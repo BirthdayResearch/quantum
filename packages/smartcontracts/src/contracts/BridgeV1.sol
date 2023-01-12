@@ -325,11 +325,10 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (supportedTokens[_tokenAddress]) revert TOKEN_ALREADY_SUPPORTED();
         // Token will be added on the supported list regardless of `_startAllowanceTimeFrom`
         supportedTokens[_tokenAddress] = true;
-        tokenAllowances[_tokenAddress].resetEpoch = _startAllowanceTimeFrom; //block.timestamp;
+        tokenAllowances[_tokenAddress].resetEpoch = _startAllowanceTimeFrom;
         tokenAllowances[_tokenAddress].dailyAllowance = _dailyAllowance;
         tokenAllowances[_tokenAddress].currentDailyUsage = 0;
         tokenAllowances[_tokenAddress].inChangeAllowancePeriod = false;
-        //tokenAllowances[_tokenAddress].startingAllowanceTime = _startAllowanceTimeFrom;
         emit ADD_SUPPORTED_TOKEN(_tokenAddress, _dailyAllowance);
     }
 
