@@ -22,7 +22,11 @@ error INCORRECT_NONCE();
 /* This error occurs when token is not in supported list
 */
 error TOKEN_NOT_SUPPORTED();
-error TOKEN_NOT_SUPPORTED_YET(uint256 timeleft);
+
+/** @notice @dev  
+/* This error occurs when token is not in supported list with `timeLeft` until the token is supported
+*/
+error TOKEN_NOT_SUPPORTED_YET(uint256 timeLeft);
 
 /** @notice @dev  
 /* This error occurs when fake signatures being used to claim fund
