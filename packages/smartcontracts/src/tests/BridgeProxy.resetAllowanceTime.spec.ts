@@ -10,7 +10,7 @@ describe('Reset allowance time tests', () => {
       it('Successfully change token`s allowance time', async () => {
         const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
         await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), currentTimeStamp());
-        const prevEpoch = (await proxyBridge.tokenAllowances(testToken.address)).resetEpoch;
+        const prevEpoch = (await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp;
         const newEpoch = currentTimeStamp(60 * 60 * 24);
         await expect(
           proxyBridge
@@ -25,7 +25,7 @@ describe('Reset allowance time tests', () => {
       it('Successfully change token`s allowance time', async () => {
         const { proxyBridge, testToken, operationalAdminSigner } = await loadFixture(deployContracts);
         await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), currentTimeStamp());
-        const prevEpoch = (await proxyBridge.tokenAllowances(testToken.address)).resetEpoch;
+        const prevEpoch = (await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp;
         const newEpoch = currentTimeStamp(60 * 60 * 24);
         await expect(
           proxyBridge
@@ -62,6 +62,26 @@ describe('Reset allowance time tests', () => {
       await expect(
         proxyBridge.connect(defaultAdminSigner).changeResetAllowanceTime(testToken.address, currentTimePastTwoHrs),
       ).to.revertedWithCustomError(proxyBridge, 'INVALID_RESET_EPOCH_TIME');
+    });
+    it('Unable to change the reset allowance time if in inChangeAllowancePeriod period', async () => {
+      const { proxyBridge, testToken } = await loadFixture(deployContracts);
+      await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), currentTimeStamp());
+      await proxyBridge.changeDailyAllowance(testToken.address, toWei('15'));
+      expect((await proxyBridge.tokenAllowances(testToken.address)).inChangeAllowancePeriod).to.equal(true);
+      // This tx will as inChangeAllowancePeriod == true
+      await expect(
+        proxyBridge.changeResetAllowanceTime(testToken.address, currentTimeStamp() + 60 * 60 * 2),
+      ).to.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
+    });
+    it('Successfully change the reset allowance time if in inChangeAllowancePeriod period', async () => {
+      const { proxyBridge, testToken } = await loadFixture(deployContracts);
+      await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), currentTimeStamp());
+      await proxyBridge.changeDailyAllowance(testToken.address, toWei('15'));
+      expect((await proxyBridge.tokenAllowances(testToken.address)).inChangeAllowancePeriod).to.equal(true);
+      // `testToken` is still in inChangeAllowancePeriod. Admins can still set the resetAllowanceTime after `nextActivateTimeStamp`
+      const nextActivateTime = (await proxyBridge.tokenAllowances(testToken.address)).nextActivateTimeStamp;
+      // Set `_newResetTimeStamp` to nextActivateTime + 1hr
+      await expect(proxyBridge.changeResetAllowanceTime(testToken.address, nextActivateTime.add(60 * 60 * 1)));
     });
   });
 });

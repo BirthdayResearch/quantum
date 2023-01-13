@@ -81,7 +81,7 @@ describe('EVM --> DeFiChain', () => {
       // Starting supporting token from time
       const allowanceStartTime = currentTimeStamp(60 * 60 * 24);
       // adding testToken as supported token with dailyAllowance of 10. Allowance start time would be an currentTimeStamp + 1 day.
-      expect((await proxyBridge.tokenAllowances(testToken.address)).resetEpoch).to.equal(allowanceStartTime);
+      expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(allowanceStartTime);
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')),
       ).to.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED_YET');

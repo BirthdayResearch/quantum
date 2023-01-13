@@ -70,16 +70,17 @@ error TRANSCATION_FAILED();
 error DO_NOT_SEND_ETHER_WITH_ERC20();
 
 /** @notice @dev 
-/* This error occurs when `_newResetEpoch` is passed block.timestamp
+/* This error occurs when `_newResetTimeStamp` is passed block.timestamp
 */
 error INVALID_RESET_EPOCH_TIME();
 
 contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     struct TokenAllowance {
-        uint256 resetEpoch;
+        uint256 latestResetTimestamp;
         uint256 dailyAllowance;
         uint256 currentDailyUsage;
         bool inChangeAllowancePeriod;
+        uint256 nextActivateTimeStamp;
     }
     address constant ETHER = address(0);
 
@@ -108,7 +109,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     modifier notInChangeAllowancePeriod(address _tokenAddress) {
         if (tokenAllowances[_tokenAddress].inChangeAllowancePeriod) {
-            if (block.timestamp - tokenAllowances[_tokenAddress].resetEpoch < 1 days)
+            if (block.timestamp - tokenAllowances[_tokenAddress].latestResetTimestamp < 1 days)
                 revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();
             tokenAllowances[_tokenAddress].inChangeAllowancePeriod = false;
             _;
@@ -191,8 +192,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice Emitted when `resetAllowanceTime` is changed by only Admin accounts
      * @param ownerAddress Owner's address requesting withdraw
-     * @param oldResetAllowanceTime previous `resetEpoch`
-     * @param newResetAllowanceTime new `resetEpoch`
+     * @param oldResetAllowanceTime previous `latestResetTimestamp`
+     * @param newResetAllowanceTime new `latestResetTimestamp`
      */
     event RESET_EPOCH_BY_OWNER(address ownerAddress, uint256 oldResetAllowanceTime, uint256 newResetAllowanceTime);
 
@@ -285,17 +286,17 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (_tokenAddress != address(0) && msg.value > 0) {
             revert DO_NOT_SEND_ETHER_WITH_ERC20();
         }
-        uint256 tokenAllowancesStartTime = tokenAllowances[_tokenAddress].resetEpoch;
+        uint256 tokenAllowancesStartTime = tokenAllowances[_tokenAddress].latestResetTimestamp;
         if (tokenAllowancesStartTime > block.timestamp)
             revert TOKEN_NOT_SUPPORTED_YET(tokenAllowancesStartTime - block.timestamp);
         uint256 amount = checkValue(_tokenAddress, _amount, msg.value);
-        if (tokenAllowances[_tokenAddress].resetEpoch + (1 days) > block.timestamp) {
+        if (tokenAllowances[_tokenAddress].latestResetTimestamp + (1 days) > block.timestamp) {
             tokenAllowances[_tokenAddress].currentDailyUsage += amount;
             if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)
                 revert EXCEEDS_DAILY_ALLOWANCE();
         } else {
-            tokenAllowances[_tokenAddress].resetEpoch +=
-                ((block.timestamp - tokenAllowances[_tokenAddress].resetEpoch) / (1 days)) *
+            tokenAllowances[_tokenAddress].latestResetTimestamp +=
+                ((block.timestamp - tokenAllowances[_tokenAddress].latestResetTimestamp) / (1 days)) *
                 1 days;
             tokenAllowances[_tokenAddress].currentDailyUsage = amount;
             if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)
@@ -325,7 +326,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (supportedTokens[_tokenAddress]) revert TOKEN_ALREADY_SUPPORTED();
         // Token will be added on the supported list regardless of `_startAllowanceTimeFrom`
         supportedTokens[_tokenAddress] = true;
-        tokenAllowances[_tokenAddress].resetEpoch = _startAllowanceTimeFrom;
+        tokenAllowances[_tokenAddress].latestResetTimestamp = _startAllowanceTimeFrom;
         tokenAllowances[_tokenAddress].dailyAllowance = _dailyAllowance;
         tokenAllowances[_tokenAddress].currentDailyUsage = 0;
         tokenAllowances[_tokenAddress].inChangeAllowancePeriod = false;
@@ -340,7 +341,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
         supportedTokens[_tokenAddress] = false;
-        tokenAllowances[_tokenAddress].resetEpoch = 0;
+        tokenAllowances[_tokenAddress].latestResetTimestamp = 0;
         tokenAllowances[_tokenAddress].dailyAllowance = 0;
         tokenAllowances[_tokenAddress].currentDailyUsage = 0;
         tokenAllowances[_tokenAddress].inChangeAllowancePeriod = false;
@@ -361,6 +362,10 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (!supportedTokens[_tokenAddress]) revert ONLY_SUPPORTED_TOKENS();
         tokenAllowances[_tokenAddress].inChangeAllowancePeriod = true;
         tokenAllowances[_tokenAddress].dailyAllowance = _dailyAllowance;
+        tokenAllowances[_tokenAddress].nextActivateTimeStamp =
+            block.timestamp -
+            ((block.timestamp - tokenAllowances[_tokenAddress].latestResetTimestamp) % 1 days) +
+            1 days;
         emit CHANGE_DAILY_ALLOWANCE(_tokenAddress, _dailyAllowance);
     }
 
@@ -410,15 +415,20 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice Use by addresses with Admin and Operational roles to set the new reset allowance for the token
      * @param _tokenAddress The token supporting new time stamp
-     * @param _newResetEpoch new time stamp in seconds
+     * @param _newResetTimeStamp new time stamp in seconds
      */
-    function changeResetAllowanceTime(address _tokenAddress, uint256 _newResetEpoch) external {
+    function changeResetAllowanceTime(address _tokenAddress, uint256 _newResetTimeStamp)
+        external
+        notInChangeAllowancePeriod(_tokenAddress)
+    {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (_newResetEpoch < block.timestamp) revert INVALID_RESET_EPOCH_TIME();
+        if (_newResetTimeStamp < block.timestamp) revert INVALID_RESET_EPOCH_TIME();
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
-        uint256 prevEpoch = tokenAllowances[_tokenAddress].resetEpoch;
-        tokenAllowances[_tokenAddress].resetEpoch = _newResetEpoch;
-        emit RESET_EPOCH_BY_OWNER(msg.sender, prevEpoch, _newResetEpoch);
+        if (tokenAllowances[_tokenAddress].nextActivateTimeStamp > _newResetTimeStamp)
+            revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();
+        uint256 prevEpoch = tokenAllowances[_tokenAddress].latestResetTimestamp;
+        tokenAllowances[_tokenAddress].latestResetTimestamp = _newResetTimeStamp;
+        emit RESET_EPOCH_BY_OWNER(msg.sender, prevEpoch, _newResetTimeStamp);
     }
 
     /**
