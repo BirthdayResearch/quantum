@@ -84,7 +84,7 @@ describe('EVM --> DeFiChain', () => {
       expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(allowanceStartTime);
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')),
-      ).to.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED_YET');
+      ).to.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
       // Contract address should be Zero
       expect(await testToken.balanceOf(proxyBridge.address)).to.equal(0);
       // increasing time by 1 day.
@@ -153,7 +153,7 @@ describe('EVM --> DeFiChain', () => {
       // Checking if the inChangeAllowancePeriod is false
       expect((await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).inChangeAllowancePeriod).to.equal(false);
       // Changing allowance from 15 to 20 for testToken
-      await proxyBridge.changeDailyAllowance(testToken.address, toWei('20'));
+      await proxyBridge.changeDailyAllowance(testToken.address, toWei('20'), currentTimeStamp(60 * 60 * 25));
       // Check if the allowance has been changed to 20
       expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('20'));
       // Confirming inChangeAllowancePeriod is true
@@ -228,7 +228,9 @@ describe('EVM --> DeFiChain', () => {
         .connect(defaultAdminSigner)
         .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), currentTimeStamp());
       // Changing allowance to set the notInChangeAllowancePeriod to 'True'
-      await proxyBridge.connect(defaultAdminSigner).changeDailyAllowance(ethers.constants.AddressZero, toWei('15'));
+      await proxyBridge
+        .connect(defaultAdminSigner)
+        .changeDailyAllowance(ethers.constants.AddressZero, toWei('15'), currentTimeStamp(60 * 60 * 25));
       // Check if the allowance has been changed to 15
       expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).dailyAllowance).to.equal(
         toWei('15'),

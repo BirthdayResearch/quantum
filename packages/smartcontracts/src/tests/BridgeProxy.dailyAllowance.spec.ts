@@ -17,7 +17,7 @@ async function initMintAndSupport(
   await testToken.mint(eoaAddress, toWei('100'));
   await testToken.approve(contractAddress, ethers.constants.MaxInt256);
   // Daily allowance amount set to 15 testToken
-  await proxyBridge.addSupportedTokens(testToken.address, ethers.utils.parseEther('15'), currentTimeStamp());
+  await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), currentTimeStamp());
 }
 
 describe('Daily allowance tests', () => {
@@ -107,38 +107,41 @@ describe('Daily allowance tests', () => {
       expect(allowance[3]).to.equal(false);
     });
 
-    it('Change daily allowance', async () => {
+    it('Change daily allowance and reset time', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
       await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
-      // await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'));
+      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('15'));
       // Setting daily allowance to 5 tokens
-      await proxyBridge.changeDailyAllowance(testToken.address, toWei('5'));
-      // No bridging to defiChain and changeDailyAllowance, result of being in 'CHANGE ALOWANCE PERIOD'
+      await proxyBridge.changeDailyAllowance(testToken.address, toWei('10'), currentTimeStamp(60 * 60 * 49));
+      // No bridging to defiChain and changeDailyAllowance, result of being in 'CHANGE ALLOWANCE PERIOD'
+      await expect(
+        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('5')),
+      ).to.be.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
+      // Increasing time by 1 day
+      await time.increase(currentTimeStamp(60 * 60 * 24));
+      // Bridging 10 test tokens
+      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'));
+      // No more bridging should be allowed
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')),
-      ).to.be.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
-      await expect(proxyBridge.changeDailyAllowance(testToken.address, toWei('5'))).to.be.revertedWithCustomError(
-        proxyBridge,
-        'STILL_IN_CHANGE_ALLOWANCE_PERIOD',
-      );
-      let allowance = await proxyBridge.tokenAllowances(testToken.address);
-      expect(allowance[3]).to.equal(true);
-      // Increasing time by 1 day (In seconds)
+      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+      // Increasing time by 1 day
       await time.increase(60 * 60 * 24);
-      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('2'));
-      allowance = await proxyBridge.tokenAllowances(testToken.address);
-      expect(allowance[1]).to.equal(toWei('5'));
-      expect(allowance[2]).to.equal(toWei('2'));
-      expect(allowance[3]).to.equal(false);
+      // Bridging test tokens
+      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('1'));
+      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('9'));
+      // Contract balance should be 35 test tokens
+      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('35'));
     });
     describe('Emitted Events', () => {
       it('Successfully emitted event when changing allowances', async () => {
         const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
         await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+        const prevTimeStamp = (await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp;
         // Event called CHANGE_DAILY_ALLOWANCE should be emitted when changes token's allowances
-        await expect(proxyBridge.changeDailyAllowance(testToken.address, toWei('10')))
+        await expect(proxyBridge.changeDailyAllowance(testToken.address, toWei('10'), currentTimeStamp(60 * 60 * 25)))
           .to.emit(proxyBridge, 'CHANGE_DAILY_ALLOWANCE')
-          .withArgs(testToken.address, toWei('10'));
+          .withArgs(testToken.address, toWei('10'), prevTimeStamp, currentTimeStamp(60 * 60 * 25));
       });
     });
 
@@ -154,9 +157,13 @@ describe('Daily allowance tests', () => {
       expect((await proxyBridge.tokenAllowances(testToken.address))[1]).to.equal(toWei('15'));
       expect((await proxyBridge.tokenAllowances(testToken2.address))[1]).to.equal(toWei('20'));
       // TestToken allowance set to 15, changing it to 25 tokens
-      await proxyBridge.connect(defaultAdminSigner).changeDailyAllowance(testToken.address, toWei('25'));
+      await proxyBridge
+        .connect(defaultAdminSigner)
+        .changeDailyAllowance(testToken.address, toWei('25'), currentTimeStamp(60 * 60 * 25));
       // TestToken2 allowance set to 20, changing it to 30 tokens
-      await proxyBridge.connect(defaultAdminSigner).changeDailyAllowance(testToken2.address, toWei('30'));
+      await proxyBridge
+        .connect(defaultAdminSigner)
+        .changeDailyAllowance(testToken2.address, toWei('30'), currentTimeStamp(60 * 60 * 25));
       // Check on dailyAllowance after changing the dailyAllowance
       expect((await proxyBridge.tokenAllowances(testToken.address))[1]).to.equal(toWei('25'));
       expect((await proxyBridge.tokenAllowances(testToken2.address))[1]).to.equal(toWei('30'));
@@ -168,7 +175,9 @@ describe('Daily allowance tests', () => {
         await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
         // Admin changing the allowance of testToken
         expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('15'));
-        await proxyBridge.connect(defaultAdminSigner).changeDailyAllowance(testToken.address, toWei('10'));
+        await proxyBridge
+          .connect(defaultAdminSigner)
+          .changeDailyAllowance(testToken.address, toWei('10'), currentTimeStamp(60 * 60 * 25));
         expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('10'));
       });
 
@@ -178,7 +187,9 @@ describe('Daily allowance tests', () => {
         );
         await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
         // Operation changing the allowance of testToken
-        await proxyBridge.connect(operationalAdminSigner).changeDailyAllowance(testToken.address, toWei('20'));
+        await proxyBridge
+          .connect(operationalAdminSigner)
+          .changeDailyAllowance(testToken.address, toWei('20'), currentTimeStamp(60 * 60 * 25));
         // This where we are exposed to token daily allowance
         expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('20'));
       });
@@ -188,7 +199,9 @@ describe('Daily allowance tests', () => {
         await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
         // Revert txn if not by Admin or Operation wallet
         await expect(
-          proxyBridge.connect(arbitrarySigner).changeDailyAllowance(testToken.address, toWei('20')),
+          proxyBridge
+            .connect(arbitrarySigner)
+            .changeDailyAllowance(testToken.address, toWei('20'), currentTimeStamp(60 * 60 * 25)),
         ).to.be.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
         expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('15'));
       });
@@ -200,7 +213,7 @@ describe('Daily allowance tests', () => {
       const { proxyBridge } = await loadFixture(deployContracts);
       // This should revert with the error 'ONLY_SUPPORTED_TOKENS'
       await expect(
-        proxyBridge.changeDailyAllowance(ethers.constants.AddressZero, toWei('12')),
+        proxyBridge.changeDailyAllowance(ethers.constants.AddressZero, toWei('12'), currentTimeStamp(60 * 60 * 25)),
       ).to.revertedWithCustomError(proxyBridge, 'ONLY_SUPPORTED_TOKENS');
     });
 
