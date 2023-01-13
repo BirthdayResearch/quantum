@@ -421,10 +421,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _tokenAddress The token supporting new time stamp
      * @param _newResetTimeStamp new time stamp in seconds
      */
-    function changeResetAllowanceTime(address _tokenAddress, uint256 _newResetTimeStamp)
-        external
-        notInChangeAllowancePeriod(_tokenAddress)
-    {
+    function changeResetAllowanceTime(address _tokenAddress, uint256 _newResetTimeStamp) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
         if (_newResetTimeStamp < block.timestamp) revert INVALID_RESET_EPOCH_TIME();
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
