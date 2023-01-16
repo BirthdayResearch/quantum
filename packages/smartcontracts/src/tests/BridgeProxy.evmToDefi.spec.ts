@@ -13,7 +13,7 @@ async function initMintAndSupport(
   testToken: TestToken,
   eoaAddress: string,
   contractAddress: string,
-  timeStamp?: number,
+  additionalTime?: number,
 ) {
   await testToken.mint(eoaAddress, toWei('100'));
   await testToken.approve(contractAddress, ethers.constants.MaxInt256);
@@ -21,7 +21,7 @@ async function initMintAndSupport(
   await proxyBridge.addSupportedTokens(
     testToken.address,
     ethers.utils.parseEther('15'),
-    timeStamp ? currentTimeStamp(timeStamp) : currentTimeStamp(),
+    additionalTime ? currentTimeStamp(additionalTime) : currentTimeStamp(),
   );
 }
 describe('EVM --> DeFiChain', () => {
@@ -75,9 +75,7 @@ describe('EVM --> DeFiChain', () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
       await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
       // This txn should fail. User sending 0 ERC20 along with ETHER. only checking the _amount not value
-      await expect(
-        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 0, { value: toWei('10') }),
-      ).to.reverted;
+      await expect(proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 0)).to.reverted;
     });
 
     it('Successfully bridging after a day', async () => {
@@ -94,7 +92,7 @@ describe('EVM --> DeFiChain', () => {
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')),
       ).to.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
-      // Contract address should be Zero
+      // Contract address balance should be zero
       expect(await testToken.balanceOf(proxyBridge.address)).to.equal(0);
       // increasing time by 1 day.
       await time.increase(60 * 60 * 24);

@@ -138,10 +138,11 @@ describe('Daily allowance tests', () => {
         const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
         await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
         const prevTimeStamp = (await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp;
+        const currentTime = currentTimeStamp(60 * 60 * 25);
         // Event called CHANGE_DAILY_ALLOWANCE should be emitted when changes token's allowances
-        await expect(proxyBridge.changeDailyAllowance(testToken.address, toWei('10'), currentTimeStamp(60 * 60 * 25)))
+        await expect(proxyBridge.changeDailyAllowance(testToken.address, toWei('10'), currentTime))
           .to.emit(proxyBridge, 'CHANGE_DAILY_ALLOWANCE')
-          .withArgs(testToken.address, toWei('10'), prevTimeStamp, currentTimeStamp(60 * 60 * 25));
+          .withArgs(testToken.address, toWei('10'), prevTimeStamp, currentTime);
       });
     });
 
