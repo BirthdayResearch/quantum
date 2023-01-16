@@ -77,8 +77,6 @@ Both the Admin and Operational addresses can change the `_dailyAllowance` and `_
 Both the Admin and Operational addresses can change `relayerAddress`.
 Relayer address will primarily be used for signature.
 
-### Change reset daily allowance time(UNIX)
-
 ### Transaction fee change
 
 Only address with admin role can change `transactionFee`. Initial fee will be set to 0.3%
