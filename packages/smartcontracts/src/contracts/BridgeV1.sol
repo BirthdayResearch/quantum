@@ -290,6 +290,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 tokenAllowancesStartTime = tokenAllowances[_tokenAddress].latestResetTimestamp;
         if (block.timestamp < tokenAllowancesStartTime) revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();
         uint256 amount = checkValue(_tokenAddress, _amount, msg.value);
+        require(amount > 0);
         if (tokenAllowances[_tokenAddress].latestResetTimestamp + (1 days) > block.timestamp) {
             tokenAllowances[_tokenAddress].currentDailyUsage += amount;
             if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)

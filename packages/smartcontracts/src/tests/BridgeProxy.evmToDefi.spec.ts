@@ -71,6 +71,15 @@ describe('EVM --> DeFiChain', () => {
       ).to.revertedWithCustomError(proxyBridge, 'DO_NOT_SEND_ETHER_WITH_ERC20');
     });
 
+    it('Successfully revert if sending zero ERC20 token', async () => {
+      const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      // This txn should fail. User sending 0 ERC20 along with ETHER. only checking the _amount not value
+      await expect(
+        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 0, { value: toWei('10') }),
+      ).to.reverted;
+    });
+
     it('Successfully bridging after a day', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
       await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address, 60 * 60 * 24);
@@ -189,6 +198,17 @@ describe('EVM --> DeFiChain', () => {
           value: toWei('11'),
         }),
       ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+    });
+
+    it('Successfully revert if sending zero ETHER', async () => {
+      const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      // This txn should fail. User sending ETHER, will check if the value is greater than 0
+      await expect(
+        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, ethers.constants.AddressZero, 0, {
+          value: 0,
+        }),
+      ).to.reverted;
     });
     describe('Emitted Events: ETH', () => {
       it('Successfully bridging to DefiChain', async () => {
