@@ -32,12 +32,9 @@ const { chains, provider } = configureChains(
   [chain.localhost, chain.hardhat],
   [
     jsonRpcProvider({
-      rpc: (chain) => {
-        console.log("CHAIIN:: ", chain);
-        return {
-          http: chain.rpcUrls.default, // http://localhost:8545
-        };
-      },
+      rpc: (c) => ({
+        http: c.rpcUrls.default, // http://localhost:8545
+      }),
     }),
   ]
 );
