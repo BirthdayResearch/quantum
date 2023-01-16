@@ -15,7 +15,7 @@ const securityHeaders = [
       };` +
       `style-src 'self' fonts.googleapis.com 'unsafe-inline';` +
       `font-src fonts.gstatic.com;` +
-      `connect-src 'self' ${
+      `connect-src 'self' 'localhost' '*' ${
         process.env.NODE_ENV === "development"
           ? `ws://localhost:3000/_next/webpack-hmr`
           : ""
