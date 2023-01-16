@@ -15,9 +15,9 @@ const securityHeaders = [
       };` +
       `style-src 'self' fonts.googleapis.com 'unsafe-inline';` +
       `font-src fonts.gstatic.com;` +
-      `connect-src 'self' 'localhost' '*' ${
+      `connect-src 'self' ${
         process.env.NODE_ENV === "development"
-          ? `ws://localhost:3000/_next/webpack-hmr`
+          ? `localhost:* 127.0.0.1:* cloudflare-eth.com ws://localhost:3000/_next/webpack-hmr`
           : ""
       };` +
       `prefetch-src 'self';`,

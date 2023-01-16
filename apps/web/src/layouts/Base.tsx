@@ -33,7 +33,7 @@ const { chains, provider } = configureChains(
   [
     jsonRpcProvider({
       rpc: (c) => ({
-        http: c.rpcUrls.default, // http://localhost:8545
+        http: process.env.RPC_URL || c.rpcUrls.default,
       }),
     }),
   ]

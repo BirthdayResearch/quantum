@@ -82,8 +82,7 @@ export default function BridgeForm() {
 
   const { address, isConnected } = useAccount();
   const { data } = useBalance({ address });
-  console.log({ data, address });
-  const maxAmount = new BigNumber(data?.formatted ?? 100); // TODO: Replace default 100 with 0 before release
+  const maxAmount = new BigNumber(data?.formatted ?? 0);
   const [fromAddress, setFromAddress] = useState<string>(address || "");
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
 
