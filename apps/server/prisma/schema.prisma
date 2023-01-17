@@ -1,0 +1,22 @@
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Status {
+  PENDING
+  COMPLETED
+}
+
+model PathIndex {
+  id        BigInt   @id @default(autoincrement())
+  index     BigInt   @unique
+  address   String
+  status    Status   @default(PENDING)
+  createdAt DateTime @default(now())
+}

@@ -80,3 +80,15 @@ services:
       - 'traefik.http.services.whale.loadbalancer.server.port=3000'
       - 'traefik.http.routers.whale.rule=PathPrefix(`/v0/regtest/`)'
       - 'traefik.http.routers.whale.entrypoints=web'
+
+  postgres:
+    image: postgres:14.1-alpine
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - '5432:5432'
