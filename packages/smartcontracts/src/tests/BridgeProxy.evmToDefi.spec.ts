@@ -235,7 +235,7 @@ describe('EVM --> DeFiChain', () => {
       await proxyBridge
         .connect(defaultAdminSigner)
         .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), currentTimeStamp());
-      // Changing allowance to set the notInChangeAllowancePeriod to 'True'
+      // Changing allowance to set STILL_IN_CHANGE_ALLOWANCE_PERIOD to true
       await proxyBridge
         .connect(defaultAdminSigner)
         .changeDailyAllowance(ethers.constants.AddressZero, toWei('15'), currentTimeStamp(60 * 60 * 25));
