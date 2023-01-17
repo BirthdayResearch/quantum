@@ -149,22 +149,16 @@ describe('EVM --> DeFiChain', () => {
         expect(allowance[1]).to.equal(toWei('15'));
         // Checking current daily usage
         expect(allowance[2]).to.equal(toWei('10'));
-        // Checking the change allowance period
-        expect(allowance[3]).to.equal(false);
       });
     });
 
     it('No deposit to DefiChain if in change allowance period', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
       await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
-      // Checking if the inChangeAllowancePeriod is false
-      expect((await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).inChangeAllowancePeriod).to.equal(false);
       // Changing allowance from 15 to 20 for testToken
       await proxyBridge.changeDailyAllowance(testToken.address, toWei('20'), currentTimeStamp(60 * 60 * 25));
       // Check if the allowance has been changed to 20
       expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('20'));
-      // Confirming inChangeAllowancePeriod is true
-      expect((await proxyBridge.tokenAllowances(testToken.address)).inChangeAllowancePeriod).to.equal(true);
       // This txn should be revert with the error 'STILL_IN_CHANGE_ALLOWANCE_PERIOD'
       // Sending 11 Ether to the bridge
       await expect(
@@ -237,10 +231,6 @@ describe('EVM --> DeFiChain', () => {
 
     it('No Bridging to DefiChain if in change allowance period', async () => {
       const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
-      // Checking if the inChangeAllowancePeriod is false
-      expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).inChangeAllowancePeriod).to.equal(
-        false,
-      );
       // Set Allowance to 10 ether by admin address
       await proxyBridge
         .connect(defaultAdminSigner)
@@ -252,9 +242,6 @@ describe('EVM --> DeFiChain', () => {
       // Check if the allowance has been changed to 15
       expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).dailyAllowance).to.equal(
         toWei('15'),
-      );
-      expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).inChangeAllowancePeriod).to.equal(
-        true,
       );
       // This txn should be revert with the error 'STILL_IN_CHANGE_ALLOWANCE_PERIOD'
       // Sending 11 Ether to the bridge
