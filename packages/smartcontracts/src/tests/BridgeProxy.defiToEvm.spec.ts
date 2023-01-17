@@ -50,6 +50,7 @@ describe('DeFiChain --> EVM', () => {
     };
 
     const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
+    console.log(signature);
     // Checking Balance before claiming fund, should be 0
     expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(0);
     await proxyBridge.claimFund(
