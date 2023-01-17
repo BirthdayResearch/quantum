@@ -8,13 +8,8 @@ import {
   website,
 } from "@components/siteInfo";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import {
-  WagmiConfig,
-  createClient,
-  chain,
-  defaultChains,
-  configureChains,
-} from "wagmi";
+import { WagmiConfig, createClient, configureChains } from "wagmi";
+import { localhost, hardhat, mainnet, goerli } from "wagmi/chains";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { ConnectKitProvider, getDefaultClient } from "connectkit";
 import Footer from "@components/Footer";
@@ -25,15 +20,15 @@ import { NetworkProvider } from "@contexts/NetworkContext";
 import { InjectedConnector } from "wagmi/connectors/injected";
 
 const metamask = new MetaMaskConnector({
-  chains: [...defaultChains, chain.localhost, chain.hardhat],
+  chains: [mainnet, goerli, localhost, hardhat],
 });
 
 const { chains, provider } = configureChains(
-  [chain.localhost, chain.hardhat],
+  [localhost, hardhat],
   [
     jsonRpcProvider({
       rpc: (c) => ({
-        http: process.env.RPC_URL || c.rpcUrls.default,
+        http: (process.env.RPC_URL || c.rpcUrls.default) as string,
       }),
     }),
   ]
