@@ -4,7 +4,7 @@ import { ethers } from 'hardhat';
 
 import { BridgeV1, TestToken } from '../generated';
 import { deployContracts } from './testUtils/deployment';
-import { amountAfterFee, toWei } from './testUtils/mathUtils';
+import { amountAfterFee, currentTimeStamp, toWei } from './testUtils/mathUtils';
 
 // initMintAndSupport will mint to the EOA address and approve contractAddress.
 // This is primarily to help avoid the repetition of code
@@ -13,11 +13,16 @@ async function initMintAndSupport(
   testToken: TestToken,
   eoaAddress: string,
   contractAddress: string,
+  additionalTime?: number,
 ) {
   await testToken.mint(eoaAddress, toWei('100'));
   await testToken.approve(contractAddress, ethers.constants.MaxInt256);
   // Daily allowance amount set to 15 testToken
-  await proxyBridge.addSupportedTokens(testToken.address, ethers.utils.parseEther('15'));
+  await proxyBridge.addSupportedTokens(
+    testToken.address,
+    ethers.utils.parseEther('15'),
+    additionalTime ? currentTimeStamp(additionalTime) : currentTimeStamp(),
+  );
 }
 describe('EVM --> DeFiChain', () => {
   describe('Bridging ERC20 token', () => {
@@ -50,7 +55,7 @@ describe('EVM --> DeFiChain', () => {
       // This txn should revert if the exceeding daily balance of 15
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('20')),
-      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+      ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
       // Current daily usage should be 15. Above txn didn't succeed
       expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('15'));
     });
@@ -63,60 +68,68 @@ describe('EVM --> DeFiChain', () => {
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'), {
           value: toWei('10'),
         }),
-      ).to.revertedWithCustomError(proxyBridge, 'DO_NOT_SEND_ETHER_WITH_ERC20');
+      ).to.be.revertedWithCustomError(proxyBridge, 'DO_NOT_SEND_ETHER_WITH_ERC20');
+    });
+
+    it('Successfully revert if sending zero ERC20 token', async () => {
+      const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      // This txn should fail. User sending 0 ERC20 along with ETHER. only checking the _amount not value
+      await expect(proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 0)).to.be.reverted;
     });
 
     it('Successfully bridging after a day', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
-      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address, 60 * 60 * 24);
       // Testing with testToken (already added in supported token)
       // Daily allowance is 15. Should revert with the error if exceeding daily allowance
       // Current daily usage should be zero
       expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(0);
-      // Bridging 15 token to defiChain. After this txn only able to bridge dailyAllowance(15) - 15 = 0 tokens
-      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('15'));
-      // Initial balance is 100, should be 85.
-      expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(toWei('85'));
-      // Current daily usage should be 15
-      expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('15'));
-      // This txn should revert if the exceeding daily balance of 15
+      // Starting supporting token from time
+      const allowanceStartTime = currentTimeStamp(60 * 60 * 24);
+      // adding testToken as supported token with dailyAllowance of 10. Allowance start time would be an currentTimeStamp + 1 day.
+      expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(allowanceStartTime);
       await expect(
-        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('20')),
-      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
-      // Current daily usage should be 15. Above txn didn't succeed
-      expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('15'));
-      // Waiting for a day to reset the allowance.
-      await time.increase(60 * 60 * 25);
-      // After a day. Bridging 12 token. Txn should not revert.
-      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('12'));
-      // This txn should revert if the exceeding daily balance of 15
-      await expect(
-        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('4')),
-      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
-      // Current daily usage should be 12
-      expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('12'));
-      // Bridging 3 token again. Txn should not revert.
-      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('3'));
-      // Current daily usage should be 15
-      expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('15'));
+        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')),
+      ).to.be.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
+      // Contract address balance should be zero
+      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(0);
+      // increasing time by 1 day.
+      await time.increase(60 * 60 * 24);
+      // Bridging 10 tokens
+      await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'));
+      // Checking contract balance: should be 10 test tokens
+      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('10'));
     });
     describe('Emitted Events: ERC20', () => {
       it('Successfully bridging over multiple days', async () => {
         const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
-        await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
-        const prevAllowance = await proxyBridge.tokenAllowances(testToken.address);
-        // Bridging 10 testToken
-        await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'));
-        // Bridging 2 testToken
-        await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('2'));
-        // Increasing time by 2 days and an hr (In seconds)
-        await time.increase(60 * 60 * 49);
-        // Bridging 9 testToken
-        await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('9'));
-        // Increasing time by 1 day (In seconds)
+        await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address, 60 * 60 * 24);
+        // increasing time by 1 day.
         await time.increase(60 * 60 * 24);
-        // Event called BRIDGE_TO_DEFI_CHAIN should be emitted when Successfully bridged token to DefiChain
-        // Getting timestamp
+        await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('8'));
+        await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('7'));
+        // Checking Contract balance - should be 15 Test token
+        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('15'));
+        // Daily allowance set to 15 during setup. This tx should fail (8 + 7 + 2) > 15
+        await expect(
+          proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('2')),
+        ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+        // increasing time by 3 days.
+        await time.increase(60 * 60 * 72);
+        await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('15'));
+        // Checking contract balance: should be 30 test tokens
+        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('30'));
+        await expect(
+          proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('2')),
+        ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+        // increasing time by 23 hrs.
+        await time.increase(60 * 60 * 23);
+        await expect(
+          proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')),
+        ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+        // increasing time by an hr.
+        await time.increase(60 * 60 * 1);
         const blockNumBefore = await ethers.provider.getBlockNumber();
         const blockBefore = await ethers.provider.getBlock(blockNumBefore);
         // Need to add to the timestamp of the previous block to match the next block the tx is mined in
@@ -124,38 +137,32 @@ describe('EVM --> DeFiChain', () => {
         // Getting tx fee from the bridged contract.
         const txFee = await proxyBridge.transactionFee();
         // Calculating amount after tx fees
-        const netAmountAfterFee = amountAfterFee(toWei('14'), txFee);
+        const netAmountAfterFee = amountAfterFee(toWei('10'), txFee);
         // Bridging 14 testToken
-        await expect(proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('14')))
+        await expect(proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')))
           .to.emit(proxyBridge, 'BRIDGE_TO_DEFI_CHAIN')
           .withArgs(ethers.constants.AddressZero, testToken.address, netAmountAfterFee, expectedTimestamp);
+        // Checking contract balance: should be 40 test tokens
+        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('40'));
         const allowance = await proxyBridge.tokenAllowances(testToken.address);
-        // Checking previous epoch
-        expect(allowance[0]).to.equal(prevAllowance[0].add(60 * 60 * 72));
         // Checking daily allowance
         expect(allowance[1]).to.equal(toWei('15'));
         // Checking current daily usage
-        expect(allowance[2]).to.equal(toWei('14'));
-        // Checking the change allowance period
-        expect(allowance[3]).to.equal(false);
+        expect(allowance[2]).to.equal(toWei('10'));
       });
     });
 
     it('No deposit to DefiChain if in change allowance period', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
       await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
-      // Checking if the inChangeAllowancePeriod is false
-      expect((await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).inChangeAllowancePeriod).to.equal(false);
       // Changing allowance from 15 to 20 for testToken
-      await proxyBridge.changeDailyAllowance(testToken.address, 20);
+      await proxyBridge.changeDailyAllowance(testToken.address, toWei('20'), currentTimeStamp(60 * 60 * 25));
       // Check if the allowance has been changed to 20
-      expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(20);
-      // Confirming inChangeAllowancePeriod is true
-      expect((await proxyBridge.tokenAllowances(testToken.address)).inChangeAllowancePeriod).to.equal(true);
+      expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('20'));
       // This txn should be revert with the error 'STILL_IN_CHANGE_ALLOWANCE_PERIOD'
       // Sending 11 Ether to the bridge
       await expect(
-        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 11),
+        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('11')),
       ).to.be.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
     });
   });
@@ -169,26 +176,37 @@ describe('EVM --> DeFiChain', () => {
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, ethers.constants.AddressZero, 0, {
           value: toWei('1'),
         }),
-      ).to.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
+      ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
     });
 
     it('Successfully revert if bridging amount exceeds daily allowance', async () => {
       const { proxyBridge } = await loadFixture(deployContracts);
       // Set Allowance to 10 ether
-      await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, 10);
+      await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('10'), currentTimeStamp());
       // This txn should be revert with custom error 'EXCEEDS_DAILY_ALLOWANCE'
       // Sending 11 Ether to the bridge
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, ethers.constants.AddressZero, 0, {
           value: toWei('11'),
         }),
-      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+      ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+    });
+
+    it('Successfully revert if sending zero ETHER', async () => {
+      const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      // This txn should fail. User sending ETHER, will check if the value is greater than 0
+      await expect(
+        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, ethers.constants.AddressZero, 0, {
+          value: 0,
+        }),
+      ).to.be.reverted;
     });
     describe('Emitted Events: ETH', () => {
       it('Successfully bridging to DefiChain', async () => {
         // set allowance to 10 Ether
         const { proxyBridge } = await loadFixture(deployContracts);
-        await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('10'));
+        await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('10'), currentTimeStamp());
         // Getting timestamp
         const blockNumBefore = await ethers.provider.getBlockNumber();
         const blockBefore = await ethers.provider.getBlock(blockNumBefore);
@@ -207,23 +225,23 @@ describe('EVM --> DeFiChain', () => {
         )
           .to.emit(proxyBridge, 'BRIDGE_TO_DEFI_CHAIN')
           .withArgs(ethers.constants.AddressZero, ethers.constants.AddressZero, netAmountAfterFee, timestampBefore);
+        expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('3'));
       });
     });
 
     it('No Bridging to DefiChain if in change allowance period', async () => {
       const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
-      // Checking if the inChangeAllowancePeriod is false
-      expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).inChangeAllowancePeriod).to.equal(
-        false,
-      );
       // Set Allowance to 10 ether by admin address
-      await proxyBridge.connect(defaultAdminSigner).addSupportedTokens(ethers.constants.AddressZero, 10);
-      // Changing allowance to set the notInChangeAllowancePeriod to 'True'
-      await proxyBridge.connect(defaultAdminSigner).changeDailyAllowance(ethers.constants.AddressZero, 15);
+      await proxyBridge
+        .connect(defaultAdminSigner)
+        .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), currentTimeStamp());
+      // Changing allowance to set STILL_IN_CHANGE_ALLOWANCE_PERIOD to true
+      await proxyBridge
+        .connect(defaultAdminSigner)
+        .changeDailyAllowance(ethers.constants.AddressZero, toWei('15'), currentTimeStamp(60 * 60 * 25));
       // Check if the allowance has been changed to 15
-      expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).dailyAllowance).to.equal(15);
-      expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).inChangeAllowancePeriod).to.equal(
-        true,
+      expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).dailyAllowance).to.equal(
+        toWei('15'),
       );
       // This txn should be revert with the error 'STILL_IN_CHANGE_ALLOWANCE_PERIOD'
       // Sending 11 Ether to the bridge
