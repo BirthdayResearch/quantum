@@ -32,7 +32,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
           proxyBridge
             .connect(defaultAdminSigner)
             .addSupportedTokens(testToken.address, toWei('15'), currentTimeStamp()),
-        ).to.revertedWithCustomError(proxyBridge, 'TOKEN_ALREADY_SUPPORTED');
+        ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_ALREADY_SUPPORTED');
         expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(true);
       });
 
@@ -47,7 +47,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
         const { proxyBridge, testToken2, defaultAdminSigner } = await loadFixture(deployContracts);
         await expect(
           proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(testToken2.address),
-        ).to.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
+        ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
       });
     });
 
@@ -71,7 +71,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
           proxyBridge
             .connect(operationalAdminSigner)
             .addSupportedTokens(testToken.address, toWei('15'), currentTimeStamp()),
-        ).to.revertedWithCustomError(proxyBridge, 'TOKEN_ALREADY_SUPPORTED');
+        ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_ALREADY_SUPPORTED');
         expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(true);
       });
 
@@ -86,7 +86,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
         const { proxyBridge, testToken2, defaultAdminSigner } = await loadFixture(deployContracts);
         await expect(
           proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(testToken2.address),
-        ).to.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
+        ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
       });
     });
 
@@ -210,7 +210,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
         // Set Allowance to 0 ether by EOA address
         await expect(
           proxyBridge.connect(arbitrarySigner).removeSupportedTokens(ethers.constants.AddressZero),
-        ).to.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
+        ).to.be.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
       });
     });
   });

@@ -83,7 +83,7 @@ describe('DeFiChain --> EVM', () => {
         testToken.address,
         signature,
       ),
-    ).to.revertedWithCustomError(proxyBridge, 'FAKE_SIGNATURE');
+    ).to.be.revertedWithCustomError(proxyBridge, 'FAKE_SIGNATURE');
     // Checking Balance after Unsuccessfully claiming fund, should be 0
     expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(0);
   });
@@ -140,7 +140,7 @@ describe('DeFiChain --> EVM', () => {
         testToken.address,
         signature,
       ),
-    ).to.revertedWith('ERC20: transfer amount exceeds balance');
+    ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
   });
 
   it('Successfully revert when claiming fund - ETH', async () => {
@@ -168,7 +168,7 @@ describe('DeFiChain --> EVM', () => {
         ethers.constants.AddressZero,
         signature,
       ),
-    ).to.revertedWithCustomError(proxyBridge, 'NOT_ENOUGH_ETHEREUM');
+    ).to.be.revertedWithCustomError(proxyBridge, 'NOT_ENOUGH_ETHEREUM');
   });
 
   describe('Emitted events', () => {

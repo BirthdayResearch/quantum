@@ -40,7 +40,7 @@ describe('Daily allowance tests', () => {
       // This txn should revert if the exceeding daily balance of 15
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('20')),
-      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+      ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
       // Current daily usage should be 15. Above txn didn't succeed
       expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('15'));
     });
@@ -61,7 +61,7 @@ describe('Daily allowance tests', () => {
       // This txn should revert if the exceeding daily balance of 15
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('20')),
-      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+      ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
       // Current daily usage should be 15. Above txn didn't succeed
       expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('15'));
       // Waiting for a day to reset the allowance.
@@ -71,7 +71,7 @@ describe('Daily allowance tests', () => {
       // This txn should revert if the exceeding daily balance of 15
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('4')),
-      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+      ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
       // Current daily usage should be 12
       expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('12'));
       // Bridging 3 token again. Txn should not revert.
@@ -122,7 +122,7 @@ describe('Daily allowance tests', () => {
       // Bridging 10 test tokens
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')),
-      ).to.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
+      ).to.be.revertedWithCustomError(proxyBridge, 'STILL_IN_CHANGE_ALLOWANCE_PERIOD');
       // Increasing time by 1 day and an hour
       await time.increase(60 * 60 * 25);
       // Bridging test tokens
@@ -130,7 +130,7 @@ describe('Daily allowance tests', () => {
       // This tx should fail as the dailyAllowance has been met
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('9')),
-      ).to.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
+      ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
       // Contract balance should be 20 test tokens
       expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('20'));
     });
@@ -169,6 +169,16 @@ describe('Daily allowance tests', () => {
       // Check on dailyAllowance after changing the dailyAllowance
       expect((await proxyBridge.tokenAllowances(testToken.address))[1]).to.equal(toWei('25'));
       expect((await proxyBridge.tokenAllowances(testToken2.address))[1]).to.equal(toWei('30'));
+    });
+
+    it('Successfully revert if the new reset time before current time stamp', async () => {
+      const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      // Current time - 1 day
+      const timeInPast = currentTimeStamp() - 60 * 60 * 24;
+      await expect(
+        proxyBridge.changeDailyAllowance(testToken.address, toWei('10'), timeInPast),
+      ).to.be.revertedWithCustomError(proxyBridge, 'INVALID_RESET_EPOCH_TIME');
     });
 
     describe('Daily Allowance change by different accounts', async () => {
@@ -216,7 +226,7 @@ describe('Daily allowance tests', () => {
       // This should revert with the error 'ONLY_SUPPORTED_TOKENS'
       await expect(
         proxyBridge.changeDailyAllowance(ethers.constants.AddressZero, toWei('12'), currentTimeStamp(60 * 60 * 25)),
-      ).to.revertedWithCustomError(proxyBridge, 'ONLY_SUPPORTED_TOKENS');
+      ).to.be.revertedWithCustomError(proxyBridge, 'ONLY_SUPPORTED_TOKENS');
     });
 
     describe('Daily Allowance change for ETH by different accounts ', () => {

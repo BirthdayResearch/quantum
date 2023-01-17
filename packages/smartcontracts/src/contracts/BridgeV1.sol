@@ -144,8 +144,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Emitted when the dailyAllowance of an existing supported token is changed by only Admin accounts
      * @param supportedToken Address of the token being added to supported token
      * @param changeDailyAllowance The new daily allowance of the supported token
-     * @param previousTimeStamp The old timeStamp of the supported toke
-     * @param newTimeStamp The new timeStamp of the supported toke
+     * @param previousTimeStamp The old reset timeStamp of the supported token that is being replaced
+     * @param newTimeStamp The new reset timeStamp of when the supported token starts to be supported
      */
     event CHANGE_DAILY_ALLOWANCE(
         address indexed supportedToken,
@@ -347,7 +347,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     ) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
         if (!supportedTokens[_tokenAddress]) revert ONLY_SUPPORTED_TOKENS();
-        if (_newResetTimeStamp - block.timestamp <= 1 days) revert INVALID_RESET_EPOCH_TIME();
+        if (_newResetTimeStamp < block.timestamp + 1 days) revert INVALID_RESET_EPOCH_TIME();
         tokenAllowances[_tokenAddress].dailyAllowance = _dailyAllowance;
         uint256 prevTimeStamp = tokenAllowances[_tokenAddress].latestResetTimestamp;
         tokenAllowances[_tokenAddress].latestResetTimestamp = _newResetTimeStamp;
