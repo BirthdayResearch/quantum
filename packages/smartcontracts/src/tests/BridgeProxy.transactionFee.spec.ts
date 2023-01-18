@@ -33,7 +33,7 @@ describe('Transaction fee tests', () => {
     it('Unable to change the fee by Operational address', async () => {
       const { proxyBridge, operationalAdminSigner } = await loadFixture(deployContracts);
       // Txn should revert with the AccessControl error
-      await expect(proxyBridge.connect(operationalAdminSigner).changeTxFee(50)).to.rejectedWith(
+      await expect(proxyBridge.connect(operationalAdminSigner).changeTxFee(50)).to.be.rejectedWith(
         // address from hardcoded Hardhat network accounts
         'AccessControl: account 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 is missing role 0x0000000000000000000000000000000000000000000000000000000000000000',
       );
@@ -44,7 +44,7 @@ describe('Transaction fee tests', () => {
     it('Unable to change the fee by another address', async () => {
       const { proxyBridge, arbitrarySigner } = await loadFixture(deployContracts);
       // Txn should revert with the AccessControl error
-      await expect(proxyBridge.connect(arbitrarySigner).changeTxFee(50)).to.rejectedWith(
+      await expect(proxyBridge.connect(arbitrarySigner).changeTxFee(50)).to.be.revertedWith(
         // address from hardcoded Hardhat network accounts
         'AccessControl: account 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc is missing role 0x0000000000000000000000000000000000000000000000000000000000000000',
       );

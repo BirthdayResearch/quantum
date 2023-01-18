@@ -101,6 +101,14 @@
 - color: fbca04
   name: area/website-api
 
+# Area - Contracts
+- color: fbca04
+  name: area/contracts
+
+# Area - Server
+- color: fbca04
+  name: area/server
+
 # Platform
 - color: 0d1d49
   name: platform/ios

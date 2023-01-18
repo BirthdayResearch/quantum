@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ethers } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 
 import { ETHERS_RPC_PROVIDER } from './modules/EthersModule';
 
@@ -9,5 +9,9 @@ export class AppService {
 
   async getBlockHeight(): Promise<number> {
     return this.ethersRpcProvider.getBlockNumber();
+  }
+
+  async getBalance(address: string): Promise<BigNumber> {
+    return this.ethersRpcProvider.getBalance(address);
   }
 }

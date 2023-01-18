@@ -21,19 +21,19 @@
     "@headlessui/react": "^1.7.7",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@waveshq/standard-web": "^0.23.0",
-    "axios": "^1.2.1",
+    "axios": "^1.2.2",
     "bignumber.js": "^9.1.1",
     "clsx": "^1.2.1",
-    "connectkit": "^1.1.0",
+    "connectkit": "^1.1.1",
     "dayjs": "^1.11.7",
     "ethers": "^5.7.2",
     "react-qr-code": "^2.0.11",
     "sass": "^1.57.1",
-    "wagmi": "^0.8.10"
+    "wagmi": "^0.9.6"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.10.0",
-    "@netlify/plugin-lighthouse": "^4.0.3",
+    "@netlify/plugin-lighthouse": "^4.0.5",
     "@netlify/plugin-nextjs": "^4.29.4",
     "@tailwindcss/typography": "^0.5.8",
     "@testing-library/cypress": "^8.0.7",
