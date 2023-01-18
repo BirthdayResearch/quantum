@@ -68,6 +68,7 @@
     "base64-sol": "1.1.0",
     "chai": "4.3.7",
     "cross-fetch": "^3.1.5",
+    "dotenv": "^16.0.3",
     "ethers": "~5.7.2",
     "hardhat": "2.12.4",
     "mocha": "10.2.0",
