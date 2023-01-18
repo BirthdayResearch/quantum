@@ -37,20 +37,22 @@ TODO
 
 ## Operational Transactions
 
-To change state of any smart contract, user needs to approve the smart contract with the respected token via `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
+For the contract to spend funds on behalf of the user, the user needs to approve the smart contract with the respected ERC-20 token via the `approve()` function first.
+Once approved, the contract will be able to transfer funds from the user's balance to itself, and the user will be able to bridge the token over to DefiChain.
 
 ### Fund ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
 
-Once approved, user will call the `bridgeToDeFiChain()` function with following the arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
+Once approved, user will call the `bridgeToDeFiChain()` function with following the arguments: `_defiAddress`- address on DeFiChain that is receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
 
 ### Fund Ether - to transfer ERC20 tokens from an EOA to the Bridge
 
-When sending ETHER to bridge, the user will not have to approve the contract. By default, every smart contract accepts ETH. Sending ether will be similar to ERC20, except we don't account for `_amount`, instead `msg.value()` is used. The `_defiAddress` is the address on the Defi Chain that is receiving funds. The `_tokenAddress` for ETH does not have an address, as it is a native currency, it should be `address(0)`/`0x0`.
+When sending ETHER to bridge, the user will not have to approve the contract. By default, every smart contract accepts ETH. Sending ether will be similar to ERC20, except we don't account for `_amount` and it is ignored. Instead, `msg.value()` is used. The `_defiAddress` is the address on the Defi Chain that is receiving funds. The `_tokenAddress` for ETH does not have an address, as it is a native currency, it should be `address(0)`/`0x0`.
 
 ### Add supported token
 
-Only addresses with Admin and operational roles can call the `addSupportedTokens()` function. Admin sets the `_dailyAllowance`.
-Users should not allow bridging more than the dailyAllowance/day.
+Only addresses with Admin and operational roles can call the `addSupportedTokens()` function. Admin sets the `_dailyAllowance` (the new allowance) and `_startAllowanceTimeFrom` (the timestamp from when the new token will start being supported). The admin will need to provide the `_tokenAddress` of the ERC-20 token as well.
+
+Users will not be able to bridge more than the dailyAllowance/day.
 
 ### Remove supported token
 
@@ -66,7 +68,7 @@ Only the Admin can call the `withdraw()` function with the token's address and a
 
 ### Change Daily Allowance
 
-Both the Admin and Operational addresses can change the `_dailyAllowance` and `_newResetTimeStamp` via `changeDailyAllowance()` function. This will reset the `inChangeAllowancePeriod` to true. When true, no bridging to the Defi chain is allowed. The allowance period stays true until it passes 24 hours since it was changed.
+Both the Admin and Operational addresses can change the `_dailyAllowance` (the new daily allowance) and `_newResetTimeStamp` (the timestamp when the token will start being supported) via `changeDailyAllowance()` function. This will reset the `inChangeAllowancePeriod` to true. When true, no bridging to the Defi chain is allowed. The allowance period stays true until it passes 24 hours since it was changed.
 
 ### Withdraw / withdrawEth
 
