@@ -21,6 +21,3 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
-// MUSDT Contract address 0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF - https://goerli.etherscan.io/address/0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF#code
-// MUSDC Contract address 0xB200af2b733B831Fbb3d98b13076BC33F605aD58 - https://goerli.etherscan.io/address/0xB200af2b733B831Fbb3d98b13076BC33F605aD58#code

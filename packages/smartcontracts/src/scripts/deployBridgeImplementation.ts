@@ -15,5 +15,3 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
-// BridgeV1 Address - https://goerli.etherscan.io/address/0xE029B5156c2e597c72f7c8D279411e1fD9a30126#code

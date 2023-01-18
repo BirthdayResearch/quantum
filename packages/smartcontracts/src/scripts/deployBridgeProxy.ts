@@ -32,5 +32,3 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
-
-// proxy contract address: https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C
