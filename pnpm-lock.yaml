@@ -42,7 +42,7 @@ importers:
       ethers: ^5.7.2
       joi: ^17.7.0
       light-my-request: ^5.8.0
-      nestjs-pino: ^3.1.1
+      nestjs-pino: ^3.1.2
       pg: ^8.8.0
       smartcontracts: workspace:0.0.0
       source-map-support: ^0.5.21
@@ -66,7 +66,7 @@ importers:
       defichain: 3.11.0
       ethers: 5.7.2
       joi: 17.7.0
-      nestjs-pino: 3.1.1_fcd54ft2xb4u3edoqjuduti5cy
+      nestjs-pino: 3.1.2_fcd54ft2xb4u3edoqjuduti5cy
       pg: 8.8.0
       typeorm: 0.3.11_pg@8.8.0+ts-node@10.9.1
     devDependencies:
@@ -13182,8 +13182,8 @@ packages:
   /neo-async/2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  /nestjs-pino/3.1.1_fcd54ft2xb4u3edoqjuduti5cy:
-    resolution: {integrity: sha512-T7ajfqYTSHKrirzrElQJ3EWO/OZF5fFFkgaRvD+I7F5YY2hU3X295E/CnTkgpHZozL0s/3Ud4OtTZlT3NisTBw==}
+  /nestjs-pino/3.1.2_fcd54ft2xb4u3edoqjuduti5cy:
+    resolution: {integrity: sha512-Rxt9v/OlHwurE2GPyBlHVjzCLCnxIPxGa+Esligij412zEcqqB6kka5MhKAk3l61u1jyTLx3Mzol+HQrR6/f9w==}
     engines: {node: '>= 14'}
     requiresBuild: true
     peerDependencies:
