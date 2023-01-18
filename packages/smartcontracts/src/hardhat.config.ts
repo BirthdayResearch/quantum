@@ -1,5 +1,6 @@
 import '@nomicfoundation/hardhat-chai-matchers';
 import '@nomicfoundation/hardhat-toolbox';
+import '@nomiclabs/hardhat-etherscan';
 
 import { HardhatUserConfig, task, types } from 'hardhat/config';
 
@@ -13,6 +14,10 @@ interface DeployContractArgs {
   deployargs: string | undefined;
   libraries: Record<string, string>;
 }
+
+require('dotenv').config({
+  path: './.env',
+});
 
 task('deployContract', 'Deploys a contract based on the name of the contract')
   .addParam(
@@ -82,6 +87,11 @@ const config: HardhatUserConfig = {
       // could be larger than the stipulated max size in EIP-170
       allowUnlimitedContractSize: true,
     },
+    goerli: {
+      url: process.env.GOERLI_URL || '',
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      gasPrice: 30000000000, // this is 30 Gwei
+    },
   },
   paths: {
     sources: './contracts',
@@ -93,6 +103,9 @@ const config: HardhatUserConfig = {
   typechain: {
     outDir: './generated',
     target: 'ethers-v5',
+  },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 
