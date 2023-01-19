@@ -9,7 +9,7 @@ export const ETHERS_RPC_PROVIDER = 'ETHERS_RPC_PROVIDER';
     {
       provide: ETHERS_RPC_PROVIDER,
       useFactory: (configService: ConfigService) =>
-        new ethers.providers.StaticJsonRpcProvider(configService.getOrThrow('blockchain.ethereumRpcUrl')),
+        new ethers.providers.StaticJsonRpcProvider(configService.getOrThrow('ethereum.rpcUrl')),
       inject: [ConfigService],
     },
   ],
