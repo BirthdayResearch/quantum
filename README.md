@@ -19,7 +19,11 @@ To deploy ERC20 token user will have to run a command `npx hardhat run --network
 
 To verify the said tokens and other contracts, there would be a prompt on terminal after running the deployment command that devs will need to run after.
 
-Devs need to deploy the `BridgeV1` contract contract before the `BridgeProxy`.
+Devs need to deploy the `BridgeV1` implementation contract before the `BridgeProxy`.
+
+`BridgeProxy` should only need to be deployed _once_ to a blockchain. Subsequent deployments should only be deploying the implementation contract (`BridgeV2`, `BridgeV3`, etc), before calling `_upgradeTo` of the `BridgeProxy` contract.
+
+This follows the [proxy pattern](https://blog.openzeppelin.com/proxy-patterns/), with the behaviour being inherited from `OpenZeppelin` proxy contracts.
 
 `BridgeV1` can be deployed with the command `npx hardhat run --network goerli ./scripts/deployBridgeImplementation.ts`
 
