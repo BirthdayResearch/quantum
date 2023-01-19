@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { RouterModule } from '@nestjs/core';
+import { APP_GUARD, RouterModule } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
 import { AppController } from './AppController';
@@ -15,6 +16,10 @@ import { EthersModule } from './modules/EthersModule';
       load: [appConfig],
       validationSchema: ENV_VALIDATION_SCHEMA,
     }),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: 10,
+    }),
     EthersModule,
     DeFiChainModule,
     RouterModule.register([
@@ -25,6 +30,13 @@ import { EthersModule } from './modules/EthersModule';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService, DeFiChainModule],
+  providers: [
+    AppService,
+    DeFiChainModule,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}
