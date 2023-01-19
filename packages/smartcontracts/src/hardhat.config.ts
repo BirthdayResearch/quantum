@@ -5,7 +5,6 @@ import '@nomiclabs/hardhat-etherscan';
 import { HardhatUserConfig, task, types } from 'hardhat/config';
 
 import { TX_AUTOMINE_ENV_VAR, TX_AUTOMINE_INTERVAL_ENV_VAR } from './envvar';
-import { BridgeV1__factory } from './generated';
 
 // Default chainId for local testing purposes. Most local testnets (Ganache, etc) use this chainId
 export const DEFAULT_CHAINID = 1337;
@@ -91,7 +90,7 @@ task('setupLocalTestnet', 'Sets up all the contracts necessary for dApp integrat
     console.log('BridgeV1 implementation deployed. You do not need to worry about the address of this contract.');
 
     const BridgeProxy = await hre.ethers.getContractFactory('BridgeProxy');
-    const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
+    const encodedData = BridgeV1.interface.encodeFunctionData('initialize', [
       'CAKE_BRIDGE',
       '1',
       // admin address
