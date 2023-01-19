@@ -13,6 +13,21 @@ TODO
 
 ## Deployed Smart Contracts on Goerli testnet
 
+## Deploy ERC20 tokens 'MUSDT' & 'MUSDC'
+
+To deploy ERC20 token user will have to run a command `npx hardhat run --network goerli ./scripts/deployERC20.ts` in smartContract directory.
+
+To verify the said tokens and other contracts, there would be a prompt on terminal after running the deployment command that devs will need to run after.
+
+Devs need to deploy the `BridgeV1` contract contract before the `BridgeProxy`.
+
+`BridgeV1` can be deployed with the command `npx hardhat run --network goerli ./scripts/deployBridgeImplementation.ts`
+
+`BridgeProxy` can be deployed with `npx hardhat run --network goerli ./scripts/deployBridgeProxy.ts`
+
+Before running the above command, following `vars` need to be addressed:
+`ADMIN_ADDRESS`, `OPERATIONAL_ADDRESS`, `RELAYER_ADDRESS`, `TRANSACTION_FEE` & `BRIDGE_IMPLEMENTATION_ADDRESS` aka `BridgeV1` contract address.
+
 ### MUSDT
 
 MUSDT Contract address: [0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF](https://goerli.etherscan.io/address/0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF)
