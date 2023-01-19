@@ -8,7 +8,7 @@ import { BridgeServerTestingApp } from '../src/BridgeServerTestingApp';
 @Module({})
 export class TestingExampleModule {
   static register(startedHardhatContainer: StartedHardhatNetworkContainer): DynamicModule {
-    const hardhatConfig = registerAs('blockchain', () => ({
+    const hardhatConfig = registerAs('ethereum', () => ({
       ethereumRpcUrl: startedHardhatContainer.rpcUrl,
     }));
 
