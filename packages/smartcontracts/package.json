@@ -71,7 +71,7 @@
     "ethers": "~5.7.2",
     "hardhat": "2.12.4",
     "mocha": "10.2.0",
-    "ts-node": "^10.9.1"
+    "ts-node": "10.9.1"
   },
   "prettier": "@birthdayresearch/sticky-prettier",
   "lint-staged": {
