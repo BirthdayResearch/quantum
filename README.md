@@ -80,7 +80,7 @@ The relayer address will primarily be used for verifying the signature that is s
 
 ### Transaction fee change
 
-Only address with admin role can change `transactionFee`. Initial fee will be set to 0.3%
+Only address with admin role can change `transactionFee`. Initial fee will be set to 0.3%. This means that if the user bridges `X` tokens, he will only bridge 99.7% of X. The other 0.3% will be taken as fees.
 
 ### Modify admin and operational address
 
