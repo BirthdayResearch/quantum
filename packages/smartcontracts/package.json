@@ -15,7 +15,7 @@
     "test:hardhat": "pnpm run generate:contract-types && hardhat test --config ./src/hardhat.config.ts",
     "clean": "rm -rf dist && rm -f tsconfig.build.tsbuildinfo && hardhat clean --config ./src/hardhat.config.ts",
     "generate:contract-types": "hardhat compile --config ./src/hardhat.config.ts",
-    "lint": "eslint ."
+    "lint": "eslint . --fix"
   },
   "eslintConfig": {
     "extends": [
@@ -68,6 +68,7 @@
     "base64-sol": "1.1.0",
     "chai": "4.3.7",
     "cross-fetch": "^3.1.5",
+    "dotenv": "^16.0.3",
     "ethers": "~5.7.2",
     "hardhat": "2.12.4",
     "mocha": "10.2.0",

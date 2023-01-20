@@ -195,8 +195,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _fee Fee charged on each transcation (initial fee: 0.3%)
      */
     function initialize(
-        string memory _name,
-        string memory _version,
+        string calldata _name,
+        string calldata _version,
         address _initialAdmin,
         address _initialOperational,
         address _relayerAddress,
@@ -235,7 +235,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 _nonce,
         uint256 _deadline,
         address _tokenAddress,
-        bytes memory signature
+        bytes calldata signature
     ) external {
         if (eoaAddressToNonce[_to] != _nonce) revert INCORRECT_NONCE();
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
@@ -264,7 +264,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _amount Amount to be bridged, this in in Wei
      */
     function bridgeToDeFiChain(
-        bytes memory _defiAddress,
+        bytes calldata _defiAddress,
         address _tokenAddress,
         uint256 _amount
     ) public payable {
