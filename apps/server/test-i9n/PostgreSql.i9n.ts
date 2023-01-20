@@ -56,7 +56,6 @@ describe('PostgreSql container', () => {
       index: 'string',
       address: 'Address 0',
     };
-    // @ts-expect-error
     await expect(prisma.pathIndex.create({ data })).rejects.toBeInstanceOf(PrismaClientValidationError);
   });
 
