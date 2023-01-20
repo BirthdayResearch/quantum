@@ -7,7 +7,8 @@ require('dotenv').config({
   path: './.env',
 });
 
-// This script will mint and approve the Bridge address, given user has provided their PRIVATE_KEY in .env. See .env.example for the reference.
+// This script will mint and approve the Bridge address to spend tokens on behalf on the user, given user has provided their PRIVATE_KEY in .env. See .env.example for the reference.
+// This is purely a convenience function so that users will not need to create a separate approval tx
 // 100,000 tokens will be minted. `amount` can be changed. To run this script, run the below command in smartContract directory.
 // npx hardhat run --network goerli ./scripts/mintTestToken.ts
 async function main() {
