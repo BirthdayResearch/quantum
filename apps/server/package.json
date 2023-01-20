@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "prepare": "npx prisma generate",
     "dev": "nest start --watch",
     "build": "tsc -b ./tsconfig.build.json",
     "clean": "rm -rf dist",
@@ -11,7 +12,6 @@
     "migration:deploy": "npx prisma migrate deploy",
     "migration:create": "npx prisma migrate dev --create-only",
     "migration:dev": "npx prisma migrate dev",
-    "prisma:generate": "npx prisma generate",
     "test": "jest",
     "test:unit": "jest --selectProjects test:unit",
     "test:i9n": "jest --selectProjects test:i9n",
