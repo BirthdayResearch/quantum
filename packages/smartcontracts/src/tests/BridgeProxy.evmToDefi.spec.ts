@@ -21,7 +21,7 @@ async function initMintAndSupport(
   await proxyBridge.addSupportedTokens(
     testToken.address,
     ethers.utils.parseEther('15'),
-    additionalTime ? getCurrentTimeStamp({ additionalTime }) : getCurrentTimeStamp({}),
+    additionalTime ? getCurrentTimeStamp({ additionalTime }) : getCurrentTimeStamp(),
   );
 }
 describe('EVM --> DeFiChain', () => {
@@ -186,7 +186,7 @@ describe('EVM --> DeFiChain', () => {
     it('Successfully revert if bridging amount exceeds daily allowance', async () => {
       const { proxyBridge } = await loadFixture(deployContracts);
       // Set Allowance to 10 ether
-      await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp({}));
+      await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp());
       // This txn should be revert with custom error 'EXCEEDS_DAILY_ALLOWANCE'
       // Sending 11 Ether to the bridge
       await expect(
@@ -210,7 +210,7 @@ describe('EVM --> DeFiChain', () => {
       it('Successfully bridging to DefiChain', async () => {
         // set allowance to 10 Ether
         const { proxyBridge } = await loadFixture(deployContracts);
-        await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp({}));
+        await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp());
         // Getting timestamp
         const blockNumBefore = await ethers.provider.getBlockNumber();
         const blockBefore = await ethers.provider.getBlock(blockNumBefore);
@@ -238,7 +238,7 @@ describe('EVM --> DeFiChain', () => {
       // Set Allowance to 10 ether by admin address
       await proxyBridge
         .connect(defaultAdminSigner)
-        .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp({}));
+        .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp());
       // Changing allowance to set STILL_IN_CHANGE_ALLOWANCE_PERIOD to true
       await proxyBridge
         .connect(defaultAdminSigner)

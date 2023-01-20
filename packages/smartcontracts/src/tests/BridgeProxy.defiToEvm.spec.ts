@@ -37,7 +37,7 @@ describe('DeFiChain --> EVM', () => {
     // Minting 100 testToken to ProxyContract
     await testToken.mint(proxyBridge.address, toWei('100'));
     // Adding testToken in supported token with daily allowance of 15 tokens
-    await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp({}));
+    await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp());
   });
 
   it('Valid Signature - ERC20 token', async () => {
@@ -157,7 +157,7 @@ describe('DeFiChain --> EVM', () => {
     await defaultAdminSigner.sendTransaction({ to: proxyBridge.address, value: toWei('10'), gasLimit: 210000 });
     expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('10'));
     // Setting ether dailyAllowance to 5. If not set, txn will revert with 'TOKEN_NOT_SUPPORTED()'
-    await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('5'), getCurrentTimeStamp({}));
+    await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('5'), getCurrentTimeStamp());
     // This should revert with custom error 'NOT_ENOUGH_ETHEREUM'
     await expect(
       proxyBridge.claimFund(
@@ -212,7 +212,7 @@ describe('DeFiChain --> EVM', () => {
       await defaultAdminSigner.sendTransaction({ to: proxyBridge.address, value: toWei('10'), gasLimit: 210000 });
       expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('10'));
       // Setting ether dailyAllowance to 5. If not set, txn will revert with 'TOKEN_NOT_SUPPORTED()'
-      await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('5'), getCurrentTimeStamp({}));
+      await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('5'), getCurrentTimeStamp());
       // Daily allowance set to 5 ether. User can withdraw any amount as long as signature valid and amount equal or less than available balance
       await expect(
         proxyBridge.claimFund(
