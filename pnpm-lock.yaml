@@ -43,7 +43,6 @@ importers:
       class-validator: ^0.14.0
       defichain: ^3.19.0
       ethers: ^5.7.2
-      jest-mock-extended: ^3.0.1
       joi: ^17.7.0
       light-my-request: ^5.8.0
       nestjs-pino: ^3.1.2
@@ -89,7 +88,6 @@ importers:
       '@types/jest': 29.2.5
       '@types/node': 18.11.11
       '@types/supertest': 2.0.12
-      jest-mock-extended: 3.0.1_p6ekqnroyms5nhqbfxosryz7rm
       light-my-request: 5.8.0
       prisma: 4.8.1
       smartcontracts: link:../../packages/smartcontracts
@@ -11567,17 +11565,6 @@ packages:
       pretty-format: 29.3.1
       slash: 3.0.0
       stack-utils: 2.0.6
-    dev: true
-
-  /jest-mock-extended/3.0.1_p6ekqnroyms5nhqbfxosryz7rm:
-    resolution: {integrity: sha512-RF4Ow8pXvbRuEcCTj56oYHmig5311BSFvbEGxPNYL51wGKGu93MvVQgx0UpFmjqyBXIcElkZo2Rke88kR1iSKQ==}
-    peerDependencies:
-      jest: ^24.0.0 || ^25.0.0 || ^26.0.0 || ^27.0.0 || ^28.0.0 || ^29.0.0
-      typescript: ^3.0.0 || ^4.0.0
-    dependencies:
-      jest: 29.3.1_k7quxe733nexnlgzi4yxvxoplq
-      ts-essentials: 7.0.3_typescript@4.9.4
-      typescript: 4.9.4
     dev: true
 
   /jest-mock/29.3.1:
