@@ -56,6 +56,40 @@ Users will not be able to bridge a total amount that is more than the dailyAllow
 ### Remove supported token
 
 Only addresses with Admin and operational roles can call the `removeSupportedTokens()` function.
+On bridging to the DeFiChain, the event `BRIDGE_TO_DEFI_CHAIN(bytes defiAddress,address indexed tokenAddress,uint256 indexed amount ,uint256 indexed timestamp);` will be emitted along with the user's defiAddress, the ERC20 token's address that is being bridged, the amount of the token being bridged, and the timestamp of the transaction.
+
+### When bridging from DeFiChain, what is the expected signed message?
+
+TODO
+
+### Sample metamask transaction of claim transaction?
+
+TODO
+
+### General explanation on how the contract works from an EVM perspective?
+
+TODO
+
+## Operational Transactions
+
+To change state of any smart contract, user need to approve the smart contract with the respected token via `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
+
+### Fund ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
+
+Once approved, user will call the `bridgeToDeFiChain()` function with following arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
+
+### Fund Ether - to transfer ERC20 tokens from an EOA to the Bridge
+
+When sending ETHER to bridge, the user will not have to approve the contract. By default, every smart contract accepts ETH. Sending ether will be similar to ERC20, except we don't account for `_amount`, instead `msg.value()` is used. The `_defiAddress` is the address on the Defi Chain that is receiving funds. The `_tokenAddress` for ETH does not have an address, as it is a native currency, it should be address(0)/0x0.
+
+### Add supported token
+
+Only addresses with Admin and operational role can call the `addSupportedTokens()` function. Admin sets the `_dailyAllowance`.
+User should not allow to bridge more than the dailyAllowance/day.
+
+### Remove supported token
+
+Only addresses with Admin and operational role can call the `removeSupportedTokens()` function.
 
 ### Withdraw ether
 
