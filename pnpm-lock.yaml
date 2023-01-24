@@ -114,7 +114,7 @@ importers:
       babel-plugin-jsx-remove-data-test-id: ^3.0.0
       bignumber.js: ^9.1.1
       clsx: ^1.2.1
-      connectkit: ^1.1.1
+      connectkit: ^1.1.2
       cypress: ^12.2.0
       dayjs: ^1.11.7
       ethers: ^5.7.2
@@ -132,7 +132,7 @@ importers:
       axios: 1.2.3
       bignumber.js: 9.1.1
       clsx: 1.2.1
-      connectkit: 1.1.1_fsxkdoz3rli5dyfru6w5blzfae
+      connectkit: 1.1.2_fsxkdoz3rli5dyfru6w5blzfae
       dayjs: 1.11.7
       ethers: 5.7.2
       react-qr-code: 2.0.11_react@18.2.0
@@ -172,6 +172,7 @@ importers:
       base64-sol: 1.1.0
       chai: 4.3.7
       cross-fetch: ^3.1.5
+      dotenv: ^16.0.3
       ethers: ~5.7.2
       hardhat: 2.12.4
       mocha: 10.2.0
@@ -194,6 +195,7 @@ importers:
       base64-sol: 1.1.0
       chai: 4.3.7
       cross-fetch: 3.1.5
+      dotenv: 16.0.3
       ethers: 5.7.2
       hardhat: 2.12.4_z6wznmtyb6ovnulj6iujpct7um
       mocha: 10.2.0
@@ -7387,14 +7389,14 @@ packages:
       - supports-color
     dev: false
 
-  /connectkit/1.1.1_fsxkdoz3rli5dyfru6w5blzfae:
-    resolution: {integrity: sha512-aQ6DHuKBMQeed0TJqlb8UJHW4K9jim/CCKBBhSwz6xLhR73tMRxP9nIyKVr/RaC+GYt/TyXBUiKBo0G96cJO6Q==}
+  /connectkit/1.1.2_fsxkdoz3rli5dyfru6w5blzfae:
+    resolution: {integrity: sha512-Y8kNdQwCPcbsV5GS2/NPZfrhZtlyKzWoU0za7rE4t0fuNJTCuh6KWT8QcbdjChIfZzRk49oDzYF3OsRMvk1nyQ==}
     engines: {node: '>=12.4'}
     peerDependencies:
       ethers: '>=5.5.0 <6'
       react: 17.x || 18.x
       react-dom: 17.x || 18.x
-      wagmi: 0.9.x
+      wagmi: 0.10.x
     dependencies:
       buffer: 6.0.3
       detect-browser: 5.3.0
