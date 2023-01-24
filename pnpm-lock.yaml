@@ -5,7 +5,7 @@ importers:
   .:
     specifiers:
       '@birthdayresearch/sticky-turbo': ^0.3.6
-      '@waveshq/standard-defichain-jellyfishsdk': ^0.34.1
+      '@waveshq/standard-defichain-jellyfishsdk': ^0.34.2
       husky: ^8.0.3
       lint-staged: ^13.1.0
     dependencies:
@@ -100,8 +100,8 @@ importers:
       '@tailwindcss/typography': ^0.5.9
       '@testing-library/cypress': ^8.0.7
       '@types/node': 18.11.11
-      '@waveshq/standard-web': ^0.34.1
-      '@waveshq/standard-web-linter': ^0.34.1
+      '@waveshq/standard-web': ^0.34.2
+      '@waveshq/standard-web-linter': ^0.34.2
       autoprefixer: ^10.4.13
       axios: ^1.2.3
       babel-plugin-istanbul: ^6.1.1
