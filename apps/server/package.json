@@ -32,8 +32,6 @@
     ]
   },
   "dependencies": {
-    "@defichain/jellyfish-json": "^3.19.0",
-    "@defichain/testcontainers": "^3.19.0",
     "@fastify/helmet": "^10.1.0",
     "@nestjs/common": "^9.2.1",
     "@nestjs/config": "^2.2.0",
@@ -44,7 +42,6 @@
     "@waveshq/walletkit-ui": "^0.24.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
-    "defichain": "^3.19.0",
     "ethers": "^5.7.2",
     "joi": "^17.7.0",
     "nestjs-pino": "^3.1.2",
