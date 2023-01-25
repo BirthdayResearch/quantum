@@ -52,9 +52,10 @@ services:
       -fortcanningspringheight=13
       -fortcanninggreatworldheight=14
       -fortcanningepilogueheight=15
+      -grandcentralheight=16
 
   defi-playground:
-    image: ghcr.io/jellyfishsdk/playground-api:3.23.1
+    image: ghcr.io/jellyfishsdk/playground-api:3.23.0
     depends_on:
       - defi-blockchain
     ports:
@@ -67,7 +68,7 @@ services:
       - "traefik.http.routers.playground.entrypoints=web"
 
   defi-whale:
-    image: ghcr.io/jellyfishsdk/whale-api:3.23.1
+    image: ghcr.io/jellyfishsdk/whale-api:3.23.0
     depends_on:
       - defi-blockchain
     ports:
