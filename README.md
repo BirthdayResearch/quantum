@@ -9,7 +9,7 @@
 
 ## DeFiChain ERC-20 Bridge
 
-### All smart contracts will be deployed on Goerli testnet.
+All smart contracts will be deployed on Goerli testnet for testing purposes.
 
 ### How to get ether on a testnet to make testnet transactions?
 
@@ -17,7 +17,7 @@ Users can get the GoerliETH via Goerli Faucet(https://goerlifaucet.com/)
 
 ### How to get ERC20 tokens to test bridging functionality?
 
-Ideally, we will have multiple Test tokens available. Users will be able to mint tokens by calling the `mint()` function with the respective EOA (Externally Owned Account) or contract address and amount.
+The MUSDT and MUSDC contract have been deployed on Goerli for testing. Users will be able to mint tokens by calling the `mint()` function with the respective EOA (Externally Owned Account) or contract address and amount.
 
 ### When bridging to DeFiChain, what is the event that devs need to listen to, and what is the payload of that event?
 
@@ -37,7 +37,7 @@ TODO
 
 ## Operational Transactions
 
-To change state of any smart contract, user need to approve the smart contract with the respected token via `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
+To change the state of any smart contract, users need to approve the smart contract of the respective token via the `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
 
 ### Fund ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
 
@@ -45,16 +45,16 @@ Once approved, user will call the `bridgeToDeFiChain()` function with following 
 
 ### Fund Ether - to transfer ERC20 tokens from an EOA to the Bridge
 
-When sending ETHER to bridge, the user will not have to approve the contract. By default, every smart contract accepts ETH. Sending ether will be similar to ERC20, except we don't account for `_amount`, instead `msg.value()` is used. The `_defiAddress` is the address on the Defi Chain that is receiving funds. The `_tokenAddress` for ETH does not have an address, as it is a native currency, it should be address(0)/0x0.
+When sending ETHER to bridge, the user will not have to approve the contract. By default, every smart contract accepts ETH. Sending ether will be similar to an ERC20 token, except we don't account for `_amount` - instead `msg.value()` is used. The `_defiAddress` is the address on the DeFiChain that is receiving funds. Since ETH does not have an address since it is the native currency, it is identified by address(0)/0x0 in `_tokenAddress`
 
 ### Add supported token
 
-Only addresses with Admin and operational role can call the `addSupportedTokens()` function. Admin sets the `_dailyAllowance`.
-User should not allow to bridge more than the dailyAllowance/day.
+Only addresses with the Admin and Operational role can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for a ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
+User are not allowed to bridge more than the dailyAllowance per day.
 
 ### Remove supported token
 
-Only addresses with Admin and operational role can call the `removeSupportedTokens()` function.
+Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function.
 
 ### Withdraw ether
 
@@ -66,11 +66,13 @@ Only the Admin can call the `withdraw()` function with the token's address and a
 
 ### Change Daily Allowance
 
-Both the Admin and Operational addresses can change the `_dailyAllowance` (the new daily allowance) and `_newResetTimeStamp` (the timestamp when the token will start being supported) via `changeDailyAllowance()` function. The allowance period stays true until it passes 24 hours since it was changed, during this time no bridging to Defi will be allowed.
+Both the Admin and Operational addresses can change the `_dailyAllowance` (the new daily allowance) and `_newResetTimeStamp` (the timestamp when the token will start being supported) via the `changeDailyAllowance()` function. The changes will only come into effect when the current timestamp has reached the `_newResetTimeStamp`. This new timestamp will have to be at least 24 hours in the future, if not the function will revert with `INVALID_RESET_EPOCH_TIME`
+
+During this 'change in allowance' period, no bridging to DeFiChain will be allowed. However, it is still possible to make additional changes by calling `changeDailyAllowance()` in case mistakes were made.
 
 ### Withdraw / withdrawEth
 
-`withdraw()` and `withdrawEth()` functions when called will withdraw ERC20 token and ETHER respectively. Only address with admin role can call these functions.
+`withdraw()` and `withdrawEth()` functions when called will withdraw ERC20 token and ETHER respectively. Only the address with the Admin role can call these functions.
 
 ### Change relayer address
 
