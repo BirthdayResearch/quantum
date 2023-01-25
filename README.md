@@ -87,7 +87,7 @@ Only address with admin role can change `transactionFee`. Initial fee will be se
 
 ## Deployed Smart Contracts on Goerli testnet
 
-## Deploy ERC20 tokens 'MUSDT' & 'MUSDC'
+### Deploy ERC20 tokens 'MUSDT' & 'MUSDC'
 
 To deploy ERC20 token user will have to run a command `npx hardhat run --network goerli ./scripts/deployERC20.ts` in smartContract directory.
 
