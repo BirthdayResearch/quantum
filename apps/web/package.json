@@ -21,7 +21,7 @@
     "@headlessui/react": "^1.7.7",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@waveshq/standard-web": "^0.34.3",
-    "axios": "^1.2.3",
+    "axios": "^1.2.5",
     "bignumber.js": "^9.1.1",
     "clsx": "^1.2.1",
     "connectkit": "^1.1.1",
