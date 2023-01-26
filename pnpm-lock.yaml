@@ -94,7 +94,7 @@ importers:
       '@cypress/code-coverage': ^3.10.0
       '@floating-ui/react-dom': ^1.2.1
       '@headlessui/react': ^1.7.7
-      '@netlify/plugin-lighthouse': ^4.0.5
+      '@netlify/plugin-lighthouse': ^4.0.7
       '@netlify/plugin-nextjs': ^4.30.1
       '@tailwindcss/line-clamp': ^0.4.2
       '@tailwindcss/typography': ^0.5.9
@@ -134,7 +134,7 @@ importers:
       wagmi: 0.10.15_yth7km35xcxv7deeyjdro63pq4
     devDependencies:
       '@cypress/code-coverage': 3.10.0_qc46khlpu4x7q5726tsqg3txxi
-      '@netlify/plugin-lighthouse': 4.0.5
+      '@netlify/plugin-lighthouse': 4.0.7
       '@netlify/plugin-nextjs': 4.30.1
       '@tailwindcss/typography': 0.5.9_tailwindcss@3.2.4
       '@testing-library/cypress': 8.0.7_cypress@12.2.0
@@ -3269,8 +3269,8 @@ packages:
       - supports-color
       - utf-8-validate
 
-  /@netlify/plugin-lighthouse/4.0.5:
-    resolution: {integrity: sha512-L73Z3oJW1YDjkkzqHPaj4GOD3dBQIeCcrKo21rb5yuzZIMfJvlnxcqyct/SlPf9+pO+e+ze7v45WHO9arkrmrg==}
+  /@netlify/plugin-lighthouse/4.0.7:
+    resolution: {integrity: sha512-J9oPEJ3/7KcWDGaHuxngSYzyiVR21DKEJ8AmfZs/G2nzG+4fXpLpWsJT/SyKj+tgD8DUxNjffZlCcZZPxIu6Vg==}
     engines: {node: '>=14.15 <19'}
     dependencies:
       chalk: 4.1.2
