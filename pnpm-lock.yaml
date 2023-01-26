@@ -30,7 +30,7 @@ importers:
       '@nestjs/schematics': ^9.0.4
       '@nestjs/testing': ^9.2.1
       '@nestjs/throttler': ^3.1.0
-      '@types/express': ^4.17.15
+      '@types/express': ^4.17.16
       '@types/jest': ^29.4.0
       '@types/node': ^18.11.9
       '@types/supertest': ^2.0.12
@@ -75,7 +75,7 @@ importers:
       '@nestjs/cli': 9.1.9
       '@nestjs/schematics': 9.0.4_typescript@4.9.4
       '@nestjs/testing': 9.2.1_hjcqpoaebdr7gdo5hgc22hthbe
-      '@types/express': 4.17.15
+      '@types/express': 4.17.16
       '@types/jest': 29.4.0
       '@types/node': 18.11.11
       '@types/supertest': 2.0.12
@@ -4668,8 +4668,8 @@ packages:
       '@types/range-parser': 1.2.4
     dev: true
 
-  /@types/express/4.17.15:
-    resolution: {integrity: sha512-Yv0k4bXGOH+8a+7bELd2PqHQsuiANB+A8a4gnQrkRWzrkKlb6KHaVvyXhqs04sVW/OWlbPyYxRgYlIXLfrufMQ==}
+  /@types/express/4.17.16:
+    resolution: {integrity: sha512-LkKpqRZ7zqXJuvoELakaFYuETHjZkSol8EV6cNnyishutDBCCdv6+dsKPbKkCcIk57qRphOLY5sEgClw1bO3gA==}
     dependencies:
       '@types/body-parser': 1.19.2
       '@types/express-serve-static-core': 4.17.31
