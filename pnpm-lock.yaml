@@ -158,7 +158,7 @@ importers:
       '@nomicfoundation/hardhat-chai-matchers': 1.0.5
       '@nomicfoundation/hardhat-network-helpers': ^1.0.7
       '@nomicfoundation/hardhat-toolbox': ^2.0.1
-      '@openzeppelin/contracts': ^4.8.0
+      '@openzeppelin/contracts': ^4.8.1
       '@openzeppelin/contracts-upgradeable': ^4.8.0
       '@typechain/ethers-v5': 10.2.0
       '@types/chai': 4.3.4
@@ -181,7 +181,7 @@ importers:
       '@nomicfoundation/hardhat-chai-matchers': 1.0.5_ja2q5v4zhslcm3ppoak5cbvw2i
       '@nomicfoundation/hardhat-network-helpers': 1.0.7_hardhat@2.12.4
       '@nomicfoundation/hardhat-toolbox': 2.0.1_w6ns32oeohpmzc4aanevc2wv2a
-      '@openzeppelin/contracts': 4.8.0
+      '@openzeppelin/contracts': 4.8.1
       '@openzeppelin/contracts-upgradeable': 4.8.0
       '@typechain/ethers-v5': 10.2.0_uvzrz6if4akbrktgtw2vfdalai
       '@types/chai': 4.3.4
@@ -3951,8 +3951,8 @@ packages:
     resolution: {integrity: sha512-5GeFgqMiDlqGT8EdORadp1ntGF0qzWZLmEY7Wbp/yVhN7/B3NNzCxujuI77ktlyG81N3CUZP8cZe3ZAQ/cW10w==}
     dev: true
 
-  /@openzeppelin/contracts/4.8.0:
-    resolution: {integrity: sha512-AGuwhRRL+NaKx73WKRNzeCxOCOCxpaqF+kp8TJ89QzAipSwZy/NoflkWaL9bywXFRhIzXt8j38sfF7KBKCPWLw==}
+  /@openzeppelin/contracts/4.8.1:
+    resolution: {integrity: sha512-xQ6eUZl+RDyb/FiZe1h+U7qr/f4p/SrTSQcTPH2bjur3C5DbuW/zFgCU/b1P/xcIaEqJep+9ju4xDRi3rmChdQ==}
     dev: true
 
   /@pedrouid/environment/1.0.1:
