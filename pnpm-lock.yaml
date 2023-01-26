@@ -159,7 +159,7 @@ importers:
       '@nomicfoundation/hardhat-network-helpers': ^1.0.7
       '@nomicfoundation/hardhat-toolbox': ^2.0.1
       '@openzeppelin/contracts': ^4.8.0
-      '@openzeppelin/contracts-upgradeable': ^4.8.0
+      '@openzeppelin/contracts-upgradeable': ^4.8.1
       '@typechain/ethers-v5': 10.2.0
       '@types/chai': 4.3.4
       '@types/mocha': 10.0.1
@@ -182,7 +182,7 @@ importers:
       '@nomicfoundation/hardhat-network-helpers': 1.0.7_hardhat@2.12.4
       '@nomicfoundation/hardhat-toolbox': 2.0.1_w6ns32oeohpmzc4aanevc2wv2a
       '@openzeppelin/contracts': 4.8.0
-      '@openzeppelin/contracts-upgradeable': 4.8.0
+      '@openzeppelin/contracts-upgradeable': 4.8.1
       '@typechain/ethers-v5': 10.2.0_uvzrz6if4akbrktgtw2vfdalai
       '@types/chai': 4.3.4
       '@types/mocha': 10.0.1
@@ -3947,8 +3947,8 @@ packages:
     transitivePeerDependencies:
       - encoding
 
-  /@openzeppelin/contracts-upgradeable/4.8.0:
-    resolution: {integrity: sha512-5GeFgqMiDlqGT8EdORadp1ntGF0qzWZLmEY7Wbp/yVhN7/B3NNzCxujuI77ktlyG81N3CUZP8cZe3ZAQ/cW10w==}
+  /@openzeppelin/contracts-upgradeable/4.8.1:
+    resolution: {integrity: sha512-1wTv+20lNiC0R07jyIAbHU7TNHKRwGiTGRfiNnA8jOWjKT98g5OgLpYWOi40Vgpk8SPLA9EvfJAbAeIyVn+7Bw==}
     dev: true
 
   /@openzeppelin/contracts/4.8.0:
