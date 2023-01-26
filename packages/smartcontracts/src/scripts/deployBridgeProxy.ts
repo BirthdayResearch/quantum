@@ -1,34 +1,46 @@
-import { ethers } from 'hardhat';
+import { ethers, network } from 'hardhat';
 
-import { BridgeV1__factory } from '../generated';
+import { BridgeProxy, BridgeV1__factory } from '../generated';
 
-const ADMIN_ADDRESS = '';
-const OPERATIONAL_ADDRESS = '';
-const RELAYER_ADDRESS = '';
 const TRANSACTION_FEE = 30;
-const BRIDGE_IMPLEMENTATION_ADDRESS = '';
-// npx hardhat run --network goerli ./scripts/deployBridgeProxy.ts
-async function main() {
-  const BridgeProxy = await ethers.getContractFactory('BridgeProxy');
+
+export async function deployBridgeProxy({
+  AdminAddress,
+  OperationalAddress,
+  RelayerAddress,
+  BridgeV1Address,
+}: InputAddresses): Promise<ProxyContract> {
+  const { chainId } = network.config;
+  const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
   const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
     'CAKE_BRIDGE',
     '0.1',
     // admin address
-    ADMIN_ADDRESS,
+    AdminAddress,
     // operational address
-    OPERATIONAL_ADDRESS,
+    OperationalAddress,
     // relayer address
-    RELAYER_ADDRESS,
+    RelayerAddress,
     TRANSACTION_FEE,
   ]);
-  const bridgeProxy = await BridgeProxy.deploy(BRIDGE_IMPLEMENTATION_ADDRESS, encodedData);
+  const bridgeProxy = await bridgeProxyContract.deploy(BridgeV1Address, encodedData);
   await bridgeProxy.deployed();
-  console.log(
-    `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/BridgeProxy.sol:BridgeProxy ${bridgeProxy.address} ${BRIDGE_IMPLEMENTATION_ADDRESS} ${encodedData}`,
-  );
+  if (chainId !== 1337) {
+    console.log(
+      `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/BridgeProxy.sol:BridgeProxy ${bridgeProxy.address} ${BridgeV1Address} ${encodedData}`,
+    );
+  }
+
+  return { bridgeProxy };
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+interface InputAddresses {
+  AdminAddress: string;
+  OperationalAddress: string;
+  RelayerAddress: string;
+  BridgeV1Address: string;
+}
+
+export interface ProxyContract {
+  bridgeProxy: BridgeProxy;
+}
