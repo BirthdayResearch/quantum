@@ -1,3 +1,4 @@
 {
-  "extends": ["github>waveshq/standard//renovate-config/web"]
+  "extends": ["github>waveshq/standard//renovate-config/web"],
+  "ignoreDeps": ["@openzeppelin/contracts", "@openzeppelin/contracts-upgradeable"]
 }
