@@ -108,7 +108,7 @@ This follows the [proxy pattern](https://blog.openzeppelin.com/proxy-patterns/),
 Before running the above command, following `vars` need to be addressed:
 `ADMIN_ADDRESS`, `OPERATIONAL_ADDRESS`, `RELAYER_ADDRESS`, `TRANSACTION_FEE` & `BRIDGE_IMPLEMENTATION_ADDRESS` aka `BridgeV1` contract address.
 
-## Mint and Approve on Testnet
+## Mint and Approve on Goerli Testnet
 
 To Mint the test tokens and Approve the Bridge Contract devs will have to run a command `npx hardhat run --network goerli ./scripts/mintTestToken.ts` in smartContract directory. Script will mint `100_000` tokens.
 
@@ -127,3 +127,16 @@ BridgeV1 Contract address: [0xE029B5156c2e597c72f7c8D279411e1fD9a30126](https://
 ### BridgeProxy
 
 BridgeProxy Contract addrress: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C)
+
+## Deployed Smart Contracts on Hardhat/Local testnet
+
+To deploy the Smart Contracts on local testnet, devs can run the command `npx hardhat run --network hardhat ./scripts/localContractsDeployment.ts` in smartContract directory.
+
+This script will deploy all needed contracts. Will mint `100,000` MUSDC and MUSDT token to the user(in this case, accounts[0]).This will also approve the Bridge contract and add test tokens as supported tokens for bridging with maximum daily allowance.
+
+Following addresses will be the admin, operational roles and relayer address.
+Admin == accounts[0],
+Operational == accounts[1],
+Relayer address == accounts[0]
+
+Devs can change these addresses as per their requirements in `../scripts/localContractsDeployment.ts` file.
