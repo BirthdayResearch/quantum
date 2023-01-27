@@ -11,20 +11,22 @@ import { tokenDeployment } from './deployERC20';
 export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> {
   const accounts = await ethers.provider.listAccounts();
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
+  const eoaAddress = defaultAdminSigner.address;
   const defaultOperationalSigner = await ethers.getSigner(accounts[1]);
-  const { bridgeV1 } = await bridgeImplementation();
-  const { bridgeProxy } = await deployBridgeProxy({
-    adminAddress: defaultAdminSigner.address,
-    operationalAddress: defaultOperationalSigner.address,
-    relayerAddress: defaultAdminSigner.address,
+  const eoaOperationalAddress = defaultOperationalSigner.address;
+  const bridgeV1 = await bridgeImplementation();
+  const bridgeProxy = await deployBridgeProxy({
+    adminAddress: eoaAddress,
+    operationalAddress: eoaOperationalAddress,
+    relayerAddress: eoaAddress,
     bridgeV1Address: bridgeV1.address,
   });
   const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
   const { usdtContract, usdcContract } = await tokenDeployment();
 
   // Minting 100_000 tokens to accounts[0]
-  await usdtContract.mint(defaultAdminSigner.address, toWei('100000'));
-  await usdcContract.mint(defaultAdminSigner.address, toWei('100000'));
+  await usdtContract.mint(eoaAddress, toWei('100000'));
+  await usdcContract.mint(eoaAddress, toWei('100000'));
   // Approving max token to `bridgeProxyAddress` by accounts[0]
   await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await usdcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);

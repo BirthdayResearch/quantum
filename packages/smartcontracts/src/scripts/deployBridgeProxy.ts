@@ -9,7 +9,7 @@ export async function deployBridgeProxy({
   operationalAddress,
   relayerAddress,
   bridgeV1Address,
-}: InputAddresses): Promise<ProxyContract> {
+}: InputAddresses): Promise<BridgeProxy> {
   const { chainId } = network.config;
   const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
   const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
@@ -31,7 +31,7 @@ export async function deployBridgeProxy({
     );
   }
 
-  return { bridgeProxy };
+  return bridgeProxy;
 }
 
 interface InputAddresses {
@@ -39,8 +39,4 @@ interface InputAddresses {
   operationalAddress: string;
   relayerAddress: string;
   bridgeV1Address: string;
-}
-
-export interface ProxyContract {
-  bridgeProxy: BridgeProxy;
 }
