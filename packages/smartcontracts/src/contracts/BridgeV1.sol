@@ -118,7 +118,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param defiAddress defiAddress DeFiChain address of user
      * @param tokenAddress Supported token's being bridged
      * @param amount Amount of the token being bridged
-     * @param timestamp TimeStamp of the transcation
+     * @param timestamp TimeStamp of the transaction
      */
     event BRIDGE_TO_DEFI_CHAIN(
         bytes defiAddress,

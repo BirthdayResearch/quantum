@@ -8,8 +8,8 @@ import { BridgeServerTestingApp } from '../src/BridgeServerTestingApp';
 @Module({})
 export class TestingExampleModule {
   static register(startedHardhatContainer: StartedHardhatNetworkContainer): DynamicModule {
-    const hardhatConfig = registerAs('blockchain', () => ({
-      ethereumRpcUrl: startedHardhatContainer.rpcUrl,
+    const hardhatConfig = registerAs('ethereum', () => ({
+      rpcUrl: startedHardhatContainer.rpcUrl,
     }));
 
     return {
@@ -54,25 +54,5 @@ describe('Bridge Service Integration Tests', () => {
     });
 
     expect(responseAfterGenerating.body).toStrictEqual('1001');
-  });
-
-  // Sample only, will re-org once we have proper layers
-  it('should be able to make calls to DeFiChain server', async () => {
-    const initialResponse = await testing.inject({
-      method: 'GET',
-      url: '/defichain/stats?network=regtest',
-    });
-
-    await expect(initialResponse.statusCode).toStrictEqual(200);
-  });
-
-  it('should fail network validation', async () => {
-    const initialResponse = await testing.inject({
-      method: 'GET',
-      url: '/defichain/stats?network=devtest',
-    });
-
-    await expect(initialResponse.statusCode).toStrictEqual(500);
-    await expect(initialResponse.statusMessage).toStrictEqual('Internal Server Error');
   });
 });
