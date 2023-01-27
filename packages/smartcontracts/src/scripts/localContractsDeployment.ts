@@ -1,9 +1,9 @@
 import { ethers } from 'hardhat';
 
-import { TestToken } from '../generated';
-import { toWei } from '../tests/testUtils/mathUtils';
+import { BridgeV1, TestToken } from '../generated';
+import { getCurrentTimeStamp, toWei } from '../tests/testUtils/mathUtils';
 import { bridgeImplementation } from './deployBridgeImplementation';
-import { deployBridgeProxy, ProxyContract } from './deployBridgeProxy';
+import { deployBridgeProxy } from './deployBridgeProxy';
 import { tokenDeployment } from './deployERC20';
 
 // Run this script to deploy all contracts on local testnet, mint and approve the proxy contacts
@@ -12,29 +12,41 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
   const accounts = await ethers.provider.listAccounts();
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
   const defaultOperationalSigner = await ethers.getSigner(accounts[1]);
-  const bridgeV1Address = await bridgeImplementation();
-  const bridgeProxy = await deployBridgeProxy({
-    AdminAddress: defaultAdminSigner.address,
-    OperationalAddress: defaultOperationalSigner.address,
-    RelayerAddress: defaultAdminSigner.address,
-    BridgeV1Address: bridgeV1Address.contractAddress,
+  const { bridgeV1 } = await bridgeImplementation();
+  const { bridgeProxy } = await deployBridgeProxy({
+    adminAddress: defaultAdminSigner.address,
+    operationalAddress: defaultOperationalSigner.address,
+    relayerAddress: defaultAdminSigner.address,
+    bridgeV1Address: bridgeV1.address,
   });
+  const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
   const { usdtContract, usdcContract } = await tokenDeployment();
 
   // Minting 100_000 tokens to accounts[0]
   await usdtContract.mint(defaultAdminSigner.address, toWei('100000'));
   await usdcContract.mint(defaultAdminSigner.address, toWei('100000'));
   // Approving max token to `bridgeProxyAddress` by accounts[0]
-  await usdtContract.approve(bridgeProxy.bridgeProxy.address, ethers.constants.MaxUint256);
-  await usdcContract.approve(bridgeProxy.bridgeProxy.address, ethers.constants.MaxUint256);
+  await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await usdcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  // Adding mUsdt and mUsdc as supported tokens
+  await bridgeImplementationContract.addSupportedTokens(
+    usdtContract.address,
+    ethers.constants.MaxUint256,
+    getCurrentTimeStamp(),
+  );
+  await bridgeImplementationContract.addSupportedTokens(
+    usdcContract.address,
+    ethers.constants.MaxUint256,
+    getCurrentTimeStamp(),
+  );
 
-  return { usdtContract, usdcContract, bridgeProxy };
+  return { usdtContract, usdcContract, bridgeImplementationContract };
 }
 
 interface ReturnContracts {
   usdtContract: TestToken;
   usdcContract: TestToken;
-  bridgeProxy: ProxyContract;
+  bridgeImplementationContract: BridgeV1;
 }
 
 mintAndApproveTestTokensLocal().catch((error) => {

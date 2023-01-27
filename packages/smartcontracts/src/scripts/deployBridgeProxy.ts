@@ -5,10 +5,10 @@ import { BridgeProxy, BridgeV1__factory } from '../generated';
 const TRANSACTION_FEE = 30;
 
 export async function deployBridgeProxy({
-  AdminAddress,
-  OperationalAddress,
-  RelayerAddress,
-  BridgeV1Address,
+  adminAddress,
+  operationalAddress,
+  relayerAddress,
+  bridgeV1Address,
 }: InputAddresses): Promise<ProxyContract> {
   const { chainId } = network.config;
   const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
@@ -16,14 +16,14 @@ export async function deployBridgeProxy({
     'CAKE_BRIDGE',
     '0.1',
     // admin address
-    AdminAddress,
+    adminAddress,
     // operational address
-    OperationalAddress,
+    operationalAddress,
     // relayer address
-    RelayerAddress,
+    relayerAddress,
     TRANSACTION_FEE,
   ]);
-  const bridgeProxy = await bridgeProxyContract.deploy(BridgeV1Address, encodedData);
+  const bridgeProxy = await bridgeProxyContract.deploy(bridgeV1Address, encodedData);
   await bridgeProxy.deployed();
   if (chainId !== 1337) {
     console.log(
@@ -35,10 +35,10 @@ export async function deployBridgeProxy({
 }
 
 interface InputAddresses {
-  AdminAddress: string;
-  OperationalAddress: string;
-  RelayerAddress: string;
-  BridgeV1Address: string;
+  adminAddress: string;
+  operationalAddress: string;
+  relayerAddress: string;
+  bridgeV1Address: string;
 }
 
 export interface ProxyContract {

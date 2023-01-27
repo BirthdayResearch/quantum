@@ -3,7 +3,7 @@ import { ethers, network } from 'hardhat';
 import { TestToken } from '../generated';
 
 // npx hardhat run --network goerli ./scripts/deployERC20.ts
-export async function tokenDeployment(): Promise<TestTokenAddress> {
+export async function tokenDeployment(): Promise<TestTokens> {
   const { chainId } = network.config;
   const ERC20 = await ethers.getContractFactory('TestToken');
   const mockTokenUSDT = await ERC20.deploy('MockUSDT', 'MUSDT'); // use {nonce:} if tx stuck
@@ -25,7 +25,7 @@ export async function tokenDeployment(): Promise<TestTokenAddress> {
   return { usdtContract: mockTokenUSDT, usdcContract: mockTokenUSDC };
 }
 
-interface TestTokenAddress {
+interface TestTokens {
   usdtContract: TestToken;
   usdcContract: TestToken;
 }
