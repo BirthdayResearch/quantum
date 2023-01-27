@@ -74,6 +74,13 @@ const config: HardhatUserConfig = {
       },
     ],
   },
+  gasReporter: {
+    currency: 'USD',
+    // To enable gas report, set enabled to true
+    enabled: true,
+    gasPriceApi: process.env.ETHERSCAN_API,
+    coinmarketcap: process.env.COINMARKET_API,
+  },
   networks: {
     hardhat: {
       chainId: DEFAULT_CHAINID,
