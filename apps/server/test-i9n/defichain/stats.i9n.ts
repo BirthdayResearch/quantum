@@ -22,7 +22,7 @@ describe('DeFiChain Wallet Integration Testing', () => {
   it('should be able to make calls to DeFiChain server', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: '/defichain/stats?network=regtest',
+      url: '/defichain/stats?network=Playground',
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);
@@ -31,7 +31,7 @@ describe('DeFiChain Wallet Integration Testing', () => {
   it('should fail network validation', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: '/defichain/stats?network=devtest',
+      url: '/defichain/stats?network=DevNet',
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(500);
