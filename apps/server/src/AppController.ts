@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, ParseIntPipe,Post, Query } from '@nestjs/common';
 import { BigNumber } from 'ethers';
 
 import { AppService } from './AppService';
@@ -16,4 +16,16 @@ export class AppController {
   async getBalance(@Query('address') address: string): Promise<BigNumber> {
     return this.appService.getBalance(address);
   }
+
+  @Post('getAllEventsFromBlockNumber')
+  async getAllEventsFromBlockNumber(
+    @Body('blockNumber', ParseIntPipe) blockNumber: number,
+    @Body('contractAddress') contractAddress: string,
+  ): Promise<object[]> {
+    return this.appService.getAllEventsFromBlockNumber(blockNumber, contractAddress);
+  }
+  // @Get('getAllEventsFromBlockNumber')
+  // async getAllEventsFromBlockNumber(@Query('blockNumber') blockNumber:number): Promise<object[]>{
+  //   return this.appService.getAllEventsFromBlockNumber(Number(blockNumber))
+  // }
 }
