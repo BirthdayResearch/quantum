@@ -99,7 +99,7 @@ importers:
       '@babel/types': ^7.20.7
       '@cypress/code-coverage': ^3.10.0
       '@floating-ui/react-dom': ^1.2.1
-      '@headlessui/react': ^1.7.7
+      '@headlessui/react': ^1.7.8
       '@netlify/plugin-lighthouse': ^4.0.7
       '@netlify/plugin-nextjs': ^4.30.2
       '@tailwindcss/line-clamp': ^0.4.2
@@ -126,7 +126,7 @@ importers:
     dependencies:
       '@babel/types': 7.20.7
       '@floating-ui/react-dom': 1.2.1_biqbaboplfbrettd7655fr4n2y
-      '@headlessui/react': 1.7.7_biqbaboplfbrettd7655fr4n2y
+      '@headlessui/react': 1.7.8_biqbaboplfbrettd7655fr4n2y
       '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4
       '@waveshq/standard-web': 0.34.3_gai3vsyrnzjq6oj2ng7h54nq6a
       axios: 1.2.5
@@ -2400,8 +2400,8 @@ packages:
       '@hapi/hoek': 9.3.0
     dev: false
 
-  /@headlessui/react/1.7.7_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-BqDOd/tB9u2tA0T3Z0fn18ktw+KbVwMnkxxsGPIH2hzssrQhKB5n/6StZOyvLYP/FsYtvuXfi9I0YowKPv2c1w==}
+  /@headlessui/react/1.7.8_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-zcwb0kd7L05hxmoAMIioEaOn235Dg0fUO+iGbLPgLVSjzl/l39V6DTpC2Df49PE5aG5/f5q0PZ9ZHZ78ENNV+A==}
     engines: {node: '>=10'}
     peerDependencies:
       react: ^16 || ^17 || ^18
