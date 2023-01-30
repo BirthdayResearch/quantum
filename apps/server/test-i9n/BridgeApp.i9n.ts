@@ -187,7 +187,7 @@ describe('Bridge Service Integration Tests', () => {
     });
     await expect(currBlock.body).toStrictEqual('1101');
 
-    // Step 12: getAllEventsFromBlockNumber?blockNumber=1005 should return array of events of length 1
+    // Step 12: getAllEventsFromBlockNumber where blockNumber=1005 should return array of events of length 1
     eventsArray = await testing.inject({
       method: 'POST',
       url: `/app/getAllEventsFromBlockNumber`,
@@ -201,7 +201,7 @@ describe('Bridge Service Integration Tests', () => {
     // Step 13: Generate another 35 blocks to achieve confirmation for second event
     await hardhatNetwork.generate(35);
 
-    // Step 14: getAllEventsFromBlockNumber?blockNumber=1005 should return array of events of length 2 now
+    // Step 14: getAllEventsFromBlockNumber where blockNumber=1005 should return array of events of length 2 now
     eventsArray = await testing.inject({
       method: 'POST',
       url: `/app/getAllEventsFromBlockNumber`,
@@ -212,7 +212,7 @@ describe('Bridge Service Integration Tests', () => {
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(2);
 
-    // Step 15: getAllEventsFromBlockNumber?blockNumber=1071 should return array of events of length 1
+    // Step 15: getAllEventsFromBlockNumber where blockNumber=1071 should return array of events of length 1
     eventsArray = await testing.inject({
       method: 'POST',
       url: `/app/getAllEventsFromBlockNumber`,
@@ -223,7 +223,7 @@ describe('Bridge Service Integration Tests', () => {
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
 
-    // Step 16: getAllEventsFromBlockNumber?blockNumber=1072 should return array of events of length 0
+    // Step 16: getAllEventsFromBlockNumber where blockNumber=1072 should return array of events of length 0
     eventsArray = await testing.inject({
       method: 'POST',
       url: `/app/getAllEventsFromBlockNumber`,
@@ -236,7 +236,7 @@ describe('Bridge Service Integration Tests', () => {
   });
 
   it('should be able to make calls to the underlying hardhat node', async () => {
-    // Given an initial block height of 1136 (due to the initial block generation when calling HardhatNetwork.ready())
+    // Given an initial block height of 1136 (due to the initial block generation when calling HardhatNetwork.ready() + getAllEventsFromBlockNumber tests)
     const initialResponse = await testing.inject({
       method: 'GET',
       url: '/app/blockheight',
