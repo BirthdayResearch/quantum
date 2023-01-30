@@ -1,12 +1,16 @@
 import { DeFiAddress } from '@defichain/jellyfish-address';
-import { CTransactionSegWit, Script,TransactionSegWit } from '@defichain/jellyfish-transaction';
+import { CTransactionSegWit, Script, TransactionSegWit } from '@defichain/jellyfish-transaction';
 import { P2WPKHTransactionBuilder } from '@defichain/jellyfish-transaction-builder';
+import { Transaction } from '@defichain/whale-api-client/dist/api/transactions';
 import { Injectable } from '@nestjs/common';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
+import { EnvironmentNetwork, isPlayground } from '@waveshq/walletkit-core';
 
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 import { WhaleApiService } from './WhaleApiService';
+
+const MAX_TIMEOUT = 300000;
+const INTERVAL_TIME = 5000;
 
 @Injectable()
 export class TransactionService {
@@ -47,5 +51,41 @@ export class TransactionService {
       }
       throw e;
     }
+  }
+
+  // Check if the transaction has been confirmed
+  async waitForTxConfirmation(network: EnvironmentNetwork, id: string): Promise<Transaction> {
+    const client = this.whaleClient.getClient(network);
+    const initialTime = isPlayground(network) ? 5000 : 30000;
+    let start = initialTime;
+
+    return new Promise((resolve, reject) => {
+      let intervalID: NodeJS.Timeout;
+      const callTransaction = (): void => {
+        client.transactions
+          .get(id)
+          .then((tx) => {
+            if (intervalID !== undefined) {
+              clearInterval(intervalID);
+            }
+            resolve(tx);
+          })
+          .catch((e) => {
+            if (start >= MAX_TIMEOUT) {
+              if (intervalID !== undefined) {
+                clearInterval(intervalID);
+              }
+              reject(e);
+            }
+          });
+      };
+      setTimeout(() => {
+        callTransaction();
+        intervalID = setInterval(() => {
+          start += INTERVAL_TIME;
+          callTransaction();
+        }, INTERVAL_TIME);
+      }, initialTime);
+    });
   }
 }
