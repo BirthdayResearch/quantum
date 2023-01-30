@@ -1,3 +1,4 @@
+import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import { HardhatNetwork, HardhatNetworkContainer, StartedHardhatNetworkContainer } from 'smartcontracts';
 
 import { BridgeServerTestingApp } from '../../src/BridgeServerTestingApp';
@@ -22,7 +23,7 @@ describe('DeFiChain Wallet Integration Testing', () => {
   it('should be able to make calls to DeFiChain server', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: '/defichain/stats?network=Playground',
+      url: `/defichain/stats?network=${EnvironmentNetwork.RemotePlayground}`,
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);
@@ -31,7 +32,7 @@ describe('DeFiChain Wallet Integration Testing', () => {
   it('should fail network validation', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: '/defichain/stats?network=DevNet',
+      url: '/defichain/stats?network=DevTest',
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(500);
