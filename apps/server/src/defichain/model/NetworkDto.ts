@@ -1,4 +1,4 @@
-import { EnvironmentNetwork } from '@waveshq/walletkit-core/dist/api/environment';
+import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import { IsEnum, IsOptional } from 'class-validator';
 
 export class NetworkDto {
