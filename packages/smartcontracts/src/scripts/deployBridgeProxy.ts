@@ -25,9 +25,10 @@ export async function deployBridgeProxy({
   ]);
   const bridgeProxy = await bridgeProxyContract.deploy(bridgeV1Address, encodedData);
   await bridgeProxy.deployed();
+  console.log('Proxy Address: ', bridgeProxy.address);
   if (chainId !== 1337) {
     console.log(
-      `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/BridgeProxy.sol:BridgeProxy ${bridgeProxy.address} ${BridgeV1Address} ${encodedData}`,
+      `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/BridgeProxy.sol:BridgeProxy ${bridgeProxy.address} ${bridgeV1Address} ${encodedData}`,
     );
   }
 
