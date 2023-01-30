@@ -13,9 +13,13 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
   // On local testNet this is the accounts[0]
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
   const eoaAddress = defaultAdminSigner.address;
+  console.log('EOA/Admin address: ', eoaAddress);
+  console.log('Relayer address: ', eoaAddress);
   // On local testNet this is the accounts[1]
   const defaultOperationalSigner = await ethers.getSigner(accounts[1]);
   const eoaOperationalAddress = defaultOperationalSigner.address;
+  console.log('Operational address: ', eoaOperationalAddress);
+  console.log('---------------------------------------------');
   const bridgeV1 = await bridgeImplementation();
   const bridgeProxy = await deployBridgeProxy({
     adminAddress: eoaAddress,
@@ -24,10 +28,10 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
     bridgeV1Address: bridgeV1.address,
   });
   const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
-  const { usdtContract, usdcContract } = await tokenDeployment();
+  const { usdtContract, usdcContract } = await tokenDeployment(eoaAddress);
 
   // Minting 100_000 tokens to accounts[0]
-  await usdtContract.mint(eoaAddress, toWei('100000'));
+  // await usdtContract.mint(eoaAddress, toWei('100000'));
   await usdcContract.mint(eoaAddress, toWei('100000'));
   // Approving max token to `bridgeProxyAddress` by accounts[0]
   await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
