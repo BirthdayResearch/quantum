@@ -177,10 +177,10 @@ describe('Bridge Service Integration Tests', () => {
     );
     await hardhatNetwork.generate(1);
 
-    // Step 10: generate 30 blocks (block 1106)
+    // Step 10: generate 30 blocks (block 1101)
     await hardhatNetwork.generate(30);
 
-    // step 11: current block should be block 1106
+    // step 11: current block should be block 1101
     currBlock = await testing.inject({
       method: 'GET',
       url: '/app/blockheight',
@@ -236,7 +236,7 @@ describe('Bridge Service Integration Tests', () => {
   });
 
   it('should be able to make calls to the underlying hardhat node', async () => {
-    // Given an initial block height of 1106 (due to the initial block generation when calling HardhatNetwork.ready())
+    // Given an initial block height of 1136 (due to the initial block generation when calling HardhatNetwork.ready())
     const initialResponse = await testing.inject({
       method: 'GET',
       url: '/app/blockheight',
