@@ -15,7 +15,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@waveshq/standard-defichain-jellyfishsdk": "^0.35.0"
+    "@waveshq/standard-defichain-jellyfishsdk": "^0.35.1"
   },
   "devDependencies": {
     "@birthdayresearch/sticky-turbo": "^0.3.6",
