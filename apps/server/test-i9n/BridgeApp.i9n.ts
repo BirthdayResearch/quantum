@@ -1,5 +1,5 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigModule, registerAs } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { ethers } from 'ethers';
 import {
   BridgeProxy,
@@ -17,16 +17,23 @@ import { BridgeServerTestingApp } from '../src/BridgeServerTestingApp';
 
 @Module({})
 export class TestingExampleModule {
-  static register(startedHardhatContainer: StartedHardhatNetworkContainer): DynamicModule {
-    const hardhatConfig = registerAs('ethereum', () => ({
-      rpcUrl: startedHardhatContainer.rpcUrl,
-    }));
-
+  static register(config: any): DynamicModule {
     return {
       module: TestingExampleModule,
-      imports: [AppModule, ConfigModule.forFeature(hardhatConfig)],
+      imports: [AppModule, ConfigModule.forFeature(() => config)],
     };
   }
+}
+
+export function buildTestConfig(startedHardhatContainer: StartedHardhatNetworkContainer, contractAddress: string) {
+  return {
+    ethereum: {
+      rpcUrl: startedHardhatContainer.rpcUrl,
+    },
+    contract: {
+      address: contractAddress,
+    },
+  };
 }
 
 describe('Bridge Service Integration Tests', () => {
@@ -81,7 +88,10 @@ describe('Bridge Service Integration Tests', () => {
     bridgeUpgradeable = bridgeUpgradeable.attach(bridgeProxy.address);
     await hardhatNetwork.generate(1);
 
-    testing = new BridgeServerTestingApp(TestingExampleModule.register(startedHardhatContainer));
+    // initialize config variables
+    testing = new BridgeServerTestingApp(
+      TestingExampleModule.register(buildTestConfig(startedHardhatContainer, bridgeUpgradeable.address)),
+    );
     await testing.start();
   });
 
@@ -144,14 +154,9 @@ describe('Bridge Service Integration Tests', () => {
     await expect(currBlock.body).toStrictEqual('1005');
 
     // step 5: calling my service should return a empty array (because it is not confirmed)
-    const payload = {
-      blockNumber: 1000,
-      contractAddress: bridgeUpgradeable.address,
-    };
     let eventsArray = await testing.inject({
-      method: 'POST',
-      url: `/app/getAllEventsFromBlockNumber`,
-      payload,
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
 
@@ -160,9 +165,8 @@ describe('Bridge Service Integration Tests', () => {
 
     // step 7: calling my service should return a array of length 1
     eventsArray = await testing.inject({
-      method: 'POST',
-      url: `/app/getAllEventsFromBlockNumber`,
-      payload,
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
 
@@ -189,12 +193,8 @@ describe('Bridge Service Integration Tests', () => {
 
     // Step 12: getAllEventsFromBlockNumber where blockNumber=1005 should return array of events of length 1
     eventsArray = await testing.inject({
-      method: 'POST',
-      url: `/app/getAllEventsFromBlockNumber`,
-      payload: {
-        blockNumber: 1005,
-        contractAddress: bridgeUpgradeable.address,
-      },
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
 
@@ -203,34 +203,22 @@ describe('Bridge Service Integration Tests', () => {
 
     // Step 14: getAllEventsFromBlockNumber where blockNumber=1005 should return array of events of length 2 now
     eventsArray = await testing.inject({
-      method: 'POST',
-      url: `/app/getAllEventsFromBlockNumber`,
-      payload: {
-        blockNumber: 1005,
-        contractAddress: bridgeUpgradeable.address,
-      },
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(2);
 
     // Step 15: getAllEventsFromBlockNumber where blockNumber=1071 should return array of events of length 1
     eventsArray = await testing.inject({
-      method: 'POST',
-      url: `/app/getAllEventsFromBlockNumber`,
-      payload: {
-        blockNumber: 1071,
-        contractAddress: bridgeUpgradeable.address,
-      },
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1071`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
 
     // Step 16: getAllEventsFromBlockNumber where blockNumber=1072 should return array of events of length 0
     eventsArray = await testing.inject({
-      method: 'POST',
-      url: `/app/getAllEventsFromBlockNumber`,
-      payload: {
-        blockNumber: 1072,
-        contractAddress: bridgeUpgradeable.address,
-      },
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1072`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
   });

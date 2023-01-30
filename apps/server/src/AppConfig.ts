@@ -11,6 +11,9 @@ export function appConfig() {
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL || 'localhost:8545',
     },
+    contract: {
+      address: process.env.BRIDGE_CONTRACT_ADDRESS || '',
+    },
   };
 }
 
