@@ -82,7 +82,8 @@ const config: HardhatUserConfig = {
     coinmarketcap: process.env.COINMARKET_API,
   },
   networks: {
-    hardhat: {
+    localHost: {
+      url: 'http://127.0.0.1:8545/',
       chainId: DEFAULT_CHAINID,
       // To enable/disable auto-mining at runtime, refer to:
       // https://hardhat.org/hardhat-network/docs/explanation/mining-modes#using-rpc-methods

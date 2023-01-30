@@ -7,7 +7,7 @@ import { deployBridgeProxy } from './deployBridgeProxy';
 import { tokenDeployment } from './deployERC20';
 
 // Run this script to deploy all contracts on local testnet, mint and approve the proxy contacts
-// npx hardhat run --network hardhat ./scripts/localContractsDeployment.ts
+// npx hardhat run --network localHost ./scripts/localContractsDeployment.ts
 export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> {
   const accounts = await ethers.provider.listAccounts();
   // On local testNet this is the accounts[0]
@@ -28,10 +28,10 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
     bridgeV1Address: bridgeV1.address,
   });
   const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
-  const { usdtContract, usdcContract } = await tokenDeployment(eoaAddress);
+  const { usdtContract, usdcContract } = await tokenDeployment();
 
   // Minting 100_000 tokens to accounts[0]
-  // await usdtContract.mint(eoaAddress, toWei('100000'));
+  await usdtContract.mint(eoaAddress, toWei('100000'));
   await usdcContract.mint(eoaAddress, toWei('100000'));
   // Approving max token to `bridgeProxyAddress` by accounts[0]
   await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
