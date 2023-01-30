@@ -10,8 +10,10 @@ import { tokenDeployment } from './deployERC20';
 // npx hardhat run --network hardhat ./scripts/localContractsDeployment.ts
 export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> {
   const accounts = await ethers.provider.listAccounts();
+  // On local testNet this is the accounts[0]
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
   const eoaAddress = defaultAdminSigner.address;
+  // On local testNet this is the accounts[1]
   const defaultOperationalSigner = await ethers.getSigner(accounts[1]);
   const eoaOperationalAddress = defaultOperationalSigner.address;
   const bridgeV1 = await bridgeImplementation();
