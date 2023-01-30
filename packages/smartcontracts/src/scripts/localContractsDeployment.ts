@@ -7,7 +7,7 @@ import { deployBridgeProxy } from './deployBridgeProxy';
 import { tokenDeployment } from './deployERC20';
 
 // Run this script to deploy all contracts on local testnet, mint and approve the proxy contacts
-// npx hardhat run --network localHost ./scripts/localContractsDeployment.ts
+// npx hardhat run --network development ./scripts/localContractsDeployment.ts
 export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> {
   const accounts = await ethers.provider.listAccounts();
   // On local testNet this is the accounts[0]
