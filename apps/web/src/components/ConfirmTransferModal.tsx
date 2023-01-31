@@ -147,9 +147,7 @@ function ERC20ToDeFiChainTransfer({ data }: { data: TransferData }) {
   const sendingFromETH = data.from.tokenName === ETHEREUM_SYMBOL;
 
   const { config } = usePrepareContractWrite({
-    address: sendingFromETH
-      ? ethers.constants.AddressZero
-      : contractConfig.BridgeProxyContractAddress,
+    address: contractConfig.BridgeProxyContractAddress,
     abi: BridgeV1Abi,
     functionName: "bridgeToDeFiChain",
     args: [
