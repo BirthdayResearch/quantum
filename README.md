@@ -39,11 +39,11 @@ TODO
 
 To change the state of any smart contract, users need to approve the smart contract of the respective token via the `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
 
-### Fund ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
+### Bridge ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
 
 Once approved, user will call the `bridgeToDeFiChain()` function with following arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
 
-### Fund Ether - to transfer ERC20 tokens from an EOA to the Bridge
+### Bridge Ether - to transfer ETHER from an EOA to the Bridge
 
 When sending ETHER to bridge, the user will not have to approve the contract. By default, every smart contract accepts ETH. Sending ether will be similar to an ERC20 token, except we don't account for `_amount` - instead `msg.value()` is used. The `_defiAddress` is the address on the DeFiChain that is receiving funds. Since ETH does not have an address since it is the native currency, it is identified by address(0)/0x0 in `_tokenAddress`
 
@@ -127,3 +127,23 @@ BridgeV1 Contract address: [0xE029B5156c2e597c72f7c8D279411e1fD9a30126](https://
 ### BridgeProxy
 
 BridgeProxy Contract addrress: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C)
+
+## Fund Bridge with ETHER and ERC20 tokens
+
+### Add funds
+
+Anyone can send fund to the bridge contract, ideally in this case, this should be done by `Cake`. If tokens send by other addresses, those tokens will be unaccounted for. In this case, Admin will have to manually refund the
+
+Admins can send the ETHER and ERC20 tokens via the `transfer(address _to, uint256 _amount)` function.
+
+Funding the bridge contract would ideally be done on lunch (Not decided on specific numbers)
+
+### Withdraw funds
+
+ETHER and ERC20 can be withdrawn by the Admin address only via `withdrawEth(uint256 amount)` and `withdraw(address _tokenAddress, uint256 amount)` functions respectively.
+
+## Operational addresses - Gnosis safe
+
+Operational address will be a Gnosis safe, ideally will be with at least 3 owners. In case of 3 addresses, 2 approval ( this can be set when making a safe or later ) will be needed to execute txs.
+
+More admins can be added later, for more info [Gnosis safe: adding owners](https://help.gnosis-safe.io/en/articles/3950657-add-owners).
