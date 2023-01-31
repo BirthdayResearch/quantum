@@ -3,9 +3,11 @@ import * as Joi from 'joi';
 export function appConfig() {
   return {
     defichain: {
-      mainnet: process.env.DEFICHAIN_MAINNET_KEY,
-      regtest:
+      MainNet: process.env.DEFICHAIN_MAINNET_KEY,
+      Playground:
         process.env.DEFICHAIN_REGTEST_KEY ||
+        'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
+      Local:
         'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
     },
     ethereum: {
