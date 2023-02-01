@@ -26,17 +26,29 @@ export class TestingExampleModule {
   }
 }
 
-export function buildTestConfig(startedHardhatContainer: StartedHardhatNetworkContainer, contractAddress?: string) {
-  return {
-    ethereum: {
-      rpcUrl: startedHardhatContainer.rpcUrl,
-    },
-    contract: {
-      bridgeProxy: {
-        testnetAddress: contractAddress,
-      },
-    },
-  };
+export function buildTestConfig({
+  startedHardhatContainer,
+  contractAddress,
+}: {
+  startedHardhatContainer: StartedHardhatNetworkContainer;
+  contractAddress?: string;
+}) {
+  return contractAddress
+    ? {
+        ethereum: {
+          rpcUrl: startedHardhatContainer.rpcUrl,
+        },
+        contract: {
+          bridgeProxy: {
+            testnetAddress: contractAddress,
+          },
+        },
+      }
+    : {
+        ethereum: {
+          rpcUrl: startedHardhatContainer.rpcUrl,
+        },
+      };
 }
 
 describe('Bridge Service Integration Tests', () => {
@@ -93,7 +105,9 @@ describe('Bridge Service Integration Tests', () => {
 
     // initialize config variables
     testing = new BridgeServerTestingApp(
-      TestingExampleModule.register(buildTestConfig(startedHardhatContainer, bridgeUpgradeable.address)),
+      TestingExampleModule.register(
+        buildTestConfig({ startedHardhatContainer, contractAddress: bridgeUpgradeable.address }),
+      ),
     );
     await testing.start();
   });

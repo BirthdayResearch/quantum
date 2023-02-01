@@ -13,7 +13,7 @@ describe('DeFiChain Wallet Integration Testing', () => {
   beforeAll(async () => {
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
-    testing = new BridgeServerTestingApp(TestingExampleModule.register(buildTestConfig(startedHardhatContainer, '')));
+    testing = new BridgeServerTestingApp(TestingExampleModule.register(buildTestConfig({ startedHardhatContainer })));
     await testing.start();
   });
 
