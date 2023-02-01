@@ -113,18 +113,21 @@ export default function BridgeForm() {
     setSelectedNetworkA(selectedNetworkB);
   };
 
+  const validateAmountInput = (value: string) => {
+    const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
+    let err = "";
+    if (isSendingToDFC && new BigNumber(value).gt(maxAmount)) {
+      err = "Insufficient Funds";
+    }
+    setAmountErr(err);
+  };
+
   const onInputChange = (value: string): void => {
     // regex to allow only number
     const re = /^\d*\.?\d*$/;
     if (value === "" || re.test(value)) {
       setAmount(value);
-
-      const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
-      let err = "";
-      if (isSendingToDFC && new BigNumber(value).gt(maxAmount)) {
-        err = "Insufficient Funds";
-      }
-      setAmountErr(err);
+      validateAmountInput(value);
     }
   };
 
@@ -174,6 +177,13 @@ export default function BridgeForm() {
       .then((f) => setFee(new BigNumber(f)))
       .catch(Logging.error);
   }, []);
+
+  useEffect(() => {
+    if (amount) {
+      // Revalidate entered amount when selected token is changed
+      validateAmountInput(amount);
+    }
+  }, [maxAmount]);
 
   useEffect(() => {
     const localData = getStorageItem<UnconfirmedTxnI>(TXN_KEY);
