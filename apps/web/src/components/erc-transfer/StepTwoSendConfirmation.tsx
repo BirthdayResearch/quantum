@@ -14,6 +14,7 @@ import AddressError from "@components/commons/AddressError";
 import TimeLimitCounter from "./TimeLimitCounter";
 import { STORAGE_DFC_ADDR_KEY } from "../../constants";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
+import { getJellyfishNetwork } from "@waveshq/walletkit-core";
 
 function debounce(func, wait) {
   let timeout;
@@ -97,7 +98,7 @@ export default function StepTwoSendConfirmation({
       if (localDfcAddress) {
         setDfcUniqueAddress(localDfcAddress);
       } else {
-        generateAddress({ network: networkEnv })
+        generateAddress({ network: getJellyfishNetwork(networkEnv).name })
           .unwrap()
           .then((data) => {
             setStorageItem<string>(STORAGE_DFC_ADDR_KEY, data.address);

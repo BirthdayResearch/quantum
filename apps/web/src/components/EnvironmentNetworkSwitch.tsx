@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import { NetworkEnvironment } from "types";
+import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 
 export default function EnvironmentNetworkSwitch({
   onChange,
@@ -16,20 +16,20 @@ export default function EnvironmentNetworkSwitch({
   } = useNetworkEnvironmentContext();
 
   const handleOnClick = () => {
-    let nextNetworkEnv: NetworkEnvironment;
+    let nextNetworkEnv: EnvironmentNetwork;
     switch (currentNetworkEnv) {
-      case NetworkEnvironment.testnet:
+      case EnvironmentNetwork.TestNet:
         nextNetworkEnv =
           process.env.NODE_ENV === "production"
-            ? NetworkEnvironment.mainnet
-            : NetworkEnvironment.local;
+            ? EnvironmentNetwork.MainNet
+            : EnvironmentNetwork.LocalPlayground;
         break;
-      case NetworkEnvironment.local:
-        nextNetworkEnv = NetworkEnvironment.mainnet;
+      case EnvironmentNetwork.LocalPlayground:
+        nextNetworkEnv = EnvironmentNetwork.MainNet;
         break;
-      case NetworkEnvironment.mainnet:
+      case EnvironmentNetwork.MainNet:
       default:
-        nextNetworkEnv = NetworkEnvironment.testnet;
+        nextNetworkEnv = EnvironmentNetwork.TestNet;
         break;
     }
     updateNetworkEnv(nextNetworkEnv);
@@ -53,7 +53,7 @@ export default function EnvironmentNetworkSwitch({
       <div
         className={clsx(
           "w-2 h-2 rounded-full mr-1",
-          currentNetworkEnv === NetworkEnvironment.mainnet
+          currentNetworkEnv === EnvironmentNetwork.MainNet
             ? "bg-valid"
             : "bg-warning"
         )}

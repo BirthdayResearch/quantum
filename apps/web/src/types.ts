@@ -1,3 +1,4 @@
+import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 /**
  * Place for common types we want to reuse in entire app
  */
@@ -10,14 +11,6 @@ export enum Network {
 export enum NetworkName {
   Ethereum = "ERC20",
   DeFiChain = "DeFiChain",
-}
-
-export enum NetworkEnvironment {
-  mainnet = "mainnet",
-  testnet = "testnet",
-  regtest = "regtest",
-  devnet = "devnet",
-  local = "local",
 }
 
 export interface TokenDetailI {
@@ -52,7 +45,7 @@ export interface UnconfirmedTxnI {
   selectedTokensA: TokensI;
   selectedNetworkB: NetworkOptionsI;
   selectedTokensB: TokensI;
-  networkEnv: NetworkEnvironment;
+  networkEnv: EnvironmentNetwork;
   amount: string;
   toAddress: string;
   fromAddress: string;

@@ -8,9 +8,13 @@ import { fromAddress } from "@defichain/jellyfish-address";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import useResponsive from "@hooks/useResponsive";
 import useAutoResizeTextArea from "@hooks/useAutoResizeTextArea";
-import { Network, NetworkName, NetworkEnvironment } from "types";
+import { Network, NetworkName } from "types";
 import Tooltip from "./commons/Tooltip";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
+import {
+  EnvironmentNetwork,
+  getJellyfishNetwork,
+} from "@waveshq/walletkit-core";
 
 interface Props {
   blockchain: Network;
@@ -84,7 +88,10 @@ export default function WalletAddressInput({
     if (blockchain === Network.Ethereum) {
       isValid = ethers.utils.isAddress(input);
     } else {
-      const decodedAddress = fromAddress(input, networkEnv);
+      const decodedAddress = fromAddress(
+        input,
+        getJellyfishNetwork(networkEnv).name
+      );
       isValid = decodedAddress !== undefined;
     }
     setIsValidAddress(isValid);
@@ -114,7 +121,10 @@ export default function WalletAddressInput({
 
   useEffect(() => {
     const displayedName = NetworkName[blockchain];
-    if (networkEnv === "testnet" && blockchain === Network.DeFiChain) {
+    if (
+      networkEnv === EnvironmentNetwork.TestNet &&
+      blockchain === Network.DeFiChain
+    ) {
       setPlaceholder(
         `Enter ${displayedName} (${networkEnvDisplayName}) address`
       );
@@ -141,9 +151,10 @@ export default function WalletAddressInput({
     } else {
       const isTestnet =
         isDeFiChain &&
-        [NetworkEnvironment.testnet, NetworkEnvironment.local].includes(
-          networkEnv
-        );
+        [
+          EnvironmentNetwork.TestNet,
+          EnvironmentNetwork.LocalPlayground,
+        ].includes(networkEnv);
       message = isTestnet
         ? `Make sure to only use ${networkEnvDisplayName} for testing`
         : "";
