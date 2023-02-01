@@ -19,21 +19,11 @@ export function appConfig() {
     },
   };
 }
-export type AppConfig = {
-  defichain?: {
-    mainnet?: string;
-    regtest?: string;
-  };
-  ethereum?: {
-    rpcUrl?: string;
-  };
-  contract?: {
-    bridgeProxy?: {
-      mainnetAddress?: string;
-      testnetAddress?: string;
-    };
-  };
+
+type DeepPartial<T> = {
+  [K in keyof T]?: T[K] extends object ? DeepPartial<T[K]> : T[K];
 };
+export type AppConfig = DeepPartial<ReturnType<typeof appConfig>>;
 
 export const ENV_VALIDATION_SCHEMA = Joi.object({
   ETHEREUM_RPC_URL: Joi.string().ip(),
