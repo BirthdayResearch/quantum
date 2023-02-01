@@ -132,11 +132,11 @@ BridgeProxy Contract addrress: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](http
 
 ### Add funds
 
-Anyone can send fund to the bridge contract, ideally in this case, this should be done by `Cake`. If tokens send by other addresses, those tokens will be unaccounted for. In this case, Admin will have to manually refund the
+Anyone can send fund to the bridge contract, ideally in this case, this should be done by `Cake`. If tokens send by other addresses, those tokens will be unaccounted for. In this case, Admin will have to manually process the refund.
 
-Admins can send the ETHER and ERC20 tokens via the `transfer(address _to, uint256 _amount)` function.
+Admins can send the ETHER and ERC20 tokens via the `transfer(address _to, uint256 _amount)` function or utilizing wallet such as Metamask.
 
-Funding the bridge contract would ideally be done on lunch (Not decided on specific numbers)
+Funding the bridge contract would ideally be done upon launch (Not decided on specific numbers)
 
 ### Withdraw funds
 
