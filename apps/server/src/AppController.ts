@@ -1,5 +1,5 @@
 import { Controller, Get, Query } from '@nestjs/common';
-import { BigNumber } from 'ethers';
+import { BigNumber, Event } from 'ethers';
 
 import { AppService } from './AppService';
 
@@ -18,7 +18,7 @@ export class AppController {
   }
 
   @Get('getAllEventsFromBlockNumber')
-  async getAllEventsFromBlockNumber(@Query('blockNumber') blockNumber: number): Promise<object[]> {
+  async getAllEventsFromBlockNumber(@Query('blockNumber') blockNumber: number): Promise<Event[]> {
     return this.appService.getAllEventsFromBlockNumber(Number(blockNumber));
   }
 }

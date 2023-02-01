@@ -2,7 +2,7 @@ import { fromAddress } from '@defichain/jellyfish-address';
 import { HardhatNetwork, HardhatNetworkContainer, StartedHardhatNetworkContainer } from 'smartcontracts';
 
 import { BridgeServerTestingApp } from '../../src/BridgeServerTestingApp';
-import { TestingExampleModule } from '../BridgeApp.i9n';
+import { buildTestConfig, TestingExampleModule } from '../BridgeApp.i9n';
 
 describe('DeFiChain Wallet Integration Testing', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
@@ -13,7 +13,7 @@ describe('DeFiChain Wallet Integration Testing', () => {
   beforeAll(async () => {
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
-    testing = new BridgeServerTestingApp(TestingExampleModule.register(startedHardhatContainer));
+    testing = new BridgeServerTestingApp(TestingExampleModule.register(buildTestConfig(startedHardhatContainer, '')));
     await testing.start();
   });
 

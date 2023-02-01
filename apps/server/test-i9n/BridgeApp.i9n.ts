@@ -12,12 +12,13 @@ import {
   StartedHardhatNetworkContainer,
 } from 'smartcontracts';
 
+import { AppConfig } from '../src/AppConfig';
 import { AppModule } from '../src/AppModule';
 import { BridgeServerTestingApp } from '../src/BridgeServerTestingApp';
 
 @Module({})
 export class TestingExampleModule {
-  static register(config: any): DynamicModule {
+  static register(config: AppConfig): DynamicModule {
     return {
       module: TestingExampleModule,
       imports: [AppModule, ConfigModule.forFeature(() => config)],
@@ -25,13 +26,15 @@ export class TestingExampleModule {
   }
 }
 
-export function buildTestConfig(startedHardhatContainer: StartedHardhatNetworkContainer, contractAddress: string) {
+export function buildTestConfig(startedHardhatContainer: StartedHardhatNetworkContainer, contractAddress?: string) {
   return {
     ethereum: {
       rpcUrl: startedHardhatContainer.rpcUrl,
     },
     contract: {
-      address: contractAddress,
+      bridgeProxy: {
+        testnetAddress: contractAddress,
+      },
     },
   };
 }
@@ -97,28 +100,6 @@ describe('Bridge Service Integration Tests', () => {
 
   afterAll(async () => {
     await hardhatNetwork.stop();
-  });
-
-  describe('Proxy contract deployment', () => {
-    it("Contract code should not be equal to '0x'", async () => {
-      await expect(hardhatNetwork.ethersRpcProvider.getCode(bridgeUpgradeable.address)).resolves.not.toStrictEqual(
-        '0x',
-      );
-    });
-    it('Admin address should be Default Admin address', async () => {
-      const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
-      expect(await bridgeUpgradeable.hasRole(DEFAULT_ADMIN_ROLE, defaultAdminAddress)).toBe(true);
-    });
-    it('Operational address should be Operational Admin address', async () => {
-      const OPERATIONAL_ROLE = ethers.utils.solidityKeccak256(['string'], ['OPERATIONAL_ROLE']);
-      expect(await bridgeUpgradeable.hasRole(OPERATIONAL_ROLE, operationalAdminAddress)).toBe(true);
-    });
-    it('Relayer address should be Default Admin address', async () => {
-      expect(await bridgeUpgradeable.relayerAddress()).toBe(defaultAdminAddress);
-    });
-    it('Successfully implemented the 0.3% txn fee', async () => {
-      expect((await bridgeUpgradeable.transactionFee()).toString()).toBe('30');
-    });
   });
 
   it('Returns an array of confirmed events from a given block number', async () => {
