@@ -18,7 +18,7 @@ interface NetworkContextI {
 const NETWORK_ENV_DISPLAY_NAME: Record<EnvironmentNetwork, string> = {
   [EnvironmentNetwork.MainNet]: "MainNet",
   [EnvironmentNetwork.TestNet]: "TestNet",
-  [EnvironmentNetwork.RemotePlayground]: "Local",
+  [EnvironmentNetwork.RemotePlayground]: "Playground",
   [EnvironmentNetwork.DevNet]: "DevNet",
   [EnvironmentNetwork.LocalPlayground]: "Local",
 };
