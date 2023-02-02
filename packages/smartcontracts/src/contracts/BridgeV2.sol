@@ -238,7 +238,7 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         bytes calldata _defiAddress,
         address _tokenAddress,
         uint256 _amount
-    ) public {
+    ) external {
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
         uint256 tokenAllowanceStartTime = tokenAllowances[_tokenAddress].latestResetTimestamp;
         if (block.timestamp < tokenAllowanceStartTime) revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();

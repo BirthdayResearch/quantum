@@ -43,22 +43,14 @@ To change the state of any smart contract, users need to approve the smart contr
 
 Once approved, user will call the `bridgeToDeFiChain()` function with following arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
 
-### Fund Ether - to transfer ERC20 tokens from an EOA to the Bridge
-
-When sending ETHER to bridge, the user will not have to approve the contract. By default, every smart contract accepts ETH. Sending ether will be similar to an ERC20 token, except we don't account for `_amount` - instead `msg.value()` is used. The `_defiAddress` is the address on the DeFiChain that is receiving funds. Since ETH does not have an address since it is the native currency, it is identified by address(0)/0x0 in `_tokenAddress`
-
 ### Add supported token
 
-Only addresses with the Admin and Operational role can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for a ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
+Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for an ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
 User are not allowed to bridge more than the dailyAllowance per day.
 
 ### Remove supported token
 
 Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function.
-
-### Withdraw ether
-
-Only the Admin can call the `withdrawEth()` function with ETH's amount.
 
 ### Withdraw ERC20
 
@@ -70,9 +62,9 @@ Both the Admin and Operational addresses can change the `_dailyAllowance` (the n
 
 During this 'change in allowance' period, no bridging to DeFiChain will be allowed. However, it is still possible to make additional changes by calling `changeDailyAllowance()` in case mistakes were made.
 
-### Withdraw / withdrawEth
+### Withdraw
 
-`withdraw()` and `withdrawEth()` functions when called will withdraw ERC20 token and ETHER respectively. Only the address with the Admin role can call these functions.
+`withdraw()` function when called will withdraw an ERC20 token. Only the address with the Admin role can call this function.
 
 ### Change relayer address
 
@@ -91,7 +83,7 @@ Only address with admin role can change `transactionFee`. Initial fee will be se
 
 ### Deploy ERC20 tokens 'MUSDT' & 'MUSDC'
 
-To deploy ERC20 token user will have to run a command `npx hardhat run --network goerli ./scripts/deployERC20.ts` in smartContract directory.
+To deploy ERC20 tokens user will have to run a command `npx hardhat run --network goerli ./scripts/deployERC20.ts` in smartContract directory.
 
 To verify the said tokens and other contracts, there would be a prompt on terminal after running the deployment command that devs will need to run after.
 
