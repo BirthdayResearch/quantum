@@ -2,14 +2,14 @@ import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { BridgeV1, TestToken } from '../generated';
+import { BridgeV2, TestToken } from '../generated';
 import { deployContracts } from './testUtils/deployment';
 import { getCurrentTimeStamp, toWei } from './testUtils/mathUtils';
 
 // initMintAndSupport will mint to the EOA address and approve contractAddress.
 // This is primarily to help avoid the repetition.
 async function initMintAndSupport(
-  proxyBridge: BridgeV1,
+  proxyBridge: BridgeV2,
   testToken: TestToken,
   eoaAddress: string,
   contractAddress: string,
@@ -220,52 +220,6 @@ describe('Daily allowance tests', () => {
             ),
         ).to.be.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
         expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('15'));
-      });
-    });
-  });
-
-  describe('Allowance tests - ETH', () => {
-    it('Not able to change daily allowance if un-supported token', async () => {
-      const { proxyBridge } = await loadFixture(deployContracts);
-      // This should revert with the error 'ONLY_SUPPORTED_TOKENS'
-      await expect(
-        proxyBridge.changeDailyAllowance(
-          ethers.constants.AddressZero,
-          toWei('12'),
-          getCurrentTimeStamp({ additionalTime: 60 * 60 * 25 }),
-        ),
-      ).to.be.revertedWithCustomError(proxyBridge, 'ONLY_SUPPORTED_TOKENS');
-    });
-
-    describe('Daily Allowance change for ETH by different accounts ', () => {
-      it('DEFAULT_ADMIN_ROLE', async () => {
-        const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
-        // Set Allowance to 10 ether by admin address
-        await proxyBridge
-          .connect(defaultAdminSigner)
-          .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp());
-        expect((await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).dailyAllowance).to.equal(toWei('10'));
-      });
-
-      it('OPERATIONAL_ROLE', async () => {
-        const { proxyBridge, operationalAdminSigner } = await loadFixture(deployContracts);
-        // Set Allowance to 10 ether by operational address
-        await proxyBridge
-          .connect(operationalAdminSigner)
-          .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp());
-        expect(await (await proxyBridge.tokenAllowances(ethers.constants.AddressZero)).dailyAllowance).to.equal(
-          toWei('10'),
-        );
-      });
-
-      it('ARBITRARY_EOA', async () => {
-        const { proxyBridge, arbitrarySigner } = await loadFixture(deployContracts);
-        // Set Allowance to 10 ether by EOA address
-        await expect(
-          proxyBridge
-            .connect(arbitrarySigner)
-            .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp()),
-        ).to.be.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
       });
     });
   });

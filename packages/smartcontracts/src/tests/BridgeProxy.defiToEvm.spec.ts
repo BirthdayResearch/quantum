@@ -3,12 +3,12 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { BridgeV1, TestToken } from '../generated';
+import { BridgeV2, TestToken } from '../generated';
 import { deployContracts } from './testUtils/deployment';
 import { getCurrentTimeStamp, toWei } from './testUtils/mathUtils';
 
 describe('DeFiChain --> EVM', () => {
-  let proxyBridge: BridgeV1;
+  let proxyBridge: BridgeV2;
   let testToken: TestToken;
   let testToken2: TestToken;
   let defaultAdminSigner: SignerWithAddress;
@@ -40,7 +40,7 @@ describe('DeFiChain --> EVM', () => {
     await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp());
   });
 
-  it('Valid Signature - ERC20 token', async () => {
+  it('Valid Signature', async () => {
     const eip712Data = {
       to: defaultAdminSigner.address,
       amount: toWei('10'),
@@ -119,7 +119,7 @@ describe('DeFiChain --> EVM', () => {
     expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(0);
   });
 
-  it('Successfully revert when claiming fund - ERC20', async () => {
+  it('Successfully revert when claiming fund', async () => {
     const eip712Data = {
       to: defaultAdminSigner.address,
       amount: toWei('110'),
@@ -143,36 +143,8 @@ describe('DeFiChain --> EVM', () => {
     ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
   });
 
-  it('Successfully revert when claiming fund - ETH', async () => {
-    const eip712Data = {
-      to: defaultAdminSigner.address,
-      amount: toWei('15'),
-      nonce: 0,
-      deadline: ethers.constants.MaxUint256,
-      tokenAddress: ethers.constants.AddressZero,
-    };
-
-    const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
-    // Sending 10 ether to proxy contract
-    await defaultAdminSigner.sendTransaction({ to: proxyBridge.address, value: toWei('10'), gasLimit: 210000 });
-    expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('10'));
-    // Setting ether dailyAllowance to 5. If not set, txn will revert with 'TOKEN_NOT_SUPPORTED()'
-    await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('5'), getCurrentTimeStamp());
-    // This should revert with custom error 'NOT_ENOUGH_ETHEREUM'
-    await expect(
-      proxyBridge.claimFund(
-        defaultAdminSigner.address,
-        toWei('15'),
-        0,
-        ethers.constants.MaxUint256,
-        ethers.constants.AddressZero,
-        signature,
-      ),
-    ).to.be.revertedWithCustomError(proxyBridge, 'NOT_ENOUGH_ETHEREUM');
-  });
-
   describe('Emitted events', () => {
-    it('Successfully emitted event when claiming fund - ERC20', async () => {
+    it('Successfully emitted event when claiming fund', async () => {
       const eip712Data = {
         to: defaultAdminSigner.address,
         amount: toWei('10'),
@@ -195,37 +167,6 @@ describe('DeFiChain --> EVM', () => {
       )
         .to.emit(proxyBridge, 'CLAIM_FUND')
         .withArgs(testToken.address, defaultAdminSigner.address, toWei('10'));
-    });
-
-    it('Successfully emitted event when claiming fund - ETH', async () => {
-      const eip712Data = {
-        to: defaultAdminSigner.address,
-        amount: toWei('8'),
-        nonce: 0,
-        deadline: ethers.constants.MaxUint256,
-        tokenAddress: ethers.constants.AddressZero,
-      };
-
-      const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
-      expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal('0');
-      // Sending ether to proxy contract
-      await defaultAdminSigner.sendTransaction({ to: proxyBridge.address, value: toWei('10'), gasLimit: 210000 });
-      expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('10'));
-      // Setting ether dailyAllowance to 5. If not set, txn will revert with 'TOKEN_NOT_SUPPORTED()'
-      await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('5'), getCurrentTimeStamp());
-      // Daily allowance set to 5 ether. User can withdraw any amount as long as signature valid and amount equal or less than available balance
-      await expect(
-        proxyBridge.claimFund(
-          defaultAdminSigner.address,
-          toWei('8'),
-          0,
-          ethers.constants.MaxUint256,
-          ethers.constants.AddressZero,
-          signature,
-        ),
-      )
-        .to.emit(proxyBridge, 'CLAIM_FUND')
-        .withArgs(ethers.constants.AddressZero, defaultAdminSigner.address, toWei('8'));
     });
   });
 });

@@ -1,19 +1,19 @@
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { ethers } from 'hardhat';
 
-import { BridgeV1, BridgeV1__factory, TestToken } from '../../generated';
+import { BridgeV2, BridgeV2__factory, TestToken } from '../../generated';
 
 export async function deployContracts(): Promise<BridgeDeploymentResult> {
   const accounts = await ethers.provider.listAccounts();
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
   const operationalAdminSigner = await ethers.getSigner(accounts[1]);
   const arbitrarySigner = await ethers.getSigner(accounts[2]);
-  const BridgeUpgradeable = await ethers.getContractFactory('BridgeV1');
+  const BridgeUpgradeable = await ethers.getContractFactory('BridgeV2');
   const bridgeUpgradeable = await BridgeUpgradeable.deploy();
   await bridgeUpgradeable.deployed();
   const BridgeProxy = await ethers.getContractFactory('BridgeProxy');
   // deployment arguments for the Proxy contract
-  const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
+  const encodedData = BridgeV2__factory.createInterface().encodeFunctionData('initialize', [
     'CAKE_BRIDGE',
     '0.1',
     // admin address
@@ -43,7 +43,7 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
 }
 
 interface BridgeDeploymentResult {
-  proxyBridge: BridgeV1;
+  proxyBridge: BridgeV2;
   testToken: TestToken;
   testToken2: TestToken;
   defaultAdminSigner: SignerWithAddress;
