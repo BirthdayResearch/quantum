@@ -88,7 +88,7 @@ services:
     image: postgres:14.6-alpine
     restart: always
     env_file:
-      - .env
+      - ./apps/server/.env
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
