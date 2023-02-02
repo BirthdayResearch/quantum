@@ -43,10 +43,6 @@ To change the state of any smart contract, users need to approve the smart contr
 
 Once approved, user will call the `bridgeToDeFiChain()` function with following arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
 
-### Bridge Ether - to transfer ETHER from an EOA to the Bridge
-
-When sending ETHER to bridge, the user will not have to approve the contract. By default, every smart contract accepts ETH. Sending ether will be similar to an ERC20 token, except we don't account for `_amount` - instead `msg.value()` is used. The `_defiAddress` is the address on the DeFiChain that is receiving funds. Since ETH does not have an address since it is the native currency, it is identified by address(0)/0x0 in `_tokenAddress`
-
 ### Add supported token
 
 Only addresses with the Admin and Operational role can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for a ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
@@ -55,10 +51,6 @@ User are not allowed to bridge more than the dailyAllowance per day.
 ### Remove supported token
 
 Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function.
-
-### Withdraw ether
-
-Only the Admin can call the `withdrawEth()` function with ETH's amount.
 
 ### Withdraw ERC20
 
@@ -70,9 +62,9 @@ Both the Admin and Operational addresses can change the `_dailyAllowance` (the n
 
 During this 'change in allowance' period, no bridging to DeFiChain will be allowed. However, it is still possible to make additional changes by calling `changeDailyAllowance()` in case mistakes were made.
 
-### Withdraw / withdrawEth
+### Withdraw
 
-`withdraw()` and `withdrawEth()` functions when called will withdraw ERC20 token and ETHER respectively. Only the address with the Admin role can call these functions.
+`withdraw()` function when called will withdraw an ERC20 token. Only the address with the Admin role can call this function.
 
 ### Change relayer address
 
@@ -91,7 +83,7 @@ Only address with admin role can change `transactionFee`. Initial fee will be se
 
 ### Deploy ERC20 tokens 'MUSDT' & 'MUSDC'
 
-To deploy ERC20 token user will have to run a command `npx hardhat run --network goerli ./scripts/deployERC20.ts` in smartContract directory.
+To deploy ERC20 tokens user will have to run a command `npx hardhat run --network goerli ./scripts/deployERC20.ts` in smartContract directory.
 
 To verify the said tokens and other contracts, there would be a prompt on terminal after running the deployment command that devs will need to run after.
 
@@ -128,22 +120,20 @@ BridgeV1 Contract address: [0xE029B5156c2e597c72f7c8D279411e1fD9a30126](https://
 
 BridgeProxy Contract addrress: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C)
 
-## Fund Bridge with ETHER and ERC20 tokens
+## Fund Bridge ERC20 tokens
 
 ### Add funds
 
-Anyone can send fund to the bridge contract, ideally in this case, this should be done by liquidity providers. If tokens send by other addresses straight to the contract, those tokens will be unaccounted for. In this case, Admin will have to manually process the refund.
+Anyone can send funds to the bridge contract. Ideally, this should be done by liquidity providers. If there are tokens sent by other addresses to the contract, those tokens will be unaccounted for.
 
-Admins can send the ETHER and ERC20 tokens via the `transfer(address _to, uint256 _amount)` function or utilizing wallet such as Metamask.
+Admins can send ERC20 tokens via the `transfer(address _to, uint256 _amount)` function or utilizing wallets such as Metamask.
 
-Funding the bridge contract would ideally be done upon launch (Not decided on specific numbers)
+### Withdrawing funds
 
-### Withdraw funds
-
-ETHER and ERC20 can be withdrawn by the Admin address only via `withdrawEth(uint256 amount)` and `withdraw(address _tokenAddress, uint256 amount)` functions respectively.
+ERC20 tokens can be withdrawn by the Admin address only via the `withdraw(address _tokenAddress, uint256 amount)` function.
 
 ## Admin and Operational addresses - Gnosis safe
 
-Admin and Operational addresses will be Gnosis safes, ideally will be with at least 3 owners. In case of 3 addresses, 2 approval ( this can be set when making a safe or later ) will be needed to execute txs.
+Admin and Operational addresses will be Gnosis safes, ideally will be with at least 3 owners with a 2/3 quorum.
 
-More admins can be added later, for more info [Gnosis safe: adding owners](https://help.gnosis-safe.io/en/articles/3950657-add-owners).
+More admins can be added later, for more info, refer to [Gnosis safe: adding owners](https://help.gnosis-safe.io/en/articles/3950657-add-owners).
