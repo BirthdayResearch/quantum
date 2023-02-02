@@ -132,7 +132,7 @@ BridgeProxy Contract addrress: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](http
 
 ### Add funds
 
-Anyone can send fund to the bridge contract, ideally in this case, this should be done by `Cake`. If tokens send by other addresses, those tokens will be unaccounted for. In this case, Admin will have to manually process the refund.
+Anyone can send fund to the bridge contract, ideally in this case, this should be done by liquidity providers. If tokens send by other addresses straight to the contract, those tokens will be unaccounted for. In this case, Admin will have to manually process the refund.
 
 Admins can send the ETHER and ERC20 tokens via the `transfer(address _to, uint256 _amount)` function or utilizing wallet such as Metamask.
 
@@ -142,8 +142,8 @@ Funding the bridge contract would ideally be done upon launch (Not decided on sp
 
 ETHER and ERC20 can be withdrawn by the Admin address only via `withdrawEth(uint256 amount)` and `withdraw(address _tokenAddress, uint256 amount)` functions respectively.
 
-## Operational addresses - Gnosis safe
+## Admin and Operational addresses - Gnosis safe
 
-Operational address will be a Gnosis safe, ideally will be with at least 3 owners. In case of 3 addresses, 2 approval ( this can be set when making a safe or later ) will be needed to execute txs.
+Admin and Operational addresses will be Gnosis safes, ideally will be with at least 3 owners. In case of 3 addresses, 2 approval ( this can be set when making a safe or later ) will be needed to execute txs.
 
 More admins can be added later, for more info [Gnosis safe: adding owners](https://help.gnosis-safe.io/en/articles/3950657-add-owners).
