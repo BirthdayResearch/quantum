@@ -52,9 +52,9 @@
   },
   "devDependencies": {
     "@birthdayresearch/eslint-config": "^0.3.7",
-    "@birthdayresearch/sticky-testcontainers": "^0.3.6",
-    "@birthdayresearch/sticky-turbo-jest": "^0.3.6",
-    "@birthdayresearch/sticky-typescript": "^0.3.6",
+    "@birthdayresearch/sticky-testcontainers": "^0.3.7",
+    "@birthdayresearch/sticky-turbo-jest": "^0.3.7",
+    "@birthdayresearch/sticky-typescript": "^0.3.7",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "1.0.5",
