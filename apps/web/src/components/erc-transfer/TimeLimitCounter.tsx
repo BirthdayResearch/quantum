@@ -35,30 +35,33 @@ export default function TimeLimitCounter({
 
   const getFillColor = () => {
     let color = "bg-dark-grdient-3";
+    let textColor = "text-dark-gradient-3";
     if (timeLimitPercentage.lt(16.67)) {
       /* less than 5mins */
       color = "bg-error";
+      textColor = "text-error";
     } else if (timeLimitPercentage.lt(33.33)) {
       /* less than 10mins */
       color = "bg-warning";
+      textColor = "text-warning";
     }
-    return color;
+    return { color, textColor };
   };
 
   return (
-    <div
-      className={clsx(
-        "flex flex-wrap items-center mt-auto gap-1",
-        "md:mt-4 md:gap-3"
-      )}
-    >
-      <div className="w-full md:w-3/5">
+    <div className={clsx("flex-1 items-center gap-1", "md:mt-4 md:gap-3")}>
+      <div className="w-full">
         <ProgressBar
           progressPercentage={timeLimitPercentage}
-          fillColor={getFillColor()}
+          fillColor={getFillColor().color}
         />
       </div>
-      <span className="text-xs md:text-sm font-semibold tracking-wide text-dark-1000">
+      <span
+        className={clsx(
+          "text-xs md:text-sm font-semibold tracking-wide items-center flex justify-center",
+          getFillColor().textColor
+        )}
+      >
         {getDuration(timeRemaining.toNumber())}
       </span>
     </div>

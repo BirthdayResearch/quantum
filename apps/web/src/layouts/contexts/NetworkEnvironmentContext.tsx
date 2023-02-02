@@ -1,10 +1,12 @@
 import React, {
   createContext,
   useContext,
+  useEffect,
   useMemo,
   useState,
   PropsWithChildren,
 } from "react";
+import { useRouter } from "next/router";
 import { NetworkEnvironment } from "types";
 
 const DEFAULT_ENV_NETWORK = NetworkEnvironment.mainnet;
@@ -32,20 +34,42 @@ export function useNetworkEnvironmentContext(): NetworkContextI {
 export function NetworkEnvironmentProvider({
   children,
 }: PropsWithChildren<{}>): JSX.Element | null {
+  const router = useRouter();
+  const networkQuery = router.query.network;
+  const initialNetwork =
+    NetworkEnvironment[networkQuery as keyof typeof NetworkEnvironment] ??
+    DEFAULT_ENV_NETWORK;
+
   const [networkEnv, setNetworkEnv] =
-    useState<NetworkEnvironment>(DEFAULT_ENV_NETWORK);
+    useState<NetworkEnvironment>(initialNetwork);
   const [networkEnvDisplayName, setNetworkEnvDisplayName] = useState<string>(
-    NETWORK_ENV_DISPLAY_NAME[DEFAULT_ENV_NETWORK]
+    NETWORK_ENV_DISPLAY_NAME[initialNetwork]
   );
 
   const handleNetworkEnvChange = (value: NetworkEnvironment) => {
+    const networkDisplayName = NETWORK_ENV_DISPLAY_NAME[value];
     setNetworkEnv(value);
-    setNetworkEnvDisplayName(NETWORK_ENV_DISPLAY_NAME[value]);
+    setNetworkEnvDisplayName(networkDisplayName);
+    if (networkQuery && networkQuery !== networkDisplayName) {
+      router.replace(
+        {
+          pathname: "/",
+          query: { network: networkDisplayName.toLowerCase() },
+        },
+        undefined,
+        { shallow: true }
+      );
+    }
   };
 
   const resetNetworkEnv = () => {
-    handleNetworkEnvChange(DEFAULT_ENV_NETWORK);
+    handleNetworkEnvChange(initialNetwork);
   };
+
+  useEffect(() => {
+    setNetworkEnv(initialNetwork);
+    setNetworkEnvDisplayName(NETWORK_ENV_DISPLAY_NAME[initialNetwork]);
+  }, [initialNetwork]);
 
   const context: NetworkContextI = useMemo(
     () => ({

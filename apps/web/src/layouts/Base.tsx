@@ -7,39 +7,48 @@ import {
   siteTitle,
   website,
 } from "@components/siteInfo";
-import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { WagmiConfig, createClient, configureChains } from "wagmi";
 import { localhost, hardhat, mainnet, goerli } from "wagmi/chains";
+import { InjectedConnector } from "wagmi/connectors/injected";
+import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
+import { publicProvider } from "wagmi/providers/public";
 import { ConnectKitProvider, getDefaultClient } from "connectkit";
 import Footer from "@components/Footer";
 import Header from "@components/Header";
 import { getInitialTheme, ThemeProvider } from "@contexts/ThemeProvider";
 import { NetworkEnvironmentProvider } from "@contexts/NetworkEnvironmentContext";
 import { NetworkProvider } from "@contexts/NetworkContext";
-import { InjectedConnector } from "wagmi/connectors/injected";
+import { ContractProvider } from "@contexts/ContractContext";
+import {
+  NetworkProvider as WhaleNetworkProvider,
+  WhaleProvider,
+} from "@waveshq/walletkit-ui";
+import SecuredStoreAPI from "@api/secure-storage";
+import Logging from "@api/logging";
 
 const metamask = new MetaMaskConnector({
   chains: [mainnet, goerli, localhost, hardhat],
 });
 
-const { chains, provider } = configureChains(
-  [localhost, hardhat],
+const { chains } = configureChains(
+  [localhost, hardhat, mainnet, goerli],
   [
     jsonRpcProvider({
       rpc: (c) => ({
         http: (process.env.RPC_URL || c.rpcUrls.default) as string,
       }),
     }),
+    publicProvider(),
   ]
 );
 
 const client = createClient(
   getDefaultClient({
     autoConnect: true,
+    chains: [localhost, hardhat, mainnet, goerli],
     appName,
     connectors: [metamask, new InjectedConnector({ chains })],
-    provider,
   })
 );
 
@@ -101,16 +110,24 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
         <ConnectKitProvider mode="dark" options={{ initialChainId: 0 }}>
           {mounted && (
             <NetworkProvider>
-              <NetworkEnvironmentProvider>
-                <ThemeProvider theme={initialTheme}>
-                  <div className="relative">
-                    <Header />
-                    <main className="relative z-[1] flex-grow">{children}</main>
-                    <div className="absolute top-0 left-0 z-auto h-full w-full bg-[url('/background/mobile.png')] bg-cover bg-local bg-clip-padding bg-top bg-no-repeat bg-origin-padding mix-blend-screen md:bg-[url('/background/tablet.png')] lg:bg-[url('/background/desktop.png')] lg:bg-center" />
-                    <Footer />
-                  </div>
-                </ThemeProvider>
-              </NetworkEnvironmentProvider>
+              <WhaleNetworkProvider api={SecuredStoreAPI} logger={Logging}>
+                <WhaleProvider>
+                  <NetworkEnvironmentProvider>
+                    <ContractProvider>
+                      <ThemeProvider theme={initialTheme}>
+                        <div className="relative">
+                          <Header />
+                          <main className="relative z-[1] flex-grow">
+                            {children}
+                          </main>
+                          <div className="absolute top-0 left-0 z-auto h-full w-full bg-[url('/background/mobile.png')] bg-cover bg-local bg-clip-padding bg-top bg-no-repeat bg-origin-padding mix-blend-screen md:bg-[url('/background/tablet.png')] lg:bg-[url('/background/desktop.png')] lg:bg-center" />
+                          <Footer />
+                        </div>
+                      </ThemeProvider>
+                    </ContractProvider>
+                  </NetworkEnvironmentProvider>
+                </WhaleProvider>
+              </WhaleNetworkProvider>
             </NetworkProvider>
           )}
         </ConnectKitProvider>

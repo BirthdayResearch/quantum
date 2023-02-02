@@ -8,12 +8,14 @@ interface Props {
   content: string;
   title?: string;
   position?: "top" | "right";
+  customIconColor?: string;
 }
 
 export default function IconTooltip({
   content,
   title,
   position = "top",
+  customIconColor,
 }: Props): JSX.Element {
   const [tooltipOffset, setTooltipOffset] = useState<string>();
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
@@ -33,7 +35,7 @@ export default function IconTooltip({
     <div className="relative flex focus:outline-none group cursor-pointer">
       <FiInfo
         size={16}
-        className="text-dark-700"
+        className={clsx(customIconColor ?? "text-dark-700")}
         onClick={() => (!isWeb ? setIsMobileModalOpen(true) : null)}
       />
       {isWeb ? (

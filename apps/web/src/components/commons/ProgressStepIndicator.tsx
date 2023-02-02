@@ -24,7 +24,7 @@ export default function ProgressStepIndicator({
   return (
     <div
       className={clsx(
-        "relative flex justify-between px-20",
+        "relative flex justify-between px-10",
         "before:absolute before:bg-dark-500 before:h-[1px] before:w-full before:top-1/2 before:-translate-y(1/2) before:left-0",
         "after:absolute after:bg-valid after:h-[1px] after:w-1/5 after:top-1/2 after:-translate-y(1/2) after:left-0 after:ease-in after:duration-300",
         getProgressWidth()

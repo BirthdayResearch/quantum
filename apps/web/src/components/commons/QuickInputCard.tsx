@@ -100,6 +100,7 @@ export function QuickInputCard({
     >
       <div className="flex flex-row px-5 py-[18px] lg:py-[22px]">
         <input
+          data-testid="amount"
           className={clsx(
             "w-full max-h-36 grow resize-none bg-transparent text-lg lg:text-2xl text-dark-1000 focus:outline-none caret-dark-1000 placeholder-dark-500 hover:placeholder-dark-800 focus:placeholder-dark-300"
           )}

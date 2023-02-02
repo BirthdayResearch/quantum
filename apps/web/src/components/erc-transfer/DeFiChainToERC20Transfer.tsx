@@ -2,26 +2,31 @@ import clsx from "clsx";
 import { useState } from "react";
 import { ProgressStepI } from "types";
 import useResponsive from "@hooks/useResponsive";
-import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import ProgressStepIndicator from "@components/commons/ProgressStepIndicator";
 import ProgressStepIndicatorMobile from "@components/commons/ProgressStepIndicatorMobile";
-import StepOneSendConfirmation from "./StepOneSendConfirmation";
-import StepTwoVerification from "./StepTwoVerification";
-import StepThreeClaim from "./StepThreeClaim";
-import { DISCLAIMER_MESSAGE } from "../../constants";
+import StepOneInitiate from "./StepOneInitiate";
+import StepTwoSendConfirmation from "./StepTwoSendConfirmation";
+import StepThreeVerification from "./StepThreeVerification";
+import StepLastClaim from "./StepLastClaim";
 
 const DfcToErcTransferSteps: ProgressStepI[] = [
-  { step: 1, label: "Transfer" },
-  { step: 2, label: "Verification" },
-  { step: 3, label: "Claim" },
+  { step: 1, label: "Initiate" },
+  { step: 2, label: "Transact" },
+  { step: 3, label: "Validate" },
+  { step: 4, label: "Claim" },
 ];
 
 export default function DeFiChainToERC20Transfer() {
   const [activeStep, setActiveStep] = useState(1);
   const { isMobile } = useResponsive();
+  // TODO: check if transaction validated from api
+  const transactionValidated = true;
 
   const handleNextStep = () => {
     setActiveStep(activeStep + 1);
+    if (activeStep >= 3 && transactionValidated) {
+      setActiveStep(activeStep + 2);
+    }
   };
 
   return (
@@ -44,22 +49,14 @@ export default function DeFiChainToERC20Transfer() {
           />
         )}
       </div>
-
-      {activeStep === 1 && (
-        <StepOneSendConfirmation goToNextStep={handleNextStep} />
-      )}
+      {activeStep === 1 && <StepOneInitiate goToNextStep={handleNextStep} />}
       {activeStep === 2 && (
-        <StepTwoVerification goToNextStep={handleNextStep} />
+        <StepTwoSendConfirmation goToNextStep={handleNextStep} />
       )}
-      {activeStep >= 3 && <StepThreeClaim goToNextStep={handleNextStep} />}
-
-      {[1, 2].includes(activeStep) && (
-        <AlertInfoMessage
-          message={DISCLAIMER_MESSAGE}
-          containerStyle="px-5 py-4 mt-4 hidden md:flex"
-          textStyle="text-xs"
-        />
+      {activeStep === 3 && (
+        <StepThreeVerification goToNextStep={handleNextStep} />
       )}
+      {activeStep >= 4 && <StepLastClaim goToNextStep={handleNextStep} />}
     </div>
   );
 }
