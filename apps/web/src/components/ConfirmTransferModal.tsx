@@ -4,7 +4,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { NetworkName } from "types";
-import { FiAlertCircle, FiCheck } from "react-icons/fi";
+import { FiCheck } from "react-icons/fi";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import useResponsive from "@hooks/useResponsive";
 import useDisableEscapeKey from "@hooks/useDisableEscapeKey";
@@ -34,6 +34,7 @@ import {
   STORAGE_TXN_KEY,
 } from "../constants";
 import BridgeV1Abi from "../config/BridgeV1Abi.json";
+import ErrorModal from "./commons/ErrorModal";
 
 interface RowDataI {
   address: string;
@@ -208,18 +209,14 @@ function ERC20ToDeFiChainTransfer({ data }: { data: TransferData }) {
         </Modal>
       )}
       {hasError && (
-        // TODO: Replace error ui/message
-        <Modal isOpen={hasError} onClose={() => router.reload()}>
-          <div className="flex flex-col items-center mt-6 mb-14">
-            <FiAlertCircle className="text-8xl text-error ml-1" />
-            <span className="font-bold text-2xl text-dark-900 mt-12">
-              Transaction error
-            </span>
-            <span className="text-dark-900 mt-2">
-              The transaction verification has failed.
-            </span>
-          </div>
-        </Modal>
+        <ErrorModal
+          title="Transaction error"
+          message="The transaction verification has failed. Check your network connection
+        and try again."
+          hasError={hasError}
+          primaryButtonLabel="Try again"
+          secondaryButtonLabel="Close"
+        />
       )}
       <AlertInfoMessage
         message={DISCLAIMER_MESSAGE}
