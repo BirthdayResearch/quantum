@@ -25,14 +25,14 @@ export class TransactionService {
   async craftTransaction(
     network: EnvironmentNetwork,
     address: string,
-    getTX: (from: Script, builder: P2WPKHTransactionBuilder, to?: Script) => TransactionSegWit,
+    getTX: (from: Script, builder: P2WPKHTransactionBuilder, to: Script) => Promise<TransactionSegWit>,
   ): Promise<CTransactionSegWit> {
     const wallet = this.whaleWalletProvider.createWallet(network);
     const to = DeFiAddress.from(this.clientProvider.remapNetwork(network), address).getScript();
 
     const from = await wallet.getScript();
     const builder = wallet.withTransactionBuilder();
-    return new CTransactionSegWit(getTX(from, builder, to));
+    return new CTransactionSegWit(await getTX(from, builder, to));
   }
 
   // Broadcast signed transaction to DeFiChain

@@ -22,13 +22,13 @@ let testing: BridgeServerTestingApp;
 
 describe('DeFiChain Transaction Testing', () => {
   beforeAll(async () => {
+    startedHardhatContainer = await new HardhatNetworkContainer().start();
+    hardhatNetwork = await startedHardhatContainer.ready();
     const network = await new Network().start();
     defid = await new NativeChainContainer().withNetwork(network).withPreconfiguredRegtestMasternode().start();
     whale = await new WhaleApiContainer().withNetwork(network).withNativeChain(defid, network).start();
     playground = await new PlaygroundApiContainer().withNetwork(network).withNativeChain(defid, network).start();
     await playground.waitForReady();
-    startedHardhatContainer = await new HardhatNetworkContainer().start();
-    hardhatNetwork = await startedHardhatContainer.ready();
     testing = new BridgeServerTestingApp(TestingExampleModule.register(buildTestConfig({ startedHardhatContainer })));
     await testing.start();
   });

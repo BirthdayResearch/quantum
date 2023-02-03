@@ -38,6 +38,7 @@ importers:
       '@types/supertest': ^2.0.12
       '@waveshq/walletkit-core': ^0.31.0
       '@waveshq/walletkit-ui': ^0.31.0
+      bignumber.js: ^9.1.1
       class-transformer: ^0.5.1
       class-validator: ^0.14.0
       ethers: ^5.7.2
@@ -65,6 +66,7 @@ importers:
       '@prisma/client': 4.9.0_prisma@4.9.0
       '@waveshq/walletkit-core': 0.31.0
       '@waveshq/walletkit-ui': 0.31.0_tguzqxachodmnp2rbs3rf5v54q
+      bignumber.js: 9.1.1
       class-transformer: 0.5.1
       class-validator: 0.14.0
       ethers: 5.7.2
