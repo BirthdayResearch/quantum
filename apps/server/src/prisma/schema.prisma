@@ -17,11 +17,12 @@ enum Network {
 }
 
 model PathIndex {
-  id        BigInt   @id @default(autoincrement())
-  index     Int
-  address   String
-  network   Network
-  createdAt DateTime @default(now())
+  id            BigInt   @id @default(autoincrement())
+  index         Int
+  address       String
+  network       Network
+  refundAddress String
+  createdAt     DateTime @default(now())
 
   @@unique([index, network])
 }
