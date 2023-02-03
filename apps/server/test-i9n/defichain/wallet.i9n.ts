@@ -7,6 +7,13 @@ import { HardhatNetwork, HardhatNetworkContainer, StartedHardhatNetworkContainer
 import { BridgeServerTestingApp } from '../../src/BridgeServerTestingApp';
 import { buildTestConfig, TestingExampleModule } from '../BridgeApp.i9n';
 
+const sleep = (time: number) =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('');
+    }, time);
+  });
+
 describe('DeFiChain Wallet Integration Testing', () => {
   const container = new PostgreSqlContainer();
   let postgreSqlContainer: StartedPostgreSqlContainer;
@@ -41,7 +48,7 @@ describe('DeFiChain Wallet Integration Testing', () => {
   it('should be able to generate a wallet address', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address?network=${EnvironmentNetwork.RemotePlayground}`,
+      url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.RemotePlayground}&refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
     await expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
@@ -52,7 +59,7 @@ describe('DeFiChain Wallet Integration Testing', () => {
   it('should be able to generate a wallet address for a specific network', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address?network=${EnvironmentNetwork.RemotePlayground}`,
+      url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.RemotePlayground}&refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);
@@ -66,10 +73,26 @@ describe('DeFiChain Wallet Integration Testing', () => {
     for (let x = 0; x < 5; x += 1) {
       const initialResponse = await testing.inject({
         method: 'GET',
-        url: `${WALLET_ENDPOINT}generate-address?network=${EnvironmentNetwork.RemotePlayground}`,
+        url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.RemotePlayground}&refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
       });
 
       expect(initialResponse.statusCode).toStrictEqual(x < 3 ? 200 : 429);
     }
+    // await 1min before continuing further
+    await sleep(60000);
+    const initialResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.RemotePlayground}&refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+    });
+
+    expect(initialResponse.statusCode).toStrictEqual(200);
+  });
+
+  it('should be able to fail without refund address while creating new address', async () => {
+    const initialResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.RemotePlayground}`,
+    });
+    expect(initialResponse.statusCode).toStrictEqual(500);
   });
 });
