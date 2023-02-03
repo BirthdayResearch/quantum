@@ -143,6 +143,59 @@ describe('DeFiChain --> EVM', () => {
     ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
   });
 
+  it('Successfully revert when claim deadline expired', async () => {
+    const eip712Data = {
+      to: defaultAdminSigner.address,
+      amount: toWei('10'),
+      nonce: 0,
+      deadline: ethers.constants.MaxUint256,
+      tokenAddress: testToken.address,
+    };
+
+    const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
+    // Checking Balance before claiming fund, should be 0
+    expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(0);
+    await expect(
+      proxyBridge.claimFund(
+        defaultAdminSigner.address,
+        toWei('10'),
+        0,
+        // Deadline pass currentTime - 1 hr
+        getCurrentTimeStamp() - 60 * 60 * 1,
+        testToken.address,
+        signature,
+      ),
+    ).to.be.revertedWithCustomError(proxyBridge, 'EXPIRED_CLAIM');
+    // Checking Balance after claiming fund, should be 0
+    expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(toWei('0'));
+  });
+
+  it('Successfully revert when claim more than available amount', async () => {
+    const eip712Data = {
+      to: defaultAdminSigner.address,
+      amount: toWei('1000'),
+      nonce: 0,
+      deadline: ethers.constants.MaxUint256,
+      tokenAddress: testToken.address,
+    };
+
+    const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
+    // Checking Balance before claiming fund, should be 0
+    expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(0);
+    await expect(
+      proxyBridge.claimFund(
+        defaultAdminSigner.address,
+        toWei('1000'),
+        0,
+        ethers.constants.MaxUint256,
+        testToken.address,
+        signature,
+      ),
+    ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+    // Checking Balance after claiming fund, should be 0
+    expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(toWei('0'));
+  });
+
   describe('Emitted events', () => {
     it('Successfully emitted event when claiming fund', async () => {
       const eip712Data = {

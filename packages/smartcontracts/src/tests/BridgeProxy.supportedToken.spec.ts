@@ -55,7 +55,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
         proxyBridge
           .connect(defaultAdminSigner)
           .addSupportedTokens(ethers.constants.AddressZero, toWei('15'), getCurrentTimeStamp()),
-      ).to.be.revertedWithCustomError(proxyBridge, 'NON_ZERO_ADDRESS');
+      ).to.be.revertedWithCustomError(proxyBridge, 'ZERO_ADDRESS');
     });
   });
 

@@ -24,11 +24,6 @@ error INCORRECT_NONCE();
 error TOKEN_NOT_SUPPORTED();
 
 /** @notice @dev  
-/* This error occurs when token is not in supported list with `timeLeft` until the token is supported
-*/
-error TOKEN_NOT_SUPPORTED_YET(uint256 timeLeft);
-
-/** @notice @dev  
 /* This error occurs when fake signatures being used to claim fund
 */
 error FAKE_SIGNATURE();
@@ -46,7 +41,7 @@ error TOKEN_ALREADY_SUPPORTED();
 /** @notice @dev  
 /* This error occurs when using Zero address
 */
-error NON_ZERO_ADDRESS();
+error ZERO_ADDRESS();
 
 /** @notice @dev  
 /* This error occurs when the msg.sender doesn't have neither DEFAULT_ADMIN_ROLE or OPERATIONAL_ROLE assigned
@@ -64,9 +59,14 @@ error ONLY_SUPPORTED_TOKENS();
 error INVALID_RESET_EPOCH_TIME();
 
 /** @notice @dev 
+/* This error occurs when `_newResetTimeStamp` is before block.timestamp
+*/
+error EXPIRED_CLAIM();
+
+/** @notice @dev 
 /* This error occurs when `_amount` is zero
 */
-error INVALID_AMOUNT();
+error AMOUNT_CAN_NOT_BE_ZERO();
 
 contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     struct TokenAllowance {
@@ -165,13 +165,6 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     event TRANSACTION_FEE_CHANGED(uint256 oldTxFee, uint256 newTxFee);
 
-    /**
-     * @notice Emitted when withdrawal of ETHER only by the Admin account
-     * @param ownerAddress Owner's address requesting withdraw
-     * @param withdrawalAmount amount of respected token being withdrawn
-     */
-    event ETH_WITHDRAWAL_BY_OWNER(address ownerAddress, uint256 withdrawalAmount);
-
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     /**
@@ -218,7 +211,7 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     ) external {
         if (eoaAddressToNonce[_to] != _nonce) revert INCORRECT_NONCE();
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
-        if (block.timestamp > _deadline) revert INVALID_RESET_EPOCH_TIME();
+        if (block.timestamp > _deadline) revert EXPIRED_CLAIM();
         bytes32 struct_hash = keccak256(abi.encode(DATA_TYPE_HASH, _to, _amount, _nonce, _deadline, _tokenAddress));
         bytes32 msg_hash = _hashTypedDataV4(struct_hash);
         if (ECDSAUpgradeable.recover(msg_hash, signature) != relayerAddress) revert FAKE_SIGNATURE();
@@ -239,11 +232,10 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address _tokenAddress,
         uint256 _amount
     ) external {
-        if (_tokenAddress == address(0)) revert NON_ZERO_ADDRESS();
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
         uint256 tokenAllowanceStartTime = tokenAllowances[_tokenAddress].latestResetTimestamp;
         if (block.timestamp < tokenAllowanceStartTime) revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();
-        if (_amount == 0) revert INVALID_AMOUNT();
+        if (_amount == 0) revert AMOUNT_CAN_NOT_BE_ZERO();
         // Transaction is within the last tracked day's daily allowance
         if (tokenAllowances[_tokenAddress].latestResetTimestamp + (1 days) > block.timestamp) {
             tokenAllowances[_tokenAddress].currentDailyUsage += _amount;
@@ -274,7 +266,7 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 _startAllowanceTimeFrom
     ) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (_tokenAddress == address(0)) revert NON_ZERO_ADDRESS();
+        if (_tokenAddress == address(0)) revert ZERO_ADDRESS();
         if (supportedTokens[_tokenAddress]) revert TOKEN_ALREADY_SUPPORTED();
         // Token will be added on the supported list regardless of `_startAllowanceTimeFrom`
         supportedTokens[_tokenAddress] = true;
@@ -336,7 +328,7 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     function changeRelayerAddress(address _relayerAddress) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (_relayerAddress == address(0)) revert NON_ZERO_ADDRESS();
+        if (_relayerAddress == address(0)) revert ZERO_ADDRESS();
         address oldRelayerAddress = relayerAddress;
         relayerAddress = _relayerAddress;
         emit RELAYER_ADDRESS_CHANGED(oldRelayerAddress, _relayerAddress);

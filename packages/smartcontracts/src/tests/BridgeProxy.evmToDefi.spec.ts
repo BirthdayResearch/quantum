@@ -66,16 +66,7 @@ describe('EVM --> DeFiChain', () => {
       // This txn should fail. User sending 0 ERC20 along with ETHER. only checking the _amount not value
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 0),
-      ).to.be.revertedWithCustomError(proxyBridge, 'INVALID_AMOUNT');
-    });
-
-    it('Successfully revert if `_tokenAddress` is 0x0', async () => {
-      const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
-      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
-      // This txn should fail. User sending 0 ERC20 along with ETHER. only checking the _amount not value
-      await expect(
-        proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, ethers.constants.AddressZero, toWei('10')),
-      ).to.be.revertedWithCustomError(proxyBridge, 'NON_ZERO_ADDRESS');
+      ).to.be.revertedWithCustomError(proxyBridge, 'AMOUNT_CAN_NOT_BE_ZERO');
     });
 
     it('Successfully bridging after a day', async () => {
