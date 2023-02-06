@@ -1,25 +1,20 @@
 import { fromAddress } from '@defichain/jellyfish-address';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
-import { HardhatNetwork, HardhatNetworkContainer, StartedHardhatNetworkContainer } from 'smartcontracts';
 
-import { BridgeServerTestingApp } from '../../src/BridgeServerTestingApp';
-import { buildTestConfig, TestingExampleModule } from '../BridgeApp.i9n';
+import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
+import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 
 describe('DeFiChain Wallet Integration Testing', () => {
-  let startedHardhatContainer: StartedHardhatNetworkContainer;
-  let hardhatNetwork: HardhatNetwork;
   let testing: BridgeServerTestingApp;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
 
   beforeAll(async () => {
-    startedHardhatContainer = await new HardhatNetworkContainer().start();
-    hardhatNetwork = await startedHardhatContainer.ready();
-    testing = new BridgeServerTestingApp(TestingExampleModule.register(buildTestConfig({ startedHardhatContainer })));
+    testing = new BridgeServerTestingApp(TestingModule.register(buildTestConfig()));
     await testing.start();
   });
 
   afterAll(async () => {
-    await hardhatNetwork.stop();
+    await testing.stop();
   });
 
   it('should be able to generate a wallet address', async () => {

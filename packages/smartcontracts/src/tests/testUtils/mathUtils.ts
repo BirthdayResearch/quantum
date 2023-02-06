@@ -1,5 +1,4 @@
-import { BigNumber } from 'ethers';
-import { ethers } from 'hardhat';
+import { BigNumber, ethers } from 'ethers';
 
 export function toWei(amount: string): BigNumber {
   return ethers.utils.parseEther(amount);

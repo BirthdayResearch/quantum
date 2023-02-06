@@ -12,18 +12,26 @@ export function appConfig() {
         'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
     },
     ethereum: {
-      rpcUrl: process.env.ETHEREUM_RPC_URL || 'localhost:8545',
-    },
-    contract: {
-      bridgeProxy: {
-        mainnetAddress: undefined,
-        testnetAddress: '0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C',
+      testnet: {
+        rpcUrl: process.env.ETHEREUM_RPC_URL || 'localhost:8545',
+        contracts: {
+          bridgeProxy: {
+            address: '0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C',
+          },
+        },
+      },
+      mainnet: {
+        contracts: {
+          bridgeProxy: {
+            address: undefined,
+          },
+        },
       },
     },
   };
 }
 
-type DeepPartial<T> = T extends object
+export type DeepPartial<T> = T extends object
   ? {
       [P in keyof T]?: DeepPartial<T[P]>;
     }
