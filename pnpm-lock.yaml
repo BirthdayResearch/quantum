@@ -63,7 +63,7 @@ importers:
       '@nestjs/throttler': 3.1.0_dvs6bzzwlxted5pypaoawo6uwu
       '@prisma/client': 4.9.0_prisma@4.9.0
       '@waveshq/walletkit-core': 0.31.0
-      '@waveshq/walletkit-ui': 0.31.0_gljdq4hwyocaj6jsfgzmf5ezuq
+      '@waveshq/walletkit-ui': 0.31.0_tguzqxachodmnp2rbs3rf5v54q
       class-transformer: 0.5.1
       class-validator: 0.14.0
       ethers: 5.7.2
@@ -99,7 +99,7 @@ importers:
       '@babel/types': ^7.20.7
       '@cypress/code-coverage': ^3.10.0
       '@floating-ui/react-dom': ^1.2.2
-      '@headlessui/react': ^1.7.9
+      '@headlessui/react': ^1.7.10
       '@netlify/plugin-lighthouse': ^4.0.7
       '@netlify/plugin-nextjs': ^4.30.3
       '@tailwindcss/line-clamp': ^0.4.2
@@ -127,7 +127,7 @@ importers:
     dependencies:
       '@babel/types': 7.20.7
       '@floating-ui/react-dom': 1.2.2_biqbaboplfbrettd7655fr4n2y
-      '@headlessui/react': 1.7.9_biqbaboplfbrettd7655fr4n2y
+      '@headlessui/react': 1.7.10_biqbaboplfbrettd7655fr4n2y
       '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4
       '@waveshq/standard-web': 0.41.1_36tlnl7zn2mlavay4mq7vpwhry
       axios: 1.3.2
@@ -2467,8 +2467,8 @@ packages:
       '@hapi/hoek': 9.3.0
     dev: false
 
-  /@headlessui/react/1.7.9_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-Bobh/+mDciu8kEE2hvdukFYjbfaG4MEkK/6TjWOgqcODLKYpRhWPKPE+dCcCSz/YrwjFVrEAMOiWtfk6sW20/w==}
+  /@headlessui/react/1.7.10_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-1m66h/5eayTEZVT2PI13/2PG3EVC7a9XalmUtVSC8X76pcyKYMuyX1XAL2RUtCr8WhoMa/KrDEyoeU5v+kSQOw==}
     engines: {node: '>=10'}
     peerDependencies:
       react: ^16 || ^17 || ^18
@@ -5851,7 +5851,7 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web/0.39.0_l7fgptqldgy4skvpr6jujnff7m:
+  /@waveshq/standard-web/0.39.0_y7mckoxejuvxhjulzmjggad7eu:
     resolution: {integrity: sha512-InzVZrE6++BpiXFyJaotbQWT/46MQ8q/0TQl9jsdh9zmtVflfSHKeXuzFknbmUiB10G9Cdpt3LkYEG+/XFj6AQ==}
     dependencies:
       '@netlify/ipx': 1.3.3
@@ -5865,7 +5865,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.7.1_react@18.2.0
-      react-redux: 8.0.5_fxtgt6bjwd6p4cwoordejim2zi
+      react-redux: 8.0.5_sfvtgtw6zg4uu5uf4vg7hgzorm
       react-responsive: 9.0.2_react@18.2.0
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -5923,12 +5923,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui/0.31.0_gljdq4hwyocaj6jsfgzmf5ezuq:
+  /@waveshq/walletkit-ui/0.31.0_tguzqxachodmnp2rbs3rf5v54q:
     resolution: {integrity: sha512-e3IVy24RKg59SBR1KKdDJSco9dqlEUVRcMaJU+wqLYdnGEjRbh+z33ESvg5v0WL11i2li5DKesSX3hmoRwhIrg==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.3.8_t6kvw7oivodfaqkpitlovcpnu4
       '@waveshq/standard-defichain-jellyfishsdk': 0.39.0_@types+tar-fs@2.0.1
-      '@waveshq/standard-web': 0.39.0_l7fgptqldgy4skvpr6jujnff7m
+      '@waveshq/standard-web': 0.39.0_y7mckoxejuvxhjulzmjggad7eu
       '@waveshq/standard-web-linter': 0.39.0_oynzuyehvvdklxmolbaouwhgyy
       '@waveshq/walletkit-core': 0.31.0
       bignumber.js: 9.1.1
@@ -15053,39 +15053,6 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-redux/8.0.5_fxtgt6bjwd6p4cwoordejim2zi:
-    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
-    peerDependencies:
-      '@types/react': ^16.8 || ^17.0 || ^18.0
-      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-      react-native: '>=0.59'
-      redux: ^4
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      '@types/react-dom':
-        optional: true
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-      redux:
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.20.7
-      '@types/hoist-non-react-statics': 3.3.1
-      '@types/react': 18.0.27
-      '@types/react-dom': 18.0.10
-      '@types/use-sync-external-store': 0.0.3
-      hoist-non-react-statics: 3.3.2
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-is: 18.2.0
-      use-sync-external-store: 1.2.0_react@18.2.0
-    dev: false
-
   /react-redux/8.0.5_h5t5tebtdnuja5nsxmc56ookni:
     resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
     peerDependencies:
@@ -15117,6 +15084,40 @@ packages:
       react-dom: 18.2.0_react@18.2.0
       react-is: 18.2.0
       react-native: 0.70.6_ildacul6tjko7jf3wnaev3ii3q
+      redux: 4.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
+  /react-redux/8.0.5_sfvtgtw6zg4uu5uf4vg7hgzorm:
+    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
+    peerDependencies:
+      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+      react-native: '>=0.59'
+      redux: ^4
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.20.7
+      '@types/hoist-non-react-statics': 3.3.1
+      '@types/react': 18.0.27
+      '@types/react-dom': 18.0.10
+      '@types/use-sync-external-store': 0.0.3
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-is: 18.2.0
       redux: 4.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
