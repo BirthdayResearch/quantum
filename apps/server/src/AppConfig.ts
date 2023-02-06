@@ -1,7 +1,10 @@
 import * as Joi from 'joi';
 
+export const DATABASE_URL = 'DATABASE_URL';
+
 export function appConfig() {
   return {
+    [DATABASE_URL]: process.env[DATABASE_URL],
     defichain: {
       mainnet: process.env.DEFICHAIN_MAINNET_KEY,
       regtest:
@@ -31,4 +34,5 @@ export const ENV_VALIDATION_SCHEMA = Joi.object({
   ETHEREUM_RPC_URL: Joi.string().ip(),
   DEFICHAIN_MAINNET_KEY: Joi.string(),
   DEFICHAIN_REGTEST_KEY: Joi.string(),
+  [DATABASE_URL]: Joi.string().required(),
 });

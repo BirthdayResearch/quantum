@@ -1,4 +1,5 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { BigNumber, Event } from 'ethers';
 
 import { AppService } from './AppService';
@@ -18,7 +19,17 @@ export class AppController {
   }
 
   @Get('getAllEventsFromBlockNumber')
-  async getAllEventsFromBlockNumber(@Query('blockNumber') blockNumber: number): Promise<Event[]> {
-    return this.appService.getAllEventsFromBlockNumber(Number(blockNumber));
+  async getAllEventsFromBlockNumber(): Promise<Event[]> {
+    return this.appService.getAllEventsFromBlockNumber();
+  }
+
+  @Post('initDatabase')
+  async initDatabase(@Body() body: Prisma.blockNumberCreateManyInput): Promise<Prisma.BatchPayload> {
+    return this.appService.initDatabase(body);
+  }
+
+  @Delete('initDatabase')
+  async deleteDatabase(): Promise<Prisma.BatchPayload> {
+    return this.appService.deleteDatabase();
   }
 }
