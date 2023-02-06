@@ -150,4 +150,18 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
         .withArgs(testToken.address);
     });
   });
+
+  it('`_startAllowanceTimeFrom` set to 00.00', async () => {
+    const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+    await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), 0);
+    // Minting test token to defaultAdminSigner
+    await testToken.mint(defaultAdminSigner.address, toWei('100'));
+    // Approving proxy address
+    await testToken.approve(proxyBridge.address, ethers.constants.MaxUint256);
+    expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(0);
+    // Bridging 10 test tokens
+    await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'));
+    // After bridging new `latestResetTimestamp` will set to 08:00:00 GMT+0800 for the respected date
+    console.log((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp);
+  });
 });
