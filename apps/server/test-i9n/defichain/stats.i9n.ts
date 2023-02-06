@@ -1,29 +1,28 @@
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
-import { HardhatNetwork, HardhatNetworkContainer, StartedHardhatNetworkContainer } from 'smartcontracts';
 
 import { BridgeServerTestingApp } from '../../src/BridgeServerTestingApp';
 import { buildTestConfig, TestingExampleModule } from '../BridgeApp.i9n';
+import {DeFiChainContainer} from "./DeFiChainContainer";
 
+let defichain: DeFiChainContainer;
 describe('DeFiChain Wallet Integration Testing', () => {
-  let startedHardhatContainer: StartedHardhatNetworkContainer;
-  let hardhatNetwork: HardhatNetwork;
   let testing: BridgeServerTestingApp;
 
   beforeAll(async () => {
-    startedHardhatContainer = await new HardhatNetworkContainer().start();
-    hardhatNetwork = await startedHardhatContainer.ready();
-    testing = new BridgeServerTestingApp(TestingExampleModule.register(buildTestConfig({ startedHardhatContainer })));
+    defichain = await new DeFiChainContainer();
+    const localWhaleURL = await defichain.start();
+    testing = new BridgeServerTestingApp(TestingExampleModule.register(buildTestConfig({ localWhaleURL })));
     await testing.start();
   });
 
   afterAll(async () => {
-    await hardhatNetwork.stop();
+    await defichain.stop();
   });
 
   it('should be able to make calls to DeFiChain server', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `/defichain/stats?network=${EnvironmentNetwork.RemotePlayground}`,
+      url: `/defichain/stats?network=${EnvironmentNetwork.LocalPlayground}`,
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);

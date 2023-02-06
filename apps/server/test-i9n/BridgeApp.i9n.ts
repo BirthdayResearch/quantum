@@ -15,6 +15,7 @@ import {
 import { AppConfig } from '../src/AppConfig';
 import { AppModule } from '../src/AppModule';
 import { BridgeServerTestingApp } from '../src/BridgeServerTestingApp';
+import {EnvironmentNetwork} from "@waveshq/walletkit-core";
 
 @Module({})
 export class TestingExampleModule {
@@ -28,27 +29,32 @@ export class TestingExampleModule {
 
 export function buildTestConfig({
   startedHardhatContainer,
-  contractAddress,
+  contractAddress, localWhaleURL, localDefichainKey
 }: {
-  startedHardhatContainer: StartedHardhatNetworkContainer;
+  startedHardhatContainer?: StartedHardhatNetworkContainer;
   contractAddress?: string;
+  localWhaleURL?: string;
+  localDefichainKey?: string;
 }) {
+  const config = {
+    ethereum: {
+      rpcUrl: startedHardhatContainer?.rpcUrl ?? 'localhost:8545',
+    },
+    defichain: {
+      localWhaleURL,
+      [EnvironmentNetwork.LocalPlayground]: localDefichainKey
+    }
+  }
   return contractAddress
     ? {
-        ethereum: {
-          rpcUrl: startedHardhatContainer.rpcUrl,
-        },
+        ...config,
         contract: {
           bridgeProxy: {
             testnetAddress: contractAddress,
           },
         },
       }
-    : {
-        ethereum: {
-          rpcUrl: startedHardhatContainer.rpcUrl,
-        },
-      };
+    : config;
 }
 
 describe('Bridge Service Integration Tests', () => {

@@ -6,10 +6,10 @@ export function appConfig() {
     defichain: {
       [EnvironmentNetwork.MainNet]: process.env.DEFICHAIN_MAINNET_KEY,
       [EnvironmentNetwork.RemotePlayground]:
-        process.env.DEFICHAIN_REGTEST_KEY ||
-        'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
+        process.env.DEFICHAIN_REGTEST_KEY,
       [EnvironmentNetwork.LocalPlayground]:
         'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
+      localWhaleURL: 'http://localhost:19553'
     },
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL || 'localhost:8545',
