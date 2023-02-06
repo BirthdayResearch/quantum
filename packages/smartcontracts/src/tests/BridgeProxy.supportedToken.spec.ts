@@ -153,15 +153,29 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
 
   it('`_startAllowanceTimeFrom` set to 00.00', async () => {
     const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+    // If the admin sets `_startAllowanceTimeFrom` to 00:00 when adding a supported token, the token will be immediately supported.
+    // Upon bridging the token for the first time, `latestResetTimestamp` will be reset to 08:00:00 SGT (GMT+0800) for the day
     await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), 0);
     // Minting test token to defaultAdminSigner
     await testToken.mint(defaultAdminSigner.address, toWei('100'));
     // Approving proxy address
     await testToken.approve(proxyBridge.address, ethers.constants.MaxUint256);
+    // `latestResetTimestamp` should be 0
     expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(0);
+    // `dailyAllowance` should be 15
+    expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance).to.equal(toWei('15'));
     // Bridging 10 test tokens
     await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'));
+    // Getting 08:00:00 GMT+0800 (SGT) for the day
+    const date = new Date();
+    date.setUTCHours(0);
+    date.setUTCMinutes(0);
+    date.setUTCSeconds(0);
+    date.setUTCMilliseconds(0);
+    const sgtTimeZoneSeconds = date.getTime() / 1000;
+    // current daily usage should be 10 test tokens. Users should not be able to bridge more than dailyAllowance(15) in a day
+    expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(toWei('10'));
     // After bridging new `latestResetTimestamp` will set to 08:00:00 GMT+0800 for the respected date
-    console.log((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp);
+    expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(sgtTimeZoneSeconds);
   });
 });

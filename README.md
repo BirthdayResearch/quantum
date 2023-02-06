@@ -48,6 +48,8 @@ Once approved, user will call the `bridgeToDeFiChain()` function with following 
 Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for an ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
 User are not allowed to bridge more than the dailyAllowance per day.
 
+If the admin sets `_startAllowanceTimeFrom` to 00:00 when adding a supported token, the token will be immediately supported. Upon bridging the token for the first time, `latestResetTimestamp` will be reset to 08:00:00 SGT (GMT+0800) for the day.
+
 ### Remove supported token
 
 Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function.
