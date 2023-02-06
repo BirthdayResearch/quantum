@@ -25,4 +25,5 @@ model PathIndex {
   createdAt     DateTime @default(now())
 
   @@unique([index, network])
+  @@unique([address, network])
 }
