@@ -38,6 +38,7 @@ export default function EnvironmentNetworkSwitch({
 
   return (
     <button
+      data-testid="network-env-switch"
       type="button"
       className={clsx(
         "flex items-center rounded-[37px] dark-section-bg border border-dark-card-stroke px-2 py-1 ml-2 hover:dark-btn-hover hover:border-dark-500",

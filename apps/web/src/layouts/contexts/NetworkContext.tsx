@@ -6,7 +6,7 @@ import React, {
   PropsWithChildren,
   useEffect,
 } from "react";
-import { Network, NetworkOptionsI, TokensI } from "types";
+import { Erc20Token, Network, NetworkOptionsI, TokensI } from "types";
 
 interface NetworkContextI {
   selectedNetworkA: NetworkOptionsI;
@@ -20,10 +20,27 @@ interface NetworkContextI {
   resetNetworkSelection: () => void;
 }
 
-export const networks = [
+interface TokenDetailI<T> {
+  name: T;
+  symbol: string;
+  icon: string;
+  supply: string;
+}
+
+interface NetworkI<T> {
+  name: Network;
+  icon: string;
+  tokens: {
+    tokenA: TokenDetailI<T>;
+    tokenB: TokenDetailI<string>;
+  }[];
+}
+
+export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
   {
     name: Network.Ethereum,
     icon: "/tokens/Ethereum.svg",
+    // 4 available tokens to mint from as of now
     tokens: [
       {
         tokenA: {

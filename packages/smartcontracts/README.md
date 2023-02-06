@@ -2,15 +2,22 @@
 
 A package which contains the Ethereum smart contracts for the DeFiChain to Ethereum bridge.
 
-## Setting up local environment
+## Deployed Smart Contracts on development testnet (http://127.0.0.1:8545/)
 
-This section outlines how to get started on integrating with the smart contracts for the Bridge on your dApp.
-There are many different ways, but this is the simplest and fastest method.
+Before running the below script, devs need to run a local hardhat node. This can be achieve by running `nx hardhat node` in the package/smartcontracts/src directory.
 
-1. In your terminal, run `npx hardhat --config ./src/hardhat.config.ts node` from this package's directory
-   - This runs a new Hardhat node locally, listening on `http://127.0.0.1:8545`
-2. In another terminal, run `npx hardhat --config ./src/hardhat.config.ts --network localhost setupLocalTestnet`
-   - This will deploy the smart contracts to the local Hardhat node that you have started
-   - This command will also log out the different contract addresses, and the minted tokens
+If local node is running on different port other than `8545`. Devs need to update the port in `./src/hardhat.config.ts` under development network.
 
-You're done! Your dApp can now interact with the smart contracts on the local Hardhat node.
+Then, to deploy the Smart Contracts and mint test tokens on local testnet, devs can run the command `npx hardhat run --network development ./scripts/localContractsDeployment.ts` in the package/smartcontracts/src directory.
+
+This script will deploy all needed contracts. Will mint `100,000` MUSDC and MUSDT token to the user(in this case, accounts[0]).This will also approve the Bridge contract and add test tokens as supported tokens for bridging with maximum daily allowance.
+
+Following addresses will be the admin, operational roles and relayer address.
+
+Admin == accounts[0],
+
+Operational == accounts[1],
+
+Relayer address == accounts[0]
+
+Devs can change these addresses as per their requirements in `../scripts/localContractsDeployment.ts` file.

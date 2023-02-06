@@ -20,6 +20,7 @@ interface Props {
   addressInput: string;
   onAddressInputChange: (address: string) => void;
   onAddressInputError: (hasError: boolean) => void;
+  isPrimary?: boolean;
 }
 
 /**
@@ -30,19 +31,22 @@ interface Props {
 function AddressWithVerifiedBadge({
   value,
   onClick,
+  isPrimary,
 }: {
   value: string;
   onClick: () => void;
+  isPrimary: boolean;
 }): JSX.Element {
   const { isLg } = useResponsive();
   return (
     <div
       role="button"
       className={clsx(
-        "relative mr-10 w-full break-all bg-transparent text-sm text-dark-1000 after:absolute focus:outline-none lg:text-xl",
+        "relative mr-10 w-full break-all bg-transparent  text-dark-1000 after:absolute focus:outline-none",
         isLg
           ? "after:-bottom-1 after:ml-2 after:content-[url('/verified-24x24.svg')]"
-          : "after:ml-1 after:content-[url('/verified-20x20.svg')]"
+          : "after:ml-1 after:content-[url('/verified-20x20.svg')]",
+        isPrimary ? "text-sm lg:text-xl" : "text-sm"
       )}
       onClick={() => onClick()}
       onKeyDown={() => {}}
@@ -61,6 +65,7 @@ export default function WalletAddressInput({
   addressInput,
   onAddressInputChange,
   onAddressInputError,
+  isPrimary = true,
 }: Props): JSX.Element {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -158,11 +163,17 @@ export default function WalletAddressInput({
   return (
     <>
       {/* Address label */}
-      <div className="h-5 lg:h-7 group relative mb-2 flex items-center lg:mb-3">
+      <div
+        className={clsx({
+          "md:h-5 lg:h-7 group relative mb-2 flex items-center lg:mb-3":
+            isPrimary,
+        })}
+      >
         <span className="pl-5 text-xs font-semibold xl:tracking-wider lg:text-base text-dark-900">
           {label}
         </span>
-        {blockchain === Network.DeFiChain && (
+        {/*  Network environment */}
+        {blockchain === Network.DeFiChain && isPrimary && (
           <EnvironmentNetworkSwitch onChange={() => onAddressInputChange("")} />
         )}
         <div
@@ -178,7 +189,7 @@ export default function WalletAddressInput({
       {/* Main wallet input container */}
       <div
         className={clsx(
-          "relative flex min-h-[48px] items-center rounded-lg border py-2.5 pr-3.5 pl-4 lg:px-5 lg:py-[21px]",
+          "relative flex min-h-[48px] items-center rounded-lg border py-2.5 pr-3.5 pl-4",
           {
             "bg-dark-100 opacity-30": disabled,
             "border-error": showErrorBorder,
@@ -190,42 +201,50 @@ export default function WalletAddressInput({
               isFocused
             ),
             "pointer-events-none": readOnly,
+            "lg:px-5 lg:py-[21px]": isPrimary,
           }
         )}
       >
         {/* Paste icon with tooltip */}
-        <Tooltip
-          content="Paste from clipboard"
-          containerClass={clsx("mr-3 lg:mr-6 shrink-0", {
-            "cursor-pointer hover:bg-dark-200 active:dark-btn-pressed":
-              !disabled,
-          })}
-          disableTooltip={disabled || isMobile} // Disable tooltip for mobile
-        >
-          <FiClipboard
-            size={20}
-            className="text-dark-1000"
-            onMouseDown={handlePasteBtnClick}
-          />
-        </Tooltip>
+        {isPrimary && (
+          <Tooltip
+            content="Paste from clipboard"
+            containerClass={clsx("mr-3 lg:mr-6 shrink-0", {
+              "cursor-pointer hover:bg-dark-200 active:dark-btn-pressed":
+                !disabled,
+            })}
+            disableTooltip={disabled || isMobile} // Disable tooltip for mobile
+          >
+            <FiClipboard
+              size={20}
+              className="text-dark-1000"
+              onMouseDown={handlePasteBtnClick}
+            />
+          </Tooltip>
+        )}
 
         {/* Copy of textarea */}
         {showVerifiedBadge && (
           <AddressWithVerifiedBadge
             value={addressInput}
             onClick={handleFocusWithCursor}
+            isPrimary={isPrimary}
           />
         )}
 
         {/* Textarea input */}
         <textarea
+          data-testid="receiver-address"
           ref={textAreaRef}
           className={clsx(
-            `w-full max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm focus:outline-none lg:text-xl lg:placeholder:text-xl`,
+            `w-full max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 focus:outline-none`,
             { hidden: showVerifiedBadge },
             isFocused
               ? "placeholder:text-dark-300"
-              : "placeholder:text-dark-500"
+              : "placeholder:text-dark-500",
+            isPrimary
+              ? "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm lg:text-xl lg:placeholder:text-xl"
+              : "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm"
           )}
           placeholder={placeholder}
           value={addressInput}

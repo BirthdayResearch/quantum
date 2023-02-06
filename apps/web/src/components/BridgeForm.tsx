@@ -15,6 +15,8 @@ import {
   NetworkName,
   UnconfirmedTxnI,
 } from "types";
+import { useWhaleApiClient } from "@waveshq/walletkit-ui/dist/contexts";
+import Logging from "@api/logging";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
@@ -22,11 +24,17 @@ import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
+import { useContractContext } from "@contexts/ContractContext";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import DailyLimit from "./DailyLimit";
 import ConfirmTransferModal from "./ConfirmTransferModal";
-import { FEES_INFO, STORAGE_DFC_ADDR_KEY, STORAGE_TXN_KEY } from "../constants";
+import {
+  ETHEREUM_SYMBOL,
+  FEES_INFO,
+  STORAGE_DFC_ADDR_KEY,
+  STORAGE_TXN_KEY,
+} from "../constants";
 
 function SwitchButton({
   onClick,
@@ -80,8 +88,20 @@ export default function BridgeForm() {
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
 
+  const client = useWhaleApiClient();
+  const [fee, setFee] = useState<BigNumber>(new BigNumber(0.0001));
+
   const { address, isConnected } = useAccount();
-  const { data } = useBalance({ address });
+  const contractConfig = useContractContext();
+  const sendingFromETH = selectedTokensA.tokenA.name === ETHEREUM_SYMBOL;
+  const { data } = useBalance({
+    address,
+    watch: true,
+    ...(!sendingFromETH && {
+      token: contractConfig.Erc20Tokens[selectedTokensA.tokenA.name],
+    }),
+  });
+
   const maxAmount = new BigNumber(data?.formatted ?? 0);
   const [fromAddress, setFromAddress] = useState<string>(address || "");
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
@@ -93,18 +113,21 @@ export default function BridgeForm() {
     setSelectedNetworkA(selectedNetworkB);
   };
 
+  const validateAmountInput = (value: string) => {
+    const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
+    let err = "";
+    if (isSendingToDFC && new BigNumber(value).gt(maxAmount)) {
+      err = "Insufficient Funds";
+    }
+    setAmountErr(err);
+  };
+
   const onInputChange = (value: string): void => {
     // regex to allow only number
     const re = /^\d*\.?\d*$/;
     if (value === "" || re.test(value)) {
       setAmount(value);
-
-      const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
-      let err = "";
-      if (isSendingToDFC && new BigNumber(value).gt(maxAmount)) {
-        err = "Insufficient Funds";
-      }
-      setAmountErr(err);
+      validateAmountInput(value);
     }
   };
 
@@ -147,6 +170,20 @@ export default function BridgeForm() {
         return "Connect wallet";
     }
   };
+
+  useEffect(() => {
+    client.fee
+      .estimate()
+      .then((f) => setFee(new BigNumber(f)))
+      .catch(Logging.error);
+  }, []);
+
+  useEffect(() => {
+    if (amount) {
+      // Revalidate entered amount when selected token is changed
+      validateAmountInput(amount);
+    }
+  }, [maxAmount]);
 
   useEffect(() => {
     const localData = getStorageItem<UnconfirmedTxnI>(TXN_KEY);
@@ -323,10 +360,9 @@ export default function BridgeForm() {
         </div>
         <NumericFormat
           className="text-left text-xs text-dark-1000 lg:text-base"
-          value={0}
-          decimalScale={2}
+          value={fee}
           thousandSeparator
-          suffix=" DFI" // TODO: Create hook to get fee based on source/destination
+          suffix=" DFI"
         />
       </div>
       <div className="block md:hidden px-5 mt-4">
@@ -336,6 +372,7 @@ export default function BridgeForm() {
         <ConnectKitButton.Custom>
           {({ show }) => (
             <ActionButton
+              testId="transfer-btn"
               label={getActionBtnLabel()}
               disabled={isConnected && !isFormValid}
               onClick={!isConnected ? show : () => onTransferTokens()}

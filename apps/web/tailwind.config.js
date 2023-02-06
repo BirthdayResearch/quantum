@@ -48,6 +48,7 @@ module.exports = {
       },
       brand: {
         100: "#FF00AF",
+        200: "#1530CC",
       },
       primary: {
         50: "#E8DEFF",

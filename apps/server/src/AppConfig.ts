@@ -1,3 +1,4 @@
+import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import * as Joi from 'joi';
 
 export const DATABASE_URL = 'DATABASE_URL';
@@ -6,9 +7,11 @@ export function appConfig() {
   return {
     [DATABASE_URL]: process.env[DATABASE_URL],
     defichain: {
-      mainnet: process.env.DEFICHAIN_MAINNET_KEY,
-      regtest:
+      [EnvironmentNetwork.MainNet]: process.env.DEFICHAIN_MAINNET_KEY,
+      [EnvironmentNetwork.RemotePlayground]:
         process.env.DEFICHAIN_REGTEST_KEY ||
+        'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
+      [EnvironmentNetwork.LocalPlayground]:
         'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
     },
     ethereum: {

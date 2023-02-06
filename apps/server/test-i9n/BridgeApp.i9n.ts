@@ -232,6 +232,108 @@ describe('Bridge Service Integration Tests', () => {
     await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
   });
 
+  it('Returns an array of confirmed events from a given block number', async () => {
+    // Step 1: starting block should be 1003 (after initializations)
+    let currBlock = await testing.inject({
+      method: 'GET',
+      url: '/app/blockheight',
+    });
+    await expect(currBlock.body).toStrictEqual('1003');
+
+    // Step 2: Call addSupportedTokens function and mine the block (block 1004)
+    await bridgeUpgradeable
+      .connect(defaultAdminSigner)
+      .addSupportedTokens(ethers.constants.AddressZero, ethers.utils.parseEther('10'), Math.floor(Date.now() / 1000));
+    await hardhatNetwork.generate(1);
+
+    // Step 3: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block (block 1005)
+    await bridgeUpgradeable.bridgeToDeFiChain(
+      ethers.constants.AddressZero,
+      ethers.constants.AddressZero,
+      ethers.utils.parseEther('5'),
+      {
+        value: ethers.utils.parseEther('3'),
+      },
+    );
+    await hardhatNetwork.generate(1);
+
+    // step 4: currBlock should now be 1005
+    currBlock = await testing.inject({
+      method: 'GET',
+      url: '/app/blockheight',
+    });
+    await expect(currBlock.body).toStrictEqual('1005');
+
+    // step 5: calling my service should return a empty array (because it is not confirmed)
+    let eventsArray = await testing.inject({
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
+    });
+    await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
+
+    // step 6: generate 65 blocks (to simulate confirmation)
+    await hardhatNetwork.generate(65);
+
+    // step 7: calling my service should return a array of length 1
+    eventsArray = await testing.inject({
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
+    });
+    await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
+
+    // Step 8: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) a second time and mine it (block 1071)
+    await bridgeUpgradeable.bridgeToDeFiChain(
+      ethers.constants.AddressZero,
+      ethers.constants.AddressZero,
+      ethers.utils.parseEther('5'),
+      {
+        value: ethers.utils.parseEther('3'),
+      },
+    );
+    await hardhatNetwork.generate(1);
+
+    // Step 10: generate 30 blocks (block 1101)
+    await hardhatNetwork.generate(30);
+
+    // step 11: current block should be block 1101
+    currBlock = await testing.inject({
+      method: 'GET',
+      url: '/app/blockheight',
+    });
+    await expect(currBlock.body).toStrictEqual('1101');
+
+    // Step 12: getAllEventsFromBlockNumber where blockNumber=1005 should return array of events of length 1
+    eventsArray = await testing.inject({
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
+    });
+    await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
+
+    // Step 13: Generate another 35 blocks to achieve confirmation for second event
+    await hardhatNetwork.generate(35);
+
+    // Step 14: getAllEventsFromBlockNumber where blockNumber=1005 should return array of events of length 2 now
+    eventsArray = await testing.inject({
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
+    });
+    await expect(JSON.parse(eventsArray.body)).toHaveLength(2);
+
+    // Step 15: getAllEventsFromBlockNumber where blockNumber=1071 should return array of events of length 1
+    eventsArray = await testing.inject({
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1071`,
+    });
+    await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
+
+    // Step 16: getAllEventsFromBlockNumber where blockNumber=1072 should return array of events of length 0
+    eventsArray = await testing.inject({
+      method: 'GET',
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=1072`,
+    });
+    await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
+  });
+
   it('should be able to make calls to the underlying hardhat node', async () => {
     // Given an initial block height of 1136 (due to the initial block generation when calling HardhatNetwork.ready() + getAllEventsFromBlockNumber tests)
     const initialResponse = await testing.inject({
