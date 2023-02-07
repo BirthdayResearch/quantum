@@ -39,7 +39,7 @@
     ]
   },
   "jest": {
-    "displayName": "test:smartcontracts",
+    "displayName": "test:hardhat",
     "preset": "@birthdayresearch/sticky-turbo-jest",
     "reporters": [
       "default"

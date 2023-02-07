@@ -56,7 +56,13 @@
     },
     "test:i9n": {
       "inputs": ["src/**", "tests-i9n/**"],
-      "dependsOn": ["^build", "generate:client", "generate:schema"]
+      "dependsOn": [
+        "^build",
+        "^build:docker",
+        "build:docker",
+        "generate:client",
+        "generate:schema"
+      ]
     },
     "test:e2e": {
       "inputs": ["src/**", "tests-e2e/**"],
