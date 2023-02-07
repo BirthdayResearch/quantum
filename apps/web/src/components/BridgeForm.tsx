@@ -25,15 +25,16 @@ import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
+import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
+import { useGetAddressDetailMutation } from "@store/website";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import DailyLimit from "./DailyLimit";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
+  DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
   ETHEREUM_SYMBOL,
   FEES_INFO,
-  STORAGE_DFC_ADDR_KEY,
-  STORAGE_TXN_KEY,
 } from "../constants";
 
 function SwitchButton({
@@ -79,6 +80,7 @@ export default function BridgeForm() {
     setSelectedTokensB,
     resetNetworkSelection,
   } = useNetworkContext();
+
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
 
@@ -106,8 +108,10 @@ export default function BridgeForm() {
   const [fromAddress, setFromAddress] = useState<string>(address || "");
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
 
-  // Local storage txn key grouped by network
-  const TXN_KEY = `${networkEnv}.${STORAGE_TXN_KEY}`;
+  const [getAddressDetail] = useGetAddressDetailMutation();
+  const [initialRefundAddress, setInitialRefundAddress] = useState<string>("");
+
+  const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
 
   const switchNetwork = () => {
     setSelectedNetworkA(selectedNetworkB);
@@ -151,7 +155,7 @@ export default function BridgeForm() {
 
   const onResetTransferForm = () => {
     setStorageItem(TXN_KEY, null);
-    setStorageItem(STORAGE_DFC_ADDR_KEY, null);
+    setStorageItem(DFC_ADDR_KEY, null);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
@@ -200,6 +204,27 @@ export default function BridgeForm() {
       updateNetworkEnv(localData.networkEnv);
     } else {
       setHasUnconfirmedTxn(false);
+    }
+  }, [networkEnv]);
+
+  useEffect(() => {
+    // fetch address detail
+    const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
+    if (localDfcAddress) {
+      getAddressDetail({ address: localDfcAddress, network: networkEnv })
+        .unwrap()
+        .then((res) => {
+          setInitialRefundAddress(res.refundAddress);
+          const createdDate = new Date(res.createdAt);
+          const diff = new Date().getTime() - createdDate.getTime();
+          if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
+            setStorageItem(TXN_KEY, null);
+            setStorageItem(DFC_ADDR_KEY, null);
+          }
+        })
+        .catch(() => {
+          setInitialRefundAddress("");
+        });
     }
   }, [networkEnv]);
 
@@ -391,6 +416,7 @@ export default function BridgeForm() {
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
+        initialRefundAddress={initialRefundAddress}
         onClose={() => setShowConfirmModal(false)}
         amount={amount}
         fromAddress={fromAddress}

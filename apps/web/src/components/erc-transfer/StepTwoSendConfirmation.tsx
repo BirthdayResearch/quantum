@@ -12,8 +12,8 @@ import { useGenerateAddressMutation } from "@store/website";
 import AddressError from "@components/commons/AddressError";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { HttpStatusCode } from "axios";
+import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
 import TimeLimitCounter from "./TimeLimitCounter";
-import { STORAGE_DFC_ADDR_KEY } from "../../constants";
 
 function debounce(func, wait) {
   let timeout;
@@ -68,14 +68,17 @@ function SuccessCopy({
 
 export default function StepTwoSendConfirmation({
   goToNextStep,
+  refundAddress,
 }: {
   goToNextStep: () => void;
+  refundAddress: string;
 }) {
   const [dfcUniqueAddress, setDfcUniqueAddress] = useState<string>("");
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const [hasTimeElapsed, setHasTimeElapsed] = useState(false);
-
   const { networkEnv } = useNetworkEnvironmentContext();
+  const { DFC_ADDR_KEY } = useBridgeFormStorageKeys();
+
   const [throttleError, setThrottleError] = useState("");
   const [generateAddress] = useGenerateAddressMutation();
   const { isMobile } = useResponsive();
@@ -93,14 +96,14 @@ export default function StepTwoSendConfirmation({
 
   const generateDfcUniqueAddress = useCallback(
     debounce(async () => {
-      const localDfcAddress = getStorageItem<string>(STORAGE_DFC_ADDR_KEY);
+      const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
       if (localDfcAddress) {
         setDfcUniqueAddress(localDfcAddress);
       } else {
-        generateAddress({ network: networkEnv })
+        generateAddress({ network: networkEnv, refundAddress })
           .unwrap()
           .then((data) => {
-            setStorageItem<string>(STORAGE_DFC_ADDR_KEY, data.address);
+            setStorageItem<string>(DFC_ADDR_KEY, data.address);
             setDfcUniqueAddress(data.address);
             setThrottleError("");
           })

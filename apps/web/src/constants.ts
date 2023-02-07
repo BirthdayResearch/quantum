@@ -39,6 +39,8 @@ export const DISCLAIMER_MESSAGE =
 // export const DFC_TO_ERC_TIME_LIMIT = 1800; // 30 mins
 export const DFC_TO_ERC_TIME_LIMIT = 10; // TODO: Remove this 10 sec, for testing purposes only
 
+export const DFC_TO_ERC_RESET_FORM_TIME_LIMIT = 1000;
+
 export const STORAGE_TXN_KEY = "unconfirmed-txn";
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
 

@@ -16,7 +16,6 @@ import Modal from "@components/commons/Modal";
 import NumericFormat from "@components/commons/NumericFormat";
 import BrLogoIcon from "@components/icons/BrLogoIcon";
 import DeFiChainToERC20Transfer from "@components/erc-transfer/DeFiChainToERC20Transfer";
-
 import { ethers, utils } from "ethers";
 import {
   useContractWrite,
@@ -24,14 +23,13 @@ import {
   useWaitForTransaction,
 } from "wagmi";
 import { useContractContext } from "@contexts/ContractContext";
-import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { setStorageItem } from "@utils/localStorage";
+import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
 import {
   CONSORTIUM_INFO,
   DISCLAIMER_MESSAGE,
   ETHEREUM_SYMBOL,
   FEES_INFO,
-  STORAGE_TXN_KEY,
 } from "../constants";
 import BridgeV1Abi from "../config/BridgeV1Abi.json";
 import ErrorModal from "./commons/ErrorModal";
@@ -143,9 +141,9 @@ function ERC20ToDeFiChainTransfer({ data }: { data: TransferData }) {
 
   const router = useRouter();
   const { isMobile } = useResponsive();
-  const { networkEnv } = useNetworkEnvironmentContext();
   const contractConfig = useContractContext();
   const sendingFromETH = data.from.tokenName === ETHEREUM_SYMBOL;
+  const { TXN_KEY } = useBridgeFormStorageKeys();
 
   const { config } = usePrepareContractWrite({
     address: contractConfig.BridgeProxyContractAddress,
@@ -174,7 +172,6 @@ function ERC20ToDeFiChainTransfer({ data }: { data: TransferData }) {
 
   useEffect(() => {
     if (isSuccess) {
-      const TXN_KEY = `${networkEnv}.${STORAGE_TXN_KEY}`;
       setStorageItem(TXN_KEY, null);
     }
   }, [isSuccess]);
@@ -248,12 +245,14 @@ export default function ConfirmTransferModal({
   amount,
   fromAddress,
   toAddress,
+  initialRefundAddress,
 }: {
   show: boolean;
   onClose: () => void;
   amount: string;
   fromAddress: string;
   toAddress: string;
+  initialRefundAddress: string;
 }) {
   const {
     selectedNetworkA,
@@ -349,7 +348,7 @@ export default function ConfirmTransferModal({
       {isSendingToDFC ? (
         <ERC20ToDeFiChainTransfer data={data} />
       ) : (
-        <DeFiChainToERC20Transfer />
+        <DeFiChainToERC20Transfer initialRefundAddress={initialRefundAddress} />
       )}
     </Modal>
   );

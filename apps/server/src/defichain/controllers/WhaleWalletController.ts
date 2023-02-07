@@ -1,4 +1,4 @@
-import { Controller, Get, Param,Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { Network } from '@prisma/client';
 
