@@ -7,9 +7,9 @@ import { DeFiChainStubContainer } from './DeFiChainStubContainer';
 let defichain: DeFiChainStubContainer;
 let testing: BridgeServerTestingApp;
 describe('DeFiChain Stats Testing', () => {
+  // Tests are slower because it's running 3 containers at the same time
+  jest.setTimeout(3600000);
   beforeAll(async () => {
-    // Tests are slower because it's running 3 containers at the same time
-    jest.setTimeout(3600000);
     defichain = await new DeFiChainStubContainer();
     const localWhaleURL = await defichain.start();
     testing = new BridgeServerTestingApp(

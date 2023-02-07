@@ -12,6 +12,8 @@ let defichain: DeFiChainStubContainer;
 let testing: BridgeServerTestingApp;
 
 describe('DeFiChain Send Transaction Testing', () => {
+  // Tests are slower because it's running 3 containers at the same time
+  jest.setTimeout(3600000);
   let whaleWalletProvider: WhaleWalletProvider;
   let sendService: SendService;
   let fromWallet: string;
@@ -19,8 +21,6 @@ describe('DeFiChain Send Transaction Testing', () => {
   const toAddress = 'bcrt1q8rfsfny80jx78cmk4rsa069e2ckp6rn83u6ut9';
 
   beforeAll(async () => {
-    // Tests are slower because it's running 3 containers at the same time
-    jest.setTimeout(3600000);
     defichain = await new DeFiChainStubContainer();
     const localWhaleURL = await defichain.start();
     const dynamicModule = TestingModule.register(
