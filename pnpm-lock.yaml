@@ -13,7 +13,7 @@ importers:
     devDependencies:
       '@birthdayresearch/sticky-turbo': 0.3.8
       husky: 8.0.3
-      lint-staged: 13.1.0
+      lint-staged: 13.1.1
 
   apps/server:
     specifiers:
@@ -1543,7 +1543,7 @@ packages:
     resolution: {integrity: sha512-0kGVrgqbHIALjqyYOCALT39v3scoYObkioZwgu9NtkIMReWk6DNycfgNxKl6pIQriGH6f0oTrUQTkZgRLka10Q==}
     dependencies:
       husky: 8.0.3
-      lint-staged: 13.1.0
+      lint-staged: 13.1.1
       prettier: 2.8.3
       prettier-plugin-tailwindcss: 0.2.2_prettier@2.8.3
     transitivePeerDependencies:
@@ -5567,7 +5567,7 @@ packages:
       eslint-plugin-react-hooks: 4.6.0_eslint@8.33.0
       eslint-plugin-simple-import-sort: 9.0.0_eslint@8.33.0
       husky: 8.0.3
-      lint-staged: 13.1.0
+      lint-staged: 13.1.1
       next: 13.1.6_fcop3xylqakmbilfhdeuva2xj4
       prettier: 2.8.3
       typescript: 4.9.5
@@ -5604,7 +5604,7 @@ packages:
       eslint-plugin-react-hooks: 4.6.0_eslint@8.33.0
       eslint-plugin-simple-import-sort: 9.0.0_eslint@8.33.0
       husky: 8.0.3
-      lint-staged: 13.1.0
+      lint-staged: 13.1.1
       next: 13.1.6_pjwopsidmaokadturxaafygjp4
       prettier: 2.8.3
       typescript: 4.9.5
@@ -5633,7 +5633,7 @@ packages:
       '@types/react-dom': 18.0.10
       follow-redirects: 1.15.2
       next: 13.1.6_pjwopsidmaokadturxaafygjp4
-      next-sitemap: 3.1.49_dlcnecpznf2wc36zwuq5m2ie5q
+      next-sitemap: 3.1.50_dlcnecpznf2wc36zwuq5m2ie5q
       nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -5666,7 +5666,7 @@ packages:
       '@types/react-dom': 18.0.10
       follow-redirects: 1.15.2_debug@4.3.4
       next: 13.1.6_fcop3xylqakmbilfhdeuva2xj4
-      next-sitemap: 3.1.49_dlcnecpznf2wc36zwuq5m2ie5q
+      next-sitemap: 3.1.50_dlcnecpznf2wc36zwuq5m2ie5q
       nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
@@ -6778,7 +6778,7 @@ packages:
     hasBin: true
     dependencies:
       caniuse-lite: 1.0.30001450
-      electron-to-chromium: 1.4.287
+      electron-to-chromium: 1.4.288
       node-releases: 2.0.10
       update-browserslist-db: 1.0.10_browserslist@4.21.5
 
@@ -8088,8 +8088,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /electron-to-chromium/1.4.287:
-    resolution: {integrity: sha512-Dj649q67z9oYp4dj7B80hdxb1ExIvy8KvrFqjCuGqFxUHk43b+VXQVFkD5zxAFmhvA6Mu9fou6ZQjJkMSXNFFg==}
+  /electron-to-chromium/1.4.288:
+    resolution: {integrity: sha512-8s9aJf3YiokIrR+HOQzNOGmEHFXVUQzXM/JaViVvKdCkNUjS+lEa/uT7xw3nDVG/IgfxiIwUGkwJ6AR1pTpYsQ==}
 
   /elliptic/6.5.4:
     resolution: {integrity: sha512-iLhC6ULemrljPZb+QutR5TQGB+pdW6KGD5RSegS+8sorOZT+rdQFbsQFJgvN3eRqNALqJer4oQ16YvJHlU8hzQ==}
@@ -11549,8 +11549,8 @@ packages:
   /lines-and-columns/1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
-  /lint-staged/13.1.0:
-    resolution: {integrity: sha512-pn/sR8IrcF/T0vpWLilih8jmVouMlxqXxKuAojmbiGX5n/gDnz+abdPptlj0vYnbfE0SQNl3CY/HwtM0+yfOVQ==}
+  /lint-staged/13.1.1:
+    resolution: {integrity: sha512-LLJLO0Kdbcv2a+CvSF4p1M7jBZOajKSMpBUvyR8+bXccsqPER0/NxTFQSpNHjqwV9kM3tkHczYerTB5wI+bksQ==}
     engines: {node: ^14.13.1 || >=16.0.0}
     hasBin: true
     dependencies:
@@ -12245,8 +12245,8 @@ packages:
       pino-http: 8.3.3
     dev: false
 
-  /next-sitemap/3.1.49_dlcnecpznf2wc36zwuq5m2ie5q:
-    resolution: {integrity: sha512-bxBq+MQdi580PKn/8ert4X0RL8Kp9scvyiq6TmIpkCQC3bd4DResTyxHY2AuCGKz83ut2udHwKMZu3ztj3aq3w==}
+  /next-sitemap/3.1.50_dlcnecpznf2wc36zwuq5m2ie5q:
+    resolution: {integrity: sha512-BnxAbjOK1zVcYvpZ4sYfhPXcL3ajLh/AIJLR39YKrhFxrD92KkiAGuVaKhfpoQLUf+ldsGBkGpdml2N5Qdd1KA==}
     engines: {node: '>=14.18'}
     hasBin: true
     peerDependencies:
