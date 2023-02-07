@@ -31,6 +31,8 @@ export class DeFiChainStubContainer {
   ) {}
 
   async start(): Promise<string> {
+    // Tests are slower because it's running 3 containers at the same time
+    jest.setTimeout(3600000);
     const network = await new Network().start();
     this.defid = await new NativeChainContainer().withNetwork(network).withPreconfiguredRegtestMasternode().start();
     this.whale = await new WhaleApiContainer().withNetwork(network).withNativeChain(this.defid, network).start();
