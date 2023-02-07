@@ -21,7 +21,7 @@ export class DeFiChainStubContainer {
 
   public whaleClient?: WhaleApiClient;
 
-  public localMnemonic: string =
+  public static LOCAL_MNEMONIC =
     'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine';
 
   constructor(
