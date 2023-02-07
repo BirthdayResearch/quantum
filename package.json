@@ -11,7 +11,7 @@
     "test": "turbo run test",
     "test:hardhat": "turbo run test:hardhat --filter=./packages/smartcontracts",
     "dev": "turbo run dev --parallel",
-    "lint": "turbo run lint",
+    "lint": "turbo run lint -- --fix",
     "format": "prettier --write ."
   },
   "dependencies": {
