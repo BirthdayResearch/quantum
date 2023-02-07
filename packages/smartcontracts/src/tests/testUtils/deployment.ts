@@ -8,7 +8,7 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
   const operationalAdminSigner = await ethers.getSigner(accounts[1]);
   const arbitrarySigner = await ethers.getSigner(accounts[2]);
-  const BridgeUpgradeable = await ethers.getContractFactory('BridgeV2');
+  const BridgeUpgradeable = await ethers.getContractFactory('BridgeV1');
   const bridgeUpgradeable = await BridgeUpgradeable.deploy();
   await bridgeUpgradeable.deployed();
   const BridgeProxy = await ethers.getContractFactory('BridgeProxy');
