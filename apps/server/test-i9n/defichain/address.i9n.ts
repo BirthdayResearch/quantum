@@ -28,6 +28,8 @@ describe('DeFiChain Address Integration Testing', () => {
   });
 
   it('should be able to generate a wallet address', async () => {
+    // Tests are slower because it's running 3 containers at the same time
+    jest.setTimeout(3600000);
     const initialResponse = await testing.inject({
       method: 'GET',
       url: `${WALLET_ENDPOINT}generate-address?network=${EnvironmentNetwork.LocalPlayground}`,
@@ -39,6 +41,8 @@ describe('DeFiChain Address Integration Testing', () => {
   });
 
   it('should be able to generate a wallet address for a specific network', async () => {
+    // Tests are slower because it's running 3 containers at the same time
+    jest.setTimeout(3600000);
     const initialResponse = await testing.inject({
       method: 'GET',
       url: `${WALLET_ENDPOINT}generate-address?network=${EnvironmentNetwork.LocalPlayground}`,
@@ -51,6 +55,8 @@ describe('DeFiChain Address Integration Testing', () => {
   });
 
   it('should be able to fail rate limiting for generating addresses', async () => {
+    // Tests are slower because it's running 3 containers at the same time
+    jest.setTimeout(3600000);
     for (let x = 0; x < 5; x += 1) {
       const initialResponse = await testing.inject({
         method: 'GET',

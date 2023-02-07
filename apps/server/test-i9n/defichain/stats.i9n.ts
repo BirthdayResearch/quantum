@@ -25,6 +25,8 @@ describe('DeFiChain Stats Testing', () => {
   });
 
   it('should be able to make calls to DeFiChain server', async () => {
+    // Tests are slower because it's running 3 containers at the same time
+    jest.setTimeout(3600000);
     const initialResponse = await testing.inject({
       method: 'GET',
       url: `/defichain/stats?network=${EnvironmentNetwork.LocalPlayground}`,

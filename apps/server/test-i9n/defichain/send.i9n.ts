@@ -49,6 +49,8 @@ describe('DeFiChain Send Transaction Testing', () => {
   });
 
   it('should be able to send tokens (BTC)', async () => {
+    // Tests are slower because it's running 3 containers at the same time
+    jest.setTimeout(3600000);
     const token = { symbol: 'BTC', id: '1', amount: new BigNumber(1) };
     // Top up UTXO
     await defichain.playgroundRpcClient?.wallet.sendToAddress(fromWallet, 1);
@@ -81,6 +83,8 @@ describe('DeFiChain Send Transaction Testing', () => {
   });
 
   it('should be able to send DFI (UTXO)', async () => {
+    // Tests are slower because it's running 3 containers at the same time
+    jest.setTimeout(3600000);
     const token = { symbol: 'DFI', id: '0', amount: new BigNumber(0.1) };
 
     // Top up UTXO
