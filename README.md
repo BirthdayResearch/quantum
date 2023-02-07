@@ -39,7 +39,7 @@ TODO
 
 To change the state of any smart contract, users need to approve the smart contract of the respective token via the `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
 
-### Fund ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
+### Bridge ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
 
 Once approved, user will call the `bridgeToDeFiChain()` function with following arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
 
@@ -131,3 +131,21 @@ BridgeV1 Contract address: [0xE029B5156c2e597c72f7c8D279411e1fD9a30126](https://
 ### BridgeProxy
 
 BridgeProxy Contract address: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C)
+
+## Fund Bridge ERC20 tokens
+
+### Add funds
+
+Anyone can send funds to the bridge contract. Ideally, this should be done by liquidity providers. If there are tokens sent by other addresses to the contract, those tokens will be unaccounted for.
+
+Admins can send ERC20 tokens via the `transfer(address _to, uint256 _amount)` function or utilizing wallets such as Metamask.
+
+### Withdrawing funds
+
+ERC20 tokens can be withdrawn by the Admin address only via the `withdraw(address _tokenAddress, uint256 amount)` function.
+
+## Admin and Operational addresses - Gnosis safe
+
+Admin and Operational addresses will be Gnosis safes, ideally will be with at least 3 owners with a 2/3 quorum.
+
+More admins can be added later, for more info, refer to [Gnosis safe: adding owners](https://help.gnosis-safe.io/en/articles/3950657-add-owners).

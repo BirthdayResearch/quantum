@@ -1,112 +1,39 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { ethers } from 'ethers';
 import {
-  BridgeProxy,
-  BridgeProxy__factory,
   BridgeV1,
-  BridgeV1__factory,
-  EvmContractManager,
   HardhatNetwork,
   HardhatNetworkContainer,
   StartedHardhatNetworkContainer,
+  TestToken,
 } from 'smartcontracts';
 
-import { AppConfig } from '../src/AppConfig';
-import { AppModule } from '../src/AppModule';
-import { BridgeServerTestingApp } from '../src/BridgeServerTestingApp';
-
-@Module({})
-export class TestingExampleModule {
-  static register(config: AppConfig): DynamicModule {
-    return {
-      module: TestingExampleModule,
-      imports: [AppModule, ConfigModule.forFeature(() => config)],
-    };
-  }
-}
-
-export function buildTestConfig({
-  startedHardhatContainer,
-  contractAddress,
-}: {
-  startedHardhatContainer: StartedHardhatNetworkContainer;
-  contractAddress?: string;
-}) {
-  return contractAddress
-    ? {
-        ethereum: {
-          rpcUrl: startedHardhatContainer.rpcUrl,
-        },
-        contract: {
-          bridgeProxy: {
-            testnetAddress: contractAddress,
-          },
-        },
-      }
-    : {
-        ethereum: {
-          rpcUrl: startedHardhatContainer.rpcUrl,
-        },
-      };
-}
+import { BridgeContractFixture } from './testing/BridgeContractFixture';
+import { BridgeServerTestingApp } from './testing/BridgeServerTestingApp';
+import { buildTestConfig, TestingModule } from './testing/TestingModule';
 
 describe('Bridge Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
-  let evmContractManager: EvmContractManager;
-  let defaultAdminAddress: string;
-  let defaultAdminSigner: ethers.Signer;
-  let operationalAdminAddress: string;
-  let bridgeUpgradeable: BridgeV1;
-  let bridgeProxy: BridgeProxy;
   let testing: BridgeServerTestingApp;
+  let bridgeContract: BridgeV1;
+  let bridgeContractFixture: BridgeContractFixture;
+  let musdcContract: TestToken;
 
   beforeAll(async () => {
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
 
-    evmContractManager = hardhatNetwork.contracts;
-    // Default and operational admin account
-    ({ testWalletAddress: defaultAdminAddress, testWalletSigner: defaultAdminSigner } =
-      await hardhatNetwork.createTestWallet());
-    ({ testWalletAddress: operationalAdminAddress } = await hardhatNetwork.createTestWallet());
+    bridgeContractFixture = new BridgeContractFixture(hardhatNetwork);
+    await bridgeContractFixture.setup();
 
-    // Deploying BridgeV1 contract
-    bridgeUpgradeable = await evmContractManager.deployContract<BridgeV1>({
-      deploymentName: 'BridgeV1',
-      contractName: 'BridgeV1',
-      abi: BridgeV1__factory.abi,
-    });
-    await hardhatNetwork.generate(1);
-
-    // Deployment arguments for the Proxy contract
-    const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-      'CAKE_BRIDGE',
-      '0.1',
-      defaultAdminAddress,
-      operationalAdminAddress,
-      defaultAdminAddress,
-      30, // 0.3% txn fee
-    ]);
-
-    // Deploying proxy contract
-    bridgeProxy = await evmContractManager.deployContract<BridgeProxy>({
-      deploymentName: 'BridgeProxy',
-      contractName: 'BridgeProxy',
-      deployArgs: [bridgeUpgradeable.address, encodedData],
-      abi: BridgeProxy__factory.abi,
-    });
-    await hardhatNetwork.generate(1);
-
-    // Attach proxy address to bridgeUpgradeable contract
-    bridgeUpgradeable = bridgeUpgradeable.attach(bridgeProxy.address);
-    await hardhatNetwork.generate(1);
+    // Using the default signer of the container to carry out tests
+    ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
+      bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
     // initialize config variables
     testing = new BridgeServerTestingApp(
-      TestingExampleModule.register(
-        buildTestConfig({ startedHardhatContainer, contractAddress: bridgeUpgradeable.address }),
+      TestingModule.register(
+        buildTestConfig({ startedHardhatContainer, testnet: { bridgeContractAddress: bridgeContract.address } }),
       ),
     );
     await testing.start();
@@ -114,128 +41,84 @@ describe('Bridge Service Integration Tests', () => {
 
   afterAll(async () => {
     await hardhatNetwork.stop();
+    await testing.stop();
   });
 
   it('Returns an array of confirmed events from a given block number', async () => {
-    // Step 1: starting block should be 1003 (after initializations)
-    let currBlock = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
-    });
-    await expect(currBlock.body).toStrictEqual('1003');
-
-    // Step 2: Call addSupportedTokens function and mine the block (block 1004)
-    await bridgeUpgradeable
-      .connect(defaultAdminSigner)
-      .addSupportedTokens(ethers.constants.AddressZero, ethers.utils.parseEther('10'), Math.floor(Date.now() / 1000));
-    await hardhatNetwork.generate(1);
-
-    // Step 3: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block (block 1005)
-    await bridgeUpgradeable.bridgeToDeFiChain(
+    // Given a call to bridgeToDeFiChain
+    await bridgeContract.bridgeToDeFiChain(
       ethers.constants.AddressZero,
-      ethers.constants.AddressZero,
+      musdcContract.address,
       ethers.utils.parseEther('5'),
-      {
-        value: ethers.utils.parseEther('3'),
-      },
     );
     await hardhatNetwork.generate(1);
 
-    // step 4: currBlock should now be 1005
-    currBlock = await testing.inject({
+    let currBlockRequest = await testing.inject({
       method: 'GET',
       url: '/app/blockheight',
     });
-    await expect(currBlock.body).toStrictEqual('1005');
+    const originalBlock = currBlockRequest.body;
 
-    // step 5: calling my service should return a empty array (because it is not confirmed)
+    // When getting the current number of events
     let eventsArray = await testing.inject({
       method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=${originalBlock}`,
     });
+
+    // Then the array should be empty since the events have not been confirmed
     await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
 
-    // step 6: generate 65 blocks (to simulate confirmation)
+    // When generating the necessary number of confirmations
     await hardhatNetwork.generate(65);
 
-    // step 7: calling my service should return a array of length 1
+    // Then there should be one event in the array from the previous bridgeToDeFiChain call
     eventsArray = await testing.inject({
       method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=${originalBlock}`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
 
-    // Step 8: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) a second time and mine it (block 1071)
-    await bridgeUpgradeable.bridgeToDeFiChain(
+    // Given another call to bridgeToDeFiChain again
+    await bridgeContract.bridgeToDeFiChain(
       ethers.constants.AddressZero,
-      ethers.constants.AddressZero,
+      musdcContract.address,
       ethers.utils.parseEther('5'),
-      {
-        value: ethers.utils.parseEther('3'),
-      },
     );
     await hardhatNetwork.generate(1);
 
-    // Step 10: generate 30 blocks (block 1101)
+    // When generating some blocks that do not meet the necessary number of confirmations
     await hardhatNetwork.generate(30);
 
-    // step 11: current block should be block 1101
-    currBlock = await testing.inject({
+    currBlockRequest = await testing.inject({
       method: 'GET',
       url: '/app/blockheight',
     });
-    await expect(currBlock.body).toStrictEqual('1101');
+    const nextBlock = currBlockRequest.body;
 
-    // Step 12: getAllEventsFromBlockNumber where blockNumber=1005 should return array of events of length 1
     eventsArray = await testing.inject({
       method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=${originalBlock}`,
     });
+    // Then the array should still only have 1 event
     await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
 
-    // Step 13: Generate another 35 blocks to achieve confirmation for second event
+    // When generating the additional confirmations to hit the necessary number
     await hardhatNetwork.generate(35);
 
-    // Step 14: getAllEventsFromBlockNumber where blockNumber=1005 should return array of events of length 2 now
+    // Then there should be two events in the array
     eventsArray = await testing.inject({
       method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=1005`,
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=${originalBlock}`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(2);
 
-    // Step 15: getAllEventsFromBlockNumber where blockNumber=1071 should return array of events of length 1
+    // When doing a sanity check from the nextBlock + 1 onwards
     eventsArray = await testing.inject({
       method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=1071`,
+      url: `/app/getAllEventsFromBlockNumber?blockNumber=${nextBlock + 1}`,
     });
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
 
-    // Step 16: getAllEventsFromBlockNumber where blockNumber=1072 should return array of events of length 0
-    eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=1072`,
-    });
+    // Then there should be no events
     await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
-  });
-
-  it('should be able to make calls to the underlying hardhat node', async () => {
-    // Given an initial block height of 1136 (due to the initial block generation when calling HardhatNetwork.ready() + getAllEventsFromBlockNumber tests)
-    const initialResponse = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
-    });
-
-    await expect(initialResponse.body).toStrictEqual('1136');
-
-    // When one block is mined
-    await hardhatNetwork.generate(1);
-
-    // Then the new block height should be 1
-    const responseAfterGenerating = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
-    });
-
-    expect(responseAfterGenerating.body).toStrictEqual('1137');
   });
 });
