@@ -14,6 +14,7 @@ import {
   NetworkOptionsI,
   NetworkName,
   UnconfirmedTxnI,
+  AddressDetails,
 } from "types";
 import { useWhaleApiClient } from "@waveshq/walletkit-ui/dist/contexts";
 import Logging from "@api/logging";
@@ -27,6 +28,7 @@ import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
 import { useGetAddressDetailMutation } from "@store/website";
+import dayjs from "dayjs";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import DailyLimit from "./DailyLimit";
@@ -109,7 +111,7 @@ export default function BridgeForm() {
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
 
   const [getAddressDetail] = useGetAddressDetailMutation();
-  const [initialRefundAddress, setInitialRefundAddress] = useState<string>("");
+  const [addressDetail, setAddressDetail] = useState<AddressDetails>();
 
   const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
 
@@ -214,16 +216,15 @@ export default function BridgeForm() {
       getAddressDetail({ address: localDfcAddress, network: networkEnv })
         .unwrap()
         .then((res) => {
-          setInitialRefundAddress(res.refundAddress);
-          const createdDate = new Date(res.createdAt);
-          const diff = new Date().getTime() - createdDate.getTime();
+          setAddressDetail(res);
+          const diff = dayjs().diff(dayjs(addressDetail?.createdAt));
           if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
             setStorageItem(TXN_KEY, null);
             setStorageItem(DFC_ADDR_KEY, null);
           }
         })
         .catch(() => {
-          setInitialRefundAddress("");
+          setAddressDetail(undefined);
         });
     }
   }, [networkEnv]);
@@ -416,7 +417,7 @@ export default function BridgeForm() {
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
-        initialRefundAddress={initialRefundAddress}
+        addressDetail={addressDetail}
         onClose={() => setShowConfirmModal(false)}
         amount={amount}
         fromAddress={fromAddress}

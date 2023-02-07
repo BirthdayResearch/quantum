@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useState } from "react";
-import { ProgressStepI } from "types";
+import { AddressDetails, ProgressStepI } from "types";
 import useResponsive from "@hooks/useResponsive";
 import ProgressStepIndicator from "@components/commons/ProgressStepIndicator";
 import ProgressStepIndicatorMobile from "@components/commons/ProgressStepIndicatorMobile";
@@ -19,16 +19,17 @@ const DfcToErcTransferSteps: ProgressStepI[] = [
 ];
 
 export default function DeFiChainToERC20Transfer({
-  initialRefundAddress,
+  addressDetail,
 }: {
-  initialRefundAddress: string;
+  addressDetail?: AddressDetails;
 }) {
   const [activeStep, setActiveStep] = useState(1);
   const { isMobile } = useResponsive();
 
   const { DFC_ADDR_KEY } = useBridgeFormStorageKeys();
-  const [refundAddress, setRefundAddress] =
-    useState<string>(initialRefundAddress);
+  const [refundAddress, setRefundAddress] = useState<string>(
+    addressDetail?.refundAddress ?? ""
+  );
 
   // TODO: check if transaction validated from api
   const transactionValidated = true;
@@ -66,8 +67,8 @@ export default function DeFiChainToERC20Transfer({
           setRefundAddress={setRefundAddress}
           goToNextStep={() => {
             if (
-              initialRefundAddress !== "" &&
-              initialRefundAddress !== refundAddress
+              addressDetail?.refundAddress !== undefined &&
+              addressDetail?.refundAddress !== refundAddress
             ) {
               setStorageItem(DFC_ADDR_KEY, null);
             }
@@ -78,6 +79,7 @@ export default function DeFiChainToERC20Transfer({
       {activeStep === 2 && (
         <StepTwoSendConfirmation
           refundAddress={refundAddress}
+          addressDetail={addressDetail}
           goToNextStep={handleNextStep}
         />
       )}

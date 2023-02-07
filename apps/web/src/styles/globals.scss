@@ -185,6 +185,7 @@ body {
   }
   .dark-bg-card-section {
     background: var(--ui-dark-card-section);
+    opacity: var(--tw-bg-opacity);
   }
   .bg-dark-gradient-3 {
     background: var(--ui-dark-gradient-3);

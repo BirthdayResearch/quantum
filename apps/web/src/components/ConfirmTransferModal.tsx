@@ -3,7 +3,7 @@ import BigNumber from "bignumber.js";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { NetworkName } from "types";
+import { AddressDetails, NetworkName } from "types";
 import { FiCheck } from "react-icons/fi";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import useResponsive from "@hooks/useResponsive";
@@ -245,14 +245,14 @@ export default function ConfirmTransferModal({
   amount,
   fromAddress,
   toAddress,
-  initialRefundAddress,
+  addressDetail,
 }: {
   show: boolean;
   onClose: () => void;
   amount: string;
   fromAddress: string;
   toAddress: string;
-  initialRefundAddress: string;
+  addressDetail?: AddressDetails;
 }) {
   const {
     selectedNetworkA,
@@ -348,7 +348,7 @@ export default function ConfirmTransferModal({
       {isSendingToDFC ? (
         <ERC20ToDeFiChainTransfer data={data} />
       ) : (
-        <DeFiChainToERC20Transfer initialRefundAddress={initialRefundAddress} />
+        <DeFiChainToERC20Transfer addressDetail={addressDetail} />
       )}
     </Modal>
   );
