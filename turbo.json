@@ -24,6 +24,10 @@
       "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
       "dependsOn": ["^build"]
     },
+    "docker:pull": {
+      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
+      "dependsOn": ["^build"]
+    },
     "generate:schema": {
       "outputs": ["dist/**"],
       "dependsOn": ["^build"]
@@ -44,7 +48,8 @@
         "^build:docker",
         "build:docker",
         "generate:client",
-        "generate:schema"
+        "generate:schema",
+        "docker:pull"
       ]
     },
     "test:unit": {
@@ -58,7 +63,8 @@
         "^build:docker",
         "build:docker",
         "generate:client",
-        "generate:schema"
+        "generate:schema",
+        "docker:pull"
       ]
     },
     "test:e2e": {
