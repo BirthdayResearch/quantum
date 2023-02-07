@@ -2,19 +2,21 @@ import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
-import { DeFiChainStubContainer } from './DeFiChainStubContainer';
+import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
 
-let defichain: DeFiChainStubContainer;
+let defichain: StartedDeFiChainStubContainer;
 let testing: BridgeServerTestingApp;
 describe('DeFiChain Stats Testing', () => {
   // Tests are slower because it's running 3 containers at the same time
   jest.setTimeout(3600000);
   beforeAll(async () => {
-    defichain = await new DeFiChainStubContainer();
-    const localWhaleURL = await defichain.start();
+    defichain = await new DeFiChainStubContainer().start();
+    const localWhaleURL = await defichain.getWhaleURL();
     testing = new BridgeServerTestingApp(
       TestingModule.register(
-        buildTestConfig({ defichain: { localWhaleURL, localDefichainKey: DeFiChainStubContainer.LOCAL_MNEMONIC } }),
+        buildTestConfig({
+          defichain: { localWhaleURL, localDefichainKey: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+        }),
       ),
     );
 
