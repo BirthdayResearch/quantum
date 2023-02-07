@@ -52,6 +52,6 @@ export class DeFiChainStubContainer {
   }
 
   async generateBlock(): Promise<void> {
-    await this.playgroundClient?.rpc.call('generatetoaddress', [3, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
+    await this.playgroundClient?.rpc.call('generatetoaddress', [10, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
   }
 }
