@@ -1,6 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
 import { BigNumber, Contract, ethers, Event } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
@@ -57,13 +56,5 @@ export class AppService {
     }
 
     return [];
-  }
-
-  async initDatabase(body: Prisma.blockNumberCreateManyInput): Promise<Prisma.BatchPayload> {
-    return this.prisma.blockNumber.createMany({ data: body });
-  }
-
-  async deleteDatabase(): Promise<Prisma.BatchPayload> {
-    return this.prisma.blockNumber.deleteMany({});
   }
 }

@@ -20,3 +20,9 @@ model PathIndex {
   status    Status   @default(PENDING)
   createdAt DateTime @default(now())
 }
+
+model blockNumber {
+  network     String   @id
+  blockNumber BigInt   @default(1000)
+  createdAt   DateTime @default(now())
+}

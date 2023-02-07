@@ -1,4 +1,9 @@
 #!/bin/sh
+# Takes care of spinning up a local db container and waiting for it to be ready prior to any prisma command that requires a database connection.
+# In terminal (/bridge), run `cd apps/server`
+# Run `./with-db generate` to generate the Prisma Client
+# Run `./with-db migrate dev` to migrate and apply database migrations in the development environment. 
+
 
 C='\033[1;36m' # Highlight - light cyan
 P='\033[1;35m' # Highlight - light purple
@@ -7,9 +12,6 @@ log() {
   echo "${C}[$(date +"%F %T %Z")] ${P}$1${N}"
 }
 
-# Takes care of spinning up a local db container and waiting for it to be ready
-# prior to any prisma command that requires a database connection.
-# E.g. `prisma migrate dev` for creating migrations after making schema changes.
 log "Spinning up local database..."
 
 # Start local dev db container with dev credentials

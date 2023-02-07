@@ -15,6 +15,7 @@ import {
 import { AppConfig } from '../src/AppConfig';
 import { AppModule } from '../src/AppModule';
 import { BridgeServerTestingApp } from '../src/BridgeServerTestingApp';
+import { PrismaService } from '../src/PrismaService';
 
 @Module({})
 export class TestingExampleModule {
@@ -62,6 +63,8 @@ describe('Bridge Service Integration Tests', () => {
   let bridgeProxy: BridgeProxy;
   let testing: BridgeServerTestingApp;
 
+  let prismaService: PrismaService;
+
   beforeAll(async () => {
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
@@ -108,13 +111,12 @@ describe('Bridge Service Integration Tests', () => {
         buildTestConfig({ startedHardhatContainer, contractAddress: bridgeUpgradeable.address }),
       ),
     );
-    await testing.start();
+    const app = await testing.start();
 
     // init postgres database
-    await testing.inject({
-      method: 'POST',
-      url: '/app/initDatabase',
-      payload: [
+    prismaService = app.get<PrismaService>(PrismaService);
+    await prismaService.blockNumber.createMany({
+      data: [
         {
           blockNumber: 1003,
           network: 'testnet',
@@ -131,19 +133,12 @@ describe('Bridge Service Integration Tests', () => {
     await hardhatNetwork.stop();
 
     // teardown database
-    await testing.inject({
-      method: 'DELETE',
-      url: '/app/initDatabase',
-    });
+    await prismaService.blockNumber.deleteMany({});
   });
 
   it('Returns an array of confirmed events from a given block number', async () => {
     // Step 1: starting block should be 1003 (after initializations)
-    let currBlock = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
-    });
-    await expect(currBlock.body).toStrictEqual('1003');
+    expect(await hardhatNetwork.ethersRpcProvider.getBlockNumber()).toStrictEqual(1003);
 
     // Step 2: Call addSupportedTokens function and mine the block (block 1004)
     await bridgeUpgradeable
@@ -163,11 +158,7 @@ describe('Bridge Service Integration Tests', () => {
     await hardhatNetwork.generate(1);
 
     // step 4: currBlock should now be 1005
-    currBlock = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
-    });
-    await expect(currBlock.body).toStrictEqual('1005');
+    expect(await hardhatNetwork.ethersRpcProvider.getBlockNumber()).toStrictEqual(1005);
 
     // step 5: calling my service should return a empty array (because it is not confirmed, blockNumber in db remains as 1003)
     let eventsArray = await testing.inject({
@@ -175,6 +166,8 @@ describe('Bridge Service Integration Tests', () => {
       url: `/app/getAllEventsFromBlockNumber`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
+    let dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
+    expect(dbBlocknumber?.blockNumber).toStrictEqual(1003n);
 
     // step 6: generate 65 blocks (to simulate confirmation)
     await hardhatNetwork.generate(65);
@@ -185,6 +178,8 @@ describe('Bridge Service Integration Tests', () => {
       url: `/app/getAllEventsFromBlockNumber`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
+    dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
+    expect(dbBlocknumber?.blockNumber).toStrictEqual(1006n);
 
     // Step 8: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) a second time and mine it (event emitted at block 1071)
     await bridgeUpgradeable.bridgeToDeFiChain(
@@ -197,39 +192,41 @@ describe('Bridge Service Integration Tests', () => {
     );
     await hardhatNetwork.generate(1);
 
-    // Step 10: generate 30 blocks (current block 1101)
+    // Step 9: generate 30 blocks (current block 1101)
     await hardhatNetwork.generate(30);
 
-    // step 11: current block should be block 1101
-    currBlock = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
-    });
-    await expect(currBlock.body).toStrictEqual('1101');
+    // step 10: current block should be block 1101
+    expect(await hardhatNetwork.ethersRpcProvider.getBlockNumber()).toStrictEqual(1101);
 
-    // Step 12: getAllEventsFromBlockNumber should return array of events of length 0 (function searches for events emitted from block 1006 to 1036 (1101-65))
+    // Step 11: getAllEventsFromBlockNumber should return array of events of length 0 (function searches for events emitted from block 1006 to 1036 (1101-65))
     eventsArray = await testing.inject({
       method: 'GET',
       url: `/app/getAllEventsFromBlockNumber`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
+    dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
+    expect(dbBlocknumber?.blockNumber).toStrictEqual(1037n);
 
-    // Step 13: Generate another 35 blocks to achieve confirmation for second event (curr block is 1136)
+    // Step 12: Generate another 35 blocks to achieve confirmation for second event (curr block is 1136)
     await hardhatNetwork.generate(35);
 
-    // Step 14: getAllEventsFromBlockNumber should return array of events of length 1 (function searches for events emitted from block 1037 to 1071 (1136-65))
+    // Step 13: getAllEventsFromBlockNumber should return array of events of length 1 (function searches for events emitted from block 1037 to 1071 (1136-65))
     eventsArray = await testing.inject({
       method: 'GET',
       url: `/app/getAllEventsFromBlockNumber`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
+    dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
+    expect(dbBlocknumber?.blockNumber).toStrictEqual(1072n);
 
-    // Step 15: getAllEventsFromBlockNumber should return array of events of length 0 (function searches for events emitted from block 1072 to 1701 (1101-65), which fails if statement hence blockNumber state will remain the same at 1072)
+    // Step 14: getAllEventsFromBlockNumber should return array of events of length 0 (function searches for events emitted from block 1072 to 1701 (1101-65), which fails if statement hence blockNumber state will remain the same at 1072)
     eventsArray = await testing.inject({
       method: 'GET',
       url: `/app/getAllEventsFromBlockNumber`,
     });
     await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
+    dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
+    expect(dbBlocknumber?.blockNumber).toStrictEqual(1072n);
   });
 
   it('Returns an array of confirmed events from a given block number', async () => {
@@ -335,7 +332,6 @@ describe('Bridge Service Integration Tests', () => {
   });
 
   it('should be able to make calls to the underlying hardhat node', async () => {
-    // Given an initial block height of 1136 (due to the initial block generation when calling HardhatNetwork.ready() + getAllEventsFromBlockNumber tests)
     const initialResponse = await testing.inject({
       method: 'GET',
       url: '/app/blockheight',
@@ -346,7 +342,7 @@ describe('Bridge Service Integration Tests', () => {
     // When one block is mined
     await hardhatNetwork.generate(1);
 
-    // Then the new block height should be 1
+    // Then the new block height should be +1
     const responseAfterGenerating = await testing.inject({
       method: 'GET',
       url: '/app/blockheight',
