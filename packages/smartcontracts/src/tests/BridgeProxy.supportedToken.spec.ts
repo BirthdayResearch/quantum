@@ -12,15 +12,15 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
         const { proxyBridge, testToken, testToken2, defaultAdminSigner } = await loadFixture(deployContracts);
         await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp());
         // Adding the testToken2 as the supported token by Admin role only.
-        expect(await proxyBridge.supportedTokens(testToken2.address)).to.equal(false);
+        expect(await proxyBridge.isSupported(testToken2.address)).to.equal(false);
         await proxyBridge
           .connect(defaultAdminSigner)
           .addSupportedTokens(testToken2.address, toWei('15'), getCurrentTimeStamp());
         // Checking RandomToken and it's allowance
-        expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(true);
+        expect(await proxyBridge.isSupported(testToken.address)).to.equal(true);
         expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance.toString()).to.equal(toWei('15'));
         // Checking RandomToken2 and it's allowance
-        expect(await proxyBridge.supportedTokens(testToken2.address)).to.equal(true);
+        expect(await proxyBridge.isSupported(testToken2.address)).to.equal(true);
         expect((await proxyBridge.tokenAllowances(testToken2.address)).dailyAllowance.toString()).to.equal(toWei('15'));
       });
 
@@ -33,14 +33,14 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
             .connect(defaultAdminSigner)
             .addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp()),
         ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_ALREADY_SUPPORTED');
-        expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(true);
+        expect(await proxyBridge.isSupported(testToken.address)).to.equal(true);
       });
 
       it('Successfully remove existing token by Admin address', async () => {
         const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
         await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp());
         await proxyBridge.removeSupportedTokens(testToken.address);
-        expect(await proxyBridge.connect(defaultAdminSigner).supportedTokens(testToken.address)).to.equal(false);
+        expect(await proxyBridge.connect(defaultAdminSigner).isSupported(testToken.address)).to.equal(false);
       });
 
       it('Unable to remove non-existing token from supported list', async () => {
@@ -59,7 +59,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
           .connect(operationalAdminSigner)
           .addSupportedTokens(testToken2.address, toWei('15'), getCurrentTimeStamp());
         // Checking RandomToken2 and it's allowance
-        expect(await proxyBridge.supportedTokens(testToken2.address)).to.equal(true);
+        expect(await proxyBridge.isSupported(testToken2.address)).to.equal(true);
         expect((await proxyBridge.tokenAllowances(testToken2.address)).dailyAllowance.toString()).to.equal(toWei('15'));
       });
 
@@ -72,14 +72,14 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
             .connect(operationalAdminSigner)
             .addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp()),
         ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_ALREADY_SUPPORTED');
-        expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(true);
+        expect(await proxyBridge.isSupported(testToken.address)).to.equal(true);
       });
 
       it('Successfully remove existing token by OPERATIONAL_ROLE address', async () => {
         const { proxyBridge, testToken, operationalAdminSigner } = await loadFixture(deployContracts);
         await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp());
         await proxyBridge.removeSupportedTokens(testToken.address);
-        expect(await proxyBridge.connect(operationalAdminSigner).supportedTokens(testToken.address)).to.equal(false);
+        expect(await proxyBridge.connect(operationalAdminSigner).isSupported(testToken.address)).to.equal(false);
       });
 
       it('Unable to remove non-existing token from supported list', async () => {
@@ -170,7 +170,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
         // This will freeze of ether to DefiChain.
         // Set Allowance to 0 ether by admin address
         await proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(ethers.constants.AddressZero);
-        expect(await proxyBridge.supportedTokens(ethers.constants.AddressZero)).to.equal(false);
+        expect(await proxyBridge.isSupported(ethers.constants.AddressZero)).to.equal(false);
       });
     });
 
@@ -194,7 +194,7 @@ describe('Add and Removed Supported ETH and ERC20 tokens', () => {
           .addSupportedTokens(ethers.constants.AddressZero, toWei('10'), getCurrentTimeStamp());
         // Set Allowance to 0 ether by Operational address
         await proxyBridge.connect(operationalAdminSigner).removeSupportedTokens(ethers.constants.AddressZero);
-        expect(await proxyBridge.supportedTokens(ethers.constants.AddressZero)).to.equal(false);
+        expect(await proxyBridge.isSupported(ethers.constants.AddressZero)).to.equal(false);
       });
     });
 
