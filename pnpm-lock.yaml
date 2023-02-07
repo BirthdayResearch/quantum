@@ -7,7 +7,7 @@ importers:
       '@birthdayresearch/sticky-turbo': ^0.3.8
       '@waveshq/standard-defichain-jellyfishsdk': ^0.41.1
       husky: ^8.0.3
-      lint-staged: ^13.1.0
+      lint-staged: ^13.1.1
     dependencies:
       '@waveshq/standard-defichain-jellyfishsdk': 0.41.1_@types+tar-fs@2.0.1
     devDependencies:
@@ -7719,7 +7719,7 @@ packages:
       supports-color:
         optional: true
     dependencies:
-      ms: 2.1.1
+      ms: 2.1.3
       supports-color: 6.0.0
     dev: true
 
@@ -9785,7 +9785,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.4
+      minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
