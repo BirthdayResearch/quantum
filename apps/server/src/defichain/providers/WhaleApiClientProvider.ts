@@ -29,12 +29,11 @@ export class WhaleApiClientProvider {
   }
 
   private createAndCacheClient(network: EnvironmentNetwork): WhaleApiClient {
-    const localWhale = this.configService.getOrThrow('defichain.localWhaleURL');
     // TODO: Allow newOceanOptions to accept custom inputs (must change in walletkit)
     const oceanOptions =
       network === EnvironmentNetwork.LocalPlayground
         ? ({
-            url: localWhale,
+            url: this.configService.getOrThrow('defichain.localWhaleURL'),
             network: 'regtest',
             version: 'v0',
           } as WhaleApiClientOptions)
