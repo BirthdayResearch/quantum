@@ -4,8 +4,8 @@ import BigNumber from 'bignumber.js';
 
 import { WhaleApiClientProvider } from '../../src/defichain/providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
+import { DeFiChainTransactionService } from '../../src/defichain/services/DeFiChainTransactionService';
 import { SendService } from '../../src/defichain/services/SendService';
-import { TransactionService } from '../../src/defichain/services/TransactionService';
 import { WhaleApiService } from '../../src/defichain/services/WhaleApiService';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
@@ -28,7 +28,7 @@ describe('DeFiChain Send Transaction Testing', () => {
       buildTestConfig({ defichain: { localWhaleURL, localDefichainKey: defichain.localMnemonic } }),
     );
     dynamicModule.providers = [
-      TransactionService,
+      DeFiChainTransactionService,
       SendService,
       WhaleWalletProvider,
       WhaleApiClientProvider,

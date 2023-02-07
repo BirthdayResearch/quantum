@@ -13,7 +13,7 @@ const MAX_TIMEOUT = 300000;
 const INTERVAL_TIME = 5000;
 
 @Injectable()
-export class TransactionService {
+export class DeFiChainTransactionService {
   constructor(
     private readonly whaleWalletProvider: WhaleWalletProvider,
     private readonly clientProvider: WhaleApiClientProvider,

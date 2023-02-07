@@ -3,11 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 
-import { TransactionService } from './TransactionService';
+import { DeFiChainTransactionService } from './DeFiChainTransactionService';
 
 @Injectable()
 export class SendService {
-  constructor(private readonly transactionService: TransactionService) {}
+  constructor(private readonly transactionService: DeFiChainTransactionService) {}
 
   async send(
     address: string,
