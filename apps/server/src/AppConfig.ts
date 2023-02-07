@@ -5,11 +5,9 @@ export function appConfig() {
   return {
     defichain: {
       [EnvironmentNetwork.MainNet]: process.env.DEFICHAIN_MAINNET_KEY,
-      [EnvironmentNetwork.RemotePlayground]:
-        process.env.DEFICHAIN_REGTEST_KEY ||
-        'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
-      [EnvironmentNetwork.LocalPlayground]:
-        'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
+      [EnvironmentNetwork.RemotePlayground]: process.env.DEFICHAIN_REMOTE_KEY,
+      [EnvironmentNetwork.LocalPlayground]: process.env.DEFICHAIN_LOCAL_KEY,
+      localWhaleURL: 'http://localhost:19553',
     },
     ethereum: {
       testnet: {
@@ -42,5 +40,6 @@ export type AppConfig = DeepPartial<ReturnType<typeof appConfig>>;
 export const ENV_VALIDATION_SCHEMA = Joi.object({
   ETHEREUM_RPC_URL: Joi.string().ip(),
   DEFICHAIN_MAINNET_KEY: Joi.string(),
-  DEFICHAIN_REGTEST_KEY: Joi.string(),
+  DEFICHAIN_REMOTE_KEY: Joi.string(),
+  DEFICHAIN_LOCAL_KEY: Joi.string(),
 });
