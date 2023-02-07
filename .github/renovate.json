@@ -3,5 +3,14 @@
   "ignoreDeps": [
     "@openzeppelin/contracts",
     "@openzeppelin/contracts-upgradeable"
+  ],
+  "regexManagers": [
+    {
+      "datasourceTemplate": "docker",
+      "fileMatch": ["apps/server/package.json$"],
+      "matchStrings": [
+        " docker pull (?<depName>.*?):(?<currentValue>.*?)"
+      ]
+    }
   ]
 }
