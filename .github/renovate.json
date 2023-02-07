@@ -9,7 +9,7 @@
       "datasourceTemplate": "docker",
       "fileMatch": ["apps/server/package.json$"],
       "matchStrings": [
-        " docker pull (?<depName>.*?):(?<currentValue>.*?)"
+        " docker pull (?<depName>.*?):(?<currentValue>.*?) "
       ]
     }
   ]
