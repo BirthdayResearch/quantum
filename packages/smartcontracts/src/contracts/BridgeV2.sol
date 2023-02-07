@@ -266,6 +266,7 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 _startAllowanceTimeFrom
     ) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        if (block.timestamp > _startAllowanceTimeFrom) revert INVALID_RESET_EPOCH_TIME();
         if (_tokenAddress == address(0)) revert ZERO_ADDRESS();
         if (supportedTokens[_tokenAddress]) revert TOKEN_ALREADY_SUPPORTED();
         // Token will be added on the supported list regardless of `_startAllowanceTimeFrom`

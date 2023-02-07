@@ -13,7 +13,7 @@ async function initMintAndSupport(
   testToken: TestToken,
   eoaAddress: string,
   contractAddress: string,
-  additionalTime?: number,
+  additionalTime: number,
 ) {
   await testToken.mint(eoaAddress, toWei('100'));
   await testToken.approve(contractAddress, ethers.constants.MaxInt256);
@@ -21,7 +21,7 @@ async function initMintAndSupport(
   await proxyBridge.addSupportedTokens(
     testToken.address,
     ethers.utils.parseEther('15'),
-    additionalTime ? getCurrentTimeStamp({ additionalTime }) : getCurrentTimeStamp(),
+    getCurrentTimeStamp({ additionalTime }),
   );
 }
 describe('EVM --> DeFiChain', () => {
@@ -41,7 +41,9 @@ describe('EVM --> DeFiChain', () => {
 
     it('Successfully revert if bridging amount exceeds daily allowance', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
-      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address, 15);
+      // Increase time by 60 secs
+      await time.increase(60);
       // Testing with testToken (already added in supported token)
       // Daily allowance is 15. Should revert with the error if exceeding daily allowance
       // Current daily usage should be zero
@@ -62,7 +64,9 @@ describe('EVM --> DeFiChain', () => {
 
     it('Successfully revert if sending zero ERC20 token', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
-      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address, 15);
+      // Increase time by 60 secs
+      await time.increase(60);
       // This txn should fail. User sending 0 ERC20 along with ETHER. only checking the _amount not value
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 0),
@@ -146,7 +150,7 @@ describe('EVM --> DeFiChain', () => {
 
     it('No deposit to DefiChain if in change allowance period', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
-      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address, 15);
       // Changing allowance from 15 to 20 for testToken
       await proxyBridge.changeDailyAllowance(
         testToken.address,
