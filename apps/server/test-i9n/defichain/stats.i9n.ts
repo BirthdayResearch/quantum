@@ -12,7 +12,7 @@ describe('DeFiChain Stats Testing', () => {
     const localWhaleURL = await defichain.start();
     testing = new BridgeServerTestingApp(
       TestingModule.register(
-        buildTestConfig({ defichain: { localWhaleURL, localDefichainKey: defichain.localMnemonic } }),
+        buildTestConfig({ defichain: { localWhaleURL, localDefichainKey: DeFiChainStubContainer.LOCAL_MNEMONIC } }),
       ),
     );
 

@@ -25,7 +25,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     defichain = await new DeFiChainStubContainer();
     const localWhaleURL = await defichain.start();
     const dynamicModule = TestingModule.register(
-      buildTestConfig({ defichain: { localWhaleURL, localDefichainKey: defichain.localMnemonic } }),
+      buildTestConfig({ defichain: { localWhaleURL, localDefichainKey: DeFiChainStubContainer.LOCAL_MNEMONIC } }),
     );
     dynamicModule.providers = [
       DeFiChainTransactionService,
