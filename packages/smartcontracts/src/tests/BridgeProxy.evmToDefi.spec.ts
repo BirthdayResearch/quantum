@@ -2,14 +2,14 @@ import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { BridgeV2, TestToken } from '../generated';
+import { BridgeV1, TestToken } from '../generated';
 import { deployContracts } from './testUtils/deployment';
 import { amountAfterFee, getCurrentTimeStamp, toWei } from './testUtils/mathUtils';
 
 // initMintAndSupport will mint to the EOA address and approve contractAddress.
 // This is primarily to help avoid the repetition of code
 async function initMintAndSupport(
-  proxyBridge: BridgeV2,
+  proxyBridge: BridgeV1,
   testToken: TestToken,
   eoaAddress: string,
   contractAddress: string,

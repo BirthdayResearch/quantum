@@ -3,12 +3,12 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { BridgeV2, TestToken } from '../generated';
+import { BridgeV1, TestToken } from '../generated';
 import { deployContracts } from './testUtils/deployment';
 import { getCurrentTimeStamp, toWei } from './testUtils/mathUtils';
 
 describe('DeFiChain --> EVM', () => {
-  let proxyBridge: BridgeV2;
+  let proxyBridge: BridgeV1;
   let testToken: TestToken;
   let testToken2: TestToken;
   let defaultAdminSigner: SignerWithAddress;
