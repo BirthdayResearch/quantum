@@ -36,8 +36,8 @@ importers:
       '@types/jest': ^29.4.0
       '@types/node': ^18.11.9
       '@types/supertest': ^2.0.12
-      '@waveshq/walletkit-core': ^0.32.0
-      '@waveshq/walletkit-ui': ^0.32.0
+      '@waveshq/walletkit-core': ^0.32.1
+      '@waveshq/walletkit-ui': ^0.32.1
       bignumber.js: ^9.1.1
       class-transformer: ^0.5.1
       class-validator: ^0.14.0
@@ -64,8 +64,8 @@ importers:
       '@nestjs/platform-fastify': 9.3.3_ylji4ot7z6vetycwdmfdxjovxi
       '@nestjs/throttler': 3.1.0_jhbpdgjxfgia53ne6r5b6n6jue
       '@prisma/client': 4.9.0_prisma@4.9.0
-      '@waveshq/walletkit-core': 0.32.0
-      '@waveshq/walletkit-ui': 0.32.0_hpdfzyqdw5heesnkjlkxls3s7m
+      '@waveshq/walletkit-core': 0.32.1
+      '@waveshq/walletkit-ui': 0.32.1_hpdfzyqdw5heesnkjlkxls3s7m
       bignumber.js: 9.1.1
       class-transformer: 0.5.1
       class-validator: 0.14.0
@@ -4870,7 +4870,7 @@ packages:
   /@types/ws/7.4.7:
     resolution: {integrity: sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==}
     dependencies:
-      '@types/node': 18.11.11
+      '@types/node': 18.11.19
     dev: false
 
   /@types/yargs-parser/21.0.0:
@@ -4885,7 +4885,7 @@ packages:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     requiresBuild: true
     dependencies:
-      '@types/node': 18.11.11
+      '@types/node': 18.11.19
     dev: true
     optional: true
 
@@ -5690,20 +5690,20 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@waveshq/walletkit-core/0.32.0:
-    resolution: {integrity: sha512-yB28TmgLqo8C6X9amiDBWdX0PSNoGrRme1cRO/nUogACSRNA5med2dUC4bMk45vCSSSn7Zqm7Wjc4ZCTkjmAkQ==}
+  /@waveshq/walletkit-core/0.32.1:
+    resolution: {integrity: sha512-wjTsRLfF5b2F4NUUtQ8cUHNxUBnXcgb4OAiFoDv4GNqBVXz48XFOfbOHOzhUUC554oVD0ttUSMTaFIMepT+nUA==}
     dependencies:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui/0.32.0_hpdfzyqdw5heesnkjlkxls3s7m:
-    resolution: {integrity: sha512-m73/uqmK37b3A79M/aZR2/G6SWgM+uVdvLZM31GkUzFkzYz5h1QIKtbKXmTN7vkx4DRCQRyqfba7yionK15lUQ==}
+  /@waveshq/walletkit-ui/0.32.1_hpdfzyqdw5heesnkjlkxls3s7m:
+    resolution: {integrity: sha512-1uIOaxK0Q1JFiIgpAg4Hr1f3FmZUGIsVu89aNhE9hHOIs+0gOtrU6gsmx5ts2DugB+sVRhtp/OnyD28LdD5auQ==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.3.8_un5nppyspp2clu76j32bus6fcm
       '@waveshq/standard-defichain-jellyfishsdk': 0.41.1_@types+tar-fs@2.0.1
       '@waveshq/standard-web': 0.41.1_bnajf7fdzfzqzjxfekg2ii76nu
       '@waveshq/standard-web-linter': 0.41.1_welo7wvizfb27iumkgoncycpce
-      '@waveshq/walletkit-core': 0.32.0
+      '@waveshq/walletkit-core': 0.32.1
       bignumber.js: 9.1.1
       dayjs: 1.11.7
       immer: 9.0.19
@@ -7059,7 +7059,7 @@ packages:
     engines: {node: '>=12.13.0'}
     hasBin: true
     dependencies:
-      '@types/node': 18.11.11
+      '@types/node': 18.11.19
       escape-string-regexp: 4.0.0
       is-wsl: 2.2.0
       lighthouse-logger: 1.3.0
@@ -7719,7 +7719,7 @@ packages:
       supports-color:
         optional: true
     dependencies:
-      ms: 2.1.1
+      ms: 2.1.3
       supports-color: 6.0.0
     dev: true
 
@@ -9785,7 +9785,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.4
+      minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
@@ -10701,6 +10701,7 @@ packages:
   /istanbul-lib-coverage/3.0.0:
     resolution: {integrity: sha512-UiUIqxMgRDET6eR+o5HbfRYP1l0hqkWOs7vNxC/mggutCMUIhWMm8gAHb8tHlyfD3/l6rlgNA5cKdDzEAf6hEg==}
     engines: {node: '>=8'}
+    dev: true
 
   /istanbul-lib-coverage/3.2.0:
     resolution: {integrity: sha512-eOeJ5BHCmHYvQK7xt9GkdHuzuCGS1Y6g9Gvnx3Ym33fz/HpLRYxiS0wHNr+m/MBC8B647Xt608vCDEvhl9c6Mw==}
@@ -10719,7 +10720,7 @@ packages:
     dependencies:
       '@babel/core': 7.20.12
       '@istanbuljs/schema': 0.1.3
-      istanbul-lib-coverage: 3.0.0
+      istanbul-lib-coverage: 3.2.0
       semver: 6.3.0
     transitivePeerDependencies:
       - supports-color
@@ -10753,7 +10754,7 @@ packages:
     resolution: {integrity: sha512-wcdi+uAKzfiGT2abPpKZ0hSU1rGQjUQnLvtY5MpQ7QCTahD3VODhcu4wcfY1YtkGaDD5yuydOLINXsfbus9ROw==}
     engines: {node: '>=8'}
     dependencies:
-      istanbul-lib-coverage: 3.0.0
+      istanbul-lib-coverage: 3.2.0
       make-dir: 3.1.0
       supports-color: 7.2.0
 
@@ -12509,7 +12510,7 @@ packages:
       foreground-child: 2.0.0
       get-package-type: 0.1.0
       glob: 7.2.3
-      istanbul-lib-coverage: 3.0.0
+      istanbul-lib-coverage: 3.2.0
       istanbul-lib-hook: 3.0.0
       istanbul-lib-instrument: 4.0.3
       istanbul-lib-processinfo: 2.0.3
@@ -14073,7 +14074,7 @@ packages:
     resolution: {integrity: sha512-uWjbaKIK3T1OSVptzX7Nl6PvQ3qAGtKEtVRjRuazjfL3Bx5eI409VZSqgND+4UNnmzLVdPj9FqFJNPqBZFve4w==}
     hasBin: true
     dependencies:
-      glob: 7.2.0
+      glob: 7.2.3
     dev: true
 
   /rimraf/3.0.2:
@@ -14583,7 +14584,7 @@ packages:
     resolution: {integrity: sha512-DI7/OuAUD+GMpR6dmu8lliO2Wg5zfeh+/xsdyJZCzd8o5JgFUjCeLsBDuZjIQJdwXS3J0L/uZYrELKYqx+PXog==}
     engines: {node: '>=8.0'}
     dependencies:
-      '@types/node': 18.11.11
+      '@types/node': 18.11.19
       image-ssim: 0.2.0
       jpeg-js: 0.4.4
     dev: true
