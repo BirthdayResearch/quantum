@@ -145,5 +145,7 @@ More admins can be added later, for more info, refer to [Gnosis safe: adding own
 ## Workflow for generating Prisma Client and applying database migrations
 
 After making changes to the database schema in schema.prisma, run `cd apps/server` in terminal (/bridge).
+
 Run `./with-db generate` to generate the Prisma Client.
+
 Run `./with-db migrate dev` to migrate and apply database migrations in the development environment. 
