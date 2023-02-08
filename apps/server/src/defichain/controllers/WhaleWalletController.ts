@@ -1,14 +1,16 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
+import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
-import { NetworkContainer } from '../NetworkContainer';
 import { WhaleWalletService } from '../services/WhaleWalletService';
 
 @Controller('/wallet')
-export class WhaleWalletController extends NetworkContainer {
+export class WhaleWalletController {
+  private network: EnvironmentNetwork;
+
   constructor(private readonly whaleWalletService: WhaleWalletService, private readonly configService: ConfigService) {
-    super(configService);
+    this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
   }
 
   @Throttle(5, 60)

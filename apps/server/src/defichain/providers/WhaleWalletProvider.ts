@@ -6,13 +6,14 @@ import { ConfigService } from '@nestjs/config';
 import { EnvironmentNetwork, getBip32Option, getJellyfishNetwork } from '@waveshq/walletkit-core';
 import { WalletPersistenceDataI, WalletType } from '@waveshq/walletkit-ui';
 
-import { NetworkContainer } from '../NetworkContainer';
 import { WhaleApiService } from '../services/WhaleApiService';
 
 @Injectable()
-export class WhaleWalletProvider extends NetworkContainer {
+export class WhaleWalletProvider {
+  private network: EnvironmentNetwork;
+
   constructor(private readonly whaleClient: WhaleApiService, private readonly configService: ConfigService) {
-    super(configService);
+    this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
   }
 
   createWallet(): WhaleWalletAccount {

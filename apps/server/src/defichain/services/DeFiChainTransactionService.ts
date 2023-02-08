@@ -4,9 +4,8 @@ import { P2WPKHTransactionBuilder } from '@defichain/jellyfish-transaction-build
 import { Transaction } from '@defichain/whale-api-client/dist/api/transactions';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { isPlayground } from '@waveshq/walletkit-core';
+import { EnvironmentNetwork, isPlayground } from '@waveshq/walletkit-core';
 
-import { NetworkContainer } from '../NetworkContainer';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 import { WhaleApiService } from './WhaleApiService';
@@ -15,14 +14,16 @@ const MAX_TIMEOUT = 300000;
 const INTERVAL_TIME = 5000;
 
 @Injectable()
-export class DeFiChainTransactionService extends NetworkContainer {
+export class DeFiChainTransactionService {
+  private network: EnvironmentNetwork;
+
   constructor(
     private readonly whaleWalletProvider: WhaleWalletProvider,
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly whaleClient: WhaleApiService,
     private readonly configService: ConfigService,
   ) {
-    super(configService);
+    this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
   }
 
   // Generates a DeFiChain Transaction that will be broadcasted to the chain
