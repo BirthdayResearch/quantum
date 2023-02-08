@@ -127,7 +127,7 @@ importers:
       react-secure-storage: ^1.0.22
       sass: ^1.58.0
       tailwindcss: ^3.2.4
-      wagmi: ^0.11.4
+      wagmi: ^0.11.5
     dependencies:
       '@babel/types': 7.20.7
       '@floating-ui/react-dom': 1.2.2_biqbaboplfbrettd7655fr4n2y
@@ -137,13 +137,13 @@ importers:
       axios: 1.3.2
       bignumber.js: 9.1.1
       clsx: 1.2.1
-      connectkit: 1.1.3_clwkrouhnazlzjmhyn44wriieq
+      connectkit: 1.1.3_2dlpuewk7wijbwqf4t645gccz4
       dayjs: 1.11.7
       ethers: 5.7.2
       react-qr-code: 2.0.11_react@18.2.0
       react-secure-storage: 1.0.22
       sass: 1.58.0
-      wagmi: 0.11.4_yysybeuaf72xfnbwfqy5sezxqy
+      wagmi: 0.11.5_yysybeuaf72xfnbwfqy5sezxqy
     devDependencies:
       '@cypress/code-coverage': 3.10.0_bao4zmketlstf37bbssx5ee4n4
       '@netlify/plugin-lighthouse': 4.0.7
@@ -5038,8 +5038,8 @@ packages:
     resolution: {integrity: sha512-haGBC8noyA5BfjCRXRH+VIkHCDVW5iD5UX24P2nOdilwUxI4qWsattS/co8QBGq64XsNLRAMdM5pQUE3zxkF9Q==}
     dev: true
 
-  /@wagmi/chains/0.2.6_typescript@4.9.5:
-    resolution: {integrity: sha512-YRvWZ6G5X25BgLB8jCAz7Je3yUh+CvmXujrWnL/1lbXslheEq1Ssf77zRfdQo+zfD4bwL/qHEUNREf8r6usKsA==}
+  /@wagmi/chains/0.2.7_typescript@4.9.5:
+    resolution: {integrity: sha512-Oqnkl5n9MTBdMzgIwwdSKEDfm0Vdv2CYBaDyTa5SiTjFNaIfT6MRATLg7KbI3JydfxqJphsVFL+TZZqFvkte/g==}
     peerDependencies:
       typescript: '>=4.9.4'
     peerDependenciesMeta:
@@ -5049,8 +5049,8 @@ packages:
       typescript: 4.9.5
     dev: false
 
-  /@wagmi/connectors/0.2.4_vsb5rtt432hbzjlax4gdz2ciou:
-    resolution: {integrity: sha512-vHlAPm9xIPze1SsF7MzUHG8Hl4mAgYwhCw2uKkhQCpZoEksKn3J89AmINh4BaMVVBcDK2ZYkLZfN0D1VMVMZcQ==}
+  /@wagmi/connectors/0.2.5_ntsvmpik4ehdeugyr3zygdvr5m:
+    resolution: {integrity: sha512-saS5wps+R5SCs4ka9BG4vlaS4xDKn8GRt5y/f6v8RYBhat+H+3DGBowwGLN/OLtu744VKY8sIsm8/GRy2tXbsg==}
     peerDependencies:
       '@wagmi/core': '>=0.9.x'
       ethers: '>=5.5.1 <6'
@@ -5065,7 +5065,7 @@ packages:
       '@ledgerhq/connect-kit-loader': 1.0.2
       '@safe-global/safe-apps-provider': 0.15.2
       '@safe-global/safe-apps-sdk': 7.9.0
-      '@wagmi/core': 0.9.4_uhfuyzzimqn4o6tr7kbdisjunu
+      '@wagmi/core': 0.9.5_uhfuyzzimqn4o6tr7kbdisjunu
       '@walletconnect/ethereum-provider': 1.8.0
       '@walletconnect/universal-provider': 2.3.3_3fk7qfkuemqflumbj4dlt34bfa
       '@web3modal/standalone': 2.1.1_react@18.2.0
@@ -5089,8 +5089,8 @@ packages:
       - zod
     dev: false
 
-  /@wagmi/core/0.9.4_uhfuyzzimqn4o6tr7kbdisjunu:
-    resolution: {integrity: sha512-YUOS1xn2PfKo0c90J708Vd+OPM5GoOouWExL/ZyuDP05f7y3PwDbN5ZfCyiqyTWsO53mMXcajMTFyjDqLxXACg==}
+  /@wagmi/core/0.9.5_uhfuyzzimqn4o6tr7kbdisjunu:
+    resolution: {integrity: sha512-Ff4ejQbeexH5pfcYbwYusvxcYUY1+AuKCqHyYLliOQChLvymK7QGth7Hh7lKEf1Js/g4ktHHI07EfLKHEiDYWw==}
     peerDependencies:
       ethers: '>=5.5.1 <6'
       typescript: '>=4.9.4'
@@ -5098,8 +5098,8 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@wagmi/chains': 0.2.6_typescript@4.9.5
-      '@wagmi/connectors': 0.2.4_vsb5rtt432hbzjlax4gdz2ciou
+      '@wagmi/chains': 0.2.7_typescript@4.9.5
+      '@wagmi/connectors': 0.2.5_ntsvmpik4ehdeugyr3zygdvr5m
       abitype: 0.3.0_typescript@4.9.5
       ethers: 5.7.2
       eventemitter3: 4.0.7
@@ -5540,7 +5540,7 @@ packages:
   /@walletconnect/window-metadata/1.0.0:
     resolution: {integrity: sha512-9eFvmJxIKCC3YWOL97SgRkKhlyGXkrHwamfechmqszbypFspaSk+t2jQXAEU7YClHF6Qjw5eYOmy1//zFi9/GA==}
     dependencies:
-      '@walletconnect/window-getters': 1.0.0
+      '@walletconnect/window-getters': 1.0.1
     dev: false
 
   /@walletconnect/window-metadata/1.0.1:
@@ -7434,7 +7434,7 @@ packages:
   /confusing-browser-globals/1.0.11:
     resolution: {integrity: sha512-JsPKdmh8ZkmnHxDk55FZ1TqVLvEQTvoByJZRN9jzI0UjxK/QgAmsphz7PGtqgPieQZ/CQcHWXCR7ATDNhGe+YA==}
 
-  /connectkit/1.1.3_clwkrouhnazlzjmhyn44wriieq:
+  /connectkit/1.1.3_2dlpuewk7wijbwqf4t645gccz4:
     resolution: {integrity: sha512-gTRybTw6zsdGoZV+RP/P2ITk8SNNz9w6GJ9rDzcDyMgNtwwASPMJDBn+0BTVrVRytqU/RH46rTBsBaloroSNZw==}
     engines: {node: '>=12.4'}
     peerDependencies:
@@ -7454,7 +7454,7 @@ packages:
       react-use-measure: 2.1.1_biqbaboplfbrettd7655fr4n2y
       resize-observer-polyfill: 1.5.1
       styled-components: 5.3.6_7i5myeigehqah43i5u7wbekgba
-      wagmi: 0.11.4_yysybeuaf72xfnbwfqy5sezxqy
+      wagmi: 0.11.5_yysybeuaf72xfnbwfqy5sezxqy
     transitivePeerDependencies:
       - react-is
     dev: false
@@ -15984,8 +15984,8 @@ packages:
       extsprintf: 1.3.0
     dev: true
 
-  /wagmi/0.11.4_yysybeuaf72xfnbwfqy5sezxqy:
-    resolution: {integrity: sha512-zzJAXvsHFuNYrS/3KZC8xPqP7/eQT33xSlMIvMCgO/EYfQLM34r0Z+tcYmJ5KnuS1xd/fO1K6O2sSZVlaXaiLg==}
+  /wagmi/0.11.5_yysybeuaf72xfnbwfqy5sezxqy:
+    resolution: {integrity: sha512-dd7UMMXm52K4auDdJ09PzCAHagV51G2xag92Y+vz+LUCGg/UKFqZObMywFY6SsTIpse0XMPsvmaR1FQeF5FOIw==}
     peerDependencies:
       ethers: '>=5.5.1 <6'
       react: '>=17.0.0'
@@ -15997,7 +15997,7 @@ packages:
       '@tanstack/query-sync-storage-persister': 4.24.4
       '@tanstack/react-query': 4.24.4_biqbaboplfbrettd7655fr4n2y
       '@tanstack/react-query-persist-client': 4.24.4_pbzrecrhgj7fe7hddoo6lp43hu
-      '@wagmi/core': 0.9.4_uhfuyzzimqn4o6tr7kbdisjunu
+      '@wagmi/core': 0.9.5_uhfuyzzimqn4o6tr7kbdisjunu
       abitype: 0.3.0_typescript@4.9.5
       ethers: 5.7.2
       react: 18.2.0
