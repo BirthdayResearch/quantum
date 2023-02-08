@@ -50,7 +50,7 @@ importers:
       smartcontracts: workspace:0.0.0
       source-map-support: ^0.5.21
       supertest: ^6.3.3
-      testcontainers: ^9.1.1
+      testcontainers: ^9.1.2
       ts-jest: ^29.0.5
       ts-loader: ^9.4.2
       ts-node: ^10.9.1
@@ -92,7 +92,7 @@ importers:
       smartcontracts: link:../../packages/smartcontracts
       source-map-support: 0.5.21
       supertest: 6.3.3
-      testcontainers: 9.1.1
+      testcontainers: 9.1.2
       ts-jest: 29.0.5_ecv55cdbauq6znr7ci2lzguwra
       ts-loader: 9.4.2_hhrrucqyg4eysmfpujvov2ym5u
       ts-node: 10.9.1_qqdszkrtcshgbphghj7vnvrrby
@@ -1568,7 +1568,7 @@ packages:
   /@birthdayresearch/sticky-testcontainers/0.3.8:
     resolution: {integrity: sha512-0bMpTwANr6lld5T738WApxBDwgh9Iv00fHsjImkycjnmuI4m62XxeaXoqnjrPH55TExOSQcGRabdjYXchgAFJg==}
     dependencies:
-      testcontainers: 9.1.1
+      testcontainers: 9.1.2
       uuid: 9.0.0
     transitivePeerDependencies:
       - encoding
@@ -1938,7 +1938,7 @@ packages:
       defichain: 3.28.1
       dockerode: 3.3.4
       tar-fs: 2.1.1
-      testcontainers: 9.1.1
+      testcontainers: 9.1.2
       uuid: 9.0.0
     transitivePeerDependencies:
       - encoding
@@ -15098,8 +15098,8 @@ packages:
       glob: 7.2.3
       minimatch: 3.1.2
 
-  /testcontainers/9.1.1:
-    resolution: {integrity: sha512-4vTjKQWZxpMA+pNFlpupZ3XCdcbisYwbZIVUYFaNxl9bk8Vi/ELDzZJ3Kr14WdG7Q7333BGaZjKgKtx/ouEuMg==}
+  /testcontainers/9.1.2:
+    resolution: {integrity: sha512-a4VbUUntbrnTsxD20u8TBhFRpdHufGbBQ3ZlPHsROK7JXh9mLDsx7qk272bt+jBm6yUf0SBBhBynC+B6uxb9Mg==}
     engines: {node: '>= 10.16'}
     dependencies:
       '@balena/dockerignore': 1.0.2

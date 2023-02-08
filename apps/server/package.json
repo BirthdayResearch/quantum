@@ -73,7 +73,7 @@
     "smartcontracts": "workspace:0.0.0",
     "source-map-support": "^0.5.21",
     "supertest": "^6.3.3",
-    "testcontainers": "^9.1.1",
+    "testcontainers": "^9.1.2",
     "ts-jest": "^29.0.5",
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
