@@ -4,7 +4,7 @@ import * as Joi from 'joi';
 export function appConfig() {
   return {
     defichain: {
-      key: process.env.DEFICHAIN_MAINNET_KEY,
+      key: process.env.DEFICHAIN_PRIVATE_KEY,
       whaleURL: process.env.DEFICHAIN_WHALE_URL || 'http://localhost:19553',
       network: process.env.DEFICHAIN_NETWORK || EnvironmentNetwork.LocalPlayground,
     },
