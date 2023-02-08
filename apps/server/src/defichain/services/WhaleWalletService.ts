@@ -70,7 +70,7 @@ export class WhaleWalletService {
         throw new Error('Address detail not available');
       }
       return data;
-    } catch (error) {
+    } catch (e: any) {
       // TODO: Improve error handling
       throw new HttpException(
         {
@@ -79,7 +79,7 @@ export class WhaleWalletService {
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
         {
-          cause: error as Error,
+          cause: e,
         },
       );
     }

@@ -66,10 +66,7 @@ export default function DeFiChainToERC20Transfer({
           refundAddress={refundAddress}
           setRefundAddress={setRefundAddress}
           goToNextStep={() => {
-            if (
-              addressDetail?.refundAddress !== undefined &&
-              addressDetail?.refundAddress !== refundAddress
-            ) {
+            if (addressDetail?.refundAddress !== refundAddress) {
               setStorageItem(DFC_ADDR_KEY, null);
             }
             handleNextStep();
