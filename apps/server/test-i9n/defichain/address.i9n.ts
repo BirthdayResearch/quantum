@@ -60,10 +60,10 @@ describe('DeFiChain Address Integration Testing', () => {
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
-    await expect(initialResponse.statusCode).toStrictEqual(200);
+    expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
     const decodedAddress = fromAddress(response.address, 'regtest');
-    await expect(decodedAddress).not.toBeUndefined();
+    expect(decodedAddress).not.toBeUndefined();
   });
 
   it('should be able to generate a wallet address for a specific network', async () => {
@@ -72,11 +72,11 @@ describe('DeFiChain Address Integration Testing', () => {
       url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
 
-    await expect(initialResponse.statusCode).toStrictEqual(200);
+    expect(initialResponse.statusCode).toStrictEqual(200);
     // will return undefined if the address is not a valid address or not a network address
     const response = JSON.parse(initialResponse.body);
     const decodedAddress = fromAddress(response.address, 'mainnet');
-    await expect(decodedAddress).toBeUndefined();
+    expect(decodedAddress).toBeUndefined();
   });
 
   it('should be able to fail rate limiting for generating addresses', async () => {
@@ -111,17 +111,17 @@ describe('DeFiChain Address Integration Testing', () => {
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
-    await expect(initialResponse.statusCode).toStrictEqual(200);
+    expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
     const decodedAddress = fromAddress(response.address, 'regtest');
-    await expect(decodedAddress).not.toBeUndefined();
+    expect(decodedAddress).not.toBeUndefined();
     const addressDetailsResponse = await testing.inject({
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/${response.address}`,
     });
-    await expect(addressDetailsResponse.statusCode).toStrictEqual(200);
+    expect(addressDetailsResponse.statusCode).toStrictEqual(200);
     const addressDetails = JSON.parse(addressDetailsResponse.body);
-    await expect(addressDetails.address).toStrictEqual(response.address);
+    expect(addressDetails.address).toStrictEqual(response.address);
   });
 
   it('should throw error while calling address detail with invalid address', async () => {
