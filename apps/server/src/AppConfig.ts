@@ -1,16 +1,15 @@
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import * as Joi from 'joi';
 
 export function appConfig() {
   return {
     defichain: {
       key: process.env.DEFICHAIN_PRIVATE_KEY,
-      whaleURL: process.env.DEFICHAIN_WHALE_URL || 'http://localhost:19553',
-      network: process.env.DEFICHAIN_NETWORK || EnvironmentNetwork.LocalPlayground,
+      whaleURL: process.env.DEFICHAIN_WHALE_URL,
+      network: process.env.DEFICHAIN_NETWORK,
     },
     ethereum: {
       testnet: {
-        rpcUrl: process.env.ETHEREUM_RPC_URL || 'localhost:8545',
+        rpcUrl: process.env.ETHEREUM_RPC_URL,
         contracts: {
           bridgeProxy: {
             // https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C
