@@ -1,5 +1,4 @@
 import { fromAddress } from '@defichain/jellyfish-address';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
@@ -14,11 +13,11 @@ describe('DeFiChain Address Integration Testing', () => {
 
   beforeAll(async () => {
     defichain = await new DeFiChainStubContainer().start();
-    const localWhaleURL = await defichain.getWhaleURL();
+    const whaleURL = await defichain.getWhaleURL();
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
-          defichain: { localWhaleURL, localDefichainKey: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
         }),
       ),
     );
@@ -34,7 +33,7 @@ describe('DeFiChain Address Integration Testing', () => {
   it('should be able to generate a wallet address', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address?network=${EnvironmentNetwork.LocalPlayground}`,
+      url: `${WALLET_ENDPOINT}generate-address`,
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);
@@ -45,7 +44,7 @@ describe('DeFiChain Address Integration Testing', () => {
   it('should be able to generate a wallet address for a specific network', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address?network=${EnvironmentNetwork.LocalPlayground}`,
+      url: `${WALLET_ENDPOINT}generate-address`,
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);
@@ -58,7 +57,7 @@ describe('DeFiChain Address Integration Testing', () => {
     for (let x = 0; x < 5; x += 1) {
       const initialResponse = await testing.inject({
         method: 'GET',
-        url: `${WALLET_ENDPOINT}generate-address?network=${EnvironmentNetwork.LocalPlayground}`,
+        url: `${WALLET_ENDPOINT}generate-address`,
       });
 
       expect(initialResponse.statusCode).toStrictEqual(x < 3 ? 200 : 429);

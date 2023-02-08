@@ -6,17 +6,20 @@ import { ConfigService } from '@nestjs/config';
 import { EnvironmentNetwork, getBip32Option, getJellyfishNetwork } from '@waveshq/walletkit-core';
 import { WalletPersistenceDataI, WalletType } from '@waveshq/walletkit-ui';
 
+import { NetworkContainer } from '../NetworkContainer';
 import { WhaleApiService } from '../services/WhaleApiService';
 
 @Injectable()
-export class WhaleWalletProvider {
-  constructor(private readonly whaleClient: WhaleApiService, private readonly configService: ConfigService) {}
+export class WhaleWalletProvider extends NetworkContainer {
+  constructor(private readonly whaleClient: WhaleApiService, private readonly configService: ConfigService) {
+    super(configService);
+  }
 
-  createWallet(network: EnvironmentNetwork = EnvironmentNetwork.MainNet): WhaleWalletAccount {
-    const mnemonic = this.configService.get(`defichain.${network}`);
-    const data = this.toData(mnemonic.split(' '), network);
-    const provider = this.initProvider(data, network);
-    return this.initJellyfishWallet(provider, network).get(1);
+  createWallet(): WhaleWalletAccount {
+    const mnemonic = this.configService.getOrThrow<string>(`defichain.key`);
+    const data = this.toData(mnemonic.split(' '), this.network);
+    const provider = this.initProvider(data, this.network);
+    return this.initJellyfishWallet(provider, this.network).get(1);
   }
 
   private initProvider(
@@ -46,10 +49,7 @@ export class WhaleWalletProvider {
     provider: WalletHdNodeProvider<HdNode>,
     network: EnvironmentNetwork,
   ): JellyfishWallet<WhaleWalletAccount, HdNode> {
-    const accountProvider = new WhaleWalletAccountProvider(
-      this.whaleClient.getClient(network),
-      getJellyfishNetwork(network),
-    );
+    const accountProvider = new WhaleWalletAccountProvider(this.whaleClient.getClient(), getJellyfishNetwork(network));
     return new JellyfishWallet(provider, accountProvider);
   }
 }

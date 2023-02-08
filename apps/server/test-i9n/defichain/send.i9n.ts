@@ -1,5 +1,4 @@
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 
 import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
@@ -22,10 +21,10 @@ describe('DeFiChain Send Transaction Testing', () => {
 
   beforeAll(async () => {
     defichain = await new DeFiChainStubContainer().start();
-    const localWhaleURL = await defichain.getWhaleURL();
+    const whaleURL = await defichain.getWhaleURL();
     const dynamicModule = TestingModule.register(
       buildTestConfig({
-        defichain: { localWhaleURL, localDefichainKey: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+        defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
       }),
     );
     testing = new BridgeServerTestingApp(dynamicModule);
@@ -33,7 +32,7 @@ describe('DeFiChain Send Transaction Testing', () => {
 
     sendService = app.get<SendService>(SendService);
     whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
-    wallet = whaleWalletProvider.createWallet(EnvironmentNetwork.LocalPlayground);
+    wallet = whaleWalletProvider.createWallet();
     fromWallet = await wallet.getAddress();
   });
 
@@ -62,7 +61,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     await defichain.generateBlock();
 
     // Send 1 BTC to specified address
-    const txid = await sendService.send(toAddress, token, EnvironmentNetwork.LocalPlayground);
+    const txid = await sendService.send(toAddress, token);
     expect(txid).toBeDefined();
 
     await defichain.generateBlock();
@@ -82,7 +81,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     await defichain.generateBlock();
 
     // Send 0.1 DFI to specified address
-    const txid = await sendService.send(toAddress, token, EnvironmentNetwork.LocalPlayground);
+    const txid = await sendService.send(toAddress, token);
     expect(txid).toBeDefined();
 
     await defichain.generateBlock();

@@ -1,5 +1,3 @@
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
-
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
@@ -11,11 +9,11 @@ describe('DeFiChain Stats Testing', () => {
   jest.setTimeout(3600000);
   beforeAll(async () => {
     defichain = await new DeFiChainStubContainer().start();
-    const localWhaleURL = await defichain.getWhaleURL();
+    const whaleURL = await defichain.getWhaleURL();
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
-          defichain: { localWhaleURL, localDefichainKey: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
         }),
       ),
     );
@@ -31,19 +29,9 @@ describe('DeFiChain Stats Testing', () => {
   it('should be able to make calls to DeFiChain server', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `/defichain/stats?network=${EnvironmentNetwork.LocalPlayground}`,
+      url: `/defichain/stats`,
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);
-  });
-
-  // TODO: Check why network validation fails on unit tests but works on actual server
-  it.skip('should fail network validation', async () => {
-    const initialResponse = await testing.inject({
-      method: 'GET',
-      url: '/defichain/stats?network=DevTest',
-    });
-    await expect(initialResponse.statusCode).toStrictEqual(500);
-    await expect(initialResponse.statusMessage).toStrictEqual('Internal Server Error');
   });
 });

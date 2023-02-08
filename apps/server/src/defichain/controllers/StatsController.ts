@@ -1,15 +1,18 @@
 import { stats } from '@defichain/whale-api-client';
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
-import { NetworkDto } from '../model/NetworkDto';
+import { NetworkContainer } from '../NetworkContainer';
 import { WhaleApiService } from '../services/WhaleApiService';
 
 @Controller('/stats')
-export class StatsController {
-  constructor(private readonly whaleClient: WhaleApiService) {}
+export class StatsController extends NetworkContainer {
+  constructor(private readonly whaleClient: WhaleApiService, private readonly configService: ConfigService) {
+    super(configService);
+  }
 
   @Get()
-  async get(@Query() query: NetworkDto): Promise<stats.StatsData> {
-    return this.whaleClient.getClient(query.network).stats.get();
+  async get(): Promise<stats.StatsData> {
+    return this.whaleClient.getClient().stats.get();
   }
 }
