@@ -28,12 +28,10 @@ export function buildTestConfig({
       network: defichain?.network ?? EnvironmentNetwork.LocalPlayground,
     },
     ethereum: {
-      testnet: {
-        rpcUrl: startedHardhatContainer?.rpcUrl ?? '',
-        contracts: {
-          bridgeProxy: {
-            address: testnet?.bridgeContractAddress ?? '',
-          },
+      rpcUrl: startedHardhatContainer?.rpcUrl ?? '',
+      contracts: {
+        bridgeProxy: {
+          address: testnet?.bridgeContractAddress ?? '',
         },
       },
     },

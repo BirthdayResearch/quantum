@@ -8,20 +8,11 @@ export function appConfig() {
       network: process.env.DEFICHAIN_NETWORK,
     },
     ethereum: {
-      testnet: {
-        rpcUrl: process.env.ETHEREUM_RPC_URL,
-        contracts: {
-          bridgeProxy: {
-            // https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C
-            address: '0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C',
-          },
-        },
-      },
-      mainnet: {
-        contracts: {
-          bridgeProxy: {
-            address: undefined,
-          },
+      rpcUrl: process.env.ETHEREUM_RPC_URL,
+      contracts: {
+        bridgeProxy: {
+          //
+          address: process.env.BRIDGE_PROXY_ADDRESS,
         },
       },
     },
