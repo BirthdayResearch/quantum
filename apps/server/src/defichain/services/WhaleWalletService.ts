@@ -1,5 +1,6 @@
 import { fromAddress } from '@defichain/jellyfish-address';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { PathIndex } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
 import { Prisma } from '../../prisma/Client';
@@ -13,7 +14,7 @@ export class WhaleWalletService {
     private readonly clientProvider: WhaleApiClientProvider,
   ) {}
 
-  async generateAddress(refundAddress: string, network: EnvironmentNetwork): Promise<{ address: string }> {
+  async generateAddress(refundAddress: string, network: EnvironmentNetwork): Promise<Omit<PathIndex, 'id' | 'index'>> {
     try {
       const decodedAddress = fromAddress(refundAddress, this.clientProvider.remapNetwork(network));
       if (decodedAddress === undefined) {
@@ -26,14 +27,18 @@ export class WhaleWalletService {
       const nextIndex = index ? index + 1 : 2;
       const wallet = this.whaleWalletProvider.createWallet(nextIndex);
       const address = await wallet.getAddress();
-      await Prisma.pathIndex.create({
+      const data = await Prisma.pathIndex.create({
         data: {
           index: nextIndex,
           address,
           refundAddress,
         },
       });
-      return { address };
+      return {
+        address: data.address,
+        createdAt: data.createdAt,
+        refundAddress: data.refundAddress,
+      };
     } catch (e: any) {
       // TODO: Improve error handling
       throw new HttpException(
@@ -49,9 +54,7 @@ export class WhaleWalletService {
     }
   }
 
-  async getAddressDetails(
-    address: string,
-  ): Promise<{ address: string; refundAddress: string; createdAt: Date } | null> {
+  async getAddressDetails(address: string): Promise<Omit<PathIndex, 'id' | 'index'>> {
     try {
       const data = await Prisma.pathIndex.findFirst({
         where: {

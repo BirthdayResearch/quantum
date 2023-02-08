@@ -29,6 +29,15 @@ function debounce(func, wait) {
   };
 }
 
+function getTimeDifferance(createdAt?: Date): number {
+  if (createdAt) {
+    return dayjs(createdAt)
+      .add(DFC_TO_ERC_RESET_FORM_TIME_LIMIT, "millisecond")
+      .diff(dayjs());
+  }
+  return 0;
+}
+
 function VerifyButton({
   onVerify,
   disabled = false,
@@ -82,9 +91,9 @@ export default function StepTwoSendConfirmation({
   const [isLoading, setIsLoading] = useState(false);
   const { networkEnv } = useNetworkEnvironmentContext();
   const { DFC_ADDR_KEY } = useBridgeFormStorageKeys();
-  const createdBeforeInMSec = dayjs(addressDetail?.createdAt)
-    .add(DFC_TO_ERC_RESET_FORM_TIME_LIMIT, "millisecond")
-    .diff(dayjs());
+  const [createdBeforeInMSec, setCreatedBeforeInMSec] = useState(
+    getTimeDifferance(addressDetail?.createdAt)
+  );
   const [addressGenerationError, setAddressGenerationError] = useState("");
   const [generateAddress] = useGenerateAddressMutation();
   const { copy } = useCopyToClipboard();
@@ -108,10 +117,11 @@ export default function StepTwoSendConfirmation({
         setIsLoading(false);
       } else {
         try {
-          const { address } = await generateAddress({
+          const { address, createdAt } = await generateAddress({
             network: networkEnv,
             refundAddress,
           }).unwrap();
+          setCreatedBeforeInMSec(getTimeDifferance(createdAt));
           setStorageItem<string>(DFC_ADDR_KEY, address);
           setAddressGenerationError("");
           setDfcUniqueAddress(address);
@@ -192,14 +202,16 @@ export default function StepTwoSendConfirmation({
                           {dfcUniqueAddress}
                         </button>
                       </Tooltip>
-                      <div className="text-center">
-                        <TimeLimitCounter
-                          time={createdBeforeInMSec}
-                          onTimeElapsed={() => {
-                            // TODO Harsh add reload logic here
-                          }}
-                        />
-                      </div>
+                      {createdBeforeInMSec > 0 && (
+                        <div className="text-center">
+                          <TimeLimitCounter
+                            time={createdBeforeInMSec}
+                            onTimeElapsed={() => {
+                              // TODO Harsh add reload logic here
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </>
                 )

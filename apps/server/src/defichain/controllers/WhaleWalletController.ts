@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
+import { PathIndex } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
 import { WhaleWalletService } from '../services/WhaleWalletService';
@@ -15,14 +16,12 @@ export class WhaleWalletController {
 
   @Throttle(5, 60)
   @Get('address/generate')
-  async get(@Query() query: { refundAddress: string }): Promise<{ address: string }> {
+  async get(@Query() query: { refundAddress: string }): Promise<Omit<PathIndex, 'id' | 'index'>> {
     return this.whaleWalletService.generateAddress(query.refundAddress, this.network);
   }
 
   @Get('address/:address')
-  async getAddressDetailById(
-    @Param() params: { address: string },
-  ): Promise<{ address: string; refundAddress: string; createdAt: Date } | null> {
+  async getAddressDetailById(@Param() params: { address: string }): Promise<Omit<PathIndex, 'id' | 'index'>> {
     return this.whaleWalletService.getAddressDetails(params.address);
   }
 }

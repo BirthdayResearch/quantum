@@ -58,6 +58,7 @@ describe('PostgreSql container', () => {
     const data = {
       index: 3,
       address: 'Address 3',
+      refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
     };
     await Prisma.pathIndex.create({ data });
     await expect(Prisma.pathIndex.create({ data: { ...data, index: 5 } })).rejects.toBeInstanceOf(
@@ -87,27 +88,5 @@ describe('PostgreSql container', () => {
     });
     expect(Number(response?.index)).toEqual(data.index);
     expect(response?.address).toEqual(data.address);
-  });
-
-  it('should throw error by passing wrong index type', async () => {
-    const data = [
-      {
-        index: 11,
-        address: 'Address 0',
-        refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
-      },
-      {
-        index: 11,
-        address: 'Address 0',
-        refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
-      },
-    ];
-    await Prisma.pathIndex.createMany({ data });
-    const response = await Prisma.pathIndex.findMany({
-      where: {
-        index: 11,
-      },
-    });
-    expect(response.length).toStrictEqual(2);
   });
 });

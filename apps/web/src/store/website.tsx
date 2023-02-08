@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
-import { EnvironmentNetwork } from "@waveshq/walletkit-core";
+import { AddressDetails } from "types";
 
 const staggeredBaseQuery = retry(
   fetchBaseQuery({
@@ -14,7 +14,7 @@ export const bridgeApi = createApi({
   reducerPath: "website",
   baseQuery: staggeredBaseQuery,
   endpoints: (builder) => ({
-    generateAddress: builder.mutation<{ address: string }, any>({
+    generateAddress: builder.mutation<AddressDetails, any>({
       query: ({ network, refundAddress }) => ({
         url: "/wallet/address/generate",
         params: { network, refundAddress },
@@ -26,15 +26,7 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 3 },
     }),
-    getAddressDetail: builder.mutation<
-      {
-        address: string;
-        network: EnvironmentNetwork;
-        refundAddress: string;
-        createdAt: Date;
-      },
-      any
-    >({
+    getAddressDetail: builder.mutation<AddressDetails, any>({
       query: ({ network, address }) => ({
         url: `/wallet/address/${address}`,
         params: { network },

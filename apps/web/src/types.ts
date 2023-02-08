@@ -24,7 +24,6 @@ export interface TokenDetailI {
 
 export interface AddressDetails {
   address: string;
-  network: EnvironmentNetwork;
   refundAddress: string;
   createdAt: Date;
 }

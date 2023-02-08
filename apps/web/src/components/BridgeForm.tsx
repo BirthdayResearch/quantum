@@ -203,24 +203,31 @@ export default function BridgeForm() {
     }
   }, [networkEnv]);
 
-  useEffect(() => {
-    // fetch address detail
-    const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
-    if (localDfcAddress) {
-      getAddressDetail({ address: localDfcAddress, network: networkEnv })
-        .unwrap()
-        .then((res) => {
-          setAddressDetail(res);
-          const diff = dayjs().diff(dayjs(addressDetail?.createdAt));
-          if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
-            setStorageItem(TXN_KEY, null);
-            setStorageItem(DFC_ADDR_KEY, null);
-          }
-        })
-        .catch(() => {
-          setAddressDetail(undefined);
-        });
+  const fetchAddressDetail = async () => {
+    try {
+      const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
+      if (localDfcAddress) {
+        const addressDetailRes = await getAddressDetail({
+          address: localDfcAddress,
+          network: networkEnv,
+        }).unwrap();
+        setAddressDetail(addressDetailRes);
+        const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
+        if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
+          setStorageItem(TXN_KEY, null);
+          setStorageItem(DFC_ADDR_KEY, null);
+        }
+      } else {
+        setAddressDetail(undefined);
+      }
+    } catch {
+      setAddressDetail(undefined);
     }
+  };
+
+  useEffect(() => {
+    // fetch address details
+    fetchAddressDetail();
   }, [networkEnv]);
 
   const { y, reference, floating, strategy, refs } = useFloating({
