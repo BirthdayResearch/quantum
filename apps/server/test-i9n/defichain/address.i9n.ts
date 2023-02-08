@@ -58,7 +58,7 @@ describe('DeFiChain Address Integration Testing', () => {
   it('should be able to generate a wallet address', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
     await expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
@@ -69,7 +69,7 @@ describe('DeFiChain Address Integration Testing', () => {
   it('should be able to generate a wallet address for a specific network', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);
@@ -83,7 +83,7 @@ describe('DeFiChain Address Integration Testing', () => {
     for (let x = 0; x < 5; x += 1) {
       const initialResponse = await testing.inject({
         method: 'GET',
-        url: `${WALLET_ENDPOINT}generate-address?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+        url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
       });
 
       expect(initialResponse.statusCode).toStrictEqual(x < 3 ? 200 : 429);
