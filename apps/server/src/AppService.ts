@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BigNumber, Contract, ethers, Event } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
 import { ETHERS_RPC_PROVIDER } from './modules/EthersModule';
@@ -30,36 +30,53 @@ export class AppService {
     return this.ethersRpcProvider.getBalance(address);
   }
 
-  async getAllEventsFromBlockNumber(): Promise<Event[]> {
+  async checkTransactionConfirmationStatus(transactionHash: string): Promise<boolean> {
+    const receipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+    const confirmed = receipt.status === 1;
+    if (!confirmed) {
+      throw new HttpException('Transaction Reverted', HttpStatus.BAD_REQUEST);
+    }
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-    const eventSignature = this.contract.filters.BRIDGE_TO_DEFI_CHAIN();
-    const lastCheckedBlockNumber = await this.prisma.blockNumber.findFirst({
+    const numberOfConfirmations = currentBlockNumber - receipt.blockNumber;
+
+    const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
       where: {
-        network: 'testnet',
+        transactionHash,
       },
     });
 
-    if (!lastCheckedBlockNumber) {
-      throw new HttpException('Service Unavailable', HttpStatus.SERVICE_UNAVAILABLE);
+    if (!txHashFound && numberOfConfirmations < 65) {
+      await this.prisma.bridgeEventTransactions.create({
+        data: {
+          transactionHash,
+          status: 'NOT_CONFIRMED',
+        },
+      });
+      return false;
     }
 
-    if (Number(lastCheckedBlockNumber.blockNumber) + 64 > currentBlockNumber) {
-      return [];
+    if (!txHashFound && numberOfConfirmations >= 65) {
+      await this.prisma.bridgeEventTransactions.create({
+        data: {
+          transactionHash,
+          status: 'CONFIRMED',
+        },
+      });
+      return true;
     }
 
-    // update last checked block number to currentBlockNumber - 65 if currentBlockNumber-64 > blockNumber in database
-    await this.prisma.blockNumber.update({
+    if (numberOfConfirmations < 65) {
+      return false;
+    }
+
+    await this.prisma.bridgeEventTransactions.update({
       where: {
-        network: 'testnet',
+        id: txHashFound?.id,
       },
       data: {
-        blockNumber: currentBlockNumber - 64,
+        status: 'CONFIRMED',
       },
     });
-    return this.contract.queryFilter(
-      eventSignature,
-      Number(lastCheckedBlockNumber.blockNumber),
-      currentBlockNumber - 65,
-    );
+    return true;
   }
 }

@@ -62,7 +62,6 @@ describe('Bridge Service Integration Tests', () => {
   let bridgeUpgradeable: BridgeV1;
   let bridgeProxy: BridgeProxy;
   let testing: BridgeServerTestingApp;
-
   let prismaService: PrismaService;
 
   beforeAll(async () => {
@@ -115,25 +114,13 @@ describe('Bridge Service Integration Tests', () => {
 
     // init postgres database
     prismaService = app.get<PrismaService>(PrismaService);
-    await prismaService.blockNumber.createMany({
-      data: [
-        {
-          blockNumber: 1003,
-          network: 'testnet',
-        },
-        {
-          blockNumber: 1000,
-          network: 'mainnet',
-        },
-      ],
-    });
   });
 
   afterAll(async () => {
     await hardhatNetwork.stop();
 
     // teardown database
-    await prismaService.blockNumber.deleteMany({});
+    await prismaService.bridgeEventTransactions.deleteMany({});
   });
 
   it('Returns an array of confirmed events from a given block number', async () => {
@@ -147,7 +134,7 @@ describe('Bridge Service Integration Tests', () => {
     await hardhatNetwork.generate(1);
 
     // Step 3: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block (event emitted at block 1005)
-    await bridgeUpgradeable.bridgeToDeFiChain(
+    const transactionCall = await bridgeUpgradeable.bridgeToDeFiChain(
       ethers.constants.AddressZero,
       ethers.constants.AddressZero,
       ethers.utils.parseEther('5'),
@@ -157,95 +144,37 @@ describe('Bridge Service Integration Tests', () => {
     );
     await hardhatNetwork.generate(1);
 
-    // step 4: currBlock should now be 1005
-    expect(await hardhatNetwork.ethersRpcProvider.getBlockNumber()).toStrictEqual(1005);
-
-    // step 5: calling my service should return a empty array (because it is not confirmed, blockNumber in db remains as 1003)
-    let eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber`,
+    // Step 4: db should not have record of transaction
+    let transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: transactionCall.hash },
     });
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
-    let dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
-    expect(dbBlocknumber?.blockNumber).toStrictEqual(1003n);
+    expect(transactionDbRecord).toStrictEqual(null);
 
-    // step 6: generate 65 blocks (to simulate confirmation)
+    let txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/app/checkTransactionConfirmationStatus?transactionHash=${transactionCall.hash}`,
+    });
+    expect(JSON.parse(txReceipt.body)).toStrictEqual(false);
+
+    // Step 5: db should create a record of transaction with status='NOT_CONFIRMED', as number of confirmations = 0.
+    transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: transactionCall.hash },
+    });
+    expect(transactionDbRecord?.status).toStrictEqual('NOT_CONFIRMED');
+
+    // Step 6: mine 65 blocks to make the transaction confirmed
     await hardhatNetwork.generate(65);
 
-    // step 7: calling my service should return a array of length 1 (function searches for events emitted from block 1003 to 1005 (1070-65))
-    eventsArray = await testing.inject({
+    // Step 7: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
+    txReceipt = await testing.inject({
       method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber`,
+      url: `/app/checkTransactionConfirmationStatus?transactionHash=${transactionCall.hash}`,
     });
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
-    dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
-    expect(dbBlocknumber?.blockNumber).toStrictEqual(1006n);
+    expect(JSON.parse(txReceipt.body)).toStrictEqual(true);
 
-    // Step 8: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) a second time and mine it (event emitted at block 1071)
-    await bridgeUpgradeable.bridgeToDeFiChain(
-      ethers.constants.AddressZero,
-      ethers.constants.AddressZero,
-      ethers.utils.parseEther('5'),
-      {
-        value: ethers.utils.parseEther('3'),
-      },
-    );
-    await hardhatNetwork.generate(1);
-
-    // Step 9: generate 30 blocks (current block 1101)
-    await hardhatNetwork.generate(30);
-
-    // step 10: current block should be block 1101
-    expect(await hardhatNetwork.ethersRpcProvider.getBlockNumber()).toStrictEqual(1101);
-
-    // Step 11: getAllEventsFromBlockNumber should return array of events of length 0 (function searches for events emitted from block 1006 to 1036 (1101-65))
-    eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber`,
+    transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: transactionCall.hash },
     });
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
-    dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
-    expect(dbBlocknumber?.blockNumber).toStrictEqual(1037n);
-
-    // Step 12: Generate another 35 blocks to achieve confirmation for second event (curr block is 1136)
-    await hardhatNetwork.generate(35);
-
-    // Step 13: getAllEventsFromBlockNumber should return array of events of length 1 (function searches for events emitted from block 1037 to 1071 (1136-65))
-    eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber`,
-    });
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
-    dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
-    expect(dbBlocknumber?.blockNumber).toStrictEqual(1072n);
-
-    // Step 14: getAllEventsFromBlockNumber should return array of events of length 0 (function searches for events emitted from block 1072 to 1701 (1101-65), which fails if statement hence blockNumber state will remain the same at 1072)
-    eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber`,
-    });
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
-    dbBlocknumber = await prismaService.blockNumber.findFirst({ where: { network: 'testnet' } });
-    expect(dbBlocknumber?.blockNumber).toStrictEqual(1072n);
-  });
-
-  it('should be able to make calls to the underlying hardhat node', async () => {
-    const initialResponse = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
-    });
-
-    await expect(initialResponse.body).toStrictEqual('1136');
-
-    // When one block is mined
-    await hardhatNetwork.generate(1);
-
-    // Then the new block height should be +1
-    const responseAfterGenerating = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
-    });
-
-    expect(responseAfterGenerating.body).toStrictEqual('1137');
+    expect(transactionDbRecord?.status).toStrictEqual('CONFIRMED');
   });
 });

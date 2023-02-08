@@ -15,7 +15,7 @@ log() {
 log "Spinning up local database..."
 
 # Start local dev db container with dev credentials
-POSTGRES_IMAGE=postgres:14.5
+POSTGRES_IMAGE=postgres:14.6-alpine
 POSTGRES_PORT=5432
 POSTGRES_DATABASE=bridge-db
 POSTGRES_USER=postgres
