@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BigNumber, Contract, ethers, Event } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
@@ -38,23 +38,28 @@ export class AppService {
         network: 'testnet',
       },
     });
-    // update last checked block number to currentBlockNumber - 64 if currentBlockNumber-64 > blockNumber in database
-    if (lastCheckedBlockNumber && currentBlockNumber - 64 > Number(lastCheckedBlockNumber.blockNumber)) {
-      await this.prisma.blockNumber.update({
-        where: {
-          network: 'testnet',
-        },
-        data: {
-          blockNumber: currentBlockNumber - 64,
-        },
-      });
-      return this.contract.queryFilter(
-        eventSignature,
-        Number(lastCheckedBlockNumber.blockNumber),
-        currentBlockNumber - 65,
-      );
+
+    if (!lastCheckedBlockNumber) {
+      throw new HttpException('Service Unavailable', HttpStatus.SERVICE_UNAVAILABLE);
     }
 
-    return [];
+    if (Number(lastCheckedBlockNumber.blockNumber) + 64 > currentBlockNumber) {
+      return [];
+    }
+
+    // update last checked block number to currentBlockNumber - 65 if currentBlockNumber-64 > blockNumber in database
+    await this.prisma.blockNumber.update({
+      where: {
+        network: 'testnet',
+      },
+      data: {
+        blockNumber: currentBlockNumber - 64,
+      },
+    });
+    return this.contract.queryFilter(
+      eventSignature,
+      Number(lastCheckedBlockNumber.blockNumber),
+      currentBlockNumber - 65,
+    );
   }
 }

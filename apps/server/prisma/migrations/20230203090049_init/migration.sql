@@ -13,12 +13,12 @@ CREATE TABLE "PathIndex" (
 );
 
 -- CreateTable
-CREATE TABLE "blockNumber" (
+CREATE TABLE "BlockNumber" (
     "network" TEXT NOT NULL,
     "blockNumber" BIGINT NOT NULL DEFAULT 1000,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "blockNumber_pkey" PRIMARY KEY ("network")
+    CONSTRAINT "BlockNumber_pkey" PRIMARY KEY ("network")
 );
 
 -- CreateIndex

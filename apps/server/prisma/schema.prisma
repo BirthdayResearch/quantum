@@ -21,7 +21,7 @@ model PathIndex {
   createdAt DateTime @default(now())
 }
 
-model blockNumber {
+model BlockNumber {
   network     String   @id
   blockNumber BigInt   @default(1000)
   createdAt   DateTime @default(now())
