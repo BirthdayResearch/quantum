@@ -110,10 +110,10 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param timestamp TimeStamp of the transaction
      */
     event BRIDGE_TO_DEFI_CHAIN(
-        bytes defiAddress,
+        bytes indexed defiAddress,
         address indexed tokenAddress,
         uint256 indexed amount,
-        uint256 indexed timestamp
+        uint256 timestamp
     );
 
     /**
@@ -139,7 +139,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     event CHANGE_DAILY_ALLOWANCE(
         address indexed supportedToken,
         uint256 indexed changeDailyAllowance,
-        uint256 previousTimeStamp,
+        uint256 indexed previousTimeStamp,
         uint256 newTimeStamp
     );
 
@@ -149,7 +149,11 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param withdrawalTokenAddress Address of the token that being withdrawed
      * @param withdrawalAmount Withdrawal amount of token
      */
-    event WITHDRAWAL_BY_OWNER(address ownerAddress, address withdrawalTokenAddress, uint256 withdrawalAmount);
+    event WITHDRAWAL_BY_OWNER(
+        address indexed ownerAddress,
+        address indexed withdrawalTokenAddress,
+        uint256 indexed withdrawalAmount
+    );
 
     /**
      * @notice Emitted when relayer address changes by only Admin accounts
@@ -163,7 +167,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param oldTxFee Old transcation fee in bps
      * @param newTxFee New transcation fee in bps
      */
-    event TRANSACTION_FEE_CHANGED(uint256 oldTxFee, uint256 newTxFee);
+    event TRANSACTION_FEE_CHANGED(uint256 indexed oldTxFee, uint256 indexed newTxFee);
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
@@ -358,7 +362,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _amount Ideally will be the value of erc20 token
      * @return netAmountInWei net balance after the fee amount taken
      */
-    function amountAfterFees(uint256 _amount) private view returns (uint256 netAmountInWei) {
+    function amountAfterFees(uint256 _amount) internal view returns (uint256 netAmountInWei) {
         netAmountInWei = _amount - (_amount * transactionFee) / 10000;
     }
 }
