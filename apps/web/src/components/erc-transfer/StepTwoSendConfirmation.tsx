@@ -107,26 +107,26 @@ export default function StepTwoSendConfirmation({
         setDfcUniqueAddress(localDfcAddress);
         setIsLoading(false);
       } else {
-        generateAddress({ network: networkEnv, refundAddress })
-          .unwrap()
-          .then((data) => {
-            setStorageItem<string>(DFC_ADDR_KEY, data.address);
-            setAddressGenerationError("");
-            setDfcUniqueAddress(data.address);
-          })
-          .catch(({ data }) => {
-            if (data?.statusCode === HttpStatusCode.TooManyRequests) {
-              setAddressGenerationError(
-                "Address generation limit reached, please wait for a minute and try again"
-              );
-            } else {
-              setAddressGenerationError(data.error);
-            }
-            setDfcUniqueAddress("");
-          })
-          .finally(() => {
-            setIsLoading(false);
-          });
+        try {
+          const { address } = await generateAddress({
+            network: networkEnv,
+            refundAddress,
+          }).unwrap();
+          setStorageItem<string>(DFC_ADDR_KEY, address);
+          setAddressGenerationError("");
+          setDfcUniqueAddress(address);
+        } catch ({ data }) {
+          if (data?.statusCode === HttpStatusCode.TooManyRequests) {
+            setAddressGenerationError(
+              "Address generation limit reached, please wait for a minute and try again"
+            );
+          } else {
+            setAddressGenerationError(data.error);
+          }
+          setDfcUniqueAddress("");
+        } finally {
+          setIsLoading(false);
+        }
       }
     }, 200),
     []

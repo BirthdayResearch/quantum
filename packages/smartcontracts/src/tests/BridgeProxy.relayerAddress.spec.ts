@@ -19,7 +19,7 @@ describe('Relayer address change tests', () => {
       expect(await proxyBridge.relayerAddress()).to.equal(defaultAdminSigner.address);
       await expect(
         proxyBridge.connect(defaultAdminSigner).changeRelayerAddress('0x0000000000000000000000000000000000000000'),
-      ).to.be.revertedWithCustomError(proxyBridge, 'NON_ZERO_ADDRESS');
+      ).to.be.revertedWithCustomError(proxyBridge, 'ZERO_ADDRESS');
     });
   });
 
@@ -37,7 +37,7 @@ describe('Relayer address change tests', () => {
       expect(await proxyBridge.relayerAddress()).to.equal(defaultAdminSigner.address);
       await expect(
         proxyBridge.connect(operationalAdminSigner).changeRelayerAddress('0x0000000000000000000000000000000000000000'),
-      ).to.be.revertedWithCustomError(proxyBridge, 'NON_ZERO_ADDRESS');
+      ).to.be.revertedWithCustomError(proxyBridge, 'ZERO_ADDRESS');
     });
   });
 

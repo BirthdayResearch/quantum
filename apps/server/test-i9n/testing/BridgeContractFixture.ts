@@ -9,7 +9,6 @@ import {
   TestToken,
   TestToken__factory,
 } from 'smartcontracts';
-import { getCurrentTimeStamp } from 'smartcontracts/src/tests/testUtils/mathUtils';
 
 export class BridgeContractFixture {
   private contractManager: EvmContractManager;
@@ -131,9 +130,16 @@ export class BridgeContractFixture {
     // Create a reference to the implementation contract via proxy
     const bridge = BridgeV1__factory.connect(bridgeProxy.address, this.adminAndOperationalSigner);
 
+    /**
+     * We need to get the currentBlockTimestamp to use as a reference since Hardhat increments the
+     * block timestamp when generating blocks
+     */
+    const currentBlock = await this.hardhatNetwork.ethersRpcProvider.getBlock('latest');
+    const currentBlockTimestamp = currentBlock.timestamp;
+
     // Adding MUSDT and MUSDC as supported tokens
-    await bridge.addSupportedTokens(musdt.address, constants.MaxInt256, getCurrentTimeStamp());
-    await bridge.addSupportedTokens(musdc.address, constants.MaxInt256, getCurrentTimeStamp());
+    await bridge.addSupportedTokens(musdt.address, constants.MaxInt256, currentBlockTimestamp + 1);
+    await bridge.addSupportedTokens(musdc.address, constants.MaxInt256, currentBlockTimestamp + 1);
 
     await this.hardhatNetwork.generate(1);
 

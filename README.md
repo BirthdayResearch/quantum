@@ -1,13 +1,13 @@
 [![CI](https://github.com/WavesHQ/bridge/actions/workflows/ci.yml/badge.svg)](https://github.com/WavesHQ/bridge/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/WavesHQ/bridge/branch/main/graph/badge.svg?token=OXLL8IBZQV)](https://codecov.io/gh/WavesHQ/bridge)
 
-# [DeFiChain Bridge](https://bridge.defichain.com)
+# [Quantum Bridge](https://quantumbridge.app)
 
-> https://bridge.defichain.com
+> https://quantumbridge.app
 
 [![Netlify Status](https://api.netlify.com/api/v1/badges/4eaec04e-1416-4c65-843e-d7413fb81d2c/deploy-status)](https://app.netlify.com/sites/defichain-erc20-bridge/deploys)
 
-## DeFiChain ERC-20 Bridge
+## Quantum Bridge
 
 All smart contracts will be deployed on Goerli testnet for testing purposes.
 
@@ -45,8 +45,10 @@ Once approved, user will call the `bridgeToDeFiChain()` function with following 
 
 ### Add supported token
 
-Only addresses with the Admin and Operational role can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for a ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
+Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for an ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
 User are not allowed to bridge more than the dailyAllowance per day.
+
+For `Instant support`, administrators can set `_startAllowanceTimeFrom` to the current timestamp plus 60 seconds or more if the network is congested when adding a supported token. This will result in immediate support for the token. The additional 60 seconds account for the time required by the network to execute this transaction.
 
 ### Remove supported token
 
@@ -108,6 +110,12 @@ To Mint the test tokens and Approve the Bridge Contract devs will have to run a 
 
 MWBTC Contract address: [0xD723D679d1A3b23d0Aafe4C0812f61DDA84fc043](https://goerli.etherscan.io/address/0xd723d679d1a3b23d0aafe4c0812f61dda84fc043)
 
+### WETH
+
+WETH Contract address: [0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6](https://goerli.etherscan.io/address/0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6)
+
+Devs need to call the deposit() and input desired ETH need to wrapped.
+
 ### MUSDT
 
 MUSDT Contract address: [0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF](https://goerli.etherscan.io/address/0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF)
@@ -122,7 +130,7 @@ BridgeV1 Contract address: [0xE029B5156c2e597c72f7c8D279411e1fD9a30126](https://
 
 ### BridgeProxy
 
-BridgeProxy Contract addrress: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C)
+BridgeProxy Contract address: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C)
 
 ## Fund Bridge ERC20 tokens
 

@@ -1,14 +1,13 @@
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 
 import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
 import { SendService } from '../../src/defichain/services/SendService';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
-import { DeFiChainStubContainer } from './DeFiChainStubContainer';
+import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
 
-let defichain: DeFiChainStubContainer;
+let defichain: StartedDeFiChainStubContainer;
 let testing: BridgeServerTestingApp;
 
 describe('DeFiChain Send Transaction Testing', () => {
@@ -21,17 +20,19 @@ describe('DeFiChain Send Transaction Testing', () => {
   const toAddress = 'bcrt1q8rfsfny80jx78cmk4rsa069e2ckp6rn83u6ut9';
 
   beforeAll(async () => {
-    defichain = await new DeFiChainStubContainer();
-    const localWhaleURL = await defichain.start();
+    defichain = await new DeFiChainStubContainer().start();
+    const whaleURL = await defichain.getWhaleURL();
     const dynamicModule = TestingModule.register(
-      buildTestConfig({ defichain: { localWhaleURL, localDefichainKey: DeFiChainStubContainer.LOCAL_MNEMONIC } }),
+      buildTestConfig({
+        defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+      }),
     );
     testing = new BridgeServerTestingApp(dynamicModule);
     const app = await testing.start();
 
     sendService = app.get<SendService>(SendService);
     whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
-    wallet = whaleWalletProvider.createWallet(EnvironmentNetwork.LocalPlayground);
+    wallet = whaleWalletProvider.createWallet();
     fromWallet = await wallet.getAddress();
   });
 
@@ -60,7 +61,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     await defichain.generateBlock();
 
     // Send 1 BTC to specified address
-    const txid = await sendService.send(toAddress, token, EnvironmentNetwork.LocalPlayground);
+    const txid = await sendService.send(toAddress, token);
     expect(txid).toBeDefined();
 
     await defichain.generateBlock();
@@ -80,7 +81,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     await defichain.generateBlock();
 
     // Send 0.1 DFI to specified address
-    const txid = await sendService.send(toAddress, token, EnvironmentNetwork.LocalPlayground);
+    const txid = await sendService.send(toAddress, token);
     expect(txid).toBeDefined();
 
     await defichain.generateBlock();

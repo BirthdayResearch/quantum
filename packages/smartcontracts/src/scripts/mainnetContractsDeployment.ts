@@ -18,10 +18,10 @@ const RELAYER_ADDRESS = '';
 async function main() {
   const bridgeV1 = await bridgeImplementation();
   await deployBridgeProxy({
-    AdminAddress: ADMIN_ADDRESS,
-    OperationalAddress: OPERATIONAL_ADDRESS,
-    RelayerAddress: RELAYER_ADDRESS,
-    BridgeV1Address: bridgeV1.contractAddress,
+    adminAddress: ADMIN_ADDRESS,
+    operationalAddress: OPERATIONAL_ADDRESS,
+    relayerAddress: RELAYER_ADDRESS,
+    bridgeV1Address: bridgeV1.address,
   });
 }
 

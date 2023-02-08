@@ -33,7 +33,7 @@ export class WhaleApiClientProvider {
     const oceanOptions =
       network === EnvironmentNetwork.LocalPlayground
         ? ({
-            url: this.configService.getOrThrow('defichain.localWhaleURL'),
+            url: this.configService.getOrThrow('defichain.whaleURL'),
             network: 'regtest',
             version: 'v0',
           } as WhaleApiClientOptions)

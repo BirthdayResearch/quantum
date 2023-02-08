@@ -1,7 +1,6 @@
 import { fromAddress } from '@defichain/jellyfish-address';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Network } from '@prisma/client';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core/dist/api/environment';
+import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
 import { Prisma } from '../../prisma/Client';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
@@ -14,30 +13,23 @@ export class WhaleWalletService {
     private readonly clientProvider: WhaleApiClientProvider,
   ) {}
 
-  async generateAddress(
-    refundAddress: string,
-    network: EnvironmentNetwork = EnvironmentNetwork.MainNet,
-  ): Promise<{ address: string }> {
+  async generateAddress(refundAddress: string, network: EnvironmentNetwork): Promise<{ address: string }> {
     try {
       const decodedAddress = fromAddress(refundAddress, this.clientProvider.remapNetwork(network));
       if (decodedAddress === undefined) {
         throw new Error(`Invalid refund address for DeFiChain ${network}`);
       }
       const lastIndex = await Prisma.pathIndex.findFirst({
-        where: {
-          network,
-        },
         orderBy: [{ index: 'desc' }],
       });
       const index = lastIndex?.index;
       const nextIndex = index ? index + 1 : 2;
-      const wallet = this.whaleWalletProvider.createWallet(network, nextIndex);
+      const wallet = this.whaleWalletProvider.createWallet(nextIndex);
       const address = await wallet.getAddress();
       await Prisma.pathIndex.create({
         data: {
           index: nextIndex,
           address,
-          network,
           refundAddress,
         },
       });
@@ -59,17 +51,14 @@ export class WhaleWalletService {
 
   async getAddressDetails(
     address: string,
-    network: EnvironmentNetwork = EnvironmentNetwork.MainNet,
-  ): Promise<{ address: string; network: Network; refundAddress: string; createdAt: Date } | null> {
+  ): Promise<{ address: string; refundAddress: string; createdAt: Date } | null> {
     try {
       const data = await Prisma.pathIndex.findFirst({
         where: {
           address,
-          network,
         },
         select: {
           address: true,
-          network: true,
           refundAddress: true,
           createdAt: true,
         },

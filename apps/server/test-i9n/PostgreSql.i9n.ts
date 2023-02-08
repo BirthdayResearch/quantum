@@ -1,5 +1,4 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
-import { Network } from '@prisma/client';
 import { PrismaClientKnownRequestError, PrismaClientValidationError } from '@prisma/client/runtime';
 import { execSync } from 'child_process';
 
@@ -32,13 +31,11 @@ describe('PostgreSql container', () => {
       {
         index: 0,
         address: 'Address 0',
-        network: Network.Playground,
         refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
       },
       {
         index: 1,
         address: 'Address 1',
-        network: Network.Playground,
         refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
       },
     ];
@@ -51,7 +48,6 @@ describe('PostgreSql container', () => {
     const data = {
       index: 2,
       address: 'Address 2 duplicate index',
-      network: Network.Playground,
       refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
     };
     await Prisma.pathIndex.create({ data });
@@ -62,7 +58,6 @@ describe('PostgreSql container', () => {
     const data = {
       index: 3,
       address: 'Address 3',
-      network: Network.Playground,
     };
     await Prisma.pathIndex.create({ data });
     await expect(Prisma.pathIndex.create({ data: { ...data, index: 5 } })).rejects.toBeInstanceOf(
@@ -74,7 +69,6 @@ describe('PostgreSql container', () => {
     const data = {
       index: 'string',
       address: 'Address string',
-      network: Network.Playground,
       refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
     };
     // @ts-ignore
@@ -85,7 +79,6 @@ describe('PostgreSql container', () => {
     const data = {
       index: 4,
       address: 'Address 4',
-      network: Network.Playground,
       refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
     };
     await Prisma.pathIndex.create({ data });
@@ -101,13 +94,11 @@ describe('PostgreSql container', () => {
       {
         index: 11,
         address: 'Address 0',
-        network: Network.MainNet,
         refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
       },
       {
         index: 11,
         address: 'Address 0',
-        network: Network.TestNet,
         refundAddress: 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
       },
     ];

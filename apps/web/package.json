@@ -2,7 +2,7 @@
   "name": "web",
   "version": "0.0.0",
   "private": true,
-  "description": "DeFiChain ERC-20 Bridge",
+  "description": "Quantum Bridge",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -36,11 +36,11 @@
   "devDependencies": {
     "@cypress/code-coverage": "^3.10.0",
     "@netlify/plugin-lighthouse": "^4.0.7",
-    "@netlify/plugin-nextjs": "^4.30.3",
+    "@netlify/plugin-nextjs": "^4.30.4",
     "@tailwindcss/typography": "^0.5.9",
     "@testing-library/cypress": "^8.0.7",
     "@types/node": "18.11.11",
-    "@waveshq/standard-web-linter": "^0.39.0",
+    "@waveshq/standard-web-linter": "^0.41.1",
     "autoprefixer": "^10.4.13",
     "babel-plugin-istanbul": "^6.1.1",
     "babel-plugin-jsx-remove-data-test-id": "^3.0.0",

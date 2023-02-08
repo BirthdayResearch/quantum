@@ -8,22 +8,10 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Network {
-  Local
-  Playground
-  MainNet
-  TestNet
-  DevNet
-}
-
 model PathIndex {
   id            BigInt   @id @default(autoincrement())
-  index         Int
-  address       String
-  network       Network
+  index         Int      @unique
+  address       String   @unique
   refundAddress String
   createdAt     DateTime @default(now())
-
-  @@unique([index, network])
-  @@unique([address, network])
 }

@@ -8,7 +8,7 @@ import React, {
 import { ContractContextI } from "types";
 import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 import { useNetworkEnvironmentContext } from "./NetworkEnvironmentContext";
-import { MAINNET_CONFIG, TESTNET_CONFIG } from "../../config/contractAddresses";
+import { MAINNET_CONFIG, TESTNET_CONFIG } from "../../config";
 
 const ContractContext = createContext<ContractContextI>(undefined as any);
 

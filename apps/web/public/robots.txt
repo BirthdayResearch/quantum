@@ -4,7 +4,7 @@ Allow: /
 Disallow: /*?network=*
 
 # Host
-Host: https://bridge.defichain.com
+Host: https://quantumbridge.app
 
 # Sitemaps
-Sitemap: https://bridge.defichain.com/sitemap.xml
+Sitemap: https://quantumbridge.app/sitemap.xml

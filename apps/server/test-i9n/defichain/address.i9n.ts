@@ -1,11 +1,10 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { fromAddress } from '@defichain/jellyfish-address';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import { execSync } from 'child_process';
 
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
-import { DeFiChainStubContainer } from './DeFiChainStubContainer';
+import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
 
 const sleep = (time: number) =>
   new Promise((resolve) => {
@@ -21,7 +20,7 @@ describe('DeFiChain Address Integration Testing', () => {
   // Tests are slower because it's running 3 containers at the same time
   jest.setTimeout(3600000);
   let testing: BridgeServerTestingApp;
-  let defichain: DeFiChainStubContainer;
+  let defichain: StartedDeFiChainStubContainer;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
 
   beforeAll(async () => {
@@ -37,11 +36,13 @@ describe('DeFiChain Address Integration Testing', () => {
     // deploy migration
     execSync('pnpm run migration:deploy');
 
-    defichain = await new DeFiChainStubContainer();
-    const localWhaleURL = await defichain.start();
+    defichain = await new DeFiChainStubContainer().start();
+    const whaleURL = await defichain.getWhaleURL();
     testing = new BridgeServerTestingApp(
       TestingModule.register(
-        buildTestConfig({ defichain: { localWhaleURL, localDefichainKey: DeFiChainStubContainer.LOCAL_MNEMONIC } }),
+        buildTestConfig({
+          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+        }),
       ),
     );
 
@@ -57,7 +58,7 @@ describe('DeFiChain Address Integration Testing', () => {
   it('should be able to generate a wallet address', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.LocalPlayground}&refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+      url: `${WALLET_ENDPOINT}generate-address?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
     await expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
@@ -68,7 +69,7 @@ describe('DeFiChain Address Integration Testing', () => {
   it('should be able to generate a wallet address for a specific network', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.LocalPlayground}&refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+      url: `${WALLET_ENDPOINT}generate-address?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
 
     await expect(initialResponse.statusCode).toStrictEqual(200);
@@ -82,7 +83,7 @@ describe('DeFiChain Address Integration Testing', () => {
     for (let x = 0; x < 5; x += 1) {
       const initialResponse = await testing.inject({
         method: 'GET',
-        url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.LocalPlayground}&refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+        url: `${WALLET_ENDPOINT}generate-address?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
       });
 
       expect(initialResponse.statusCode).toStrictEqual(x < 3 ? 200 : 429);
@@ -91,7 +92,7 @@ describe('DeFiChain Address Integration Testing', () => {
     await sleep(60000);
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.LocalPlayground}&refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
 
     expect(initialResponse.statusCode).toStrictEqual(200);
@@ -100,7 +101,7 @@ describe('DeFiChain Address Integration Testing', () => {
   it('should be able to fail without refund address while creating new address', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}address/generate?network=${EnvironmentNetwork.LocalPlayground}`,
+      url: `${WALLET_ENDPOINT}address/generate`,
     });
     expect(initialResponse.statusCode).toStrictEqual(500);
   });

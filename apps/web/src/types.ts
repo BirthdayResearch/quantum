@@ -3,6 +3,8 @@ import { EnvironmentNetwork } from "@waveshq/walletkit-core";
  * Place for common types we want to reuse in entire app
  */
 
+import BigNumber from "bignumber.js";
+
 export enum Network {
   Ethereum = "Ethereum",
   DeFiChain = "DeFiChain",
@@ -59,9 +61,29 @@ export interface UnconfirmedTxnI {
   dfcUniqueAddress?: string;
 }
 
-export type Erc20Token = "wBTC" | "USDT" | "USDC" | "ETH";
+export interface RowDataI {
+  address: string;
+  networkName: NetworkName;
+  networkIcon: string;
+  tokenName: string;
+  tokenIcon: string;
+  amount: BigNumber;
+}
+
+export interface TransferData {
+  from: RowDataI;
+  to: RowDataI;
+}
+
+export type Erc20Token = "wBTC" | "USDT" | "USDC" | "wETH";
+
+interface ContractConfigI {
+  address: `0x${string}`;
+  abi?: any;
+}
 
 export interface ContractContextI {
-  BridgeProxyContractAddress: `0x${string}`;
-  Erc20Tokens: Record<Erc20Token, `0x${string}`>;
+  ExplorerURL: string;
+  BridgeV1: ContractConfigI;
+  Erc20Tokens: Record<Erc20Token, ContractConfigI>;
 }
