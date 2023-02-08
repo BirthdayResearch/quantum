@@ -203,7 +203,7 @@ export default function BridgeForm() {
     }
   }, [networkEnv]);
 
-  const fetchAddressDetail = async () => {
+  const fetchAddressDetail = async (): Promise<void> => {
     try {
       const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
       if (localDfcAddress) {
@@ -214,9 +214,10 @@ export default function BridgeForm() {
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
           setStorageItem(TXN_KEY, null);
-          return setStorageItem(DFC_ADDR_KEY, null);
+          setStorageItem(DFC_ADDR_KEY, null);
+        } else {
+          setAddressDetail(addressDetailRes);
         }
-        setAddressDetail(addressDetailRes);
       } else {
         setAddressDetail(undefined);
       }
