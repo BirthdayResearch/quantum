@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { BigNumber } from 'ethers';
 
 import { AppService } from './AppService';
@@ -17,8 +17,8 @@ export class AppController {
     return this.appService.getBalance(address);
   }
 
-  @Get('checkTransactionConfirmationStatus')
-  async checkTransactionConfirmationStatus(@Query('transactionHash') transactionHash: string): Promise<boolean> {
-    return this.appService.checkTransactionConfirmationStatus(transactionHash);
+  @Post('handleTransaction')
+  async handleTransaction(@Body('transactionHash') transactionHash: string): Promise<boolean> {
+    return this.appService.handleTransaction(transactionHash);
   }
 }

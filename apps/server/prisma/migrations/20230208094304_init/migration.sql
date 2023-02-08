@@ -2,7 +2,7 @@
 CREATE TYPE "Status" AS ENUM ('PENDING', 'COMPLETED');
 
 -- CreateEnum
-CREATE TYPE "TransactionStatus" AS ENUM ('NOT_CONFIRMED', 'CONFIRMED');
+CREATE TYPE "EthereumTransactionStatus" AS ENUM ('NOT_CONFIRMED', 'CONFIRMED');
 
 -- CreateTable
 CREATE TABLE "PathIndex" (
@@ -19,8 +19,9 @@ CREATE TABLE "PathIndex" (
 CREATE TABLE "BridgeEventTransactions" (
     "id" BIGSERIAL NOT NULL,
     "transactionHash" TEXT NOT NULL,
-    "status" "TransactionStatus" NOT NULL DEFAULT 'NOT_CONFIRMED',
+    "status" "EthereumTransactionStatus" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3),
 
     CONSTRAINT "BridgeEventTransactions_pkey" PRIMARY KEY ("id")
 );

@@ -30,14 +30,14 @@ export class AppService {
     return this.ethersRpcProvider.getBalance(address);
   }
 
-  async checkTransactionConfirmationStatus(transactionHash: string): Promise<boolean> {
-    const receipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-    const confirmed = receipt.status === 1;
-    if (!confirmed) {
+  async handleTransaction(transactionHash: string): Promise<boolean> {
+    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+    const isReverted = txReceipt.status === 0;
+    if (isReverted === true) {
       throw new HttpException('Transaction Reverted', HttpStatus.BAD_REQUEST);
     }
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-    const numberOfConfirmations = currentBlockNumber - receipt.blockNumber;
+    const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
 
     const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
       where: {
@@ -45,17 +45,16 @@ export class AppService {
       },
     });
 
-    if (!txHashFound && numberOfConfirmations < 65) {
-      await this.prisma.bridgeEventTransactions.create({
-        data: {
-          transactionHash,
-          status: 'NOT_CONFIRMED',
-        },
-      });
-      return false;
-    }
-
-    if (!txHashFound && numberOfConfirmations >= 65) {
+    if (txHashFound === null) {
+      if (numberOfConfirmations < 65) {
+        await this.prisma.bridgeEventTransactions.create({
+          data: {
+            transactionHash,
+            status: 'NOT_CONFIRMED',
+          },
+        });
+        return false;
+      }
       await this.prisma.bridgeEventTransactions.create({
         data: {
           transactionHash,
@@ -75,6 +74,7 @@ export class AppService {
       },
       data: {
         status: 'CONFIRMED',
+        updatedAt: new Date(),
       },
     });
     return true;

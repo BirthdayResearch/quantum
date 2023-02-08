@@ -127,13 +127,13 @@ describe('Bridge Service Integration Tests', () => {
     // Step 1: starting block should be 1003 (after initializations)
     expect(await hardhatNetwork.ethersRpcProvider.getBlockNumber()).toStrictEqual(1003);
 
-    // Step 2: Call addSupportedTokens function and mine the block (block 1004)
+    // Step 2: Call addSupportedTokens function and mine the block
     await bridgeUpgradeable
       .connect(defaultAdminSigner)
       .addSupportedTokens(ethers.constants.AddressZero, ethers.utils.parseEther('10'), Math.floor(Date.now() / 1000));
     await hardhatNetwork.generate(1);
 
-    // Step 3: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block (event emitted at block 1005)
+    // Step 3: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block
     const transactionCall = await bridgeUpgradeable.bridgeToDeFiChain(
       ethers.constants.AddressZero,
       ethers.constants.AddressZero,
@@ -151,8 +151,11 @@ describe('Bridge Service Integration Tests', () => {
     expect(transactionDbRecord).toStrictEqual(null);
 
     let txReceipt = await testing.inject({
-      method: 'GET',
-      url: `/app/checkTransactionConfirmationStatus?transactionHash=${transactionCall.hash}`,
+      method: 'POST',
+      url: `/app/handleTransaction`,
+      payload: {
+        transactionHash: transactionCall.hash,
+      },
     });
     expect(JSON.parse(txReceipt.body)).toStrictEqual(false);
 
@@ -167,8 +170,11 @@ describe('Bridge Service Integration Tests', () => {
 
     // Step 7: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
     txReceipt = await testing.inject({
-      method: 'GET',
-      url: `/app/checkTransactionConfirmationStatus?transactionHash=${transactionCall.hash}`,
+      method: 'POST',
+      url: `/app/handleTransaction`,
+      payload: {
+        transactionHash: transactionCall.hash,
+      },
     });
     expect(JSON.parse(txReceipt.body)).toStrictEqual(true);
 
