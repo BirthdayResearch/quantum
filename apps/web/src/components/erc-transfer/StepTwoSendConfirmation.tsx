@@ -89,6 +89,7 @@ export default function StepTwoSendConfirmation({
   const [dfcUniqueAddress, setDfcUniqueAddress] = useState<string>("");
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isAddressExpired, setIsAddressExpired] = useState(false);
   const { networkEnv } = useNetworkEnvironmentContext();
   const { DFC_ADDR_KEY } = useBridgeFormStorageKeys();
   const [createdBeforeInMSec, setCreatedBeforeInMSec] = useState(
@@ -171,50 +172,66 @@ export default function StepTwoSendConfirmation({
         ) : (
           <div className="flex flex-col items-center justify-center">
             <div className="w-[164px] relative">
-              {addressGenerationError !== "" ? (
+              {isAddressExpired ? (
                 <AddressError
-                  error={addressGenerationError}
-                  onClick={async () => generateDfcUniqueAddress()}
+                  delayAction={false}
+                  error="Address has expired and is now unavailable for use."
+                  onClick={async () => {
+                    await generateDfcUniqueAddress();
+                    setIsAddressExpired(false);
+                  }}
                 />
               ) : (
-                dfcUniqueAddress && (
-                  <>
-                    <SuccessCopy
-                      containerClass="m-auto right-0 left-0 top-2"
-                      show={showSuccessCopy}
+                <div>
+                  {addressGenerationError !== "" ? (
+                    <AddressError
+                      delayAction
+                      error={addressGenerationError}
+                      onClick={async () => generateDfcUniqueAddress()}
                     />
-                    <div className="h-[164px] bg-dark-1000 p-0.5 md:rounded">
-                      <QRCode value={dfcUniqueAddress} size={160} />
-                    </div>
-                    <div className="flex flex-col">
-                      <Tooltip
-                        content="Click to copy address"
-                        containerClass={clsx("relative p-0 mt-1")}
-                      >
-                        <button
-                          type="button"
-                          className={clsx(
-                            "text-dark-700 text-left break-all focus-visible:outline-none text-center mt-3",
-                            "text-xs cursor-pointer hover:underline"
-                          )}
-                          onClick={() => handleOnCopy(dfcUniqueAddress)}
-                        >
-                          {dfcUniqueAddress}
-                        </button>
-                      </Tooltip>
-                      {createdBeforeInMSec > 0 && (
-                        <div className="text-center">
-                          <TimeLimitCounter
-                            time={createdBeforeInMSec}
-                            onTimeElapsed={() => {
-                              // TODO Harsh add reload logic here
-                            }}
-                          />
+                  ) : (
+                    dfcUniqueAddress && (
+                      <>
+                        <SuccessCopy
+                          containerClass="m-auto right-0 left-0 top-2"
+                          show={showSuccessCopy}
+                        />
+                        <div className="h-[164px] bg-dark-1000 p-0.5 md:rounded">
+                          <QRCode value={dfcUniqueAddress} size={160} />
                         </div>
-                      )}
-                    </div>
-                  </>
-                )
+                        <div className="flex flex-col">
+                          <Tooltip
+                            content="Click to copy address"
+                            containerClass={clsx("relative p-0 mt-1")}
+                          >
+                            <button
+                              type="button"
+                              className={clsx(
+                                "text-dark-700 text-left break-all focus-visible:outline-none text-center mt-3",
+                                "text-xs cursor-pointer hover:underline"
+                              )}
+                              onClick={() => handleOnCopy(dfcUniqueAddress)}
+                            >
+                              {dfcUniqueAddress}
+                            </button>
+                          </Tooltip>
+                          {createdBeforeInMSec > 0 && (
+                            <div className="text-center">
+                              <TimeLimitCounter
+                                time={createdBeforeInMSec}
+                                onTimeElapsed={() => {
+                                  setStorageItem(DFC_ADDR_KEY, null);
+                                  setDfcUniqueAddress("");
+                                  setIsAddressExpired(true);
+                                }}
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </>
+                    )
+                  )}
+                </div>
               )}
             </div>
           </div>

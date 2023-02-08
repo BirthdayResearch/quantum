@@ -211,12 +211,12 @@ export default function BridgeForm() {
           address: localDfcAddress,
           network: networkEnv,
         }).unwrap();
-        setAddressDetail(addressDetailRes);
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
           setStorageItem(TXN_KEY, null);
-          setStorageItem(DFC_ADDR_KEY, null);
+          return setStorageItem(DFC_ADDR_KEY, null);
         }
+        setAddressDetail(addressDetailRes);
       } else {
         setAddressDetail(undefined);
       }

@@ -8,11 +8,13 @@ import CircularProgress from "./CircularProgress";
 export default function AddressError({
   onClick,
   error,
+  delayAction,
 }: {
   onClick: () => void;
   error: string;
+  delayAction: boolean;
 }) {
-  const [isDisabled, setIsDisabled] = useState(true);
+  const [isDisabled, setIsDisabled] = useState(delayAction);
   const { timeLimitPercentage } = useTimeCounter(
     DFC_TO_API_RESET_TIME_LIMIT,
     () => setIsDisabled(false)
@@ -32,7 +34,7 @@ export default function AddressError({
           onClick={onClick}
           disabledClass="!opacity-100 text-dark-1000/[0.3] !border-dark-1000/[0.3] dark-bg-card-section bg-opacity-30"
         >
-          {isDisabled && (
+          {isDisabled && delayAction && (
             <div className="inline-block ml-1 opacity-100">
               <CircularProgress value={timeLimitPercentage} />
             </div>
