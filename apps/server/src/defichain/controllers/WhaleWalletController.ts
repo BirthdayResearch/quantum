@@ -16,7 +16,7 @@ export class WhaleWalletController {
   @Throttle(5, 60)
   @Get('address/generate')
   async get(@Query() query: { refundAddress: string }): Promise<{ address: string }> {
-    return this.whaleWalletService.generateAddress(query.refundAddress);
+    return this.whaleWalletService.generateAddress(query.refundAddress, this.network);
   }
 
   @Get('address/:address')
