@@ -98,10 +98,36 @@ describe('DeFiChain Address Integration Testing', () => {
     expect(initialResponse.statusCode).toStrictEqual(200);
   });
 
-  it('should be able to fail without refund address while creating new address', async () => {
+  it('should throw error while calling without refund address while creating new address', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/generate`,
+    });
+    expect(initialResponse.statusCode).toStrictEqual(500);
+  });
+
+  it('should be able to get address detail', async () => {
+    const initialResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+    });
+    await expect(initialResponse.statusCode).toStrictEqual(200);
+    const response = JSON.parse(initialResponse.body);
+    const decodedAddress = fromAddress(response.address, 'regtest');
+    await expect(decodedAddress).not.toBeUndefined();
+    const addressDetailsResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/${response.address}`,
+    });
+    await expect(addressDetailsResponse.statusCode).toStrictEqual(200);
+    const addressDetails = JSON.parse(addressDetailsResponse.body);
+    await expect(addressDetails.address).toStrictEqual(response.address);
+  });
+
+  it('should throw error while calling address detail with invalid address', async () => {
+    const initialResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/random-address`,
     });
     expect(initialResponse.statusCode).toStrictEqual(500);
   });
