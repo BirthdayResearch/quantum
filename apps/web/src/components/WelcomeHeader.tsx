@@ -1,4 +1,3 @@
-import { FiBook, FiHelpCircle } from "react-icons/fi";
 import IconTooltip from "./commons/IconTooltip";
 import { CONSORTIUM_INFO } from "../constants";
 
@@ -22,22 +21,6 @@ export default function WelcomeHeader() {
             content={CONSORTIUM_INFO.content}
           />
         </button>
-      </div>
-      <div className="hidden md:block">
-        <div className="flex flex-row items-center md:mt-5">
-          <button type="button" className="flex flex-row items-center">
-            <FiBook size={20} className="text-dark-700" />
-            <span className="ml-2 text-base font-semibold text-dark-700">
-              User Guide
-            </span>
-          </button>
-          <button type="button" className="ml-6 flex flex-row items-center">
-            <FiHelpCircle size={20} className="text-dark-700" />
-            <span className="ml-2 text-base font-semibold text-dark-700">
-              FAQs
-            </span>
-          </button>
-        </div>
       </div>
     </div>
   );
