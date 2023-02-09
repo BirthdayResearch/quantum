@@ -269,8 +269,8 @@ export default function StepTwoSendConfirmation({
           <FaqSection />
         </div>
 
-        <div className={clsx("hidden mt-12", "md:block")}>
-          <div className="float-right">
+        <div className={clsx("hidden", "md:block")}>
+          <div className="float-right mt-8">
             {/* Web confirm button */}
             <VerifyButton onVerify={handleConfirmClick} />
           </div>
