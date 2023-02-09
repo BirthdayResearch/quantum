@@ -7,7 +7,7 @@ import { useLazyVerifyQuery } from "@store/website";
 import BigNumber from "bignumber.js";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { getStorageItem } from "@utils/localStorage";
-import { CustomErrorCodes, UnconfirmedTxnI } from "types";
+import { UnconfirmedTxnI } from "types";
 import { HttpStatusCode } from "axios";
 import {
   DISCLAIMER_MESSAGE,
@@ -71,15 +71,7 @@ export default function StepThreeVerification({
       })
         .unwrap()
         .then((data) => {
-          if (
-            [
-              CustomErrorCodes.AddressNotOwned,
-              CustomErrorCodes.AddressNotFound,
-              CustomErrorCodes.AddressNotValid,
-              CustomErrorCodes.IsZeroBalance,
-              CustomErrorCodes.BalanceNotMatched,
-            ].includes(data?.statusCode)
-          ) {
+          if (data?.statusCode !== undefined) {
             setTitle(TitleLabel.Rejected);
             setContent(`Something went wrong (${data.statusCode}).`);
             setValidationSuccess(false);

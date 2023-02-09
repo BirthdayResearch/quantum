@@ -29,6 +29,10 @@ export class WhaleWalletService {
       return { isValid: false, statusCode: CustomErrorCodes.AddressNotValid };
     }
 
+    if (new BigNumber(verify.amount).isLessThanOrEqualTo(0)) {
+      return { isValid: false, statusCode: CustomErrorCodes.AmountNotValid };
+    }
+
     try {
       const pathIndex = await Prisma.pathIndex.findFirst({
         where: {
@@ -59,7 +63,7 @@ export class WhaleWalletService {
       }
 
       // Verify that the amount === token balance
-      if (new BigNumber(verify.amount).isEqualTo(token?.amount)) {
+      if (!new BigNumber(verify.amount).isEqualTo(token.amount)) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 

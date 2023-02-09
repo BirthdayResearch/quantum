@@ -1,11 +1,21 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
+import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
 import { execSync } from 'child_process';
 
 import { CustomErrorCodes } from '../../src/CustomErrorCodes';
+import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
 import { Prisma } from '../../src/prisma/Client';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
+
+// TODO: Find a nestjs way of configuring throttle limit for tests
+jest.mock('../../src/ThrottleLimitConfig', () => ({
+  ThrottleLimitConfig: {
+    limit: 20,
+    ttl: 30,
+  },
+}));
 
 describe('DeFiChain Verify fund Testing', () => {
   const container = new PostgreSqlContainer();
@@ -13,11 +23,13 @@ describe('DeFiChain Verify fund Testing', () => {
 
   // Tests are slower because it's running 3 containers at the same time
   jest.setTimeout(3600000);
+  let whaleWalletProvider: WhaleWalletProvider;
+  let localAddress: string;
+  let wallet: WhaleWalletAccount;
   let testing: BridgeServerTestingApp;
   let defichain: StartedDeFiChainStubContainer;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
   const VERIFY_ENDPOINT = `${WALLET_ENDPOINT}verify`;
-  const localMnemonicIndex2Address = 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g';
 
   beforeAll(async () => {
     postgreSqlContainer = await container
@@ -42,7 +54,11 @@ describe('DeFiChain Verify fund Testing', () => {
       ),
     );
 
-    await testing.start();
+    const app = await testing.start();
+
+    whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
+    wallet = whaleWalletProvider.createWallet(2);
+    localAddress = await wallet.getAddress();
   });
 
   afterAll(async () => {
@@ -58,7 +74,7 @@ describe('DeFiChain Verify fund Testing', () => {
       payload: {
         amount: '1',
         symbol: '_invalid_symbol_',
-        address: localMnemonicIndex2Address,
+        address: localAddress,
       },
     });
     const response = JSON.parse(initialResponse.body);
@@ -79,20 +95,6 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotValid });
   });
 
-  it('should throw error if address is not found in db', async () => {
-    const initialResponse = await testing.inject({
-      method: 'POST',
-      url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '2',
-        symbol: 'BTC',
-        address: localMnemonicIndex2Address,
-      },
-    });
-    const response = JSON.parse(initialResponse.body);
-    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotFound });
-  });
-
   it('should throw error if address has zero balance', async () => {
     // Generate address (index = 2)
     await testing.inject({
@@ -106,7 +108,7 @@ describe('DeFiChain Verify fund Testing', () => {
       payload: {
         amount: '3',
         symbol: 'BTC',
-        address: localMnemonicIndex2Address,
+        address: localAddress,
       },
     });
 
@@ -114,15 +116,54 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.IsZeroBalance });
   });
 
-  // TODO(pierregee): to send address
-  it.skip('should throw error if balance did not match with the amount', async () => {
+  it('should throw error if address is not found in db', async () => {
+    // Get address (not generated through API)
+    const newWallet = whaleWalletProvider.createWallet(3);
+    const newLocalAddress = await newWallet.getAddress();
+
+    const initialResponse = await testing.inject({
+      method: 'POST',
+      url: `${VERIFY_ENDPOINT}`,
+      payload: {
+        amount: '2',
+        symbol: 'BTC',
+        address: newLocalAddress,
+      },
+    });
+    const response = JSON.parse(initialResponse.body);
+    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotFound });
+  });
+
+  it('should throw error if balance did not match with the amount', async () => {
+    // Generate address (index = 3)
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}generate-address`,
+    });
+
+    const newWallet = whaleWalletProvider.createWallet(3);
+    const newLocalAddress = await newWallet.getAddress();
+
+    // Sends token to the address
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [newLocalAddress]: `10@BTC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock();
+
     const initialResponse = await testing.inject({
       method: 'POST',
       url: `${VERIFY_ENDPOINT}`,
       payload: {
         amount: '3',
         symbol: 'BTC',
-        address: localMnemonicIndex2Address,
+        address: newLocalAddress,
       },
     });
 
@@ -130,15 +171,13 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched });
   });
 
-  // TODO(pierregee): configure increase of throttle guard for testing
-  it.skip('should throw error if address is not owned by the wallet', async () => {
+  it('should throw error if address is not owned by the wallet', async () => {
     const randomAddress = 'bcrt1qg8m5rcgc9da0dk2dmj9zltvlc99s5qugs4nf2l';
-    // Save a random valid address (not owned by the wallet)
+    // Update with a random valid address (not owned by the wallet)
     const data = {
-      index: 2,
       address: randomAddress,
     };
-    await Prisma.pathIndex.update({ where: { index: 2 }, data });
+    await Prisma.pathIndex.update({ where: { index: 3 }, data });
 
     const initialResponse = await testing.inject({
       method: 'POST',
@@ -152,5 +191,49 @@ describe('DeFiChain Verify fund Testing', () => {
 
     const response = JSON.parse(initialResponse.body);
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotOwned });
+  });
+
+  it('should throw error if amount is invalid', async () => {
+    const initialResponse = await testing.inject({
+      method: 'POST',
+      url: `${VERIFY_ENDPOINT}`,
+      payload: {
+        amount: '-3',
+        symbol: 'BTC',
+        address: localAddress,
+      },
+    });
+
+    const response = JSON.parse(initialResponse.body);
+    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AmountNotValid });
+  });
+
+  // TODO: Return the signed claim
+  it('should verify fund in the wallet address', async () => {
+    // Sends token to the address
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [localAddress]: `10@BTC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock();
+
+    const initialResponse = await testing.inject({
+      method: 'POST',
+      url: `${VERIFY_ENDPOINT}`,
+      payload: {
+        amount: '10',
+        symbol: 'BTC',
+        address: localAddress,
+      },
+    });
+
+    const response = JSON.parse(initialResponse.body);
+    expect(response).toStrictEqual({ isValid: true });
   });
 });

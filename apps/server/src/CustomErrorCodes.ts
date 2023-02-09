@@ -5,4 +5,5 @@ export enum CustomErrorCodes {
   BalanceNotMatched = 3,
   IsZeroBalance = 4,
   TokenSymbolNotValid = 5,
+  AmountNotValid = 6,
 }

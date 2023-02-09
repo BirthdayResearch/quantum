@@ -4,9 +4,11 @@ import { Throttle } from '@nestjs/throttler';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import { CustomErrorCodes } from 'src/CustomErrorCodes';
 
+import { ThrottleLimitConfig } from '../../ThrottleLimitConfig';
 import { VerifyDto } from '../model/VerifyDto';
 import { WhaleWalletService } from '../services/WhaleWalletService';
 
+@Throttle(ThrottleLimitConfig.limit, ThrottleLimitConfig.ttl)
 @Controller('/wallet')
 export class WhaleWalletController {
   private network: EnvironmentNetwork;
@@ -15,13 +17,11 @@ export class WhaleWalletController {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
   }
 
-  @Throttle(5, 60)
   @Get('generate-address')
   async get(): Promise<{ address: string }> {
     return this.whaleWalletService.generateAddress();
   }
 
-  @Throttle(5, 60)
   @Post('verify')
   async verify(@Body() body: VerifyDto): Promise<{ isValid: boolean; statusCode?: CustomErrorCodes }> {
     return this.whaleWalletService.verify(body, this.network);
