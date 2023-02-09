@@ -6,10 +6,11 @@ import {
   StartedHardhatNetworkContainer,
   TestToken,
 } from 'smartcontracts';
+
+import { PrismaService } from '../src/PrismaService';
 import { BridgeContractFixture } from './testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from './testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from './testing/TestingModule';
-import { PrismaService } from '../src/PrismaService';
 
 describe('Bridge Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
@@ -23,7 +24,7 @@ describe('Bridge Service Integration Tests', () => {
   beforeAll(async () => {
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
-    
+
     bridgeContractFixture = new BridgeContractFixture(hardhatNetwork);
     await bridgeContractFixture.setup();
 
@@ -49,7 +50,7 @@ describe('Bridge Service Integration Tests', () => {
     // teardown database
     await prismaService.bridgeEventTransactions.deleteMany({});
   });
-  
+
   it('Validates that the transaction inputted is of the correct format', async () => {
     const txReceipt = await testing.inject({
       method: 'POST',
@@ -64,24 +65,15 @@ describe('Bridge Service Integration Tests', () => {
   });
 
   it('Checks if a transaction is confirmed, and stores it in the database', async () => {
-    // Step 1: starting block should be 1003 (after initializations)
-    expect(await hardhatNetwork.ethersRpcProvider.getBlockNumber()).toStrictEqual(1003);
-
-    // Step 2: Call addSupportedTokens function and mine the block
-    await bridgeUpgradeable
-      .connect(defaultAdminSigner)
-      .addSupportedTokens(ethers.constants.AddressZero, ethers.utils.parseEther('10'), Math.floor(Date.now() / 1000));
-    await hardhatNetwork.generate(1);
-
-    // Step 3: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block
-    await bridgeContract.bridgeToDeFiChain(
+    // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block
+    const transactionCall = await bridgeContract.bridgeToDeFiChain(
       ethers.constants.AddressZero,
       musdcContract.address,
       ethers.utils.parseEther('5'),
     );
     await hardhatNetwork.generate(1);
 
-    // Step 4: db should not have record of transaction
+    // Step 2: db should not have record of transaction
     let transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
       where: { transactionHash: transactionCall.hash },
     });
@@ -96,16 +88,16 @@ describe('Bridge Service Integration Tests', () => {
     });
     expect(JSON.parse(txReceipt.body)).toStrictEqual(false);
 
-    // Step 5: db should create a record of transaction with status='NOT_CONFIRMED', as number of confirmations = 0.
+    // Step 3: db should create a record of transaction with status='NOT_CONFIRMED', as number of confirmations = 0.
     transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
       where: { transactionHash: transactionCall.hash },
     });
     expect(transactionDbRecord?.status).toStrictEqual('NOT_CONFIRMED');
 
-    // Step 6: mine 65 blocks to make the transaction confirmed
+    // Step 4: mine 65 blocks to make the transaction confirmed
     await hardhatNetwork.generate(65);
 
-    // Step 7: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
+    // Step 5: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
     txReceipt = await testing.inject({
       method: 'POST',
       url: `/app/handleTransaction`,

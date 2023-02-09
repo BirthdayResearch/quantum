@@ -30,9 +30,7 @@ export type DeepPartial<T> = T extends object
 export type AppConfig = DeepPartial<ReturnType<typeof appConfig>>;
 
 export const ENV_VALIDATION_SCHEMA = Joi.object({
-  ETHEREUM_RPC_URL: Joi.string().ip(),
-  DEFICHAIN_MAINNET_KEY: Joi.string(),
-  DEFICHAIN_REGTEST_KEY: Joi.string(),
+  ETHEREUM_RPC_URL: Joi.string().uri(),
   [DATABASE_URL]: Joi.string().required(),
   DEFICHAIN_NETWORK: Joi.string(),
   DEFICHAIN_WHALE_URL: Joi.string().uri(),
