@@ -123,7 +123,20 @@ describe('Bridge Service Integration Tests', () => {
     await prismaService.bridgeEventTransactions.deleteMany({});
   });
 
-  it('Returns an array of confirmed events from a given block number', async () => {
+  it('Validates that the transaction inputted is of the correct format', async () => {
+    const txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/app/handleTransaction`,
+      payload: {
+        transactionHash: 'wrong_transaction_test',
+      },
+    });
+    expect(JSON.parse(txReceipt.body).error).toBe('Bad Request');
+    expect(JSON.parse(txReceipt.body).message).toBe('Invalid Ethereum transaction hash: wrong_transaction_test');
+    expect(JSON.parse(txReceipt.body).statusCode).toBe(400);
+  });
+
+  it('Checks if a transaction is confirmed, and stores it in the database', async () => {
     // Step 1: starting block should be 1003 (after initializations)
     expect(await hardhatNetwork.ethersRpcProvider.getBlockNumber()).toStrictEqual(1003);
 

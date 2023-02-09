@@ -31,5 +31,5 @@ model BridgeEventTransactions {
   transactionHash String
   status          EthereumTransactionStatus
   createdAt       DateTime                  @default(now())
-  updatedAt       DateTime?
+  updatedAt       DateTime?                 @updatedAt
 }

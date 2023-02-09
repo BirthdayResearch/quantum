@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
@@ -34,7 +34,7 @@ export class AppService {
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      throw new HttpException('Transaction Reverted', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(`Transaction Reverted`);
     }
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
     const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
@@ -74,7 +74,6 @@ export class AppService {
       },
       data: {
         status: 'CONFIRMED',
-        updatedAt: new Date(),
       },
     });
     return true;
