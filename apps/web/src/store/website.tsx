@@ -46,7 +46,7 @@ export const bridgeApi = createApi({
           "Content-Type": "application/json; charset=UTF-8",
         },
       }),
-      extraOptions: { maxRetries: 3 },
+      extraOptions: { maxRetries: 1 },
     }),
   }),
 });
