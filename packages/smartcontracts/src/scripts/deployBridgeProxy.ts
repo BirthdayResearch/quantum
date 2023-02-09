@@ -15,8 +15,6 @@ export async function deployBridgeProxy({
   const { chainId } = network.config;
   const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
   const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-    'CAKE_BRIDGE',
-    '0.1',
     // admin address
     adminAddress,
     // operational address

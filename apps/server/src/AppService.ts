@@ -14,7 +14,7 @@ export class AppService {
     private configService: ConfigService,
   ) {
     this.contract = new ethers.Contract(
-      this.configService.getOrThrow('ethereum.testnet.contracts.bridgeProxy.address'),
+      this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address'),
       BridgeV1__factory.abi,
       this.ethersRpcProvider,
     );
