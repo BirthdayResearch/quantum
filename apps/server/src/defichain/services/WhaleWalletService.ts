@@ -17,6 +17,12 @@ export class WhaleWalletService {
     verify: VerifyDto,
     network: EnvironmentNetwork = EnvironmentNetwork.MainNet,
   ): Promise<{ isValid: boolean; statusCode?: CustomErrorCodes }> {
+    // Verify if the token symbol is valid
+    const { isTokenSymbolValid } = this.verifyTokenSymbol(verify.symbol);
+    if (!isTokenSymbolValid) {
+      return { isValid: false, statusCode: CustomErrorCodes.TokenSymbolNotValid };
+    }
+
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
     if (!isAddressValid) {
@@ -107,5 +113,11 @@ export class WhaleWalletService {
     const decodedAddress = fromAddress(address, getJellyfishNetwork(network).name);
 
     return { isAddressValid: decodedAddress !== undefined };
+  }
+
+  private verifyTokenSymbol(tokenSymbol: string): { isTokenSymbolValid: boolean } {
+    // TODO(pierregee): Convert string -> enum of allowed token symbols
+    const tokenSymbols = ['BTC', 'USDT', 'USDC', 'ETH'];
+    return { isTokenSymbolValid: tokenSymbols.includes(tokenSymbol) };
   }
 }
