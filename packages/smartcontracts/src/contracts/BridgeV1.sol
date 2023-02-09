@@ -25,11 +25,6 @@ error INCORRECT_NONCE();
 error TOKEN_NOT_SUPPORTED();
 
 /** @notice @dev  
-/* This error occurs when token is not in supported list with `timeLeft` until the token is supported
-*/
-error TOKEN_NOT_SUPPORTED_YET(uint256 timeLeft);
-
-/** @notice @dev  
 /* This error occurs when fake signatures being used to claim fund
 */
 error FAKE_SIGNATURE();
@@ -47,7 +42,7 @@ error TOKEN_ALREADY_SUPPORTED();
 /** @notice @dev  
 /* This error occurs when using Zero address
 */
-error NON_ZERO_ADDRESS();
+error ZERO_ADDRESS();
 
 /** @notice @dev  
 /* This error occurs when the msg.sender doesn't have neither DEFAULT_ADMIN_ROLE or OPERATIONAL_ROLE assigned
@@ -60,24 +55,19 @@ error NON_AUTHORIZED_ADDRESS();
 error ONLY_SUPPORTED_TOKENS();
 
 /** @notice @dev 
-/* This error occurs when this contract doesn't have enough ETH.
+/* This error occurs when `_newResetTimeStamp` is before block.timestamp
 */
-error NOT_ENOUGH_ETHEREUM();
-
-/** @notice @dev 
-/* This error occurs when the txn to withdraw ether by admin doesn't succeed.
-*/
-error TRANSCATION_FAILED();
-
-/** @notice @dev 
-/* This error occurs when users sends ETHER wlong with other erc20 token.
-*/
-error DO_NOT_SEND_ETHER_WITH_ERC20();
+error INVALID_RESET_EPOCH_TIME();
 
 /** @notice @dev 
 /* This error occurs when `_newResetTimeStamp` is before block.timestamp
 */
-error INVALID_RESET_EPOCH_TIME();
+error EXPIRED_CLAIM();
+
+/** @notice @dev 
+/* This error occurs when `_amount` is zero
+*/
+error AMOUNT_CAN_NOT_BE_ZERO();
 
 contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -86,8 +76,6 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 dailyAllowance;
         uint256 currentDailyUsage;
     }
-
-    address constant ETHER = address(0);
 
     // Mapping to track the address's nonce
     mapping(address => uint256) public eoaAddressToNonce;
@@ -190,13 +178,6 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     event TRANSACTION_FEE_CHANGED(uint256 indexed oldTxFee, uint256 indexed newTxFee);
 
     /**
-     * @notice Emitted when withdrawal of ETHER only by the Admin account
-     * @param ownerAddress Owner's address requesting withdraw
-     * @param withdrawalAmount amount of respected token being withdrawn
-     */
-    event ETH_WITHDRAWAL_BY_OWNER(address indexed ownerAddress, uint256 indexed withdrawalAmount);
-
-    /**
      * @notice Emitted when fund is flushed
      */
     event FLUSH_FUND();
@@ -247,16 +228,6 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     }
 
     /**
-     * @dev Testing need for this fn. Using to test claim ether.
-     */
-    fallback() external payable {}
-
-    /**
-     * @dev Testing need for this fn. Using to test claim ether.
-     */
-    receive() external payable {}
-
-    /**
      * @notice Used to claim the tokens that have been approved by the relayer (for bridging from DeFiChain to Ethereum mainnet)
      * @param _to Address to send the claimed fund
      * @param _amount Amount to be claimed
@@ -275,20 +246,12 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     ) external {
         if (eoaAddressToNonce[_to] != _nonce) revert INCORRECT_NONCE();
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
-        require(block.timestamp <= _deadline);
+        if (block.timestamp > _deadline) revert EXPIRED_CLAIM();
         bytes32 struct_hash = keccak256(abi.encode(DATA_TYPE_HASH, _to, _amount, _nonce, _deadline, _tokenAddress));
         bytes32 msg_hash = _hashTypedDataV4(struct_hash);
         if (ECDSAUpgradeable.recover(msg_hash, signature) != relayerAddress) revert FAKE_SIGNATURE();
-        if (_tokenAddress == address(0)) {
-            if (_amount > address(this).balance) revert NOT_ENOUGH_ETHEREUM();
-            eoaAddressToNonce[_to]++;
-            (bool sent, ) = msg.sender.call{value: _amount}('');
-            if (!sent) revert TRANSCATION_FAILED();
-        } else {
-            eoaAddressToNonce[_to]++;
-            IERC20(_tokenAddress).transfer(_to, _amount);
-        }
-
+        eoaAddressToNonce[_to]++;
+        IERC20(_tokenAddress).transfer(_to, _amount);
         emit CLAIM_FUND(_tokenAddress, _to, _amount);
     }
 
@@ -303,35 +266,27 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         bytes calldata _defiAddress,
         address _tokenAddress,
         uint256 _amount
-    ) external payable {
+    ) external {
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
-        if (_tokenAddress != address(0) && msg.value > 0) {
-            revert DO_NOT_SEND_ETHER_WITH_ERC20();
-        }
         uint256 tokenAllowanceStartTime = tokenAllowances[_tokenAddress].latestResetTimestamp;
         if (block.timestamp < tokenAllowanceStartTime) revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();
-        uint256 amount = checkValue(_tokenAddress, _amount, msg.value);
-        require(amount > 0);
+        if (_amount == 0) revert AMOUNT_CAN_NOT_BE_ZERO();
         // Transaction is within the last tracked day's daily allowance
         if (tokenAllowances[_tokenAddress].latestResetTimestamp + (1 days) > block.timestamp) {
-            tokenAllowances[_tokenAddress].currentDailyUsage += amount;
+            tokenAllowances[_tokenAddress].currentDailyUsage += _amount;
             if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)
                 revert EXCEEDS_DAILY_ALLOWANCE();
         } else {
             tokenAllowances[_tokenAddress].latestResetTimestamp +=
                 ((block.timestamp - tokenAllowances[_tokenAddress].latestResetTimestamp) / (1 days)) *
                 1 days;
-            tokenAllowances[_tokenAddress].currentDailyUsage = amount;
+            tokenAllowances[_tokenAddress].currentDailyUsage = _amount;
             if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)
                 revert EXCEEDS_DAILY_ALLOWANCE();
         }
-        uint256 netAmountInWei = amountAfterFees(amount);
-        if (_tokenAddress == address(0)) {
-            emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, address(0), netAmountInWei, block.timestamp);
-        } else {
-            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), amount);
-            emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmountInWei, block.timestamp);
-        }
+        uint256 netAmountInWei = amountAfterFees(_amount);
+        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
+        emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmountInWei, block.timestamp);
     }
 
     /**
@@ -346,6 +301,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 _startAllowanceTimeFrom
     ) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        if (block.timestamp > _startAllowanceTimeFrom) revert INVALID_RESET_EPOCH_TIME();
+        if (_tokenAddress == address(0)) revert ZERO_ADDRESS();
         if (supportedTokens.contains(_tokenAddress)) revert TOKEN_ALREADY_SUPPORTED();
         // Token will be added on the supported list regardless of `_startAllowanceTimeFrom`
         supportedTokens.add(_tokenAddress);
@@ -399,17 +356,6 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     function withdraw(address _tokenAddress, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         IERC20(_tokenAddress).transfer(msg.sender, amount);
         emit WITHDRAWAL_BY_OWNER(msg.sender, _tokenAddress, amount);
-    }
-
-    /**
-     * @notice Used by Admin only. When called, the specified amount of ETH will be withdrawn
-     * @param amount Requested amount to be withdraw. Amount would be in the denomination of ETH
-     */
-    function withdrawEth(uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (amount > address(this).balance) revert NOT_ENOUGH_ETHEREUM();
-        (bool sent, ) = msg.sender.call{value: amount}('');
-        if (!sent) revert TRANSCATION_FAILED();
-        emit ETH_WITHDRAWAL_BY_OWNER(msg.sender, amount);
     }
 
     /**
@@ -474,7 +420,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     function changeRelayerAddress(address _relayerAddress) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (_relayerAddress == address(0)) revert NON_ZERO_ADDRESS();
+        if (_relayerAddress == address(0)) revert ZERO_ADDRESS();
         address oldRelayerAddress = relayerAddress;
         relayerAddress = _relayerAddress;
         emit RELAYER_ADDRESS_CHANGED(oldRelayerAddress, _relayerAddress);
@@ -496,22 +442,6 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     function checkRoles() internal view returns (bool check) {
         return check = hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(OPERATIONAL_ROLE, msg.sender);
-    }
-
-    /**
-     * This function will do check if passing arguments has value. Both params can be used inter-changebly
-     * @param _amount Ideally will be the value of erc20 token
-     * @param _value Ideally will be the value of Ether
-     * @return uint256 type value that is not undefined
-     */
-    function checkValue(
-        address _token,
-        uint256 _amount,
-        uint256 _value
-    ) internal pure returns (uint256) {
-        if (_token == address(0)) {
-            return _value;
-        } else return _amount;
     }
 
     /**

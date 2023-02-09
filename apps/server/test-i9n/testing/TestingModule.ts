@@ -1,5 +1,6 @@
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import { StartedHardhatNetworkContainer } from 'smartcontracts';
 
 import { AppConfig, DeepPartial } from '../../src/AppConfig';
@@ -15,8 +16,17 @@ export class TestingModule {
   }
 }
 
-export function buildTestConfig({ startedHardhatContainer, testnet }: DeepPartial<BuildTestConfigParams> = {}) {
+export function buildTestConfig({
+  startedHardhatContainer,
+  testnet,
+  defichain,
+}: DeepPartial<BuildTestConfigParams> = {}) {
   return {
+    defichain: {
+      key: defichain?.key ?? '',
+      whaleURL: defichain?.whaleURL ?? '',
+      network: defichain?.network ?? EnvironmentNetwork.LocalPlayground,
+    },
     ethereum: {
       testnet: {
         rpcUrl: startedHardhatContainer?.rpcUrl ?? '',
@@ -31,6 +41,11 @@ export function buildTestConfig({ startedHardhatContainer, testnet }: DeepPartia
 }
 
 interface BuildTestConfigParams {
+  defichain: {
+    whaleURL: string;
+    key: string;
+    network: string;
+  };
   startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {
     bridgeContractAddress: string;

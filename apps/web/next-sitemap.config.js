@@ -1,5 +1,5 @@
 module.exports = {
-  siteUrl: process.env.SITE_URL || "https://bridge.defichain.com",
+  siteUrl: process.env.SITE_URL || "https://quantumbridge.app",
   generateRobotsTxt: true,
   robotsTxtOptions: {
     policies: [

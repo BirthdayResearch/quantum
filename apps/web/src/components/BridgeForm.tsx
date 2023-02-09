@@ -15,8 +15,6 @@ import {
   NetworkName,
   UnconfirmedTxnI,
 } from "types";
-import { useWhaleApiClient } from "@waveshq/walletkit-ui/dist/contexts";
-import Logging from "@api/logging";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
@@ -25,6 +23,7 @@ import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
+import useTransferFee from "@hooks/useTransferFee";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import DailyLimit from "./DailyLimit";
@@ -81,6 +80,7 @@ export default function BridgeForm() {
   } = useNetworkContext();
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
+  const { Erc20Tokens } = useContractContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -88,17 +88,17 @@ export default function BridgeForm() {
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
 
-  const client = useWhaleApiClient();
-  const [fee, setFee] = useState<BigNumber>(new BigNumber(0.0001));
+  const [fee, feeSymbol] = useTransferFee(amount);
 
   const { address, isConnected } = useAccount();
-  const contractConfig = useContractContext();
-  const sendingFromETH = selectedTokensA.tokenA.name === ETHEREUM_SYMBOL;
+  const isSendingErcToken =
+    selectedNetworkA.name === Network.Ethereum &&
+    selectedTokensA.tokenA.name !== ETHEREUM_SYMBOL;
   const { data } = useBalance({
     address,
     watch: true,
-    ...(!sendingFromETH && {
-      token: contractConfig.Erc20Tokens[selectedTokensA.tokenA.name],
+    ...(isSendingErcToken && {
+      token: Erc20Tokens[selectedTokensA.tokenA.name].address,
     }),
   });
 
@@ -156,6 +156,7 @@ export default function BridgeForm() {
     setAmount("");
     setAddressInput("");
     setFromAddress(address || "");
+    setAmountErr("");
     resetNetworkSelection();
     resetNetworkEnv();
   };
@@ -170,13 +171,6 @@ export default function BridgeForm() {
         return "Connect wallet";
     }
   };
-
-  useEffect(() => {
-    client.fee
-      .estimate()
-      .then((f) => setFee(new BigNumber(f)))
-      .catch(Logging.error);
-  }, []);
 
   useEffect(() => {
     if (amount) {
@@ -344,9 +338,9 @@ export default function BridgeForm() {
         <NumericFormat
           className="text-left text-xs text-dark-1000 lg:text-base"
           value={amount || 0}
-          decimalScale={2}
           thousandSeparator
           suffix={` ${selectedTokensB.tokenA.name}`}
+          trimTrailingZeros
         />
       </div>
       <div className="flex flex-row justify-between items-center px-4 lg:px-5 mt-4 lg:mt-6">
@@ -362,7 +356,8 @@ export default function BridgeForm() {
           className="text-left text-xs text-dark-1000 lg:text-base"
           value={fee}
           thousandSeparator
-          suffix=" DFI"
+          suffix={` ${feeSymbol}`}
+          trimTrailingZeros
         />
       </div>
       <div className="block md:hidden px-5 mt-4">

@@ -10,13 +10,17 @@ import { WhaleApiService } from '../services/WhaleApiService';
 
 @Injectable()
 export class WhaleWalletProvider {
-  constructor(private readonly whaleClient: WhaleApiService, private readonly configService: ConfigService) {}
+  private network: EnvironmentNetwork;
 
-  createWallet(network: EnvironmentNetwork = EnvironmentNetwork.MainNet): WhaleWalletAccount {
-    const mnemonic = this.configService.get(`defichain.${network}`);
-    const data = this.toData(mnemonic.split(' '), network);
-    const provider = this.initProvider(data, network);
-    return this.initJellyfishWallet(provider, network).get(1);
+  constructor(private readonly whaleClient: WhaleApiService, private readonly configService: ConfigService) {
+    this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
+  }
+
+  createWallet(): WhaleWalletAccount {
+    const mnemonic = this.configService.getOrThrow<string>(`defichain.key`);
+    const data = this.toData(mnemonic.split(' '), this.network);
+    const provider = this.initProvider(data, this.network);
+    return this.initJellyfishWallet(provider, this.network).get(1);
   }
 
   private initProvider(
@@ -46,10 +50,7 @@ export class WhaleWalletProvider {
     provider: WalletHdNodeProvider<HdNode>,
     network: EnvironmentNetwork,
   ): JellyfishWallet<WhaleWalletAccount, HdNode> {
-    const accountProvider = new WhaleWalletAccountProvider(
-      this.whaleClient.getClient(network),
-      getJellyfishNetwork(network),
-    );
+    const accountProvider = new WhaleWalletAccountProvider(this.whaleClient.getClient(), getJellyfishNetwork(network));
     return new JellyfishWallet(provider, accountProvider);
   }
 }

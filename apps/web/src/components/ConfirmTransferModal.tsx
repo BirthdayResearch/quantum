@@ -1,54 +1,18 @@
 import clsx from "clsx";
 import BigNumber from "bignumber.js";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { NetworkName } from "types";
-import { FiCheck } from "react-icons/fi";
+import { NetworkName, RowDataI, TransferData } from "types";
 import { useNetworkContext } from "@contexts/NetworkContext";
-import useResponsive from "@hooks/useResponsive";
 import useDisableEscapeKey from "@hooks/useDisableEscapeKey";
+import useTransferFee from "@hooks/useTransferFee";
 import truncateTextFromMiddle from "@utils/textHelper";
-import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import IconTooltip from "@components/commons/IconTooltip";
-import ActionButton from "@components/commons/ActionButton";
 import Modal from "@components/commons/Modal";
 import NumericFormat from "@components/commons/NumericFormat";
 import BrLogoIcon from "@components/icons/BrLogoIcon";
 import DeFiChainToERC20Transfer from "@components/erc-transfer/DeFiChainToERC20Transfer";
-
-import { ethers, utils } from "ethers";
-import {
-  useContractWrite,
-  usePrepareContractWrite,
-  useWaitForTransaction,
-} from "wagmi";
-import { useContractContext } from "@contexts/ContractContext";
-import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import { setStorageItem } from "@utils/localStorage";
-import {
-  CONSORTIUM_INFO,
-  DISCLAIMER_MESSAGE,
-  ETHEREUM_SYMBOL,
-  FEES_INFO,
-  STORAGE_TXN_KEY,
-} from "../constants";
-import BridgeV1Abi from "../config/BridgeV1Abi.json";
-import ErrorModal from "./commons/ErrorModal";
-
-interface RowDataI {
-  address: string;
-  networkName: NetworkName;
-  networkIcon: string;
-  tokenName: string;
-  tokenIcon: string;
-  amount: BigNumber;
-}
-
-interface TransferData {
-  from: RowDataI;
-  to: RowDataI;
-}
+import EvmToDeFiChainTransfer from "@components/erc-transfer/EvmToDeFiChainTransfer";
+import { CONSORTIUM_INFO, FEES_INFO } from "../constants";
 
 function RowData({
   data,
@@ -108,15 +72,16 @@ function RowData({
             "md:self-end md:w-auto"
           )}
         >
-          <span
+          <NumericFormat
             className={clsx(
               "!text-xl font-bold leading-6 text-right",
               "md:text-lg md:font-semibold",
               data.amount.isPositive() ? "text-valid" : "text-error"
             )}
-          >
-            {data.amount.toFixed(2)}
-          </span>
+            value={data.amount}
+            thousandSeparator
+            trimTrailingZeros
+          />
           <div className="flex items-center justify-end gap-1">
             <Image
               width={100}
@@ -135,110 +100,6 @@ function RowData({
         </div>
       </div>
     </div>
-  );
-}
-
-function ERC20ToDeFiChainTransfer({ data }: { data: TransferData }) {
-  const [hasError, setHasError] = useState(false);
-
-  const router = useRouter();
-  const { isMobile } = useResponsive();
-  const { networkEnv } = useNetworkEnvironmentContext();
-  const contractConfig = useContractContext();
-  const sendingFromETH = data.from.tokenName === ETHEREUM_SYMBOL;
-
-  const { config } = usePrepareContractWrite({
-    address: contractConfig.BridgeProxyContractAddress,
-    abi: BridgeV1Abi,
-    functionName: "bridgeToDeFiChain",
-    args: [
-      utils.hexlify(utils.toUtf8Bytes(data.to.address)) as `0x${string}`,
-      contractConfig.Erc20Tokens[data.from.tokenName],
-      utils.parseUnits(data.to.amount.toString(), "18"), // TODO: Check how to get decimal set for selected token
-    ],
-    ...(sendingFromETH
-      ? {
-          overrides: {
-            value: ethers.utils.parseEther(data.to.amount.toString()),
-          },
-        }
-      : {}),
-    onError: () => setHasError(true),
-  });
-
-  const { data: bridgeContract, write } = useContractWrite(config);
-  const { isLoading, isSuccess } = useWaitForTransaction({
-    hash: bridgeContract?.hash,
-    onError: () => setHasError(true),
-  });
-
-  useEffect(() => {
-    if (isSuccess) {
-      const TXN_KEY = `${networkEnv}.${STORAGE_TXN_KEY}`;
-      setStorageItem(TXN_KEY, null);
-    }
-  }, [isSuccess]);
-
-  return (
-    <>
-      {isLoading && (
-        <Modal isOpen={isLoading}>
-          <div className="flex flex-col items-center mt-6 mb-14">
-            <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
-            <span className="font-bold text-2xl text-dark-900 mt-12">
-              Waiting for confirmation
-            </span>
-            <span className="text-dark-900 mt-2">
-              Confirm this transaction in your Wallet.
-            </span>
-          </div>
-        </Modal>
-      )}
-      {isSuccess && (
-        // TODO: Replace success ui/message
-        <Modal isOpen={isSuccess} onClose={() => router.reload()}>
-          <div className="flex flex-col items-center mt-6 mb-14">
-            <FiCheck className="text-8xl text-valid ml-1" />
-            <span className="font-bold text-2xl text-dark-900 mt-12">
-              Transaction confirmed
-            </span>
-            <span className="text-dark-900 mt-2">
-              Funds will be transferred to your DeFiChain wallet shortly.
-            </span>
-          </div>
-        </Modal>
-      )}
-      {hasError && (
-        <ErrorModal
-          title="Transaction error"
-          message="The transaction verification has failed. Check your network connection
-        and try again."
-          hasError={hasError}
-          primaryButtonLabel="Try again"
-          secondaryButtonLabel="Close"
-        />
-      )}
-      <AlertInfoMessage
-        message={DISCLAIMER_MESSAGE}
-        containerStyle="px-5 py-4 mt-8"
-        textStyle="text-xs"
-      />
-      <div className={clsx("px-6 py-8", "md:px-[72px] md:pt-16")}>
-        <ActionButton
-          testId="confirm-transfer-btn"
-          label={isMobile ? "Confirm transfer" : "Confirm transfer on wallet"}
-          onClick={() => write?.()}
-          isLoading={isLoading}
-          disabled={isSuccess}
-        />
-      </div>
-      {/* TODO: Update screen shown for successful transfer */}
-      {isSuccess && (
-        <div className="flex justify-center items-center text-valid">
-          Transfer successful! <FiCheck size={20} className="text-valid ml-1" />
-        </div>
-      )}
-    </>
   );
 }
 
@@ -262,6 +123,8 @@ export default function ConfirmTransferModal({
     selectedTokensB,
   } = useNetworkContext();
   useDisableEscapeKey(show);
+
+  const [fee, feeSymbol] = useTransferFee(amount);
 
   // Direction of transfer
   const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
@@ -313,10 +176,10 @@ export default function ConfirmTransferModal({
         </div>
         <NumericFormat
           className="text-right text-dark-900 tracking-[0.01em] md:tracking-normal"
-          value={0}
-          decimalScale={2}
+          value={fee}
           thousandSeparator
-          suffix=" DFI" // TODO: Create hook to get fee based on source/destination
+          suffix={` ${feeSymbol}`}
+          trimTrailingZeros
         />
       </div>
 
@@ -347,7 +210,7 @@ export default function ConfirmTransferModal({
       </div>
 
       {isSendingToDFC ? (
-        <ERC20ToDeFiChainTransfer data={data} />
+        <EvmToDeFiChainTransfer data={data} />
       ) : (
         <DeFiChainToERC20Transfer />
       )}
