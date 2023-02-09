@@ -1,4 +1,4 @@
-function secondsToTime(value: number): {
+export default function secondsToTime(value: number): {
   y: number;
   m: number;
   d: number;
@@ -32,20 +32,4 @@ function secondsToTime(value: number): {
     min,
     s,
   };
-}
-
-export default function getDuration(seconds: number): string {
-  const { y, m, d, h, min, s } = secondsToTime(seconds);
-  const yDisplay = y > 0 ? `${y}y` : "";
-  const mDisplay =
-    m > 0 ? ` ${y > 0 ? m.toString().padStart(2, "0") : m}m` : "";
-  const dDisplay =
-    d > 0 ? ` ${m > 0 ? d.toString().padStart(2, "0") : d}d` : "";
-  const hDisplay =
-    h > 0 ? ` ${d > 0 ? h.toString().padStart(2, "0") : h}hr` : "";
-  const minDisplay =
-    min > 0 ? ` ${h > 0 ? min.toString().padStart(2, "0") : min}min` : "";
-  const sDisplay = s > 0 ? ` ${s.toString().padStart(2, "0")}s` : "";
-
-  return `${yDisplay}${mDisplay}${dDisplay}${hDisplay}${minDisplay}${sDisplay}`;
 }

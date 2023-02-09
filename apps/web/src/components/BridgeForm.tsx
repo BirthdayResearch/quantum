@@ -158,6 +158,7 @@ export default function BridgeForm() {
   const onResetTransferForm = () => {
     setStorageItem(TXN_KEY, null);
     setStorageItem(DFC_ADDR_KEY, null);
+    setAddressDetail(undefined);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
