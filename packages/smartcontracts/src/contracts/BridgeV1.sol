@@ -91,6 +91,9 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
 
     bytes32 public constant OPERATIONAL_ROLE = keccak256('OPERATIONAL_ROLE');
 
+    string public constant name = 'QUANTUM_BRIDGE';
+    string public constant version = '1.0';
+
     // Initial Tx fee 0.3%. Based on dps (e.g 1% == 100dps)
     uint256 public transactionFee;
 
