@@ -37,8 +37,6 @@ describe('Bridge Contract', () => {
     await hardhatNetwork.generate(1);
     // deployment arguments for the Proxy contract
     const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-      'CAKE_BRIDGE',
-      '0.1',
       defaultAdminAddress,
       operationalAdminAddress,
       defaultAdminAddress,
