@@ -1,7 +1,19 @@
+import useTimeCounter from "@hooks/useTimeCounter";
 import { CircularProgressbar } from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
 
-function CircularProgress({ value }) {
+function CircularProgress({
+  initialCounter,
+  onTimeCounterEnd,
+}: {
+  initialCounter: number;
+  onTimeCounterEnd: () => void;
+}) {
+  const { timeLimitPercentage } = useTimeCounter(
+    initialCounter,
+    onTimeCounterEnd
+  );
+
   return (
     <div className="w-3 h-3">
       <svg style={{ height: 0, width: 0 }}>
@@ -13,7 +25,7 @@ function CircularProgress({ value }) {
         </defs>
       </svg>
       <CircularProgressbar
-        value={value}
+        value={timeLimitPercentage}
         strokeWidth={20}
         counterClockwise
         styles={{

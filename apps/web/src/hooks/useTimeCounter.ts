@@ -28,7 +28,7 @@ export default function useTimeCounter(
   const timeLimitPercentage = timeRemaining
     .dividedBy(initialCounter)
     .multipliedBy(100)
-    .toFixed(0);
+    .toNumber();
 
   return { timeLimitPercentage, timeRemaining };
 }

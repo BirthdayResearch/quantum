@@ -15,10 +15,6 @@ export default function AddressError({
   delayAction: boolean;
 }) {
   const [isDisabled, setIsDisabled] = useState(delayAction);
-  const { timeLimitPercentage } = useTimeCounter(
-    DFC_TO_API_RESET_TIME_LIMIT,
-    () => setIsDisabled(false)
-  );
 
   return (
     <div className="flex flex-col items-center justify-center mt-8">
@@ -36,7 +32,12 @@ export default function AddressError({
         >
           {isDisabled && delayAction && (
             <div className="inline-block ml-1 opacity-100">
-              <CircularProgress value={timeLimitPercentage} />
+              <CircularProgress
+                initialCounter={DFC_TO_API_RESET_TIME_LIMIT}
+                onTimeCounterEnd={() => {
+                  setIsDisabled(false);
+                }}
+              />
             </div>
           )}
         </UtilityButton>
