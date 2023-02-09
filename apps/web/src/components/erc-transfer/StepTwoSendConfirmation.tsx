@@ -117,7 +117,6 @@ export default function StepTwoSendConfirmation({
   const [addressGenerationError, setAddressGenerationError] = useState("");
   const [generateAddress] = useGenerateAddressMutation();
   const { copy } = useCopyToClipboard();
-  const router = useRouter();
 
   const handleConfirmClick = () => {
     goToNextStep();

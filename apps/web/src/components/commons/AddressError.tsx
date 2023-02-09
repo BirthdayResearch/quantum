@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FiAlertCircle } from "react-icons/fi";
 import UtilityButton from "@components/commons/UtilityButton";
-import useTimeCounter from "@hooks/useTimeCounter";
 import { DFC_TO_API_RESET_TIME_LIMIT } from "../../constants";
 import CircularProgress from "./CircularProgress";
 
