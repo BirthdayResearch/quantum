@@ -176,23 +176,19 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
 
     /**
      * @notice To initialize this contract (No constructor as part of the proxy pattery )
-     * @param _name Name of the bridge (Need more discussion on this)
-     * @param _version Version number of the contract (Need more discussion on this)
      * @param _initialAdmin Initial admin address of this contract.
      * @param _initialOperational Initial operational address of this contract.
      * @param _relayerAddress Relayer address for signature
      * @param _fee Fee charged on each transcation (initial fee: 0.3%)
      */
     function initialize(
-        string calldata _name,
-        string calldata _version,
         address _initialAdmin,
         address _initialOperational,
         address _relayerAddress,
         uint256 _fee
     ) external initializer {
         __UUPSUpgradeable_init();
-        __EIP712_init(_name, _version);
+        __EIP712_init(name, version);
         _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
         _grantRole(OPERATIONAL_ROLE, _initialOperational);
         relayerAddress = _relayerAddress;
