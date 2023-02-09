@@ -8,13 +8,13 @@ export default function ErrorModal({
   title,
   message,
   primaryButtonLabel,
-  secondaryButtonLabel,
+  onPrimaryButtonClick,
 }: {
   hasError: boolean;
   title: string;
   message: string;
   primaryButtonLabel: string;
-  secondaryButtonLabel: string;
+  onPrimaryButtonClick?: () => void;
 }): JSX.Element {
   const router = useRouter();
   return (
@@ -22,18 +22,20 @@ export default function ErrorModal({
       <div className="flex flex-col items-center mt-6 mb-14">
         <FiAlertCircle className="text-8xl text-error ml-1" />
         <span className="font-bold text-2xl text-dark-900 mt-12">{title}</span>
-        <span className="text-dark-900 mt-2 text-center px-[29px]">
+        <div className="w-full text-dark-900 text-center break-all mt-2 px-[29px]">
           {message}
-        </span>
+        </div>
         <span className="pt-12">
           <ActionButton
             label={primaryButtonLabel}
             customStyle="md:px-6 text-xg lg:leading-8 lg:py-2 lg:px-8 xl:px-14"
+            onClick={onPrimaryButtonClick}
           />
           <ActionButton
-            label={secondaryButtonLabel}
+            label="Close"
             variant="secondary"
             customStyle="mt-2 md:px-2.5 lg:text-xl lg:leading-8 lg:py-2 lg:px-8 xl:px-14"
+            onClick={() => router.reload()}
           />
         </span>
       </div>

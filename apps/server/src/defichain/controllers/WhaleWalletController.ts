@@ -1,16 +1,21 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
+import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
-import { NetworkDto } from '../model/NetworkDto';
 import { WhaleWalletService } from '../services/WhaleWalletService';
 
 @Controller('/wallet')
 export class WhaleWalletController {
-  constructor(private readonly whaleWalletService: WhaleWalletService) {}
+  private network: EnvironmentNetwork;
+
+  constructor(private readonly whaleWalletService: WhaleWalletService, private readonly configService: ConfigService) {
+    this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
+  }
 
   @Throttle(5, 60)
   @Get('generate-address')
-  async get(@Query() query: NetworkDto): Promise<string> {
-    return this.whaleWalletService.generateAddress(query.network);
+  async get(): Promise<string> {
+    return this.whaleWalletService.generateAddress();
   }
 }

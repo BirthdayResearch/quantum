@@ -16,7 +16,7 @@ export class AppService {
     private prisma: PrismaService,
   ) {
     this.contract = new ethers.Contract(
-      this.configService.getOrThrow('contract.bridgeProxy.testnetAddress'),
+      this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address'),
       BridgeV1__factory.abi,
       this.ethersRpcProvider,
     );

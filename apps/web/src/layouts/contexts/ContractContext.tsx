@@ -7,7 +7,7 @@ import React, {
 } from "react";
 import { ContractContextI, NetworkEnvironment } from "types";
 import { useNetworkEnvironmentContext } from "./NetworkEnvironmentContext";
-import { MAINNET_CONFIG, TESTNET_CONFIG } from "../../config/contractAddresses";
+import { MAINNET_CONFIG, TESTNET_CONFIG } from "../../config";
 
 const ContractContext = createContext<ContractContextI>(undefined as any);
 

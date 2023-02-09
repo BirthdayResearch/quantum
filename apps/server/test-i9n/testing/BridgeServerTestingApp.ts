@@ -2,8 +2,8 @@ import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Chain as LightMyRequestChain, InjectOptions, Response as LightMyRequestResponse } from 'light-my-request';
 
-import { BridgeServerApp } from './BridgeServerApp';
-import { BaseModule } from './modules/BaseModule';
+import { BridgeServerApp } from '../../src/BridgeServerApp';
+import { BaseModule } from '../../src/modules/BaseModule';
 
 /**
  * Testing app used for testing Bridge Server App behaviour through integration tests

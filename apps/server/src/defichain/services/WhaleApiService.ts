@@ -1,14 +1,19 @@
 import { WhaleApiClient } from '@defichain/whale-api-client';
 import { Injectable } from '@nestjs/common';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core/dist/api/environment';
+import { ConfigService } from '@nestjs/config';
+import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 
 @Injectable()
 export class WhaleApiService {
-  constructor(private readonly clientProvider: WhaleApiClientProvider) {}
+  private network: EnvironmentNetwork;
 
-  getClient(network: EnvironmentNetwork = EnvironmentNetwork.MainNet): WhaleApiClient {
-    return this.clientProvider.getClient(network);
+  constructor(private readonly clientProvider: WhaleApiClientProvider, private configService: ConfigService) {
+    this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
+  }
+
+  getClient(): WhaleApiClient {
+    return this.clientProvider.getClient(this.network);
   }
 }

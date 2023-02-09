@@ -86,7 +86,7 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
       },
       {
         tokenA: {
-          name: "ETH",
+          name: "wETH",
           symbol: "ETH",
           icon: "/tokens/ETH.svg",
           supply: "120052901.9012",
@@ -154,7 +154,7 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           supply: "107732901.8210",
         },
         tokenB: {
-          name: "ETH",
+          name: "wETH",
           symbol: "ETH",
           icon: "/tokens/ETH.svg",
           supply: "107732901.8210",

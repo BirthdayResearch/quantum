@@ -24,6 +24,10 @@
       "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
       "dependsOn": ["^build"]
     },
+    "docker:pull": {
+      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
+      "dependsOn": ["^build"]
+    },
     "generate:schema": {
       "outputs": ["dist/**"],
       "dependsOn": ["^build"]
@@ -44,7 +48,8 @@
         "^build:docker",
         "build:docker",
         "generate:client",
-        "generate:schema"
+        "generate:schema",
+        "docker:pull"
       ]
     },
     "test:unit": {
@@ -53,7 +58,14 @@
     },
     "test:i9n": {
       "inputs": ["src/**", "tests-i9n/**"],
-      "dependsOn": ["^build", "generate:client", "generate:schema"]
+      "dependsOn": [
+        "^build",
+        "^build:docker",
+        "build:docker",
+        "generate:client",
+        "generate:schema",
+        "docker:pull"
+      ]
     },
     "test:e2e": {
       "inputs": ["src/**", "tests-e2e/**"],

@@ -1,113 +1,40 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { ethers } from 'ethers';
 import {
-  BridgeProxy,
-  BridgeProxy__factory,
   BridgeV1,
-  BridgeV1__factory,
-  EvmContractManager,
   HardhatNetwork,
   HardhatNetworkContainer,
   StartedHardhatNetworkContainer,
+  TestToken,
 } from 'smartcontracts';
-
-import { AppConfig } from '../src/AppConfig';
-import { AppModule } from '../src/AppModule';
-import { BridgeServerTestingApp } from '../src/BridgeServerTestingApp';
+import { BridgeContractFixture } from './testing/BridgeContractFixture';
+import { BridgeServerTestingApp } from './testing/BridgeServerTestingApp';
+import { buildTestConfig, TestingModule } from './testing/TestingModule';
 import { PrismaService } from '../src/PrismaService';
-
-@Module({})
-export class TestingExampleModule {
-  static register(config: AppConfig): DynamicModule {
-    return {
-      module: TestingExampleModule,
-      imports: [AppModule, ConfigModule.forFeature(() => config)],
-    };
-  }
-}
-
-export function buildTestConfig({
-  startedHardhatContainer,
-  contractAddress,
-}: {
-  startedHardhatContainer: StartedHardhatNetworkContainer;
-  contractAddress?: string;
-}) {
-  return contractAddress
-    ? {
-        ethereum: {
-          rpcUrl: startedHardhatContainer.rpcUrl,
-        },
-        contract: {
-          bridgeProxy: {
-            testnetAddress: contractAddress,
-          },
-        },
-      }
-    : {
-        ethereum: {
-          rpcUrl: startedHardhatContainer.rpcUrl,
-        },
-      };
-}
 
 describe('Bridge Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
-  let evmContractManager: EvmContractManager;
-  let defaultAdminAddress: string;
-  let defaultAdminSigner: ethers.Signer;
-  let operationalAdminAddress: string;
-  let bridgeUpgradeable: BridgeV1;
-  let bridgeProxy: BridgeProxy;
   let testing: BridgeServerTestingApp;
+  let bridgeContract: BridgeV1;
+  let bridgeContractFixture: BridgeContractFixture;
+  let musdcContract: TestToken;
   let prismaService: PrismaService;
 
   beforeAll(async () => {
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
-    evmContractManager = hardhatNetwork.contracts;
-    // Default and operational admin account
-    ({ testWalletAddress: defaultAdminAddress, testWalletSigner: defaultAdminSigner } =
-      await hardhatNetwork.createTestWallet());
-    ({ testWalletAddress: operationalAdminAddress } = await hardhatNetwork.createTestWallet());
+    
+    bridgeContractFixture = new BridgeContractFixture(hardhatNetwork);
+    await bridgeContractFixture.setup();
 
-    // Deploying BridgeV1 contract
-    bridgeUpgradeable = await evmContractManager.deployContract<BridgeV1>({
-      deploymentName: 'BridgeV1',
-      contractName: 'BridgeV1',
-      abi: BridgeV1__factory.abi,
-    });
-    await hardhatNetwork.generate(1);
-
-    // Deployment arguments for the Proxy contract
-    const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-      'CAKE_BRIDGE',
-      '0.1',
-      defaultAdminAddress,
-      operationalAdminAddress,
-      defaultAdminAddress,
-      30, // 0.3% txn fee
-    ]);
-
-    // Deploying proxy contract
-    bridgeProxy = await evmContractManager.deployContract<BridgeProxy>({
-      deploymentName: 'BridgeProxy',
-      contractName: 'BridgeProxy',
-      deployArgs: [bridgeUpgradeable.address, encodedData],
-      abi: BridgeProxy__factory.abi,
-    });
-    await hardhatNetwork.generate(1);
-
-    // Attach proxy address to bridgeUpgradeable contract
-    bridgeUpgradeable = bridgeUpgradeable.attach(bridgeProxy.address);
-    await hardhatNetwork.generate(1);
+    // Using the default signer of the container to carry out tests
+    ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
+      bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
     // initialize config variables
     testing = new BridgeServerTestingApp(
-      TestingExampleModule.register(
-        buildTestConfig({ startedHardhatContainer, contractAddress: bridgeUpgradeable.address }),
+      TestingModule.register(
+        buildTestConfig({ startedHardhatContainer, testnet: { bridgeContractAddress: bridgeContract.address } }),
       ),
     );
     const app = await testing.start();
@@ -118,11 +45,11 @@ describe('Bridge Service Integration Tests', () => {
 
   afterAll(async () => {
     await hardhatNetwork.stop();
-
+    await testing.stop();
     // teardown database
     await prismaService.bridgeEventTransactions.deleteMany({});
   });
-
+  
   it('Validates that the transaction inputted is of the correct format', async () => {
     const txReceipt = await testing.inject({
       method: 'POST',
@@ -147,13 +74,10 @@ describe('Bridge Service Integration Tests', () => {
     await hardhatNetwork.generate(1);
 
     // Step 3: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block
-    const transactionCall = await bridgeUpgradeable.bridgeToDeFiChain(
+    await bridgeContract.bridgeToDeFiChain(
       ethers.constants.AddressZero,
-      ethers.constants.AddressZero,
+      musdcContract.address,
       ethers.utils.parseEther('5'),
-      {
-        value: ethers.utils.parseEther('3'),
-      },
     );
     await hardhatNetwork.generate(1);
 

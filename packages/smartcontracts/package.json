@@ -39,7 +39,7 @@
     ]
   },
   "jest": {
-    "displayName": "test:smartcontracts",
+    "displayName": "test:hardhat",
     "preset": "@birthdayresearch/sticky-turbo-jest",
     "reporters": [
       "default"
@@ -51,10 +51,10 @@
     ]
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.3.8",
-    "@birthdayresearch/sticky-testcontainers": "^0.3.8",
-    "@birthdayresearch/sticky-turbo-jest": "^0.3.8",
-    "@birthdayresearch/sticky-typescript": "^0.3.8",
+    "@birthdayresearch/eslint-config": "^0.4.0",
+    "@birthdayresearch/sticky-testcontainers": "^0.4.0",
+    "@birthdayresearch/sticky-turbo-jest": "^0.4.0",
+    "@birthdayresearch/sticky-typescript": "^0.4.0",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "1.0.5",

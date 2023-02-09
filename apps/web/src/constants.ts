@@ -43,3 +43,5 @@ export const STORAGE_TXN_KEY = "unconfirmed-txn";
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
 
 export const ETHEREUM_SYMBOL = "ETH";
+
+export const DEFAULT_SPENDING_LIMIT = "1.8"; // TODO: Confirm what should be the default limit

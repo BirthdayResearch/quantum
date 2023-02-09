@@ -16,4 +16,9 @@ describe('BridgeV1 deployment test', () => {
     const OPERATIONAL_ROLE = ethers.utils.solidityKeccak256(['string'], ['OPERATIONAL_ROLE']);
     expect(await proxyBridge.hasRole(OPERATIONAL_ROLE, operationalAdminSigner.address)).to.equal(true);
   });
+  it('Successfully fetching constants', async () => {
+    const { proxyBridge } = await loadFixture(deployContracts);
+    expect(await proxyBridge.name()).to.be.equal('QUANTUM_BRIDGE');
+    expect(await proxyBridge.version()).to.be.equal('1.0');
+  });
 });

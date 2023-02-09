@@ -1,4 +1,3 @@
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import * as Joi from 'joi';
 
 export const DATABASE_URL = 'DATABASE_URL';
@@ -7,26 +6,23 @@ export function appConfig() {
   return {
     [DATABASE_URL]: process.env[DATABASE_URL],
     defichain: {
-      [EnvironmentNetwork.MainNet]: process.env.DEFICHAIN_MAINNET_KEY,
-      [EnvironmentNetwork.RemotePlayground]:
-        process.env.DEFICHAIN_REGTEST_KEY ||
-        'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
-      [EnvironmentNetwork.LocalPlayground]:
-        'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine',
+      key: process.env.DEFICHAIN_PRIVATE_KEY,
+      whaleURL: process.env.DEFICHAIN_WHALE_URL,
+      network: process.env.DEFICHAIN_NETWORK,
     },
     ethereum: {
-      rpcUrl: process.env.ETHEREUM_RPC_URL || 'localhost:8545',
-    },
-    contract: {
-      bridgeProxy: {
-        mainnetAddress: undefined,
-        testnetAddress: '0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C',
+      rpcUrl: process.env.ETHEREUM_RPC_URL,
+      contracts: {
+        bridgeProxy: {
+          //
+          address: process.env.BRIDGE_PROXY_ADDRESS,
+        },
       },
     },
   };
 }
 
-type DeepPartial<T> = T extends object
+export type DeepPartial<T> = T extends object
   ? {
       [P in keyof T]?: DeepPartial<T[P]>;
     }
@@ -38,4 +34,6 @@ export const ENV_VALIDATION_SCHEMA = Joi.object({
   DEFICHAIN_MAINNET_KEY: Joi.string(),
   DEFICHAIN_REGTEST_KEY: Joi.string(),
   [DATABASE_URL]: Joi.string().required(),
+  DEFICHAIN_NETWORK: Joi.string(),
+  DEFICHAIN_WHALE_URL: Joi.string().uri(),
 });

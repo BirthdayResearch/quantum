@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core/dist/api/environment';
 
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
@@ -7,9 +6,9 @@ import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 export class WhaleWalletService {
   constructor(private readonly whaleWalletProvider: WhaleWalletProvider) {}
 
-  async generateAddress(network: EnvironmentNetwork = EnvironmentNetwork.MainNet): Promise<string> {
+  async generateAddress(): Promise<string> {
     try {
-      const wallet = this.whaleWalletProvider.createWallet(network);
+      const wallet = this.whaleWalletProvider.createWallet();
       return await wallet.getAddress();
     } catch (e: any) {
       // TODO: Improve error handling
