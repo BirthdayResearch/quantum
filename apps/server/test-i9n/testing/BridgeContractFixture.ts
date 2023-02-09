@@ -87,8 +87,6 @@ export class BridgeContractFixture {
 
     // Deployment arguments for the Proxy contract
     const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-      'CAKE_BRIDGE',
-      '0.1',
       // admin address
       await this.adminAndOperationalSigner.getAddress(),
       // operational address
