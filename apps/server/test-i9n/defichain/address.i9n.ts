@@ -131,4 +131,21 @@ describe('DeFiChain Address Integration Testing', () => {
     });
     expect(initialResponse.statusCode).toStrictEqual(500);
   });
+
+  it('should be able to handel concurrent request on', async () => {
+    const promiseArr = Array(2)
+      .fill(0)
+      .map(() =>
+        testing.inject({
+          method: 'GET',
+          url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+        }),
+      );
+    const responses = await Promise.all(promiseArr);
+    expect(responses.length).toStrictEqual(2);
+    const successRes = responses.filter((res) => res.statusCode === 200);
+    expect(successRes.length).toStrictEqual(1);
+    const failureRes = responses.filter((res) => res.statusCode !== 200);
+    expect(failureRes.length).toStrictEqual(1);
+  });
 });
