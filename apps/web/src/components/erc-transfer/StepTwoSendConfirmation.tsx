@@ -77,6 +77,25 @@ function SuccessCopy({
   );
 }
 
+function FaqSection() {
+  const router = useRouter();
+  return (
+    <div className="mt-6 md:mt-2">
+      <span className={clsx("text-sm text-warning", "md:mt-2")}>
+        Transactions in this Bridge, as with all other on-chain transactions,
+        are irreversible. For more details, read&nbsp;
+        <button
+          type="button"
+          className="underline underline-offset-1 text-warning"
+          onClick={() => router.push("/faq")}
+        >
+          FAQs and terms of use.
+        </button>
+      </span>
+    </div>
+  );
+}
+
 export default function StepTwoSendConfirmation({
   goToNextStep,
   refundAddress,
@@ -157,7 +176,7 @@ export default function StepTwoSendConfirmation({
     <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-7 md:mt-4")}>
       <div
         className={clsx(
-          "max-w-max mx-auto flex flex-row order-1 mt-8 justify-start border-[0.5px] border-dark-200 rounded",
+          "max-w-max mx-auto flex flex-row order-1 mt-6 justify-start border-[0.5px] border-dark-200 rounded",
           "md:w-2/5 md:flex-col md:shrink-0 md:order-none px-6 pt-6 pb-3 md:mt-0"
         )}
       >
@@ -246,17 +265,9 @@ export default function StepTwoSendConfirmation({
           through the Bridge. Make sure you send the correct amount to the
           correct address.
         </p>
-        <span className={clsx("text-sm text-warning mt-1", "md:mt-2")}>
-          Transactions in this Bridge, as with all other on-chain transactions,
-          are irreversible. For more details, read
-          <button
-            type="button"
-            className="underline underline-offset-1 text-warning"
-            onClick={() => router.push("/faq")}
-          >
-            FAQs and terms of use.
-          </button>
-        </span>
+        <div className="hidden md:block">
+          <FaqSection />
+        </div>
 
         <div className={clsx("hidden mt-12", "md:block")}>
           <div className="float-right">
@@ -266,9 +277,14 @@ export default function StepTwoSendConfirmation({
         </div>
       </div>
 
+      {/* Mobile FAQ section */}
+      <div className="order-2 md:hidden text-center">
+        <FaqSection />
+      </div>
+
       {/* Mobile confirm button */}
-      <div className={clsx("order-last pt-6", "md:hidden")}>
-        <div className={clsx("px-6 pt-12", "md:px-0")}>
+      <div className={clsx("order-last", "md:hidden")}>
+        <div className={clsx("px-6 mt-12", "md:px-0")}>
           <VerifyButton onVerify={handleConfirmClick} />
         </div>
       </div>
