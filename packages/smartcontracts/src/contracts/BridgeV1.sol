@@ -366,8 +366,11 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         for (uint256 i = 0; i < supportedTokens.length(); i++) {
             address supToken = supportedTokens.at(i);
             if (
-                IERC20(supToken).balanceOf(address(this)) >
-                acceptableRemainingDays * tokenAllowances[supToken].dailyAllowance
+                (IERC20(supToken).balanceOf(address(this)) >
+                    acceptableRemainingDays * tokenAllowances[supToken].dailyAllowance) &&
+                // the same analysis as in bridgeToDeFiChain applies here, if we are still
+                // in the period for addingSupport or changingDailyAllowane, we will not flush for the token
+                (tokenAllowances[supToken].latestResetTimestamp <= block.timestamp)
             ) {
                 uint256 amountToFlush = IERC20(supToken).balanceOf(address(this)) -
                     acceptableRemainingDays *
