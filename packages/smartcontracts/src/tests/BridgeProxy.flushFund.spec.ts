@@ -104,7 +104,6 @@ describe('Test Flushfund functionalities', () => {
 
   it('Should not flush fund for a token if it is in the change allowance period', async () => {
     const { proxyBridge, flushReceiveSigner, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
-    // latestResetTimestamp = block.timestamp + 59 = X + 59
 
     const referenceTime = await time.latest(); // X
 
@@ -115,6 +114,7 @@ describe('Test Flushfund functionalities', () => {
     await testToken.mint(proxyBridge.address, toWei('100')); // + 1
 
     // await time.increase(60); // + 60
+    // mine the next block after 60 mins
     await network.provider.request({
       method: 'evm_setNextBlockTimestamp',
       params: [toHexString(referenceTime + 60 + 1 + 1)],
@@ -123,6 +123,7 @@ describe('Test Flushfund functionalities', () => {
 
     await testToken.approve(proxyBridge.address, ethers.constants.MaxUint256); // + 1
     await testToken.mint(defaultAdminSigner.address, toWei('5')); // + 1
+    // timestamp for the next transaction = X + 60 + 1 + 1 + 1 + 1 + 1 > X + 60 = latestResetTimestamp
     await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('5')); // + 1
     expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(
       latestResetTimestampAfterAddingSupport,
@@ -136,24 +137,20 @@ describe('Test Flushfund functionalities', () => {
       referenceTime + ONE_DAY + 66,
     );
     const balanceBefore1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
-    // block.timestamp = Y + 1 < Y + 1 days = new latestResetTimestamp
-    await proxyBridge.flushFund();
+    // timestamp of the next transaction = X + 66 + 1 < X + ONE_DAY + 66
+    await proxyBridge.flushFund(); // + 1
     const balanceAfter1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
     expect(balanceAfter1stFlush).to.equal(balanceBefore1stFlush);
-    // new block with block.timestamp = Y + 1 + ONE_DAY
-
-    // await time.increase(ONE_DAY);
-
-    // await time.increase(60); // + 60
+    // await time.increase(ONE_DAY); // + ONE_DAY
     await network.provider.request({
       method: 'evm_setNextBlockTimestamp',
-      params: [toHexString(referenceTime + 60 + 1 + 1 + 1 + 1 + 1 + 1 + ONE_DAY)],
+      params: [toHexString(referenceTime + 60 + 1 + 1 + 1 + 1 + 1 + 1 + 1 + ONE_DAY)],
     });
     await mine(1);
 
     const balanceBefore2ndFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balanceBridgeBefore2ndFlush = await testToken.balanceOf(proxyBridge.address);
-    // block.timestamp = Y + 2 + ONE_DAY  > Y + 1 days = new latestResetTimestamp
+    // timestamp of the next transaction = X + 60 + 7 + ONE_DAY + 1 > X + ONE_DAY + 66
     await proxyBridge.flushFund();
     const balanceAfter2ndFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balanceBridgeAfter2ndFlush = await testToken.balanceOf(proxyBridge.address);
@@ -165,5 +162,5 @@ describe('Test Flushfund functionalities', () => {
 });
 
 function toHexString(num: number): string {
-  return `0x${  num.toString(16)}`;
+  return `0x${num.toString(16)}`;
 }
