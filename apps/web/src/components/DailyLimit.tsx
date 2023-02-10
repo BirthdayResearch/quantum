@@ -29,7 +29,7 @@ export default function DailyLimit() {
 
   const DAILY_CAP = {
     dailyLimit: 25,
-    reachedLimit: 25,
+    reachedLimit: 15,
   };
 
   const limitPercentage = useMemo(
@@ -91,6 +91,8 @@ export default function DailyLimit() {
     setLimitMessageState(getLimitMessage());
   }, [limitPercentage, limitMessage]);
 
+  const DailyLimitReached = limitMessage === LimitMessageType.LimitReached;
+
   return (
     <div className="flex flex-wrap justify-between items-baseline md:block">
       <div className="w-full order-last mt-2 md:mt-0">
@@ -106,18 +108,10 @@ export default function DailyLimit() {
       <div
         className={clsx(
           "md:mt-2 flex items-center text-xs md:text-sm lg:text-base",
-          { "justify-between": limitMessage === LimitMessageType.LimitReached }
+          { "justify-between": DailyLimitReached }
         )}
       >
-        {limitMessage !== LimitMessageType.LimitReached ? (
-          <NumericFormat
-            className="text-dark-900"
-            value={DAILY_CAP.reachedLimit}
-            decimalScale={3}
-            thousandSeparator
-            suffix={` ${selectedTokensA.tokenA.symbol}`}
-          />
-        ) : (
+        {DailyLimitReached ? (
           <NumericFormat
             className="self-start text-left text-dark-700"
             value={DAILY_CAP.dailyLimit}
@@ -125,15 +119,27 @@ export default function DailyLimit() {
             thousandSeparator
             suffix={` ${selectedTokensA.tokenA.symbol}`}
           />
+        ) : (
+          <NumericFormat
+            className="text-dark-900"
+            value={DAILY_CAP.reachedLimit}
+            decimalScale={3}
+            thousandSeparator
+            suffix={` ${selectedTokensA.tokenA.symbol}`}
+          />
         )}
 
-        {limitMessage !== LimitMessageType.LimitReached && (
+        {!DailyLimitReached && (
           <span className="hidden md:block text-dark-700 ml-1">
             {`(${limitPercentage}%)`}
           </span>
         )}
 
-        {limitMessage !== LimitMessageType.LimitReached ? (
+        {DailyLimitReached ? (
+          <div className="block">
+            <LimitMessage color={getTextColor()} message={limitMessage} />
+          </div>
+        ) : (
           <NumericFormat
             className="self-end text-right text-dark-700 grow ml-0.5"
             value={DAILY_CAP.dailyLimit}
@@ -142,10 +148,6 @@ export default function DailyLimit() {
             prefix="/"
             suffix={` ${selectedTokensA.tokenA.symbol}`}
           />
-        ) : (
-          <div className="block">
-            <LimitMessage color={getTextColor()} message={limitMessage} />
-          </div>
         )}
       </div>
       {limitMessage && limitMessage !== LimitMessageType.LimitReached && (
