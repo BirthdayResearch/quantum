@@ -362,13 +362,13 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * anyone can call this function
      */
     function flushFund() external {
-        for (uint256 i = 0; i < supportedTokens.length(); i++) {
+        for (uint256 i = 0; i < supportedTokens.length(); ++i) {
             address supToken = supportedTokens.at(i);
             if (
                 (IERC20(supToken).balanceOf(address(this)) >
                     acceptableRemainingDays * tokenAllowances[supToken].dailyAllowance) &&
-                // the same analysis as in bridgeToDeFiChain applies here, if we are still
-                // in the period for addingSupport or changingDailyAllowane, we will not flush for the token
+                // the same logic as in bridgeToDeFiChain applies here, if we are still
+                // in the period for addingSupport or changingDailyAllowance, we will not flush for that particular token
                 (tokenAllowances[supToken].latestResetTimestamp <= block.timestamp)
             ) {
                 uint256 amountToFlush = IERC20(supToken).balanceOf(address(this)) -
