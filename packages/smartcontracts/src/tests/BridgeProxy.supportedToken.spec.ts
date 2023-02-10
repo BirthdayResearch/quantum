@@ -14,16 +14,16 @@ describe('Add and Removed Supported ERC20 tokens', () => {
         .connect(defaultAdminSigner)
         .addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp({ additionalTime: 60 }));
       // Adding the testToken2 as the supported token by Admin role only.
-      expect(await proxyBridge.supportedTokens(testToken2.address)).to.equal(false);
+      expect(await proxyBridge.isSupported(testToken2.address)).to.equal(false);
       // Supporting testToken2 in current time + 60 secs
       await proxyBridge
         .connect(defaultAdminSigner)
         .addSupportedTokens(testToken2.address, toWei('15'), getCurrentTimeStamp({ additionalTime: 60 }));
       // Checking testToken and it's allowance
-      expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(true);
+      expect(await proxyBridge.isSupported(testToken.address)).to.equal(true);
       expect((await proxyBridge.tokenAllowances(testToken.address)).dailyAllowance.toString()).to.equal(toWei('15'));
       // Checking testToken2 and it's allowance
-      expect(await proxyBridge.supportedTokens(testToken2.address)).to.equal(true);
+      expect(await proxyBridge.isSupported(testToken2.address)).to.equal(true);
       expect((await proxyBridge.tokenAllowances(testToken2.address)).dailyAllowance.toString()).to.equal(toWei('15'));
     });
 
@@ -39,7 +39,7 @@ describe('Add and Removed Supported ERC20 tokens', () => {
           .connect(defaultAdminSigner)
           .addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp({ additionalTime: 60 })),
       ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_ALREADY_SUPPORTED');
-      expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(true);
+      expect(await proxyBridge.isSupported(testToken.address)).to.equal(true);
     });
 
     it('Successfully remove existing token by Admin address', async () => {
@@ -49,7 +49,7 @@ describe('Add and Removed Supported ERC20 tokens', () => {
         .connect(defaultAdminSigner)
         .addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp({ additionalTime: 60 }));
       await proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(testToken.address);
-      expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(false);
+      expect(await proxyBridge.isSupported(testToken.address)).to.equal(false);
     });
 
     it('Successfully revert if `_startAllowanceTimeFrom` passed block.timestamp', async () => {
@@ -88,7 +88,7 @@ describe('Add and Removed Supported ERC20 tokens', () => {
         .connect(operationalAdminSigner)
         .addSupportedTokens(testToken2.address, toWei('15'), getCurrentTimeStamp({ additionalTime: 60 }));
       // Checking testToken2 and it's allowance
-      expect(await proxyBridge.supportedTokens(testToken2.address)).to.equal(true);
+      expect(await proxyBridge.isSupported(testToken2.address)).to.equal(true);
       expect((await proxyBridge.tokenAllowances(testToken2.address)).dailyAllowance.toString()).to.equal(toWei('15'));
     });
 
@@ -104,7 +104,7 @@ describe('Add and Removed Supported ERC20 tokens', () => {
           .connect(operationalAdminSigner)
           .addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp({ additionalTime: 60 })),
       ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_ALREADY_SUPPORTED');
-      expect(await proxyBridge.supportedTokens(testToken.address)).to.equal(true);
+      expect(await proxyBridge.isSupported(testToken.address)).to.equal(true);
     });
 
     it('Successfully remove existing token by OPERATIONAL_ROLE address', async () => {
@@ -114,7 +114,7 @@ describe('Add and Removed Supported ERC20 tokens', () => {
         .connect(operationalAdminSigner)
         .addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp({ additionalTime: 60 }));
       await proxyBridge.connect(operationalAdminSigner).removeSupportedTokens(testToken.address);
-      expect(await proxyBridge.connect(operationalAdminSigner).supportedTokens(testToken.address)).to.equal(false);
+      expect(await proxyBridge.connect(operationalAdminSigner).isSupported(testToken.address)).to.equal(false);
     });
 
     it('Unable to remove non-existing token from supported list', async () => {

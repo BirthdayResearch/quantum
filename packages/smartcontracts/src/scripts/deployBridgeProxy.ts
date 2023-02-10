@@ -9,12 +9,12 @@ export async function deployBridgeProxy({
   operationalAddress,
   relayerAddress,
   bridgeV1Address,
-}: InputAddresses): Promise<BridgeProxy> {
+  flushReceiveAddress,
+  acceptableRemainingDays,
+}: InputsForInitialization): Promise<BridgeProxy> {
   const { chainId } = network.config;
   const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
   const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-    'CAKE_BRIDGE',
-    '0.1',
     // admin address
     adminAddress,
     // operational address
@@ -22,6 +22,8 @@ export async function deployBridgeProxy({
     // relayer address
     relayerAddress,
     TRANSACTION_FEE,
+    flushReceiveAddress,
+    acceptableRemainingDays,
   ]);
   const bridgeProxy = await bridgeProxyContract.deploy(bridgeV1Address, encodedData);
   await bridgeProxy.deployed();
@@ -35,9 +37,11 @@ export async function deployBridgeProxy({
   return bridgeProxy;
 }
 
-interface InputAddresses {
+interface InputsForInitialization {
   adminAddress: string;
   operationalAddress: string;
   relayerAddress: string;
   bridgeV1Address: string;
+  flushReceiveAddress: string;
+  acceptableRemainingDays: Number;
 }

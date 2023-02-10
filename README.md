@@ -149,3 +149,11 @@ ERC20 tokens can be withdrawn by the Admin address only via the `withdraw(addres
 Admin and Operational addresses will be Gnosis safes, ideally will be with at least 3 owners with a 2/3 quorum.
 
 More admins can be added later, for more info, refer to [Gnosis safe: adding owners](https://help.gnosis-safe.io/en/articles/3950657-add-owners).
+
+## Workflow for generating Prisma Client and applying database migrations
+
+After making changes to the database schema in schema.prisma, run `cd apps/server` in terminal (/bridge).
+
+Run `./with-db generate` to generate the Prisma Client.
+
+Run `./with-db migrate dev` to migrate and apply database migrations in the development environment. 

@@ -13,10 +13,23 @@ enum Status {
   COMPLETED
 }
 
+enum EthereumTransactionStatus {
+  NOT_CONFIRMED
+  CONFIRMED
+}
+
 model PathIndex {
   id        BigInt   @id @default(autoincrement())
   index     BigInt   @unique
   address   String
   status    Status   @default(PENDING)
   createdAt DateTime @default(now())
+}
+
+model BridgeEventTransactions {
+  id              BigInt                    @id @default(autoincrement())
+  transactionHash String
+  status          EthereumTransactionStatus
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime?                 @updatedAt
 }
