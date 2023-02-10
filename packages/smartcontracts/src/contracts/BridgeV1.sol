@@ -6,6 +6,7 @@ import '@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable
 import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
+import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
 import 'hardhat/console.sol';
 
 /** @notice @dev  
@@ -69,6 +70,7 @@ error EXPIRED_CLAIM();
 error AMOUNT_CAN_NOT_BE_ZERO();
 
 contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
+    using EnumerableSet for EnumerableSet.AddressSet;
     struct TokenAllowance {
         uint256 latestResetTimestamp;
         uint256 dailyAllowance;
@@ -78,8 +80,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     // Mapping to track the address's nonce
     mapping(address => uint256) public eoaAddressToNonce;
 
-    // Mapping to track supported token
-    mapping(address => bool) public supportedTokens;
+    // Enumerable set of supportedTokens
+    EnumerableSet.AddressSet internal supportedTokens;
 
     address public relayerAddress;
 
@@ -98,6 +100,12 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     uint256 public transactionFee;
     // Community wallet to send tx fees to
     address public communityWallet;
+
+    // Address to receive the flush
+    address public flushReceiveAddress;
+
+    // The remaining day variable used when flushing
+    uint256 public acceptableRemainingDays;
 
     /**
      * @notice Emitted when the user claims funds from the bridge
@@ -181,6 +189,25 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     event TRANSACTION_FEE_ADDRESS_CHANGED(address indexed oldAddress, address indexed newAddress);
 
+    /**
+     * @notice Emitted when fund is flushed
+     */
+    event FLUSH_FUND();
+
+    /**
+     * @notice Emitted when the address to be flushed to is changed
+     * @param oldAddress The old address to be flushed to
+     * @param newAddress The new address to be flushed to
+     */
+    event CHANGE_FLUSH_RECEIVE_ADDRESS(address oldAddress, address newAddress);
+
+    /**
+     * @notice Emitted when the remaining days variable for flushing is changed
+     * @param oldDayRemaining The old remaining days
+     * @param newDayRemaining The new remaining days
+     */
+    event CHANGE_ACCEPTABLE_REMAINING_DAYS(uint256 oldDayRemaining, uint256 newDayRemaining);
+
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     /**
@@ -196,7 +223,9 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address _initialOperational,
         address _relayerAddress,
         address _communityWallet,
-        uint256 _fee
+        uint256 _fee,
+        address _flushReceiveAddress,
+        uint256 _acceptableRemainingDays
     ) external initializer {
         __UUPSUpgradeable_init();
         __EIP712_init(name, version);
@@ -205,6 +234,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         communityWallet = _communityWallet;
         relayerAddress = _relayerAddress;
         transactionFee = _fee;
+        flushReceiveAddress = _flushReceiveAddress;
+        acceptableRemainingDays = _acceptableRemainingDays;
     }
 
     /**
@@ -225,7 +256,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         bytes calldata signature
     ) external {
         if (eoaAddressToNonce[_to] != _nonce) revert INCORRECT_NONCE();
-        if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
+        if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
         if (block.timestamp > _deadline) revert EXPIRED_CLAIM();
         bytes32 struct_hash = keccak256(abi.encode(DATA_TYPE_HASH, _to, _amount, _nonce, _deadline, _tokenAddress));
         bytes32 msg_hash = _hashTypedDataV4(struct_hash);
@@ -247,7 +278,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address _tokenAddress,
         uint256 _amount
     ) external {
-        if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
+        if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
         uint256 tokenAllowanceStartTime = tokenAllowances[_tokenAddress].latestResetTimestamp;
         if (block.timestamp < tokenAllowanceStartTime) revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();
         if (_amount == 0) revert AMOUNT_CAN_NOT_BE_ZERO();
@@ -285,9 +316,9 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
         if (block.timestamp > _startAllowanceTimeFrom) revert INVALID_RESET_EPOCH_TIME();
         if (_tokenAddress == address(0)) revert ZERO_ADDRESS();
-        if (supportedTokens[_tokenAddress]) revert TOKEN_ALREADY_SUPPORTED();
+        if (supportedTokens.contains(_tokenAddress)) revert TOKEN_ALREADY_SUPPORTED();
         // Token will be added on the supported list regardless of `_startAllowanceTimeFrom`
-        supportedTokens[_tokenAddress] = true;
+        supportedTokens.add(_tokenAddress);
         tokenAllowances[_tokenAddress].latestResetTimestamp = _startAllowanceTimeFrom;
         tokenAllowances[_tokenAddress].dailyAllowance = _dailyAllowance;
         tokenAllowances[_tokenAddress].currentDailyUsage = 0;
@@ -300,8 +331,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     function removeSupportedTokens(address _tokenAddress) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
-        supportedTokens[_tokenAddress] = false;
+        if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
+        supportedTokens.remove(_tokenAddress);
         tokenAllowances[_tokenAddress].latestResetTimestamp = 0;
         tokenAllowances[_tokenAddress].dailyAllowance = 0;
         tokenAllowances[_tokenAddress].currentDailyUsage = 0;
@@ -321,7 +352,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 _newResetTimeStamp
     ) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (!supportedTokens[_tokenAddress]) revert ONLY_SUPPORTED_TOKENS();
+        if (!supportedTokens.contains(_tokenAddress)) revert ONLY_SUPPORTED_TOKENS();
         if (_newResetTimeStamp < block.timestamp + 1 days) revert INVALID_RESET_EPOCH_TIME();
         tokenAllowances[_tokenAddress].dailyAllowance = _dailyAllowance;
         uint256 prevTimeStamp = tokenAllowances[_tokenAddress].latestResetTimestamp;
@@ -338,6 +369,51 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     function withdraw(address _tokenAddress, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
         IERC20(_tokenAddress).transfer(msg.sender, amount);
         emit WITHDRAWAL_BY_OWNER(msg.sender, _tokenAddress, amount);
+    }
+
+    /**
+     * @notice Function to flush the excess funds across supported tokens to a hardcoded address
+     * anyone can call this function
+     */
+    function flushFund() external {
+        for (uint256 i = 0; i < supportedTokens.length(); ++i) {
+            address supToken = supportedTokens.at(i);
+            if (
+                (IERC20(supToken).balanceOf(address(this)) >
+                    acceptableRemainingDays * tokenAllowances[supToken].dailyAllowance) &&
+                // the same logic as in bridgeToDeFiChain applies here, if we are still
+                // in the period for addingSupport or changingDailyAllowance, we will not flush for that particular token
+                (tokenAllowances[supToken].latestResetTimestamp <= block.timestamp)
+            ) {
+                uint256 amountToFlush = IERC20(supToken).balanceOf(address(this)) -
+                    acceptableRemainingDays *
+                    tokenAllowances[supToken].dailyAllowance;
+                IERC20(supToken).transfer(flushReceiveAddress, amountToFlush);
+            }
+        }
+        emit FLUSH_FUND();
+    }
+
+    /**
+     * @notice Used by addresses with Admin and Operational roles to set the new flush receive address
+     * @param _newAddress new address to be flushed to
+     */
+    function changeFlushReceiveAddress(address _newAddress) external {
+        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        address _oldAddress = flushReceiveAddress;
+        flushReceiveAddress = _newAddress;
+        emit CHANGE_FLUSH_RECEIVE_ADDRESS(_oldAddress, _newAddress);
+    }
+
+    /**
+     * @notice Used by addresses with Admin and Operational roles to set the new acceptable remaining days
+     * @param _newAcceptableRemainingDays new acceptableRemainingDays to be used when flusing
+     */
+    function changeAcceptableRemainingDays(uint256 _newAcceptableRemainingDays) external {
+        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        uint256 _oldAcceptableRemainingDays = acceptableRemainingDays;
+        acceptableRemainingDays = _newAcceptableRemainingDays;
+        emit CHANGE_ACCEPTABLE_REMAINING_DAYS(_oldAcceptableRemainingDays, _newAcceptableRemainingDays);
     }
 
     /**
@@ -372,6 +448,20 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address oldAddress = communityWallet;
         communityWallet = _newAddress;
         emit TRANSACTION_FEE_ADDRESS_CHANGED(oldAddress, _newAddress);
+    }
+
+    /**
+     * @notice to get the supported tokens, as recursive data structure (supportedTokens) cannot be made public
+     */
+    function getSupportedTokens() external view returns (address[] memory) {
+        return supportedTokens.values();
+    }
+
+    /**
+     * @notice to check whether a token is supported
+     */
+    function isSupported(address _tokenAddress) public view returns (bool) {
+        return supportedTokens.contains(_tokenAddress);
     }
 
     /**

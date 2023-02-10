@@ -44,6 +44,8 @@ describe('Bridge Contract', () => {
       defaultAdminAddress,
       communityAddress,
       30, // 0.3% txn fee
+      defaultAdminAddress, // flush funds back to admin
+      2, // 2 day buffer for flush
     ]);
     // Deploying proxy contract
     bridgeProxy = await evmContractManager.deployContract<BridgeProxy>({
