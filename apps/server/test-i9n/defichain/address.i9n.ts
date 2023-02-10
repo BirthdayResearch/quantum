@@ -6,8 +6,6 @@ import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
 
 describe('DeFiChain Address Integration Testing', () => {
-  let postgreSqlContainer: StartedPostgreSqlContainer;
-
   // Tests are slower because it's running 3 containers at the same time
   jest.setTimeout(3600000);
   let testing: BridgeServerTestingApp;
@@ -34,7 +32,7 @@ describe('DeFiChain Address Integration Testing', () => {
 
   afterAll(async () => {
     await testing.stop();
-    await postgreSqlContainer.stop();
+    await postgres.stop();
     await defichain.stop();
   });
 
