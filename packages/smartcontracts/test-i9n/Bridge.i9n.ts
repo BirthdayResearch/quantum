@@ -18,6 +18,7 @@ describe('Bridge Contract', () => {
   let evmContractManager: EvmContractManager;
   let defaultAdminAddress: string;
   let operationalAdminAddress: string;
+  let communityAddress: string;
   let bridgeUpgradeable: BridgeV1;
   let bridgeProxy: BridgeProxy;
 
@@ -28,6 +29,7 @@ describe('Bridge Contract', () => {
     // Default and operational admin account
     ({ testWalletAddress: defaultAdminAddress } = await hardhatNetwork.createTestWallet());
     ({ testWalletAddress: operationalAdminAddress } = await hardhatNetwork.createTestWallet());
+    ({ testWalletAddress: communityAddress } = await hardhatNetwork.createTestWallet());
     // Deploying BridgeV1 contract
     bridgeUpgradeable = await evmContractManager.deployContract<BridgeV1>({
       deploymentName: 'BridgeV1',
@@ -40,6 +42,7 @@ describe('Bridge Contract', () => {
       defaultAdminAddress,
       operationalAdminAddress,
       defaultAdminAddress,
+      communityAddress,
       30, // 0.3% txn fee
     ]);
     // Deploying proxy contract
@@ -74,6 +77,9 @@ describe('Bridge Contract', () => {
     });
     it('Relayer address should be Default Admin address', async () => {
       expect(await bridgeUpgradeable.relayerAddress()).toBe(defaultAdminAddress);
+    });
+    it('Community address should be  Community address', async () => {
+      expect(await bridgeUpgradeable.communityWallet()).toBe(communityAddress);
     });
     it('Successfully implemented the 0.3% txn fee', async () => {
       expect((await bridgeUpgradeable.transactionFee()).toString()).toBe('30');
