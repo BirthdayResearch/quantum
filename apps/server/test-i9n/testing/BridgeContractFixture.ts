@@ -94,6 +94,9 @@ export class BridgeContractFixture {
       // relayer address
       // TODO: change this to the actual relayer address
       await this.adminAndOperationalSigner.getAddress(),
+      // community address
+      // TODO: change this to the actual community address
+      await this.adminAndOperationalSigner.getAddress(),
       // 0.3% txn fee
       30,
     ]);

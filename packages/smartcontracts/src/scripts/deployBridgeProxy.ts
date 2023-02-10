@@ -9,6 +9,7 @@ export async function deployBridgeProxy({
   operationalAddress,
   relayerAddress,
   bridgeV1Address,
+  txFeeAddress,
 }: InputAddresses): Promise<BridgeProxy> {
   const { chainId } = network.config;
   const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
@@ -19,6 +20,8 @@ export async function deployBridgeProxy({
     operationalAddress,
     // relayer address
     relayerAddress,
+    // community wallet address
+    txFeeAddress,
     TRANSACTION_FEE,
   ]);
   const bridgeProxy = await bridgeProxyContract.deploy(bridgeV1Address, encodedData);
@@ -38,4 +41,5 @@ interface InputAddresses {
   operationalAddress: string;
   relayerAddress: string;
   bridgeV1Address: string;
+  txFeeAddress: string;
 }

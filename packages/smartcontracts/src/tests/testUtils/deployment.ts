@@ -20,6 +20,8 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
     accounts[1],
     // relayer address
     accounts[0],
+    // community wallet address
+    accounts[4],
     30,
   ]);
   const bridgeProxy = await BridgeProxy.deploy(bridgeUpgradeable.address, encodedData);
@@ -37,6 +39,7 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
     defaultAdminSigner,
     operationalAdminSigner,
     arbitrarySigner,
+    communityAddress: accounts[4],
   };
 }
 
@@ -47,4 +50,5 @@ interface BridgeDeploymentResult {
   defaultAdminSigner: SignerWithAddress;
   operationalAdminSigner: SignerWithAddress;
   arbitrarySigner: SignerWithAddress;
+  communityAddress: string;
 }

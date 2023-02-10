@@ -96,6 +96,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
 
     // Initial Tx fee 0.3%. Based on dps (e.g 1% == 100dps)
     uint256 public transactionFee;
+    // Community wallet to send tx fees to
+    address public communityWallet;
 
     /**
      * @notice Emitted when the user claims funds from the bridge
@@ -172,25 +174,35 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     event TRANSACTION_FEE_CHANGED(uint256 indexed oldTxFee, uint256 indexed newTxFee);
 
+    /**
+     * @notice Emitted when transcation fee is changed by only Admin accounts
+     * @param oldAddress Old community's Address
+     * @param newAddress Old community's Address
+     */
+    event TRANSACTION_FEE_ADDRESS_CHANGED(address indexed oldAddress, address indexed newAddress);
+
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     /**
      * @notice To initialize this contract (No constructor as part of the proxy pattery )
-     * @param _initialAdmin Initial admin address of this contract.
-     * @param _initialOperational Initial operational address of this contract.
+     * @param _initialAdmin Initial admin address of this contract
+     * @param _initialOperational Initial operational address of this contract
      * @param _relayerAddress Relayer address for signature
+     * @param _communityWallet Community address for tx fees
      * @param _fee Fee charged on each transcation (initial fee: 0.3%)
      */
     function initialize(
         address _initialAdmin,
         address _initialOperational,
         address _relayerAddress,
+        address _communityWallet,
         uint256 _fee
     ) external initializer {
         __UUPSUpgradeable_init();
         __EIP712_init(name, version);
         _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
         _grantRole(OPERATIONAL_ROLE, _initialOperational);
+        communityWallet = _communityWallet;
         relayerAddress = _relayerAddress;
         transactionFee = _fee;
     }
@@ -253,7 +265,9 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
                 revert EXCEEDS_DAILY_ALLOWANCE();
         }
         uint256 netAmountInWei = amountAfterFees(_amount);
-        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), _amount);
+        uint256 netTxFee = _amount - netAmountInWei;
+        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), netAmountInWei);
+        IERC20(_tokenAddress).transferFrom(msg.sender, communityWallet, netTxFee);
         emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmountInWei, block.timestamp);
     }
 
@@ -346,6 +360,18 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 oldTxFee = transactionFee;
         transactionFee = fee;
         emit TRANSACTION_FEE_CHANGED(oldTxFee, transactionFee);
+    }
+
+    /**
+     * @notice Called by addresses with Admin and Operational roles to set the new wallet for sending transaction fees to
+     * @param _newAddress The new community address
+     */
+    function changeTxFeeAddress(address _newAddress) external {
+        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        if (_newAddress == address(0)) revert ZERO_ADDRESS();
+        address oldAddress = communityWallet;
+        communityWallet = _newAddress;
+        emit TRANSACTION_FEE_ADDRESS_CHANGED(oldAddress, _newAddress);
     }
 
     /**
