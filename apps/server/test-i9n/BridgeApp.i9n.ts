@@ -27,7 +27,7 @@ describe('Bridge Service Integration Tests', () => {
   let prismaService: PrismaService;
 
   beforeAll(async () => {
-    await execAsync(`./with-db generate && ./with-db migrate deploy`);
+    await execAsync(`./with-db generate && ./with-db migrate dev`);
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
 
