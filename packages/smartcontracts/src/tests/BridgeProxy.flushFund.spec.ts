@@ -35,22 +35,19 @@ describe('Test Flushfund functionalities', () => {
 
   it('Should be able to change flushReceiveAddress', async () => {
     const { proxyBridge, flushReceiveSigner, testToken } = await loadFixture(deployContracts);
-    // latestResetTimestamp = block.timestamp + 59 = X + 59
-    await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), (await time.latest()) + 60);
-    const timeStampOfAddSupportedToken = await time.latest();
+
+    const timeBeforeAddingToken = await time.latest(); // X
+
+    await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), timeBeforeAddingToken + 60); // + 1
     expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(
-      timeStampOfAddSupportedToken + 59,
+      timeBeforeAddingToken + 60,
     );
-    // block.timestamp = X + 1
-    await testToken.mint(proxyBridge.address, toWei('100'));
-    // increase time by 60 secs
-    // block.timstamp = X + 61
-    await time.increase(60);
+    await testToken.mint(proxyBridge.address, toWei('100')); // + 1
+    await time.increase(60); // + 60
     const balance1stReceiverBefore1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
-    // block.timstamp = X + 62 > latestResetTimestamp = X + 59 --> can flush
+    const timeStampOfFlushFund = (await time.latest()) + 1; // + 1
     await proxyBridge.flushFund();
-    const timeStampOfFlushFund = await time.latest();
-    expect(timeStampOfFlushFund).to.equal(timeStampOfAddSupportedToken + 62);
+    expect(timeStampOfFlushFund).to.equal(timeBeforeAddingToken + 63);
     const balance1stReceiverAfter1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
     expect(balance1stReceiverAfter1stFlush.sub(balance1stReceiverBefore1stFlush)).to.equal(toWei('80'));
     const newFlushReceiveAddress = (await ethers.provider.listAccounts())[4];
@@ -103,24 +100,24 @@ describe('Test Flushfund functionalities', () => {
   it('Should not flush fund for a token if it is in the change allowance period', async () => {
     const { proxyBridge, flushReceiveSigner, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
     // latestResetTimestamp = block.timestamp + 59 = X + 59
-    await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), (await time.latest()) + 60);
+
+    const beforeAddTokenTimeStamp = await time.latest(); // X
+
+    await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), beforeAddTokenTimeStamp + 60); // + 1
     const latestResetTimestampAfterAddingSupport = (await proxyBridge.tokenAllowances(testToken.address))
       .latestResetTimestamp;
-    expect(latestResetTimestampAfterAddingSupport).to.equal((await time.latest()) + 59);
-    // block.timestamp = X + 1
-    await testToken.mint(proxyBridge.address, toWei('100'));
-    // create a new block with timestamp = X + 1 + 60 = X + 61 > X + 59 = latestResetTimestamp
-    await time.increase(60);
-    await testToken.approve(proxyBridge.address, ethers.constants.MaxUint256);
-    await testToken.mint(defaultAdminSigner.address, toWei('5'));
-    await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('5'));
+    expect(latestResetTimestampAfterAddingSupport).to.equal(beforeAddTokenTimeStamp + 60);
+    await testToken.mint(proxyBridge.address, toWei('100')); // + 1
+    await time.increase(60); // + 60
+    await testToken.approve(proxyBridge.address, ethers.constants.MaxUint256); // + 1
+    await testToken.mint(defaultAdminSigner.address, toWei('5')); // + 1
+    await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('5')); // + 1
     expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(
       latestResetTimestampAfterAddingSupport,
     );
-    // new latestResetTimestamp = block.timestamp + 1 days = Y + 1 days
-    await proxyBridge.changeDailyAllowance(testToken.address, toWei('20'), (await time.latest()) + ONE_DAY + 1);
+    await proxyBridge.changeDailyAllowance(testToken.address, toWei('20'), (await time.latest()) + ONE_DAY + 1); // + 1
     expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(
-      (await time.latest()) + ONE_DAY,
+      beforeAddTokenTimeStamp + ONE_DAY + 66,
     );
     const balanceBefore1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
     // block.timestamp = Y + 1 < Y + 1 days = new latestResetTimestamp
