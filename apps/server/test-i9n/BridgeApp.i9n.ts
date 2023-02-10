@@ -18,6 +18,7 @@ import { buildTestConfig, TestingModule } from './testing/TestingModule';
 const execAsync = promisify(exec);
 
 describe('Bridge Service Integration Tests', () => {
+  jest.setTimeout(3600000);
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
   let testing: BridgeServerTestingApp;
