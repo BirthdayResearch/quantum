@@ -29,8 +29,8 @@ describe('DeFiChain --> EVM', () => {
       deployContracts,
     ));
     domainData = {
-      name: 'CAKE_BRIDGE',
-      version: '0.1',
+      name: 'QUANTUM_BRIDGE',
+      version: '1.0',
       chainId: 1337,
       verifyingContract: proxyBridge.address,
     };
