@@ -1,6 +1,6 @@
-import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
+import { loadFixture, mine, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
+import { ethers, network } from 'hardhat';
 
 import { deployContracts } from './testUtils/deployment';
 import { toWei } from './testUtils/mathUtils';
@@ -36,14 +36,21 @@ describe('Test Flushfund functionalities', () => {
   it('Should be able to change flushReceiveAddress', async () => {
     const { proxyBridge, flushReceiveSigner, testToken } = await loadFixture(deployContracts);
 
-    const timeBeforeAddingToken = await time.latest(); // X
+    // Use the time before adding the token as the reference time
+    const referenceTime = await time.latest(); // X
 
-    await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), timeBeforeAddingToken + 60); // + 1
-    expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(
-      timeBeforeAddingToken + 60,
-    );
+    await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), referenceTime + 60); // + 1
+    expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(referenceTime + 60);
     await testToken.mint(proxyBridge.address, toWei('100')); // + 1
-    await time.increase(60); // + 60
+
+    // await time.increase(60); // + 60
+
+    await network.provider.request({
+      method: 'evm_setNextBlockTimestamp',
+      params: [toHexString(referenceTime + 60 + 1 + 1)],
+    });
+    await mine(1);
+
     const balance1stReceiverBefore1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
     await proxyBridge.flushFund();
     const balance1stReceiverAfter1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
@@ -99,14 +106,21 @@ describe('Test Flushfund functionalities', () => {
     const { proxyBridge, flushReceiveSigner, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
     // latestResetTimestamp = block.timestamp + 59 = X + 59
 
-    const beforeAddTokenTimeStamp = await time.latest(); // X
+    const referenceTime = await time.latest(); // X
 
-    await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), beforeAddTokenTimeStamp + 60); // + 1
+    await proxyBridge.addSupportedTokens(testToken.address, toWei('10'), referenceTime + 60); // + 1
     const latestResetTimestampAfterAddingSupport = (await proxyBridge.tokenAllowances(testToken.address))
       .latestResetTimestamp;
-    expect(latestResetTimestampAfterAddingSupport).to.equal(beforeAddTokenTimeStamp + 60);
+    expect(latestResetTimestampAfterAddingSupport).to.equal(referenceTime + 60);
     await testToken.mint(proxyBridge.address, toWei('100')); // + 1
-    await time.increase(60); // + 60
+
+    // await time.increase(60); // + 60
+    await network.provider.request({
+      method: 'evm_setNextBlockTimestamp',
+      params: [toHexString(referenceTime + 60 + 1 + 1)],
+    });
+    await mine(1);
+
     await testToken.approve(proxyBridge.address, ethers.constants.MaxUint256); // + 1
     await testToken.mint(defaultAdminSigner.address, toWei('5')); // + 1
     await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('5')); // + 1
@@ -116,10 +130,10 @@ describe('Test Flushfund functionalities', () => {
     await proxyBridge.changeDailyAllowance(
       testToken.address,
       toWei('20'),
-      beforeAddTokenTimeStamp + 1 + 1 + 1 + 1 + 1 + 60 + ONE_DAY + 1,
+      referenceTime + 1 + 1 + 1 + 1 + 1 + 60 + ONE_DAY + 1,
     ); // + 1
     expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(
-      beforeAddTokenTimeStamp + ONE_DAY + 66,
+      referenceTime + ONE_DAY + 66,
     );
     const balanceBefore1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
     // block.timestamp = Y + 1 < Y + 1 days = new latestResetTimestamp
@@ -127,7 +141,16 @@ describe('Test Flushfund functionalities', () => {
     const balanceAfter1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
     expect(balanceAfter1stFlush).to.equal(balanceBefore1stFlush);
     // new block with block.timestamp = Y + 1 + ONE_DAY
-    await time.increase(ONE_DAY);
+
+    // await time.increase(ONE_DAY);
+
+    // await time.increase(60); // + 60
+    await network.provider.request({
+      method: 'evm_setNextBlockTimestamp',
+      params: [toHexString(referenceTime + 60 + 1 + 1 + 1 + 1 + 1 + 1 + ONE_DAY)],
+    });
+    await mine(1);
+
     const balanceBefore2ndFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balanceBridgeBefore2ndFlush = await testToken.balanceOf(proxyBridge.address);
     // block.timestamp = Y + 2 + ONE_DAY  > Y + 1 days = new latestResetTimestamp
@@ -140,3 +163,7 @@ describe('Test Flushfund functionalities', () => {
     expect(balanceBridgeAfter2ndFlush).to.equal(toWei('20').mul(2));
   });
 });
+
+function toHexString(num: number): string {
+  return `0x${  num.toString(16)}`;
+}
