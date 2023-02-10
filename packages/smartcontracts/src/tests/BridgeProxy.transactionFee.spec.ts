@@ -66,15 +66,6 @@ describe('Transaction fee tests', () => {
           .to.emit(proxyBridge, 'TRANSACTION_FEE_ADDRESS_CHANGED')
           .withArgs(communityAddress, arbitrarySigner.address);
       });
-
-      it('Successfully revert if the address 0x0', async () => {
-        const { proxyBridge, defaultAdminSigner, communityAddress } = await loadFixture(deployContracts);
-        expect(await proxyBridge.communityWallet()).to.be.equal(communityAddress);
-        // Changing the community wallet address
-        await expect(
-          proxyBridge.connect(defaultAdminSigner).changeTxFeeAddress(ethers.constants.AddressZero),
-        ).to.be.revertedWithCustomError(proxyBridge, 'ZERO_ADDRESS');
-      });
     });
 
     describe('OPERATIONAL_ROLE', () => {
@@ -99,6 +90,16 @@ describe('Transaction fee tests', () => {
 
         expect(await proxyBridge.communityWallet()).to.be.equal(communityAddress);
       });
+    });
+
+    it('Successfully revert if the address 0x0', async () => {
+      const { proxyBridge, communityAddress } = await loadFixture(deployContracts);
+      expect(await proxyBridge.communityWallet()).to.be.equal(communityAddress);
+      // Changing the community wallet address
+      await expect(proxyBridge.changeTxFeeAddress(ethers.constants.AddressZero)).to.be.revertedWithCustomError(
+        proxyBridge,
+        'ZERO_ADDRESS',
+      );
     });
   });
 });

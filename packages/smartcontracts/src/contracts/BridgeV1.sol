@@ -175,7 +175,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     event TRANSACTION_FEE_CHANGED(uint256 indexed oldTxFee, uint256 indexed newTxFee);
 
     /**
-     * @notice Emitted when transcation fee is changed by only Admin accounts
+     * @notice Emitted when the address to send transcation fees to is changed by Admin accounts
      * @param oldAddress Old community's Address
      * @param newAddress Old community's Address
      */
