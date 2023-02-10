@@ -1,3 +1,6 @@
+import { exec } from 'node:child_process';
+import { promisify } from 'node:util';
+
 import { ethers } from 'ethers';
 import {
   BridgeV1,
@@ -12,6 +15,8 @@ import { BridgeContractFixture } from './testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from './testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from './testing/TestingModule';
 
+const execAsync = promisify(exec);
+
 describe('Bridge Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
@@ -22,6 +27,7 @@ describe('Bridge Service Integration Tests', () => {
   let prismaService: PrismaService;
 
   beforeAll(async () => {
+    await execAsync(`./with-db generate && ./with-db migrate deploy`);
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
 
