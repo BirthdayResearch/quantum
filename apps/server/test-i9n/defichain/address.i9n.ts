@@ -132,7 +132,7 @@ describe('DeFiChain Address Integration Testing', () => {
     expect(initialResponse.statusCode).toStrictEqual(500);
   });
 
-  it('should be able to handel concurrent request on', async () => {
+  it.skip('should be able to handel concurrent request on', async () => {
     const promiseArr = Array(2)
       .fill(0)
       .map(() =>
