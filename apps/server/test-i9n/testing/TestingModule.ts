@@ -20,8 +20,10 @@ export function buildTestConfig({
   startedHardhatContainer,
   testnet,
   defichain,
+  dbUrl,
 }: DeepPartial<BuildTestConfigParams> = {}) {
   return {
+    dbUrl: dbUrl ?? '',
     defichain: {
       key: defichain?.key ?? '',
       whaleURL: defichain?.whaleURL ?? '',
@@ -39,6 +41,7 @@ export function buildTestConfig({
 }
 
 interface BuildTestConfigParams {
+  dbUrl: string;
   defichain: {
     whaleURL: string;
     key: string;

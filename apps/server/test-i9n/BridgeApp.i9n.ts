@@ -1,6 +1,6 @@
-import { exec } from 'node:child_process';
-import { promisify } from 'node:util';
+import * as child_process from 'node:child_process';
 
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { ethers } from 'ethers';
 import {
   BridgeV1,
@@ -15,10 +15,7 @@ import { BridgeContractFixture } from './testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from './testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from './testing/TestingModule';
 
-const execAsync = promisify(exec);
-
 describe('Bridge Service Integration Tests', () => {
-  jest.setTimeout(3600000);
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
   let testing: BridgeServerTestingApp;
@@ -26,9 +23,16 @@ describe('Bridge Service Integration Tests', () => {
   let bridgeContractFixture: BridgeContractFixture;
   let musdcContract: TestToken;
   let prismaService: PrismaService;
+  let postgres: StartedPostgreSqlContainer;
+  let dbUrl: string;
 
   beforeAll(async () => {
-    await execAsync(`./with-db generate && ./with-db migrate dev`);
+    postgres = await new PostgreSqlContainer().start();
+
+    // Run migrations against new db container
+    dbUrl = `postgres://${postgres.getUsername()}:${postgres.getPassword()}@${postgres.getHost()}:${postgres.getPort()}`;
+    child_process.execSync(`export DATABASE_URL=${dbUrl} && pnpm prisma migrate deploy`);
+
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
 
@@ -42,7 +46,7 @@ describe('Bridge Service Integration Tests', () => {
     // initialize config variables
     testing = new BridgeServerTestingApp(
       TestingModule.register(
-        buildTestConfig({ startedHardhatContainer, testnet: { bridgeContractAddress: bridgeContract.address } }),
+        buildTestConfig({ startedHardhatContainer, dbUrl, testnet: { bridgeContractAddress: bridgeContract.address } }),
       ),
     );
     const app = await testing.start();
@@ -52,10 +56,11 @@ describe('Bridge Service Integration Tests', () => {
   });
 
   afterAll(async () => {
-    await hardhatNetwork.stop();
-    await testing.stop();
     // teardown database
     await prismaService.bridgeEventTransactions.deleteMany({});
+    await postgres.stop();
+    await hardhatNetwork.stop();
+    await testing.stop();
   });
 
   it('Validates that the transaction inputted is of the correct format', async () => {
