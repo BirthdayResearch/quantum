@@ -1,6 +1,7 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { fromAddress } from '@defichain/jellyfish-address';
 
+import { PrismaService } from '../../src/PrismaService';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
@@ -18,6 +19,7 @@ describe('DeFiChain Address Integration Testing', () => {
   let testing: BridgeServerTestingApp;
   let defichain: StartedDeFiChainStubContainer;
   let postgres: StartedPostgreSqlContainer;
+  let prismaService: PrismaService;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
 
   beforeAll(async () => {
@@ -34,10 +36,14 @@ describe('DeFiChain Address Integration Testing', () => {
       ),
     );
 
-    await testing.start();
+    const app = await testing.start();
+    // init postgres database
+    prismaService = app.get<PrismaService>(PrismaService);
   });
 
   afterAll(async () => {
+    // teardown database
+    await prismaService.pathIndex.deleteMany({});
     await testing.stop();
     await postgres.stop();
     await defichain.stop();
@@ -50,6 +56,14 @@ describe('DeFiChain Address Integration Testing', () => {
     });
     expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
+    // db should not have record of transaction
+    const dbAddressDetail = await prismaService.pathIndex.findFirst({
+      where: { address: response.address },
+    });
+    expect(dbAddressDetail?.address).toStrictEqual(response.address);
+    expect(dbAddressDetail?.createdAt.toISOString()).toStrictEqual(response.createdAt);
+    expect(dbAddressDetail?.refundAddress).toStrictEqual(response.refundAddress);
+
     const decodedAddress = fromAddress(response.address, 'regtest');
     expect(decodedAddress).not.toBeUndefined();
   });
@@ -68,13 +82,15 @@ describe('DeFiChain Address Integration Testing', () => {
   });
 
   it('should be able to fail rate limiting for generating addresses', async () => {
-    for (let x = 0; x < 5; x += 1) {
+    // await 1min before continuing further
+    await sleep(60000);
+    for (let x = 0; x < 6; x += 1) {
       const initialResponse = await testing.inject({
         method: 'GET',
         url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
       });
 
-      expect(initialResponse.statusCode).toStrictEqual(x < 3 ? 200 : 429);
+      expect(initialResponse.statusCode).toStrictEqual(x < 5 ? 200 : 429);
     }
     // await 1min before continuing further
     await sleep(60000);
