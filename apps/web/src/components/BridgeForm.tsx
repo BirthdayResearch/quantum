@@ -225,6 +225,8 @@ export default function BridgeForm() {
     floating,
   };
 
+  const limitReached = true; // will be change once the endpoint is created
+
   const isFormValid =
     amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
 
@@ -237,32 +239,40 @@ export default function BridgeForm() {
           textStyle="text-xs md:text-base"
         />
       )}
-      <div className="flex flex-row items-center" ref={reference}>
-        <div className="w-1/2">
-          <InputSelector
-            label="Source Network"
-            popUpLabel="Select source"
-            options={networks}
-            floatingObj={floatingObj}
-            type={SelectionType.Network}
-            onSelect={(value: NetworkOptionsI) => setSelectedNetworkA(value)}
-            value={selectedNetworkA}
-            disabled={hasUnconfirmedTxn}
-          />
+      <div>
+        <div className="flex flex-row items-center" ref={reference}>
+          <div className="w-1/2">
+            <InputSelector
+              label="Source Network"
+              popUpLabel="Select source"
+              options={networks}
+              floatingObj={floatingObj}
+              type={SelectionType.Network}
+              onSelect={(value: NetworkOptionsI) => setSelectedNetworkA(value)}
+              value={selectedNetworkA}
+              disabled={hasUnconfirmedTxn}
+            />
+          </div>
+          <div className="w-1/2">
+            <InputSelector
+              label="Token"
+              popUpLabel="Select token"
+              options={selectedNetworkA.tokens}
+              floatingObj={floatingObj}
+              type={SelectionType.Token}
+              onSelect={(value: TokensI) => setSelectedTokensA(value)}
+              value={selectedTokensA}
+              disabled={hasUnconfirmedTxn}
+            />
+          </div>
         </div>
-        <div className="w-1/2">
-          <InputSelector
-            label="Token"
-            popUpLabel="Select token"
-            options={selectedNetworkA.tokens}
-            floatingObj={floatingObj}
-            type={SelectionType.Token}
-            onSelect={(value: TokensI) => setSelectedTokensA(value)}
-            value={selectedTokensA}
-            disabled={hasUnconfirmedTxn}
-          />
-        </div>
+        {limitReached && (
+          <span className="block mt-2 mx-5 text-error text-xs leading-4 lg:text-sm lg:leading-5">
+            The daily limit for this token has been reached. Try again tomorrow.
+          </span>
+        )}
       </div>
+
       <div className="mt-5">
         <span className="pl-4 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-base">
           Amount to transfer
@@ -360,7 +370,7 @@ export default function BridgeForm() {
           trimTrailingZeros
         />
       </div>
-      <div className="block md:hidden px-5 mt-4">
+      <div className="block md:hidden px-4 mt-4">
         <DailyLimit />
       </div>
       <div className="mt-8 px-6 md:mt-6 md:px-4 lg:mt-16 lg:mb-0 lg:px-0 xl:px-20">

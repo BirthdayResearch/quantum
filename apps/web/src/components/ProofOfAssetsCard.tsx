@@ -1,36 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useAccount } from "wagmi";
-import clsx from "clsx";
 import { FiBook, FiHelpCircle } from "react-icons/fi";
 import { TokenDetailI } from "types";
 import truncateTextFromMiddle from "@utils/textHelper";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import useResponsive from "@hooks/useResponsive";
 import DailyLimit from "./DailyLimit";
-import IconTooltip from "./commons/IconTooltip";
-import { DAILY_LIMIT_INFO } from "../constants";
+import DailyLimitHeader from "./DailyLimitHeader";
 
-function TokenSupplyItem({
-  token,
-  tokenStyle,
-}: {
-  token: TokenDetailI;
-  tokenStyle?: string;
-}) {
+function TokenSupplyItem({ token }: { token: TokenDetailI }) {
   return (
-    <div
-      className={clsx(
-        "flex flex-row items-center min-w-[45%] 2xl:min-w-[30%]",
-        tokenStyle
-      )}
-    >
+    <div className="flex flex-row items-center min-w-[45%] 2xl:min-w-[30%]">
       <Image
         width={100}
         height={100}
         src={token.icon}
         alt={token.name}
-        className="w-6 h-6"
+        className="w-7 h-7"
       />
     </div>
   );
@@ -38,33 +25,15 @@ function TokenSupplyItem({
 
 export default function ProofOfAssetsCard() {
   const { isMd, isLg } = useResponsive();
-  const { selectedTokensA, selectedTokensB } = useNetworkContext();
+  const { selectedTokensB } = useNetworkContext();
   const { address } = useAccount();
 
   return (
     <div className="h-full md:h-auto relative w-full md:dark-card-bg-image md:rounded-lg lg:rounded-xl md:border md:border-dark-200 md:backdrop-blur-[18px] md:px-6 md:pt-6 lg:px-8 lg:pt-8">
       <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <span className="hidden md:block text-lg lg:text-2xl font-semibold leading-6 lg:leading-9 tracking-wide text-dark-900">
-            Daily Limit
-          </span>
-          <div className="ml-[9.33px]">
-            <IconTooltip
-              title={DAILY_LIMIT_INFO.title}
-              content={DAILY_LIMIT_INFO.content}
-            />
-          </div>
-        </div>
-
-        <div className="flex">
-          <TokenSupplyItem
-            token={selectedTokensA.tokenA}
-            tokenStyle="absolute z-50"
-          />
-          <TokenSupplyItem
-            token={selectedTokensB.tokenA}
-            tokenStyle=" ml-5 z-40"
-          />
+        <DailyLimitHeader />
+        <div>
+          <TokenSupplyItem token={selectedTokensB.tokenA} />
         </div>
       </div>
 

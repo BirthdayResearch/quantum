@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { IconType } from "react-icons";
-import { FiBook, FiHelpCircle, FiShield } from "react-icons/fi";
+import { FiBook, FiHelpCircle } from "react-icons/fi";
 import BottomModal from "./commons/BottomModal";
 import ProofOfAssetsCard from "./ProofOfAssetsCard";
 
@@ -17,12 +17,6 @@ export default function MobileBottomMenu() {
   const [openProofOfAssets, setOpenProofOfAssets] = useState<boolean>(false);
 
   const menuList: MenuListItem[] = [
-    {
-      id: "assets",
-      title: "Proof of assets",
-      icon: FiShield,
-      onClick: () => setOpenProofOfAssets(true),
-    },
     {
       id: "faqs",
       title: "FAQs",
@@ -40,7 +34,7 @@ export default function MobileBottomMenu() {
   return (
     <>
       <nav>
-        <ul className="grid grid-cols-3 gap-2">
+        <ul className="grid grid-cols-2 gap-2">
           {menuList.map(({ icon: Icon, ...item }) => (
             <li key={item.title}>
               <button
