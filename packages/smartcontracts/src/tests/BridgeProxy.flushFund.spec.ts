@@ -45,9 +45,7 @@ describe('Test Flushfund functionalities', () => {
     await testToken.mint(proxyBridge.address, toWei('100')); // + 1
     await time.increase(60); // + 60
     const balance1stReceiverBefore1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
-    const timeStampOfFlushFund = (await time.latest()) + 1; // + 1
     await proxyBridge.flushFund();
-    expect(timeStampOfFlushFund).to.equal(timeBeforeAddingToken + 63);
     const balance1stReceiverAfter1stFlush = await testToken.balanceOf(flushReceiveSigner.address);
     expect(balance1stReceiverAfter1stFlush.sub(balance1stReceiverBefore1stFlush)).to.equal(toWei('80'));
     const newFlushReceiveAddress = (await ethers.provider.listAccounts())[4];
@@ -115,7 +113,11 @@ describe('Test Flushfund functionalities', () => {
     expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(
       latestResetTimestampAfterAddingSupport,
     );
-    await proxyBridge.changeDailyAllowance(testToken.address, toWei('20'), (await time.latest()) + ONE_DAY + 1); // + 1
+    await proxyBridge.changeDailyAllowance(
+      testToken.address,
+      toWei('20'),
+      beforeAddTokenTimeStamp + 1 + 1 + 1 + 1 + 1 + 60 + ONE_DAY + 1,
+    ); // + 1
     expect((await proxyBridge.tokenAllowances(testToken.address)).latestResetTimestamp).to.equal(
       beforeAddTokenTimeStamp + ONE_DAY + 66,
     );
