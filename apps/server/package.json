@@ -6,6 +6,8 @@
     "prepare": "npx prisma generate --schema=./src/prisma/schema.prisma",
     "dev": "pnpm run migration:dev && nest start --watch",
     "build": "tsc -b ./tsconfig.build.json",
+    "generate:migrations": "./with-db migrate dev && pnpm prisma format",
+    "generate:prisma": "prisma generate",
     "clean": "rm -rf dist",
     "lint": "eslint .",
     "playground:start": "docker-compose rm -fsv && docker-compose -f ../../docker-compose.yml --env-file ./.env up",

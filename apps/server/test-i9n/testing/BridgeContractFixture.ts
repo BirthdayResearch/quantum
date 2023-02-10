@@ -85,19 +85,23 @@ export class BridgeContractFixture {
     });
     await this.hardhatNetwork.generate(1);
 
+    const adminAndOperationalAddress = await this.adminAndOperationalSigner.getAddress();
+
     // Deployment arguments for the Proxy contract
     const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-      'CAKE_BRIDGE',
-      '0.1',
       // admin address
-      await this.adminAndOperationalSigner.getAddress(),
+      adminAndOperationalAddress,
       // operational address
-      await this.adminAndOperationalSigner.getAddress(),
+      adminAndOperationalAddress,
       // relayer address
       // TODO: change this to the actual relayer address
-      await this.adminAndOperationalSigner.getAddress(),
+      adminAndOperationalAddress,
       // 0.3% txn fee
       30,
+      // flush funds back to admin and operational signer
+      adminAndOperationalAddress,
+      // minimum 2 day buffer
+      2,
     ]);
 
     // Deploying proxy contract

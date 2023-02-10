@@ -37,12 +37,12 @@ describe('Bridge Contract', () => {
     await hardhatNetwork.generate(1);
     // deployment arguments for the Proxy contract
     const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-      'CAKE_BRIDGE',
-      '0.1',
       defaultAdminAddress,
       operationalAdminAddress,
-      defaultAdminAddress,
-      30, // 0.3% txn fee
+      defaultAdminAddress, // relayer address
+      30, // 0.3% txn fee,
+      defaultAdminAddress, // flush funds back to admin
+      2, // 2 day buffer for flush
     ]);
     // Deploying proxy contract
     bridgeProxy = await evmContractManager.deployContract<BridgeProxy>({

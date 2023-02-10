@@ -38,7 +38,7 @@ describe('SetupLocalTestTask', () => {
 
     // When checking that MUSDT is supported on the bridge
     // Then the token should be supported
-    expect(await proxyBridge.supportedTokens(musdtAddress)).to.equal(true);
+    expect(await proxyBridge.isSupported(musdtAddress)).to.equal(true);
     const musdtSupportedTokenInfo = await proxyBridge.tokenAllowances(musdtAddress);
     // And the token should have the expected reset time
     expect(musdtSupportedTokenInfo[0].eq(expectedTimeStamp + 60)).to.equal(true);
@@ -46,7 +46,7 @@ describe('SetupLocalTestTask', () => {
     expect(musdtSupportedTokenInfo[1].eq(ethers.constants.MaxUint256)).to.equal(true);
     // When checking that MUSDC is supported on the bridge
     // Then the token should be supported
-    expect(await proxyBridge.supportedTokens(musdcAddress)).to.equal(true);
+    expect(await proxyBridge.isSupported(musdcAddress)).to.equal(true);
     const musdcSupportedTokenInfo = await proxyBridge.tokenAllowances(musdcAddress);
     // And the token should have the expected reset time
     expect(musdcSupportedTokenInfo[0].eq(expectedTimeStamp + 60)).to.equal(true);
