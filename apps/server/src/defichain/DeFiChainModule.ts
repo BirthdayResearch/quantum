@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { PrismaService } from '../PrismaService';
 import { StatsController } from './controllers/StatsController';
 import { WhaleWalletController } from './controllers/WhaleWalletController';
 import { WhaleApiClientProvider } from './providers/WhaleApiClientProvider';
@@ -16,6 +17,7 @@ import { WhaleWalletService } from './services/WhaleWalletService';
     WhaleWalletProvider,
     WhaleWalletService,
     DeFiChainTransactionService,
+    PrismaService,
     SendService,
   ],
   controllers: [StatsController, WhaleWalletController],

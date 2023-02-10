@@ -1,6 +1,5 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { fromAddress } from '@defichain/jellyfish-address';
-import { execSync } from 'child_process';
 
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
@@ -14,27 +13,15 @@ const sleep = (time: number) =>
   });
 
 describe('DeFiChain Address Integration Testing', () => {
-  const container = new PostgreSqlContainer();
-  let postgreSqlContainer: StartedPostgreSqlContainer;
-
   // Tests are slower because it's running 3 containers at the same time
   jest.setTimeout(3600000);
   let testing: BridgeServerTestingApp;
   let defichain: StartedDeFiChainStubContainer;
+  let postgres: StartedPostgreSqlContainer;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
 
   beforeAll(async () => {
-    postgreSqlContainer = await container
-      .withDatabase('bridge')
-      .withUsername('playground')
-      .withPassword('playground')
-      .withExposedPorts({
-        container: 5432,
-        host: 5432,
-      })
-      .start();
-    // deploy migration
-    execSync('pnpm run migration:deploy');
+    postgres = await new PostgreSqlContainer().start();
 
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
@@ -42,6 +29,7 @@ describe('DeFiChain Address Integration Testing', () => {
       TestingModule.register(
         buildTestConfig({
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          postgres,
         }),
       ),
     );
@@ -51,7 +39,7 @@ describe('DeFiChain Address Integration Testing', () => {
 
   afterAll(async () => {
     await testing.stop();
-    await postgreSqlContainer.stop();
+    await postgres.stop();
     await defichain.stop();
   });
 

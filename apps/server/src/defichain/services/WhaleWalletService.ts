@@ -3,7 +3,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PathIndex } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
-import { Prisma } from '../../prisma/Client';
+import { PrismaService } from '../../PrismaService';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
@@ -12,6 +12,7 @@ export class WhaleWalletService {
   constructor(
     private readonly whaleWalletProvider: WhaleWalletProvider,
     private readonly clientProvider: WhaleApiClientProvider,
+    private prisma: PrismaService,
   ) {}
 
   async generateAddress(refundAddress: string, network: EnvironmentNetwork): Promise<Omit<PathIndex, 'id' | 'index'>> {
@@ -20,14 +21,14 @@ export class WhaleWalletService {
       if (decodedAddress === undefined) {
         throw new Error(`Invalid refund address for DeFiChain ${network}`);
       }
-      const lastIndex = await Prisma.pathIndex.findFirst({
+      const lastIndex = await this.prisma.pathIndex.findFirst({
         orderBy: [{ index: 'desc' }],
       });
       const index = lastIndex?.index;
       const nextIndex = index ? index + 1 : 2;
       const wallet = this.whaleWalletProvider.createWallet(nextIndex);
       const address = await wallet.getAddress();
-      const data = await Prisma.pathIndex.create({
+      const data = await this.prisma.pathIndex.create({
         data: {
           index: nextIndex,
           address,
@@ -56,7 +57,7 @@ export class WhaleWalletService {
 
   async getAddressDetails(address: string): Promise<Omit<PathIndex, 'id' | 'index'>> {
     try {
-      const data = await Prisma.pathIndex.findFirst({
+      const data = await this.prisma.pathIndex.findFirst({
         where: {
           address,
         },

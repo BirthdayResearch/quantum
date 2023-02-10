@@ -8,6 +8,7 @@ import { AppController } from './AppController';
 import { AppService } from './AppService';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthersModule } from './modules/EthersModule';
+import { PrismaService } from './PrismaService';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { EthersModule } from './modules/EthersModule';
   providers: [
     AppService,
     DeFiChainModule,
+    PrismaService,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
