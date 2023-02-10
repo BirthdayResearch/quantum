@@ -1,3 +1,4 @@
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { fromAddress } from '@defichain/jellyfish-address';
 
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
@@ -9,15 +10,19 @@ describe('DeFiChain Address Integration Testing', () => {
   jest.setTimeout(3600000);
   let testing: BridgeServerTestingApp;
   let defichain: StartedDeFiChainStubContainer;
+  let postgres: StartedPostgreSqlContainer;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
 
   beforeAll(async () => {
+    postgres = await new PostgreSqlContainer().start();
+
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          postgres,
         }),
       ),
     );

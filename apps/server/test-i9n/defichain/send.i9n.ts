@@ -1,3 +1,4 @@
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
 import BigNumber from 'bignumber.js';
 
@@ -18,13 +19,17 @@ describe('DeFiChain Send Transaction Testing', () => {
   let fromWallet: string;
   let wallet: WhaleWalletAccount;
   const toAddress = 'bcrt1q8rfsfny80jx78cmk4rsa069e2ckp6rn83u6ut9';
+  let postgres: StartedPostgreSqlContainer;
 
   beforeAll(async () => {
+    postgres = await new PostgreSqlContainer().start();
+
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
     const dynamicModule = TestingModule.register(
       buildTestConfig({
         defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+        postgres,
       }),
     );
     testing = new BridgeServerTestingApp(dynamicModule);

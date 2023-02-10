@@ -1,3 +1,6 @@
+import * as child_process from 'node:child_process';
+
+import { StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
@@ -16,12 +19,12 @@ export class TestingModule {
   }
 }
 
-export function buildTestConfig({
-  startedHardhatContainer,
-  testnet,
-  defichain,
-  dbUrl,
-}: DeepPartial<BuildTestConfigParams> = {}) {
+export function buildTestConfig({ startedHardhatContainer, testnet, defichain, postgres }: BuildTestConfigParams) {
+  if (postgres === undefined) {
+    throw Error('Must pass in started postgres container');
+  }
+  const dbUrl = `postgres://${postgres.getUsername()}:${postgres.getPassword()}@${postgres.getHost()}:${postgres.getPort()}`;
+  child_process.execSync(`export DATABASE_URL=${dbUrl} && pnpm prisma migrate deploy`);
   return {
     dbUrl: dbUrl ?? '',
     defichain: {
@@ -40,7 +43,11 @@ export function buildTestConfig({
   };
 }
 
-interface BuildTestConfigParams {
+type BuildTestConfigParams = DeepPartial<OptionalBuildTestConfigParams> & {
+  postgres: StartedPostgreSqlContainer;
+};
+
+type OptionalBuildTestConfigParams = {
   dbUrl: string;
   defichain: {
     whaleURL: string;
@@ -51,4 +58,4 @@ interface BuildTestConfigParams {
   testnet: {
     bridgeContractAddress: string;
   };
-}
+};
