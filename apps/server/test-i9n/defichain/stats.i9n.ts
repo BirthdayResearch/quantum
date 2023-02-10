@@ -6,12 +6,12 @@ import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './contain
 
 let defichain: StartedDeFiChainStubContainer;
 let testing: BridgeServerTestingApp;
-let postgres: StartedPostgreSqlContainer;
+let startedPostgresContainer: StartedPostgreSqlContainer;
 describe('DeFiChain Stats Testing', () => {
   // Tests are slower because it's running 3 containers at the same time
   jest.setTimeout(3600000);
   beforeAll(async () => {
-    postgres = await new PostgreSqlContainer().start();
+    startedPostgresContainer = await new PostgreSqlContainer().start();
 
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
@@ -19,7 +19,7 @@ describe('DeFiChain Stats Testing', () => {
       TestingModule.register(
         buildTestConfig({
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
-          postgres,
+          startedPostgresContainer,
         }),
       ),
     );
@@ -29,6 +29,7 @@ describe('DeFiChain Stats Testing', () => {
 
   afterAll(async () => {
     await testing.stop();
+    await startedPostgresContainer.stop();
     await defichain.stop();
   });
 
