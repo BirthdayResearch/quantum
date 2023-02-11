@@ -61,21 +61,6 @@ export default function DailyLimit() {
     return color;
   };
 
-  // Wrapping with useMemo to prevent it from re-rendering
-  // const LimitDetail: LimitDetailItem = useMemo(
-  //   () => ({
-  //     AtLimit: {
-  //       progressBarMessage: "Limit is almost reached. Proceed with caution.",
-  //     },
-  //     LimitReached: {
-  //       progressBarMessage: "Max limit reached",
-  //       formMessage:
-  //         "The daily limit for this token has been reached. Try again tomorrow.",
-  //     },
-  //   }),
-  //   []
-  // );
-
   const [limitMessage, setLimitMessageState] = useState<string | null>(null);
   function getLimitMessage() {
     if (limitPercentage.gte(50) && limitPercentage.lte(99)) {

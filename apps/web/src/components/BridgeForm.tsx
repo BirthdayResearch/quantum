@@ -379,7 +379,7 @@ export default function BridgeForm() {
             <ActionButton
               testId="transfer-btn"
               label={getActionBtnLabel()}
-              disabled={isConnected && !isFormValid}
+              disabled={(isConnected && !isFormValid) || limitReached}
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
           )}
