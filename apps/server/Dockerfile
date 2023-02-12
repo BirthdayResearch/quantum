@@ -13,7 +13,6 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 COPY package.json ./
-COPY pnpm-lock.yaml ./
 COPY pnpm-workspace.yaml ./
 COPY turbo.json ./
 COPY .npmrc ./
@@ -21,7 +20,7 @@ COPY .npmrc ./
 COPY apps ./apps
 COPY packages ./packages
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 RUN pnpm build --scope="server"
 
 CMD node bridge-api
