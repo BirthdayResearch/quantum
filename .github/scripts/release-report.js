@@ -9,7 +9,7 @@ module.exports = ({ context }) => {
   const hashLinks = getContainerHashLinks(context);
   return `
 
-Docker build preview for @waveshq/bridge/apps is ready!
+Docker build preview for waveshq/bridge/apps is ready!
           
 Built with commit ${context.sha}
 
@@ -23,10 +23,10 @@ You can also get an immutable image with the commit hash
 
 function getContainerPRLinks({ payload: { number } }) {
   const apps = process.env.APPS.split(",");
-  return apps.map((app) => `ghcr.io/@waveshq/${app}:pr-${number}`);
+  return apps.map((app) => `ghcr.io/waveshq/${app}:pr-${number}`);
 }
 
 function getContainerHashLinks({ sha }) {
   const apps = process.env.APPS.split(",");
-  return apps.map((app) => `ghcr.io/@waveshq/${app}:${sha}`);
+  return apps.map((app) => `ghcr.io/waveshq/${app}:${sha}`);
 }

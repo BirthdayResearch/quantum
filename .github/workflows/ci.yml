@@ -111,4 +111,4 @@ jobs:
           push: false
           build-args: APP=bridge-api
           platforms: ${{ matrix.platform }}
-          tags: ghcr.io/@waveshq/bridge-api:latest
+          tags: ghcr.io/waveshq/bridge-api:latest
