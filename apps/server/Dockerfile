@@ -1,5 +1,4 @@
 # Dockerfile used to build an image for the bridge-api
-
 FROM node:18-alpine
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
@@ -12,6 +11,7 @@ RUN apk add --no-cache --virtual .gyp python3 make g++
 RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
+RUN ls
 
 COPY package.json .npmrc ./
 COPY src ./src
