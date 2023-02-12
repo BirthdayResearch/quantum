@@ -22,9 +22,11 @@ You can also get an immutable image with the commit hash
 };
 
 function getContainerPRLinks({ payload: { number } }) {
-  return `ghcr.io/waveshq/bridge-api:pr-${number}`;
+  const apps = process.env.APPS.split(",");
+  return apps.map((app) => `ghcr.io/waveshq/${app}:pr-${number}`);
 }
 
 function getContainerHashLinks({ sha }) {
-  return `ghcr.io/waveshq/bridge-api:${sha}`;
+  const apps = process.env.APPS.split(",");
+  return apps.map((app) => `ghcr.io/waveshq/${app}:${sha}`);
 }
