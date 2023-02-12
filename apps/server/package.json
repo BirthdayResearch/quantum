@@ -6,7 +6,6 @@
     "prepare": "npx prisma generate",
     "dev": "nest start --watch",
     "build": "tsc -b ./tsconfig.build.json",
-    "build:docker": "docker build -t bridge-api:0.0.0 .",
     "generate:migrations": "./with-db migrate dev && pnpm prisma format",
     "generate:prisma": "prisma generate",
     "clean": "rm -rf dist",
