@@ -53,7 +53,7 @@ jobs:
           install: false
           record: true
           parallel: true
-          start: pnpm run start
+          start: pnpm dev --scope="web"
           wait-on: "http://localhost:5173"
           browser: chrome
           spec: cypress/e2e/**
