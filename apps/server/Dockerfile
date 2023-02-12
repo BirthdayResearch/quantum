@@ -1,5 +1,7 @@
-# Dockerfile used to build an image to start the hardhat network
-FROM node:16-alpine3.15
+# Dockerfile used to build an image for the bridge-api
+
+FROM node:18-alpine
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN npm install -g pnpm
 RUN pnpm config set auto-install-peers true
@@ -16,4 +18,4 @@ COPY src ./src
 
 RUN pnpm install --frozen-lockfile
 
-CMD npx hardhat --config ./src/hardhat.config.ts node
+CMD node bridge-api
