@@ -15,6 +15,6 @@ WORKDIR /app
 COPY package.json .npmrc ./
 COPY src ./src
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 CMD node bridge-api
