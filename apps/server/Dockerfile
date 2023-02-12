@@ -12,9 +12,9 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY package.json .npmrc ./
+COPY apps/server/package.json apps/server/.npmrc ./
 
-COPY src ./src
+COPY apps/server/src ./src
 
 RUN pnpm install
 
