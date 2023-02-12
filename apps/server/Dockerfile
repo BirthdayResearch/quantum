@@ -14,9 +14,7 @@ WORKDIR /app
 
 COPY package.json .npmrc ./
 
-RUN pwd
-RUN ls
-COPY ../src ./src
+COPY src ./src
 
 RUN pnpm install
 
