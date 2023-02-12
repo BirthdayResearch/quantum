@@ -22,6 +22,6 @@ COPY apps ./apps
 COPY packages ./packages
 
 RUN pnpm install --frozen-lockfile
-RUN pnpm build
+RUN pnpm build --scope="server"
 
 CMD node bridge-api
