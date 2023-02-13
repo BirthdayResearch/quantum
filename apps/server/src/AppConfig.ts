@@ -19,6 +19,9 @@ export function appConfig() {
         },
       },
     },
+    contract: {
+      address: process.env.BRIDGE_CONTRACT_ADDRESS || '',
+    },
   };
 }
 
