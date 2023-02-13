@@ -4,8 +4,6 @@ import { APP_GUARD, RouterModule } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
-import { AppController } from './AppController';
-import { AppService } from './AppService';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';
@@ -36,9 +34,8 @@ import { PrismaService } from './PrismaService';
       },
     ]),
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [
-    AppService,
     DeFiChainModule,
     PrismaService,
     EthereumModule,

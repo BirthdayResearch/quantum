@@ -3,7 +3,7 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { EthereumTransactionValidationPipe } from '../../pipes/EthereumTransactionValidation.pipe';
 import { EVMTransactionConfirmerService } from '../services/EVMTransactionConfirmerService';
 
-@Controller('')
+@Controller()
 export class EthereumController {
   constructor(private readonly evmTransactionConfirmerService: EVMTransactionConfirmerService) {}
 
