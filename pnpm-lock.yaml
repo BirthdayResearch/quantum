@@ -42,7 +42,7 @@ importers:
       class-transformer: ^0.5.1
       class-validator: ^0.14.0
       ethers: ^5.7.2
-      joi: ^17.7.0
+      joi: ^17.7.1
       light-my-request: ^5.8.0
       nestjs-pino: ^3.1.2
       pg: ^8.9.0
@@ -70,7 +70,7 @@ importers:
       class-transformer: 0.5.1
       class-validator: 0.14.0
       ethers: 5.7.2
-      joi: 17.7.0
+      joi: 17.7.1
       nestjs-pino: 3.1.2_g34766fkyuasurskfgrj5dqszq
       pg: 8.9.0
       typeorm: 0.3.12_pg@8.9.0+ts-node@10.9.1
@@ -11244,8 +11244,8 @@ packages:
       - supports-color
       - ts-node
 
-  /joi/17.7.0:
-    resolution: {integrity: sha512-1/ugc8djfn93rTE3WRKdCzGGt/EtiYKxITMO4Wiv6q5JL1gl9ePt4kBsl1S499nbosspfctIQTpYIhSmHA3WAg==}
+  /joi/17.7.1:
+    resolution: {integrity: sha512-teoLhIvWE298R6AeJywcjR4sX2hHjB3/xJX4qPjg+gTg+c0mzUDsziYlqPmLomq9gVsfaMcgPaGc7VxtD/9StA==}
     dependencies:
       '@hapi/hoek': 9.3.0
       '@hapi/topo': 5.1.0
