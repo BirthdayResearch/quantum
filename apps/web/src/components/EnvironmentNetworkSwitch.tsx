@@ -9,11 +9,8 @@ export default function EnvironmentNetworkSwitch({
   onChange: () => void;
   disabled?: boolean;
 }): JSX.Element {
-  const {
-    networkEnv: currentNetworkEnv,
-    networkEnvDisplayName,
-    updateNetworkEnv,
-  } = useNetworkEnvironmentContext();
+  const { networkEnv: currentNetworkEnv, updateNetworkEnv } =
+    useNetworkEnvironmentContext();
 
   const handleOnClick = () => {
     let nextNetworkEnv: EnvironmentNetwork;
@@ -59,7 +56,7 @@ export default function EnvironmentNetworkSwitch({
         )}
       />
       <span className="text-dark-1000 text-2xs font-bold tracking-widest uppercase">
-        {networkEnvDisplayName}
+        {currentNetworkEnv}
       </span>
     </button>
   );

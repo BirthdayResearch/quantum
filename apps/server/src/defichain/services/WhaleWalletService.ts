@@ -9,14 +9,14 @@ export class WhaleWalletService {
 
   async generateAddress(): Promise<{ address: string }> {
     try {
-      const lastIndex = await this.prisma.pathIndex.findFirst({
+      const lastIndex = await this.prisma.deFiChainAddressIndex.findFirst({
         orderBy: [{ index: 'desc' }],
       });
       const index = lastIndex?.index;
       const nextIndex = index ? index + 1 : 2;
       const wallet = this.whaleWalletProvider.createWallet(nextIndex);
       const address = await wallet.getAddress();
-      await this.prisma.pathIndex.create({
+      await this.prisma.deFiChainAddressIndex.create({
         data: {
           index: nextIndex,
           address,
