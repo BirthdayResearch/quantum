@@ -22,9 +22,9 @@ COPY .npmrc ./
 COPY apps ./apps
 COPY packages ./packages
 
-RUN pnpm fetch --prod
+RUN pnpm fetch
 
-RUN pnpm install -r --offline --prod
+RUN pnpm install -r --offline
 RUN pnpm build --filter="./apps/server"
 
 CMD node
