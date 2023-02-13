@@ -6,28 +6,17 @@ import useResponsive from "@hooks/useResponsive";
 import NumericFormat from "./commons/NumericFormat";
 import ProgressBar from "./commons/ProgressBar";
 import DailyLimitHeader from "./DailyLimitHeader";
+import LimitMessage from "./DailyLimitMessage";
 
 enum LimitMessageType {
   AtLimit = "Limit is almost reached. Proceed with caution.",
   LimitReached = "Max limit reached",
 }
 
-function LimitMessage({ message, color }: { message: string; color: string }) {
-  return (
-    <span
-      className={clsx(
-        "text-xs md:text-sm lg:text-base leading-4 md:leading-5 lg:leading-5",
-        color
-      )}
-    >
-      {message}
-    </span>
-  );
-}
-
 export default function DailyLimit() {
   const { selectedTokensB } = useNetworkContext();
   const { isMobile } = useResponsive();
+  const [limitMessage, setLimitMessageState] = useState<string | null>(null);
 
   const DAILY_CAP = {
     dailyLimit: 25,
@@ -63,7 +52,6 @@ export default function DailyLimit() {
     return color;
   };
 
-  const [limitMessage, setLimitMessageState] = useState<string | null>(null);
   function getLimitMessage() {
     if (limitPercentage.gte(50) && limitPercentage.lte(99)) {
       return LimitMessageType.AtLimit;
