@@ -96,9 +96,13 @@ export class BridgeContractFixture {
       // relayer address
       // TODO: change this to the actual relayer address
       adminAndOperationalAddress,
+      // community address
+      // TODO: change this to the actual community address
+      adminAndOperationalAddress,
       // 0.3% txn fee
       30,
       // flush funds back to admin and operational signer
+      // TODO: change this to the actual flush address
       adminAndOperationalAddress,
       // minimum 2 day buffer
       2,

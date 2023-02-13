@@ -4,7 +4,7 @@ import { ethers } from 'hardhat';
 
 import { BridgeV1, TestToken } from '../generated';
 import { deployContracts } from './testUtils/deployment';
-import { getCurrentTimeStamp, toWei } from './testUtils/mathUtils';
+import { amountAfterFee, getCurrentTimeStamp, toWei } from './testUtils/mathUtils';
 
 // initMintAndSupport will mint to the EOA address and approve contractAddress.
 // This is primarily to help avoid the repetition.
@@ -34,8 +34,10 @@ describe('Daily allowance tests', () => {
       expect((await proxyBridge.tokenAllowances(testToken.address)).currentDailyUsage).to.equal(0);
       // Bridging 15 token to defiChain. After this txn only able to bridge dailyAllowance(15) - 15 = 0 tokens
       await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('15'));
-      // Contract balance should be 15
-      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('15'));
+      // Contract balance should be 15 - txFee
+      const txFee = await proxyBridge.transactionFee();
+      const expectedBalance = amountAfterFee({ amount: toWei('15'), transactionFee: txFee });
+      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(expectedBalance);
       // Initial balance is 100, should be 85.
       expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(toWei('85'));
       // Current daily usage should be 15
@@ -92,9 +94,7 @@ describe('Daily allowance tests', () => {
       await time.increase(60);
       const prevAllowance = await proxyBridge.tokenAllowances(testToken.address);
       await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'));
-
       await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('2'));
-
       // Increasing time by 2 days and an hr (In seconds)
       await time.increase(60 * 60 * 49);
       await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('9'));
@@ -140,8 +140,10 @@ describe('Daily allowance tests', () => {
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('9')),
       ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
-      // Contract balance should be 20 test tokens
-      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('20'));
+      // Contract balance should be 20 - txFee test tokens
+      const txFee = await proxyBridge.transactionFee();
+      const expectedBalance = amountAfterFee({ amount: toWei('20'), transactionFee: txFee });
+      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(expectedBalance);
     });
     describe('Emitted Events', () => {
       it('Successfully emitted event when changing allowances', async () => {

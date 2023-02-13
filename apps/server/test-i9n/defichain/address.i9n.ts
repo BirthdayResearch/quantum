@@ -18,12 +18,12 @@ describe('DeFiChain Address Integration Testing', () => {
   jest.setTimeout(3600000);
   let testing: BridgeServerTestingApp;
   let defichain: StartedDeFiChainStubContainer;
-  let postgres: StartedPostgreSqlContainer;
+  let startedPostgresContainer: StartedPostgreSqlContainer;
   let prismaService: PrismaService;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
 
   beforeAll(async () => {
-    postgres = await new PostgreSqlContainer().start();
+    startedPostgresContainer = await new PostgreSqlContainer().start();
 
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
@@ -31,7 +31,7 @@ describe('DeFiChain Address Integration Testing', () => {
       TestingModule.register(
         buildTestConfig({
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
-          postgres,
+          startedPostgresContainer,
         }),
       ),
     );
@@ -45,7 +45,7 @@ describe('DeFiChain Address Integration Testing', () => {
     // teardown database
     await prismaService.deFiChainAddressIndex.deleteMany({});
     await testing.stop();
-    await postgres.stop();
+    await startedPostgresContainer.stop();
     await defichain.stop();
   });
 

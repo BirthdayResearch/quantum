@@ -10,6 +10,7 @@ import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './contain
 
 let defichain: StartedDeFiChainStubContainer;
 let testing: BridgeServerTestingApp;
+let startedPostgresContainer: StartedPostgreSqlContainer;
 
 describe('DeFiChain Send Transaction Testing', () => {
   // Tests are slower because it's running 3 containers at the same time
@@ -19,17 +20,16 @@ describe('DeFiChain Send Transaction Testing', () => {
   let fromWallet: string;
   let wallet: WhaleWalletAccount;
   const toAddress = 'bcrt1q8rfsfny80jx78cmk4rsa069e2ckp6rn83u6ut9';
-  let postgres: StartedPostgreSqlContainer;
 
   beforeAll(async () => {
-    postgres = await new PostgreSqlContainer().start();
+    startedPostgresContainer = await new PostgreSqlContainer().start();
 
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
     const dynamicModule = TestingModule.register(
       buildTestConfig({
         defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
-        postgres,
+        startedPostgresContainer,
       }),
     );
     testing = new BridgeServerTestingApp(dynamicModule);
@@ -43,6 +43,7 @@ describe('DeFiChain Send Transaction Testing', () => {
 
   afterAll(async () => {
     await testing.stop();
+    await startedPostgresContainer.stop();
     await defichain.stop();
   });
 
