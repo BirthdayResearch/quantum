@@ -6,24 +6,23 @@ RUN npm install -g pnpm
 RUN pnpm config set auto-install-peers true
 
 RUN apk --no-cache add curl git
-RUN apk add --no-cache --virtual .gyp python3 make g++
-# See: https://github.com/vercel/turbo/issues/2198#issuecomment-1276475618
-RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
 ENV PUPPETEER_SKIP_DOWNLOAD=false
 ENV CYPRESS_INSTALL_BINARY=0
 
+COPY pnpm-lock.yaml ./
 COPY package.json ./
 COPY pnpm-workspace.yaml ./
 COPY turbo.json ./
 COPY .npmrc ./
 
-COPY apps ./apps
-COPY packages ./packages
+COPY apps/server ./apps/server
 
-RUN pnpm install
+RUN pnpm fetch --prod
+
+RUN pnpm install -r --offline --prod
 RUN pnpm build --filter="server"
 
-CMD node bridge-api
+CMD node
