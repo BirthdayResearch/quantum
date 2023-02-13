@@ -13,6 +13,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
 ENV PUPPETEER_SKIP_DOWNLOAD=false
+ENV CYPRESS_INSTALL_BINARY=false
 
 COPY package.json ./
 COPY pnpm-workspace.yaml ./
