@@ -9,6 +9,7 @@ export async function deployBridgeProxy({
   operationalAddress,
   relayerAddress,
   bridgeV1Address,
+  txFeeAddress,
   flushReceiveAddress,
   acceptableRemainingDays,
 }: InputsForInitialization): Promise<BridgeProxy> {
@@ -21,6 +22,8 @@ export async function deployBridgeProxy({
     operationalAddress,
     // relayer address
     relayerAddress,
+    // community wallet address
+    txFeeAddress,
     TRANSACTION_FEE,
     flushReceiveAddress,
     acceptableRemainingDays,
@@ -42,6 +45,7 @@ interface InputsForInitialization {
   operationalAddress: string;
   relayerAddress: string;
   bridgeV1Address: string;
+  txFeeAddress: string;
   flushReceiveAddress: string;
   acceptableRemainingDays: Number;
 }

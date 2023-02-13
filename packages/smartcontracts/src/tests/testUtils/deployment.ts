@@ -21,6 +21,8 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
     accounts[1],
     // relayer address
     accounts[0],
+    // community wallet address
+    accounts[4],
     30,
     // flushReceiveAddress
     accounts[3],
@@ -42,6 +44,7 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
     defaultAdminSigner,
     operationalAdminSigner,
     arbitrarySigner,
+    communityAddress: accounts[4],
     flushReceiveSigner,
   };
 }
@@ -53,5 +56,6 @@ interface BridgeDeploymentResult {
   defaultAdminSigner: SignerWithAddress;
   operationalAdminSigner: SignerWithAddress;
   arbitrarySigner: SignerWithAddress;
+  communityAddress: string;
   flushReceiveSigner: SignerWithAddress;
 }
