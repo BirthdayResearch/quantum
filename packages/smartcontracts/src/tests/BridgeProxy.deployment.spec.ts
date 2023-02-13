@@ -6,7 +6,9 @@ import { deployContracts } from './testUtils/deployment';
 
 describe('BridgeV1 deployment test', () => {
   it('BridgeV1 should be deployed with correct Admin, Operational and relayer addresses', async () => {
-    const { proxyBridge, defaultAdminSigner, operationalAdminSigner } = await loadFixture(deployContracts);
+    const { proxyBridge, defaultAdminSigner, operationalAdminSigner, communityAddress } = await loadFixture(
+      deployContracts,
+    );
     // Check if the accounts[0] has the admin role.
     const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
     expect(await proxyBridge.hasRole(DEFAULT_ADMIN_ROLE, defaultAdminSigner.address)).to.equal(true);
@@ -15,6 +17,7 @@ describe('BridgeV1 deployment test', () => {
     // Check if the accounts[1] has the OPERATIONAL_ROLE.
     const OPERATIONAL_ROLE = ethers.utils.solidityKeccak256(['string'], ['OPERATIONAL_ROLE']);
     expect(await proxyBridge.hasRole(OPERATIONAL_ROLE, operationalAdminSigner.address)).to.equal(true);
+    expect(await proxyBridge.communityWallet()).to.equal(communityAddress);
   });
   it('Successfully fetching constants', async () => {
     const { proxyBridge } = await loadFixture(deployContracts);

@@ -8,7 +8,11 @@ import { fromAddress } from "@defichain/jellyfish-address";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import useResponsive from "@hooks/useResponsive";
 import useAutoResizeTextArea from "@hooks/useAutoResizeTextArea";
-import { Network, NetworkName, NetworkEnvironment } from "types";
+import {
+  EnvironmentNetwork,
+  getJellyfishNetwork,
+} from "@waveshq/walletkit-core";
+import { Network, NetworkName } from "types";
 import Tooltip from "./commons/Tooltip";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 
@@ -75,7 +79,7 @@ export default function WalletAddressInput({
   const [copiedFromClipboard, setCopiedFromClipboard] = useState(false);
 
   const { isConnected } = useAccount();
-  const { networkEnv, networkEnvDisplayName } = useNetworkEnvironmentContext();
+  const { networkEnv } = useNetworkEnvironmentContext();
   const { isMobile } = useResponsive();
   useAutoResizeTextArea(textAreaRef.current, [addressInput, placeholder]);
 
@@ -84,7 +88,10 @@ export default function WalletAddressInput({
     if (blockchain === Network.Ethereum) {
       isValid = ethers.utils.isAddress(input);
     } else {
-      const decodedAddress = fromAddress(input, networkEnv);
+      const decodedAddress = fromAddress(
+        input,
+        getJellyfishNetwork(networkEnv).name
+      );
       isValid = decodedAddress !== undefined;
     }
     setIsValidAddress(isValid);
@@ -114,10 +121,11 @@ export default function WalletAddressInput({
 
   useEffect(() => {
     const displayedName = NetworkName[blockchain];
-    if (networkEnv === "testnet" && blockchain === Network.DeFiChain) {
-      setPlaceholder(
-        `Enter ${displayedName} (${networkEnvDisplayName}) address`
-      );
+    if (
+      networkEnv === EnvironmentNetwork.TestNet &&
+      blockchain === Network.DeFiChain
+    ) {
+      setPlaceholder(`Enter ${displayedName} (${networkEnv}) address`);
     } else {
       setPlaceholder(`Enter ${displayedName} address`);
     }
@@ -136,16 +144,17 @@ export default function WalletAddressInput({
     const isDeFiChain = blockchain === "DeFiChain";
     const hasInvalidInput = !!(addressInput && !isValidAddress);
     if (hasInvalidInput) {
-      const dfiNetwork = isDeFiChain ? ` ${networkEnvDisplayName}` : "";
+      const dfiNetwork = isDeFiChain ? ` ${networkEnv}` : "";
       message = `Use correct address for ${NetworkName[blockchain]}${dfiNetwork}`;
     } else {
       const isTestnet =
         isDeFiChain &&
-        [NetworkEnvironment.testnet, NetworkEnvironment.local].includes(
-          networkEnv
-        );
+        [
+          EnvironmentNetwork.TestNet,
+          EnvironmentNetwork.LocalPlayground,
+        ].includes(networkEnv);
       message = isTestnet
-        ? `Make sure to only use ${networkEnvDisplayName} for testing`
+        ? `Make sure to only use ${networkEnv} for testing`
         : "";
     }
     setError({ message, isError: hasInvalidInput });

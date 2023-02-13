@@ -74,7 +74,7 @@ describe('EVM --> DeFiChain', () => {
     });
 
     it('Successfully bridging after a day', async () => {
-      const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+      const { proxyBridge, testToken, defaultAdminSigner, communityAddress } = await loadFixture(deployContracts);
       await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address, 60 * 60 * 24);
       // Testing with testToken (already added in supported token)
       // Daily allowance is 15. Should revert with the error if exceeding daily allowance
@@ -93,29 +93,42 @@ describe('EVM --> DeFiChain', () => {
       await time.increase(60 * 60 * 24);
       // Bridging 10 tokens
       await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10'));
-      // Checking contract balance: should be 10 test tokens
-      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('10'));
+      // Checking contract balance: should be 10 - txFee test tokens
+      const txFee = await proxyBridge.transactionFee();
+      const expectedBalance = amountAfterFee({ amount: toWei('10'), transactionFee: txFee });
+      expect(await testToken.balanceOf(proxyBridge.address)).to.equal(expectedBalance);
+      // Checking the community wallet balance
+      expect(await testToken.balanceOf(communityAddress)).to.be.equal(toWei('10').sub(expectedBalance));
     });
 
     describe('Emitted Events: ERC20', () => {
       it('Successfully bridging over multiple days', async () => {
-        const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+        const { proxyBridge, testToken, defaultAdminSigner, communityAddress } = await loadFixture(deployContracts);
         await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address, 60 * 60 * 24);
         // increasing time by 1 day.
         await time.increase(60 * 60 * 24);
         await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('8'));
         await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('7'));
-        // Checking Contract balance - should be 15 Test token
-        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('15'));
+        // Checking Contract balance - should be 15 - txFee Test token
+        const txFee = await proxyBridge.transactionFee();
+        let amount = toWei('15');
+        const expectedBalanceOne = amountAfterFee({ amount, transactionFee: txFee });
+        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(expectedBalanceOne);
+        let txFeeBalance = amount.sub(expectedBalanceOne);
+        expect(await testToken.balanceOf(communityAddress)).to.equal(txFeeBalance);
         // Daily allowance set to 15 during setup. This tx should fail (8 + 7 + 2) > 15
         await expect(
           proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('2')),
         ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
         // increasing time by 3 days.
         await time.increase(60 * 60 * 72);
-        await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('15'));
-        // Checking contract balance: should be 30 test tokens
-        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('30'));
+        await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, amount);
+        // Checking contract balance: should be 30 - txFee test tokens
+        const expectedBalanceTwo = amountAfterFee({ amount, transactionFee: txFee });
+        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(expectedBalanceOne.add(expectedBalanceTwo));
+        // Checking community balance
+        txFeeBalance = txFeeBalance.add(amount.sub(expectedBalanceTwo));
+        expect(await testToken.balanceOf(communityAddress)).to.equal(txFeeBalance);
         await expect(
           proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('2')),
         ).to.be.revertedWithCustomError(proxyBridge, 'EXCEEDS_DAILY_ALLOWANCE');
@@ -131,15 +144,21 @@ describe('EVM --> DeFiChain', () => {
         // Need to add to the timestamp of the previous block to match the next block the tx is mined in
         const expectedTimestamp = blockBefore.timestamp + 1;
         // Getting tx fee from the bridged contract.
-        const txFee = await proxyBridge.transactionFee();
         // Calculating amount after tx fees
-        const netAmountAfterFee = amountAfterFee({ amount: toWei('10'), transactionFee: txFee });
-        // Bridging 14 testToken
-        await expect(proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, toWei('10')))
+        amount = toWei('10');
+        const expectedBalanceThree = amountAfterFee({ amount, transactionFee: txFee });
+        // Bridging 10 testToken
+        await expect(proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, amount))
           .to.emit(proxyBridge, 'BRIDGE_TO_DEFI_CHAIN')
-          .withArgs(ethers.constants.AddressZero, testToken.address, netAmountAfterFee, expectedTimestamp);
-        // Checking contract balance: should be 40 test tokens
-        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('40'));
+          .withArgs(ethers.constants.AddressZero, testToken.address, expectedBalanceThree, expectedTimestamp);
+        // Checking contract balance: should be 40 - txFees test tokens
+        expect(await testToken.balanceOf(proxyBridge.address)).to.equal(
+          expectedBalanceOne.add(expectedBalanceTwo.add(expectedBalanceThree)),
+        );
+        // Checking community wallet balance
+        expect(await testToken.balanceOf(communityAddress)).to.equal(
+          txFeeBalance.add(amount.sub(expectedBalanceThree)),
+        );
         const allowance = await proxyBridge.tokenAllowances(testToken.address);
         // Checking daily allowance
         expect(allowance[1]).to.equal(toWei('15'));

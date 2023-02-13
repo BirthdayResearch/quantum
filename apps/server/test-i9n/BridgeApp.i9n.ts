@@ -21,10 +21,10 @@ describe('Bridge Service Integration Tests', () => {
   let bridgeContractFixture: BridgeContractFixture;
   let musdcContract: TestToken;
   let prismaService: PrismaService;
-  let postgres: StartedPostgreSqlContainer;
+  let startedPostgresContainer: StartedPostgreSqlContainer;
 
   beforeAll(async () => {
-    postgres = await new PostgreSqlContainer().start();
+    startedPostgresContainer = await new PostgreSqlContainer().start();
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
 
@@ -41,7 +41,7 @@ describe('Bridge Service Integration Tests', () => {
         buildTestConfig({
           startedHardhatContainer,
           testnet: { bridgeContractAddress: bridgeContract.address },
-          postgres,
+          startedPostgresContainer,
         }),
       ),
     );
@@ -54,7 +54,7 @@ describe('Bridge Service Integration Tests', () => {
   afterAll(async () => {
     // teardown database
     await prismaService.bridgeEventTransactions.deleteMany({});
-    await postgres.stop();
+    await startedPostgresContainer.stop();
     await hardhatNetwork.stop();
     await testing.stop();
   });

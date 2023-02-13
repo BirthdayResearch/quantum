@@ -7,19 +7,11 @@ import React, {
   PropsWithChildren,
 } from "react";
 import { useRouter } from "next/router";
-import { NetworkEnvironment } from "types";
-
-const DEFAULT_ENV_NETWORK = NetworkEnvironment.mainnet;
-const NETWORK_ENV_DISPLAY_NAME: Record<NetworkEnvironment, string> = {
-  mainnet: "MainNet",
-  testnet: "TestNet",
-  regtest: "Local",
-};
+import { EnvironmentNetwork, getEnvironment } from "@waveshq/walletkit-core";
 
 interface NetworkContextI {
-  networkEnv: NetworkEnvironment;
-  networkEnvDisplayName: string;
-  updateNetworkEnv: (networkEnv: NetworkEnvironment) => void;
+  networkEnv: EnvironmentNetwork;
+  updateNetworkEnv: (networkEnv: EnvironmentNetwork) => void;
   resetNetworkEnv: () => void;
 }
 
@@ -35,26 +27,27 @@ export function NetworkEnvironmentProvider({
   children,
 }: PropsWithChildren<{}>): JSX.Element | null {
   const router = useRouter();
+  const env = getEnvironment(process.env.NODE_ENV);
   const networkQuery = router.query.network;
-  const initialNetwork =
-    NetworkEnvironment[networkQuery as keyof typeof NetworkEnvironment] ??
-    DEFAULT_ENV_NETWORK;
 
+  function getNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
+    if (env.networks.includes(n)) {
+      return n;
+    }
+    return EnvironmentNetwork.MainNet;
+  }
+
+  const initialNetwork = getNetwork(networkQuery as EnvironmentNetwork);
   const [networkEnv, setNetworkEnv] =
-    useState<NetworkEnvironment>(initialNetwork);
-  const [networkEnvDisplayName, setNetworkEnvDisplayName] = useState<string>(
-    NETWORK_ENV_DISPLAY_NAME[initialNetwork]
-  );
+    useState<EnvironmentNetwork>(initialNetwork);
 
-  const handleNetworkEnvChange = (value: NetworkEnvironment) => {
-    const networkDisplayName = NETWORK_ENV_DISPLAY_NAME[value];
+  const handleNetworkEnvChange = (value: EnvironmentNetwork) => {
     setNetworkEnv(value);
-    setNetworkEnvDisplayName(networkDisplayName);
-    if (networkQuery && networkQuery !== networkDisplayName) {
+    if (value !== initialNetwork) {
       router.replace(
         {
           pathname: "/",
-          query: { network: networkDisplayName.toLowerCase() },
+          query: { network: value },
         },
         undefined,
         { shallow: true }
@@ -68,13 +61,11 @@ export function NetworkEnvironmentProvider({
 
   useEffect(() => {
     setNetworkEnv(initialNetwork);
-    setNetworkEnvDisplayName(NETWORK_ENV_DISPLAY_NAME[initialNetwork]);
   }, [initialNetwork]);
 
   const context: NetworkContextI = useMemo(
     () => ({
       networkEnv,
-      networkEnvDisplayName,
       updateNetworkEnv: handleNetworkEnvChange,
       resetNetworkEnv,
     }),
