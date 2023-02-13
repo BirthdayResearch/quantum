@@ -58,7 +58,7 @@
     "typeorm": "^0.3.12"
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.4.0",
+    "@birthdayresearch/eslint-config": "^0.4.1",
     "@birthdayresearch/sticky-prettier": "^0.4.0",
     "@birthdayresearch/sticky-testcontainers": "^0.4.0",
     "@birthdayresearch/sticky-turbo-jest": "^0.4.0",
