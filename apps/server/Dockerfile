@@ -12,6 +12,8 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
+ENV PUPPETEER_SKIP_DOWNLOAD=false
+
 COPY package.json ./
 COPY pnpm-workspace.yaml ./
 COPY turbo.json ./
