@@ -8,12 +8,12 @@ import Tooltip from "@components/commons/Tooltip";
 import UtilityButton from "@components/commons/UtilityButton";
 import { useRouter } from "next/router";
 import { useGenerateAddressMutation } from "@store/website";
-import AddressError from "@components/commons/AddressError";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { HttpStatusCode } from "axios";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
 import { AddressDetails } from "types";
 import dayjs from "dayjs";
+import AddressError from "@components/commons/AddressError";
 import { DFC_TO_ERC_RESET_FORM_TIME_LIMIT } from "../../constants";
 import TimeLimitCounter from "./TimeLimitCounter";
 
@@ -29,7 +29,7 @@ function debounce(func, wait) {
   };
 }
 
-function getTimeDifferance(createdAt?: Date): number {
+function getTimeDifference(createdAt?: Date): number {
   if (createdAt) {
     return dayjs(createdAt)
       .add(DFC_TO_ERC_RESET_FORM_TIME_LIMIT, "millisecond")
@@ -112,7 +112,7 @@ export default function StepTwoSendConfirmation({
   const { networkEnv } = useNetworkEnvironmentContext();
   const { DFC_ADDR_KEY } = useBridgeFormStorageKeys();
   const [createdBeforeInMSec, setCreatedBeforeInMSec] = useState(
-    getTimeDifferance(addressDetail?.createdAt)
+    getTimeDifference(addressDetail?.createdAt)
   );
   const [addressGenerationError, setAddressGenerationError] = useState("");
   const [generateAddress] = useGenerateAddressMutation();
@@ -140,7 +140,7 @@ export default function StepTwoSendConfirmation({
             network: networkEnv,
             refundAddress,
           }).unwrap();
-          setCreatedBeforeInMSec(getTimeDifferance(createdAt));
+          setCreatedBeforeInMSec(getTimeDifference(createdAt));
           setStorageItem<string>(DFC_ADDR_KEY, address);
           setAddressGenerationError("");
           setDfcUniqueAddress(address);
