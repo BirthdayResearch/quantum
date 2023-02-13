@@ -170,7 +170,7 @@ importers:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@nomicfoundation/hardhat-chai-matchers': 1.0.5
-      '@nomicfoundation/hardhat-network-helpers': ^1.0.7
+      '@nomicfoundation/hardhat-network-helpers': ^1.0.8
       '@nomicfoundation/hardhat-toolbox': ^2.0.1
       '@openzeppelin/contracts': 4.8.0
       '@openzeppelin/contracts-upgradeable': 4.8.0
@@ -193,8 +193,8 @@ importers:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@nomicfoundation/hardhat-chai-matchers': 1.0.5_5h2wsktwjis7lmzn2zb7mgvahm
-      '@nomicfoundation/hardhat-network-helpers': 1.0.7_hardhat@2.12.7
-      '@nomicfoundation/hardhat-toolbox': 2.0.1_cbjjwzb4nsmz5jfarpfsr6guwa
+      '@nomicfoundation/hardhat-network-helpers': 1.0.8_hardhat@2.12.7
+      '@nomicfoundation/hardhat-toolbox': 2.0.1_ezsbf7xxshnemqyc3yls6tfeky
       '@openzeppelin/contracts': 4.8.0
       '@openzeppelin/contracts-upgradeable': 4.8.0
       '@typechain/ethers-v5': 10.2.0_kuvqdvnhbslgxdpi2awxjzdvhe
@@ -3647,8 +3647,8 @@ packages:
       ordinal: 1.0.3
     dev: true
 
-  /@nomicfoundation/hardhat-network-helpers/1.0.7_hardhat@2.12.7:
-    resolution: {integrity: sha512-X+3mNvn8B7BY5hpIaLO+TrfzWq12bpux+ajGGdmdcfC78NXmYmOZkAtiz1QZx1YIZGMS1LaXzPXyBExxKFpCaw==}
+  /@nomicfoundation/hardhat-network-helpers/1.0.8_hardhat@2.12.7:
+    resolution: {integrity: sha512-MNqQbzUJZnCMIYvlniC3U+kcavz/PhhQSsY90tbEtUyMj/IQqsLwIRZa4ctjABh3Bz0KCh9OXUZ7Yk/d9hr45Q==}
     peerDependencies:
       hardhat: ^2.9.5
     dependencies:
@@ -3656,7 +3656,7 @@ packages:
       hardhat: 2.12.7_6qtx7vkbdhwvdm4crzlegk4mvi
     dev: true
 
-  /@nomicfoundation/hardhat-toolbox/2.0.1_cbjjwzb4nsmz5jfarpfsr6guwa:
+  /@nomicfoundation/hardhat-toolbox/2.0.1_ezsbf7xxshnemqyc3yls6tfeky:
     resolution: {integrity: sha512-/pr8m9xlqiNlq6fXv4hEPNwdNwUhysoB2qbDCKqERfPpq34EydUQTC3Vis4aIea8RLwSrU8sDXFdv4TQxYstKw==}
     peerDependencies:
       '@ethersproject/abi': ^5.4.7
@@ -3682,7 +3682,7 @@ packages:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@nomicfoundation/hardhat-chai-matchers': 1.0.5_5h2wsktwjis7lmzn2zb7mgvahm
-      '@nomicfoundation/hardhat-network-helpers': 1.0.7_hardhat@2.12.7
+      '@nomicfoundation/hardhat-network-helpers': 1.0.8_hardhat@2.12.7
       '@nomiclabs/hardhat-ethers': 2.2.2_4tzilew2vuitdwerzusliplz24
       '@nomiclabs/hardhat-etherscan': 3.1.5_hardhat@2.12.7
       '@typechain/ethers-v5': 10.2.0_kuvqdvnhbslgxdpi2awxjzdvhe
