@@ -28,6 +28,7 @@ import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import DailyLimit from "./DailyLimit";
 import ConfirmTransferModal from "./ConfirmTransferModal";
+import DailyLimitErrorModal from "./DailyLimitErrorModal";
 import {
   ETHEREUM_SYMBOL,
   FEES_INFO,
@@ -401,6 +402,7 @@ export default function BridgeForm() {
         fromAddress={fromAddress}
         toAddress={addressInput}
       />
+      <DailyLimitErrorModal show={false} />
     </div>
   );
 }
