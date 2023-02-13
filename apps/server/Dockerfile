@@ -22,9 +22,7 @@ COPY .npmrc ./
 COPY apps ./apps
 COPY packages ./packages
 
-RUN pnpm fetch
-
-RUN pnpm install -r --offline
+RUN pnpm install
 RUN pnpm build --filter="server"
 
 CMD node bridge-api
