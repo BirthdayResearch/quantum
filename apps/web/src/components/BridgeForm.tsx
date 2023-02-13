@@ -380,7 +380,9 @@ export default function BridgeForm() {
             <ActionButton
               testId="transfer-btn"
               label={getActionBtnLabel()}
-              disabled={(isConnected && !isFormValid) || limitReached}
+              disabled={
+                (isConnected && !isFormValid) || (isConnected && limitReached)
+              }
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
           )}
@@ -402,7 +404,7 @@ export default function BridgeForm() {
         fromAddress={fromAddress}
         toAddress={addressInput}
       />
-      <DailyLimitErrorModal show />
+      <DailyLimitErrorModal show={limitReached} />
     </div>
   );
 }
