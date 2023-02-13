@@ -402,7 +402,7 @@ export default function BridgeForm() {
         fromAddress={fromAddress}
         toAddress={addressInput}
       />
-      <DailyLimitErrorModal show={false} />
+      <DailyLimitErrorModal show />
     </div>
   );
 }
