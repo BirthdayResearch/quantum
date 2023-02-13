@@ -52,7 +52,6 @@ describe('Bridge Service Integration Tests', () => {
   });
 
   afterAll(async () => {
-    // teardown database
     await prismaService.bridgeEventTransactions.deleteMany({});
     await startedPostgresContainer.stop();
     await hardhatNetwork.stop();
