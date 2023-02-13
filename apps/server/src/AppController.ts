@@ -1,8 +1,7 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { BigNumber } from 'ethers';
 
 import { AppService } from './AppService';
-import { EthereumTransactionValidationPipe } from './EthereumTransactionValidation.pipe';
 
 @Controller('app')
 export class AppController {
@@ -16,12 +15,5 @@ export class AppController {
   @Get('balance')
   async getBalance(@Query('address') address: string): Promise<BigNumber> {
     return this.appService.getBalance(address);
-  }
-
-  @Post('handleTransaction')
-  async handleTransaction(
-    @Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
-  ): Promise<boolean> {
-    return this.appService.handleTransaction(transactionHash);
   }
 }
