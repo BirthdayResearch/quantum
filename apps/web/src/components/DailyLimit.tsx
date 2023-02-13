@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import clsx from "clsx";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import BigNumber from "bignumber.js";
+import useResponsive from "@hooks/useResponsive";
 import NumericFormat from "./commons/NumericFormat";
 import ProgressBar from "./commons/ProgressBar";
 import DailyLimitHeader from "./DailyLimitHeader";
@@ -25,11 +26,12 @@ function LimitMessage({ message, color }: { message: string; color: string }) {
 }
 
 export default function DailyLimit() {
-  const { selectedTokensA } = useNetworkContext();
+  const { selectedTokensB } = useNetworkContext();
+  const { isMobile } = useResponsive();
 
   const DAILY_CAP = {
     dailyLimit: 25,
-    reachedLimit: 15,
+    reachedLimit: 22,
   };
 
   const limitPercentage = useMemo(
@@ -76,6 +78,7 @@ export default function DailyLimit() {
     setLimitMessageState(getLimitMessage());
   }, [limitPercentage, limitMessage]);
 
+  const AtLimit = limitMessage === LimitMessageType.AtLimit;
   const DailyLimitReached = limitMessage === LimitMessageType.LimitReached;
 
   return (
@@ -96,31 +99,25 @@ export default function DailyLimit() {
           { "justify-between": DailyLimitReached }
         )}
       >
-        {DailyLimitReached ? (
-          <NumericFormat
-            className="self-start text-left text-dark-700"
-            value={DAILY_CAP.dailyLimit}
-            decimalScale={0}
-            thousandSeparator
-            suffix={` ${selectedTokensA.tokenA.symbol}`}
-          />
-        ) : (
-          <NumericFormat
-            className="text-dark-900"
-            value={DAILY_CAP.reachedLimit}
-            decimalScale={3}
-            thousandSeparator
-            suffix={` ${selectedTokensA.tokenA.symbol}`}
-          />
-        )}
-
+        <NumericFormat
+          className={clsx(
+            {
+              "self-start text-left text-dark-700": DailyLimitReached,
+            },
+            { "text-dark-900": !DailyLimitReached }
+          )}
+          value={DAILY_CAP.dailyLimit}
+          decimalScale={DailyLimitReached ? 0 : 3}
+          thousandSeparator
+          suffix={` ${selectedTokensB.tokenA.name}`}
+        />
         {!DailyLimitReached && (
           <span className="hidden md:block text-dark-700 ml-1">
             {`(${limitPercentage}%)`}
           </span>
         )}
 
-        {DailyLimitReached ? (
+        {DailyLimitReached && !isMobile ? (
           <div className="block">
             <LimitMessage color={getTextColor()} message={limitMessage} />
           </div>
@@ -131,12 +128,12 @@ export default function DailyLimit() {
             decimalScale={0}
             thousandSeparator
             prefix="/"
-            suffix={` ${selectedTokensA.tokenA.symbol}`}
+            suffix={` ${selectedTokensB.tokenA.name}`}
           />
         )}
       </div>
-      {limitMessage && limitMessage !== LimitMessageType.LimitReached && (
-        <div className="order-last block mt-2 md:mt-5 lg:mt-6">
+      {(AtLimit || (DailyLimitReached && isMobile)) && (
+        <div className="order-last inline-flex mt-2 md:mt-5 lg:mt-6">
           <LimitMessage color={getTextColor()} message={limitMessage} />
         </div>
       )}

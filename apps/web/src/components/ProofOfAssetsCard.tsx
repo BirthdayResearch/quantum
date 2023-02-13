@@ -17,7 +17,7 @@ function TokenSupplyItem({ token }: { token: TokenDetailI }) {
         height={100}
         src={token.icon}
         alt={token.name}
-        className="w-7 h-7"
+        className="w-5 h-5 lg:w-7 lg:h-7"
       />
     </div>
   );
