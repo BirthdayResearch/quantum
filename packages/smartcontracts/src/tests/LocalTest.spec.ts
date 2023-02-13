@@ -54,7 +54,7 @@ describe('SetupLocalTestTask', () => {
     expect(musdcSupportedTokenInfo[1].eq(ethers.constants.MaxUint256)).to.equal(true);
     // Before bridging, approval needed for the proxy contracts. `approve()` is being called for both mUsdc and mUsdt in `mintAndApproveTestTokensLocal()`
     // Then the call should not revert
-    await time.increase(60);
+    await time.increase(90);
     await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, musdtAddress, toWei('1'));
     // And the EOA's balance of MUSDT should be reduced by 1
     expect((await musdtContract.balanceOf(adminAddress)).eq(toWei('99999'))).to.eq(true);

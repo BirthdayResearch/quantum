@@ -45,12 +45,12 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
   await bridgeImplementationContract.addSupportedTokens(
     usdtContract.address,
     ethers.constants.MaxUint256,
-    getCurrentTimeStamp({ additionalTime: 90 }),
+    getCurrentTimeStamp({ additionalTime: 60 }),
   );
   await bridgeImplementationContract.addSupportedTokens(
     usdcContract.address,
     ethers.constants.MaxUint256,
-    getCurrentTimeStamp({ additionalTime: 90 }),
+    getCurrentTimeStamp({ additionalTime: 60 }),
   );
 
   return { usdtContract, usdcContract, bridgeImplementationContract };
