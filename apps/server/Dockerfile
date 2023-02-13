@@ -6,6 +6,7 @@ RUN npm install -g pnpm
 RUN pnpm config set auto-install-peers true
 
 RUN apk --no-cache add curl git
+RUN apk add --no-cache --virtual .gyp python3 make g++
 
 WORKDIR /app
 
@@ -18,11 +19,12 @@ COPY pnpm-workspace.yaml ./
 COPY turbo.json ./
 COPY .npmrc ./
 
-COPY apps/server ./apps/server
+COPY apps ./apps
+COPY packages ./packages
 
 RUN pnpm fetch --prod
 
 RUN pnpm install -r --offline --prod
-RUN pnpm build --filter="server"
+RUN pnpm build --filter="./apps/server"
 
 CMD node
