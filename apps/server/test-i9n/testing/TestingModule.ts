@@ -19,11 +19,16 @@ export class TestingModule {
   }
 }
 
-export function buildTestConfig({ startedHardhatContainer, testnet, defichain, postgres }: BuildTestConfigParams) {
-  if (postgres === undefined) {
-    throw Error('Must pass in started postgres container');
+export function buildTestConfig({
+  startedHardhatContainer,
+  testnet,
+  defichain,
+  startedPostgresContainer,
+}: BuildTestConfigParams) {
+  if (startedPostgresContainer === undefined) {
+    throw Error('Must pass in StartedPostgresContainer');
   }
-  const dbUrl = `postgres://${postgres.getUsername()}:${postgres.getPassword()}@${postgres.getHost()}:${postgres.getPort()}`;
+  const dbUrl = `postgres://${startedPostgresContainer.getUsername()}:${startedPostgresContainer.getPassword()}@${startedPostgresContainer.getHost()}:${startedPostgresContainer.getPort()}`;
   child_process.execSync(`export DATABASE_URL=${dbUrl} && pnpm prisma migrate deploy`);
   return {
     dbUrl: dbUrl ?? '',
@@ -44,7 +49,7 @@ export function buildTestConfig({ startedHardhatContainer, testnet, defichain, p
 }
 
 type BuildTestConfigParams = DeepPartial<OptionalBuildTestConfigParams> & {
-  postgres: StartedPostgreSqlContainer;
+  startedPostgresContainer: StartedPostgreSqlContainer;
 };
 
 type OptionalBuildTestConfigParams = {

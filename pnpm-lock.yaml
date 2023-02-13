@@ -31,7 +31,7 @@ importers:
       '@nestjs/schematics': ^9.0.4
       '@nestjs/testing': ^9.3.7
       '@nestjs/throttler': ^3.1.0
-      '@prisma/client': ^4.9.0
+      '@prisma/client': ^4.10.1
       '@types/express': ^4.17.17
       '@types/jest': ^29.4.0
       '@types/node': ^18.11.9
@@ -46,7 +46,7 @@ importers:
       light-my-request: ^5.8.0
       nestjs-pino: ^3.1.2
       pg: ^8.9.0
-      prisma: ^4.9.0
+      prisma: ^4.10.1
       smartcontracts: workspace:0.0.0
       source-map-support: ^0.5.21
       supertest: ^6.3.3
@@ -63,9 +63,9 @@ importers:
       '@nestjs/core': 9.3.7_ojttuksvundfk3amlyo674va74
       '@nestjs/platform-fastify': 9.3.7_zmctrozi6xxh3beaccl6ebop6u
       '@nestjs/throttler': 3.1.0_pwlerhfcldutg4bxlbqlfavbwi
-      '@prisma/client': 4.9.0_prisma@4.9.0
+      '@prisma/client': 4.10.1_prisma@4.10.1
       '@waveshq/walletkit-core': 0.32.2
-      '@waveshq/walletkit-ui': 0.32.2_hpdfzyqdw5heesnkjlkxls3s7m
+      '@waveshq/walletkit-ui': 0.32.2_324nqicespnc5vbljes5glxsxm
       bignumber.js: 9.1.1
       class-transformer: 0.5.1
       class-validator: 0.14.0
@@ -88,7 +88,7 @@ importers:
       '@types/node': 18.11.19
       '@types/supertest': 2.0.12
       light-my-request: 5.8.0
-      prisma: 4.9.0
+      prisma: 4.10.1
       smartcontracts: link:../../packages/smartcontracts
       source-map-support: 0.5.21
       supertest: 6.3.3
@@ -106,6 +106,7 @@ importers:
       '@headlessui/react': ^1.7.10
       '@netlify/plugin-lighthouse': ^4.0.7
       '@netlify/plugin-nextjs': ^4.30.4
+      '@reduxjs/toolkit': ^1.9.2
       '@tailwindcss/line-clamp': ^0.4.2
       '@tailwindcss/typography': ^0.5.9
       '@testing-library/cypress': ^8.0.7
@@ -132,6 +133,7 @@ importers:
       '@babel/types': 7.20.7
       '@floating-ui/react-dom': 1.2.2_biqbaboplfbrettd7655fr4n2y
       '@headlessui/react': 1.7.10_biqbaboplfbrettd7655fr4n2y
+      '@reduxjs/toolkit': 1.9.2_react@18.2.0
       '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.6
       '@waveshq/standard-web': 0.42.0_l2gmmsp2usol2zi6poi7tjsgcy
       axios: 1.3.2
@@ -186,13 +188,13 @@ importers:
     devDependencies:
       '@birthdayresearch/eslint-config': 0.4.0_typescript@4.9.5
       '@birthdayresearch/sticky-testcontainers': 0.4.0
-      '@birthdayresearch/sticky-turbo-jest': 0.4.0_un5nppyspp2clu76j32bus6fcm
+      '@birthdayresearch/sticky-turbo-jest': 0.4.0_bq4te3ijfhoriehdxy7hzzdkwa
       '@birthdayresearch/sticky-typescript': 0.4.0
       '@ethersproject/abi': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@nomicfoundation/hardhat-chai-matchers': 1.0.5_6lwdgb6qfbcwwoa4qxnor6tsvi
       '@nomicfoundation/hardhat-network-helpers': 1.0.7_hardhat@2.12.6
-      '@nomicfoundation/hardhat-toolbox': 2.0.1_ncflrofoptd3iv5tv6rczq4you
+      '@nomicfoundation/hardhat-toolbox': 2.0.1_b2j7eeoum6kptaetzx6bc6x63a
       '@openzeppelin/contracts': 4.8.0
       '@openzeppelin/contracts-upgradeable': 4.8.0
       '@typechain/ethers-v5': 10.2.0_kuvqdvnhbslgxdpi2awxjzdvhe
@@ -205,7 +207,7 @@ importers:
       ethers: 5.7.2
       hardhat: 2.12.6_6qtx7vkbdhwvdm4crzlegk4mvi
       mocha: 10.2.0
-      ts-node: 10.9.1_qqdszkrtcshgbphghj7vnvrrby
+      ts-node: 10.9.1_3fk7qfkuemqflumbj4dlt34bfa
 
 packages:
 
@@ -1520,6 +1522,27 @@ packages:
       - typescript
     dev: true
 
+  /@birthdayresearch/sticky-jest/0.4.0_bq4te3ijfhoriehdxy7hzzdkwa:
+    resolution: {integrity: sha512-vXGyqeqvqnCCRWsWvz9WMFH5WLTCTngYgNJedsoH+tFV07tX+Rae5Le97T1pokQ8VhuYgcLYRuM++GNi33pwpg==}
+    dependencies:
+      '@types/jest': 29.4.0
+      jest: 29.4.1_k7quxe733nexnlgzi4yxvxoplq
+      jest-extended: 3.2.3_jest@29.4.1
+      ts-jest: 29.0.5_ecv55cdbauq6znr7ci2lzguwra
+      wait-for-expect: 3.0.2
+      whatwg-fetch: 3.6.2
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@jest/types'
+      - '@types/node'
+      - babel-jest
+      - esbuild
+      - node-notifier
+      - supports-color
+      - ts-node
+      - typescript
+    dev: true
+
   /@birthdayresearch/sticky-jest/0.4.0_un5nppyspp2clu76j32bus6fcm:
     resolution: {integrity: sha512-vXGyqeqvqnCCRWsWvz9WMFH5WLTCTngYgNJedsoH+tFV07tX+Rae5Le97T1pokQ8VhuYgcLYRuM++GNi33pwpg==}
     dependencies:
@@ -1574,6 +1597,23 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    dev: true
+
+  /@birthdayresearch/sticky-turbo-jest/0.4.0_bq4te3ijfhoriehdxy7hzzdkwa:
+    resolution: {integrity: sha512-YKAqFWcmrYd55pQ4s7wdyRNymXDzhENS0CVZScgya/u/S97S2XML3Ydmk8TjpZbZDTOM8Jk2DN3CXoLBz4gzMw==}
+    dependencies:
+      '@birthdayresearch/sticky-jest': 0.4.0_bq4te3ijfhoriehdxy7hzzdkwa
+      '@birthdayresearch/sticky-turbo': 0.4.0
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@jest/types'
+      - '@types/node'
+      - babel-jest
+      - esbuild
+      - node-notifier
+      - supports-color
+      - ts-node
+      - typescript
     dev: true
 
   /@birthdayresearch/sticky-turbo-jest/0.4.0_un5nppyspp2clu76j32bus6fcm:
@@ -2752,7 +2792,7 @@ packages:
       jest:
         optional: true
     dependencies:
-      jest: 29.4.1_qnch7tm6w36cvfoqlc3v7gbphu
+      jest: 29.4.1_k7quxe733nexnlgzi4yxvxoplq
       lodash: 4.17.21
       typescript: 4.9.5
       uuid: 7.0.3
@@ -3616,7 +3656,7 @@ packages:
       hardhat: 2.12.6_6qtx7vkbdhwvdm4crzlegk4mvi
     dev: true
 
-  /@nomicfoundation/hardhat-toolbox/2.0.1_ncflrofoptd3iv5tv6rczq4you:
+  /@nomicfoundation/hardhat-toolbox/2.0.1_b2j7eeoum6kptaetzx6bc6x63a:
     resolution: {integrity: sha512-/pr8m9xlqiNlq6fXv4hEPNwdNwUhysoB2qbDCKqERfPpq34EydUQTC3Vis4aIea8RLwSrU8sDXFdv4TQxYstKw==}
     peerDependencies:
       '@ethersproject/abi': ^5.4.7
@@ -3649,13 +3689,13 @@ packages:
       '@typechain/hardhat': 6.1.5_flitjyqkwkdrfmvmmkefmykn34
       '@types/chai': 4.3.4
       '@types/mocha': 10.0.1
-      '@types/node': 18.11.19
+      '@types/node': 18.11.11
       chai: 4.3.7
       ethers: 5.7.2
       hardhat: 2.12.6_6qtx7vkbdhwvdm4crzlegk4mvi
       hardhat-gas-reporter: 1.0.9_hardhat@2.12.6
       solidity-coverage: 0.8.2_hardhat@2.12.6
-      ts-node: 10.9.1_qqdszkrtcshgbphghj7vnvrrby
+      ts-node: 10.9.1_3fk7qfkuemqflumbj4dlt34bfa
       typechain: 8.1.1_wrz2f4catxnbofknv5bs36jgqa
       typescript: 4.9.5
     dev: true
@@ -3836,8 +3876,8 @@ packages:
     requiresBuild: true
     optional: true
 
-  /@prisma/client/4.9.0_prisma@4.9.0:
-    resolution: {integrity: sha512-bz6QARw54sWcbyR1lLnF2QHvRW5R/Jxnbbmwh3u+969vUKXtBkXgSgjDA85nji31ZBlf7+FrHDy5x+5ydGyQDg==}
+  /@prisma/client/4.10.1_prisma@4.10.1:
+    resolution: {integrity: sha512-VonXLJZybdt8e5XZH5vnIGCRNnIh6OMX1FS3H/yzMGLT3STj5TJ/OkMcednrvELgk8PK89Vo3aSh51MWNO0axA==}
     engines: {node: '>=14.17'}
     requiresBuild: true
     peerDependencies:
@@ -3846,16 +3886,16 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.9.0-42.ceb5c99003b99c9ee2c1d2e618e359c14aef2ea5
-      prisma: 4.9.0
+      '@prisma/engines-version': 4.10.1-2.aead147aa326ccb985dcfed5b065b4fdabd44b19
+      prisma: 4.10.1
     dev: false
 
-  /@prisma/engines-version/4.9.0-42.ceb5c99003b99c9ee2c1d2e618e359c14aef2ea5:
-    resolution: {integrity: sha512-M16aibbxi/FhW7z1sJCX8u+0DriyQYY5AyeTH7plQm9MLnURoiyn3CZBqAyIoQ+Z1pS77usCIibYJWSgleBMBA==}
+  /@prisma/engines-version/4.10.1-2.aead147aa326ccb985dcfed5b065b4fdabd44b19:
+    resolution: {integrity: sha512-tsjTho7laDhf9EJ9EnDxAPEf7yrigSMDhniXeU4YoWc7azHAs4GPxRi2P9LTFonmHkJLMOLjR77J1oIP8Ife1w==}
     dev: false
 
-  /@prisma/engines/4.9.0:
-    resolution: {integrity: sha512-t1pt0Gsp+HcgPJrHFc+d/ZSAaKKWar2G/iakrE07yeKPNavDP3iVKPpfXP22OTCHZUWf7OelwKJxQgKAm5hkgw==}
+  /@prisma/engines/4.10.1:
+    resolution: {integrity: sha512-B3tcTxjx196nuAu1GOTKO9cGPUgTFHYRdkPkTS4m5ptb2cejyBlH9X7GOfSt3xlI7p4zAJDshJP4JJivCg9ouA==}
     requiresBuild: true
 
   /@reduxjs/toolkit/1.9.2_k4ae6lp43ej6mezo3ztvx6pykq:
@@ -3872,6 +3912,24 @@ packages:
       immer: 9.0.19
       react: 18.2.0
       react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
+      redux: 4.2.1
+      redux-thunk: 2.4.2_redux@4.2.1
+      reselect: 4.1.7
+    dev: false
+
+  /@reduxjs/toolkit/1.9.2_react@18.2.0:
+    resolution: {integrity: sha512-5ZAZ7hwAKWSii5T6NTPmgIBUqyVdlDs+6JjThz6J6dmHLDm6zCzv2OjHIFAi3Vvs1qjmXU0bm6eBojukYXjVMQ==}
+    peerDependencies:
+      react: ^16.9.0 || ^17.0.0 || ^18
+      react-redux: ^7.2.1 || ^8.0.2
+    peerDependenciesMeta:
+      react:
+        optional: true
+      react-redux:
+        optional: true
+    dependencies:
+      immer: 9.0.19
+      react: 18.2.0
       redux: 4.2.1
       redux-thunk: 2.4.2_redux@4.2.1
       reselect: 4.1.7
@@ -4457,7 +4515,7 @@ packages:
   /@types/concat-stream/1.6.1:
     resolution: {integrity: sha512-eHE4cQPoj6ngxBZMvVf6Hw7Mh4jMW4U9lpGmS5GBPB9RYxlFg+CHaVN7ErNY4W9XfLIEn20b4VDYaIrbq0q4uA==}
     dependencies:
-      '@types/node': 18.11.19
+      '@types/node': 18.11.11
     dev: true
 
   /@types/connect/3.4.35:
@@ -4519,14 +4577,14 @@ packages:
   /@types/form-data/0.0.33:
     resolution: {integrity: sha512-8BSvG1kGm83cyJITQMZSulnl6QV8jqAGreJsc5tPu1Jq0vTSOiY/k24Wx82JRpWwZSqrala6sd5rWi6aNXvqcw==}
     dependencies:
-      '@types/node': 18.11.19
+      '@types/node': 18.11.11
     dev: true
 
   /@types/glob/7.2.0:
     resolution: {integrity: sha512-ZUxbzKl0IfJILTS6t7ip5fQQM/J3TJYubDm3nMbgubNNYS62eXeUpoLUC8/7fJNiFYHTrGPQn7hspDUzIHX3UA==}
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 18.11.19
+      '@types/node': 18.11.11
     dev: true
 
   /@types/glob/8.0.1:
@@ -4725,14 +4783,14 @@ packages:
   /@types/tar-fs/2.0.1:
     resolution: {integrity: sha512-qlsQyIY9sN7p221xHuXKNoMfUenOcvEBN4zI8dGsYbYCqHtTarXOEXSIgUnK+GcR0fZDse6pAIc5pIrCh9NefQ==}
     dependencies:
-      '@types/node': 18.11.19
+      '@types/node': 18.11.11
       '@types/tar-stream': 2.2.2
     dev: false
 
   /@types/tar-stream/2.2.2:
     resolution: {integrity: sha512-1AX+Yt3icFuU6kxwmPakaiGrJUwG44MpuiqPg4dSolRFk6jmvs4b3IbUol9wKDLIgU76gevn3EwE8y/DkSJCZQ==}
     dependencies:
-      '@types/node': 18.11.19
+      '@types/node': 18.11.11
     dev: false
 
   /@types/trusted-types/2.0.2:
@@ -5503,39 +5561,6 @@ packages:
       - supports-color
     dev: false
 
-  /@waveshq/standard-web/0.42.0_bnajf7fdzfzqzjxfekg2ii76nu:
-    resolution: {integrity: sha512-AFDqk4LQUca8l08LyP75OK9ybfbfit0Qh8L1oZIwIaJj15sDlWtq0c5fs/Vdb1ZFYAHZ6vu8CLB1lf2HW/Wm3w==}
-    dependencies:
-      '@netlify/ipx': 1.3.3
-      '@reduxjs/toolkit': 1.9.2_k4ae6lp43ej6mezo3ztvx6pykq
-      '@types/react': 18.0.27
-      '@types/react-dom': 18.0.10
-      follow-redirects: 1.15.2
-      next: 13.1.6_pjwopsidmaokadturxaafygjp4
-      next-sitemap: 3.1.50_dlcnecpznf2wc36zwuq5m2ie5q
-      nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-icons: 4.7.1_react@18.2.0
-      react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
-      react-responsive: 9.0.2_react@18.2.0
-      typescript: 4.9.5
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@next/env'
-      - babel-plugin-macros
-      - bufferutil
-      - debug
-      - encoding
-      - fibers
-      - node-sass
-      - react-native
-      - redux
-      - sass
-      - supports-color
-      - utf-8-validate
-    dev: false
-
   /@waveshq/standard-web/0.42.0_l2gmmsp2usol2zi6poi7tjsgcy:
     resolution: {integrity: sha512-AFDqk4LQUca8l08LyP75OK9ybfbfit0Qh8L1oZIwIaJj15sDlWtq0c5fs/Vdb1ZFYAHZ6vu8CLB1lf2HW/Wm3w==}
     dependencies:
@@ -5569,18 +5594,51 @@ packages:
       - utf-8-validate
     dev: false
 
+  /@waveshq/standard-web/0.42.0_msjvvzxkmt5dptcvqzaeo2v74m:
+    resolution: {integrity: sha512-AFDqk4LQUca8l08LyP75OK9ybfbfit0Qh8L1oZIwIaJj15sDlWtq0c5fs/Vdb1ZFYAHZ6vu8CLB1lf2HW/Wm3w==}
+    dependencies:
+      '@netlify/ipx': 1.3.3
+      '@reduxjs/toolkit': 1.9.2_k4ae6lp43ej6mezo3ztvx6pykq
+      '@types/react': 18.0.27
+      '@types/react-dom': 18.0.10
+      follow-redirects: 1.15.2
+      next: 13.1.6_pjwopsidmaokadturxaafygjp4
+      next-sitemap: 3.1.50_dlcnecpznf2wc36zwuq5m2ie5q
+      nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-icons: 4.7.1_react@18.2.0
+      react-redux: 8.0.5_fxtgt6bjwd6p4cwoordejim2zi
+      react-responsive: 9.0.2_react@18.2.0
+      typescript: 4.9.5
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@next/env'
+      - babel-plugin-macros
+      - bufferutil
+      - debug
+      - encoding
+      - fibers
+      - node-sass
+      - react-native
+      - redux
+      - sass
+      - supports-color
+      - utf-8-validate
+    dev: false
+
   /@waveshq/walletkit-core/0.32.2:
     resolution: {integrity: sha512-U8Y3AYFV5rL+E7oHtZzn+rGCZ0MZM3RWlPYJLck1zim3T1W0a9fqZ9QTWHFSIcU/Ln0lzey2JcUOGEigtFvTnA==}
     dependencies:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui/0.32.2_hpdfzyqdw5heesnkjlkxls3s7m:
+  /@waveshq/walletkit-ui/0.32.2_324nqicespnc5vbljes5glxsxm:
     resolution: {integrity: sha512-3koQVccFKVRUn0dhus6DFtBjXHC6v9lVWX1RS06CgWmWI/M+P5RD5PtBWtPZOdyMymctc3HRSvAuWgJSwUobZQ==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.4.0_un5nppyspp2clu76j32bus6fcm
       '@waveshq/standard-defichain-jellyfishsdk': 0.42.0_@types+tar-fs@2.0.1
-      '@waveshq/standard-web': 0.42.0_bnajf7fdzfzqzjxfekg2ii76nu
+      '@waveshq/standard-web': 0.42.0_msjvvzxkmt5dptcvqzaeo2v74m
       '@waveshq/standard-web-linter': 0.42.0_welo7wvizfb27iumkgoncycpce
       '@waveshq/walletkit-core': 0.32.2
       bignumber.js: 9.1.1
@@ -9926,7 +9984,7 @@ packages:
       solc: 0.7.3_debug@4.3.4
       source-map-support: 0.5.21
       stacktrace-parser: 0.1.10
-      ts-node: 10.9.1_qqdszkrtcshgbphghj7vnvrrby
+      ts-node: 10.9.1_3fk7qfkuemqflumbj4dlt34bfa
       tsort: 0.0.1
       typescript: 4.9.5
       undici: 5.18.0
@@ -10725,6 +10783,34 @@ packages:
     transitivePeerDependencies:
       - supports-color
 
+  /jest-cli/29.4.1_k7quxe733nexnlgzi4yxvxoplq:
+    resolution: {integrity: sha512-jz7GDIhtxQ37M+9dlbv5K+/FVcIo1O/b1sX3cJgzlQUf/3VG25nvuWzlDC4F1FLLzUThJeWLu8I7JF9eWpuURQ==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
+    peerDependencies:
+      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+    peerDependenciesMeta:
+      node-notifier:
+        optional: true
+    dependencies:
+      '@jest/core': 29.4.1_ts-node@10.9.1
+      '@jest/test-result': 29.4.1
+      '@jest/types': 29.4.1
+      chalk: 4.1.2
+      exit: 0.1.2
+      graceful-fs: 4.2.10
+      import-local: 3.1.0
+      jest-config: 29.4.1_k7quxe733nexnlgzi4yxvxoplq
+      jest-util: 29.4.1
+      jest-validate: 29.4.1
+      prompts: 2.4.2
+      yargs: 17.6.2
+    transitivePeerDependencies:
+      - '@types/node'
+      - supports-color
+      - ts-node
+    dev: true
+
   /jest-cli/29.4.1_qnch7tm6w36cvfoqlc3v7gbphu:
     resolution: {integrity: sha512-jz7GDIhtxQ37M+9dlbv5K+/FVcIo1O/b1sX3cJgzlQUf/3VG25nvuWzlDC4F1FLLzUThJeWLu8I7JF9eWpuURQ==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -11118,6 +11204,26 @@ packages:
       jest-util: 29.4.1
       merge-stream: 2.0.0
       supports-color: 8.1.1
+
+  /jest/29.4.1_k7quxe733nexnlgzi4yxvxoplq:
+    resolution: {integrity: sha512-cknimw7gAXPDOmj0QqztlxVtBVCw2lYY9CeIE5N6kD+kET1H4H79HSNISJmijb1HF+qk+G+ploJgiDi5k/fRlg==}
+    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
+    hasBin: true
+    peerDependencies:
+      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+    peerDependenciesMeta:
+      node-notifier:
+        optional: true
+    dependencies:
+      '@jest/core': 29.4.1_ts-node@10.9.1
+      '@jest/types': 29.4.1
+      import-local: 3.1.0
+      jest-cli: 29.4.1_k7quxe733nexnlgzi4yxvxoplq
+    transitivePeerDependencies:
+      - '@types/node'
+      - supports-color
+      - ts-node
+    dev: true
 
   /jest/29.4.1_qnch7tm6w36cvfoqlc3v7gbphu:
     resolution: {integrity: sha512-cknimw7gAXPDOmj0QqztlxVtBVCw2lYY9CeIE5N6kD+kET1H4H79HSNISJmijb1HF+qk+G+ploJgiDi5k/fRlg==}
@@ -13280,13 +13386,13 @@ packages:
       ansi-styles: 5.2.0
       react-is: 18.2.0
 
-  /prisma/4.9.0:
-    resolution: {integrity: sha512-bS96oZ5oDFXYgoF2l7PJ3Mp1wWWfLOo8B/jAfbA2Pn0Wm5Z/owBHzaMQKS3i1CzVBDWWPVnOohmbJmjvkcHS5w==}
+  /prisma/4.10.1:
+    resolution: {integrity: sha512-0jDxgg+DruB1kHVNlcspXQB9au62IFfVg9drkhzXudszHNUAQn0lVuu+T8np0uC2z1nKD5S3qPeCyR8u5YFLnA==}
     engines: {node: '>=14.17'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.9.0
+      '@prisma/engines': 4.10.1
 
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
@@ -13586,6 +13692,39 @@ packages:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 18.2.0
+    dev: false
+
+  /react-redux/8.0.5_fxtgt6bjwd6p4cwoordejim2zi:
+    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
+    peerDependencies:
+      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+      react-native: '>=0.59'
+      redux: ^4
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.20.13
+      '@types/hoist-non-react-statics': 3.3.1
+      '@types/react': 18.0.27
+      '@types/react-dom': 18.0.10
+      '@types/use-sync-external-store': 0.0.3
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-is: 18.2.0
+      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /react-redux/8.0.5_r7hvvldj6g2s5chfsdsflfq664:
@@ -15295,7 +15434,6 @@ packages:
       typescript: 4.9.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
-    dev: false
 
   /ts-node/10.9.1_qqdszkrtcshgbphghj7vnvrrby:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}

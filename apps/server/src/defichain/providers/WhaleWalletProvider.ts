@@ -16,11 +16,11 @@ export class WhaleWalletProvider {
     this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
   }
 
-  createWallet(): WhaleWalletAccount {
+  createWallet(index: number = 2): WhaleWalletAccount {
     const mnemonic = this.configService.getOrThrow<string>(`defichain.key`);
     const data = this.toData(mnemonic.split(' '), this.network);
     const provider = this.initProvider(data, this.network);
-    return this.initJellyfishWallet(provider, this.network).get(1);
+    return this.initJellyfishWallet(provider, this.network).get(index);
   }
 
   private initProvider(

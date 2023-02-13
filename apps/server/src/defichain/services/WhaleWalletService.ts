@@ -1,15 +1,28 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
+import { PrismaService } from '../../PrismaService';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
 @Injectable()
 export class WhaleWalletService {
-  constructor(private readonly whaleWalletProvider: WhaleWalletProvider) {}
+  constructor(private readonly whaleWalletProvider: WhaleWalletProvider, private prisma: PrismaService) {}
 
-  async generateAddress(): Promise<string> {
+  async generateAddress(): Promise<{ address: string }> {
     try {
-      const wallet = this.whaleWalletProvider.createWallet();
-      return await wallet.getAddress();
+      const lastIndex = await this.prisma.deFiChainAddressIndex.findFirst({
+        orderBy: [{ index: 'desc' }],
+      });
+      const index = lastIndex?.index;
+      const nextIndex = index ? index + 1 : 2;
+      const wallet = this.whaleWalletProvider.createWallet(nextIndex);
+      const address = await wallet.getAddress();
+      await this.prisma.deFiChainAddressIndex.create({
+        data: {
+          index: nextIndex,
+          address,
+        },
+      });
+      return { address };
     } catch (e: any) {
       // TODO: Improve error handling
       throw new HttpException(

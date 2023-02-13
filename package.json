@@ -7,6 +7,7 @@
     "write": "turbo run write",
     "clean": "turbo run clean",
     "build": "turbo run build",
+    "playground:start": "turbo run playground:start",
     "build:docker": "turbo run build:docker",
     "test": "turbo run test",
     "test:hardhat": "turbo run test:hardhat --filter=./packages/smartcontracts",

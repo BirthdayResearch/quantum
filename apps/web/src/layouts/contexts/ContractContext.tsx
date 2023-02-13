@@ -5,7 +5,8 @@ import React, {
   useState,
   PropsWithChildren,
 } from "react";
-import { ContractContextI, NetworkEnvironment } from "types";
+import { ContractContextI } from "types";
+import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 import { useNetworkEnvironmentContext } from "./NetworkEnvironmentContext";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../../config";
 
@@ -23,7 +24,7 @@ export function ContractProvider({
 
   useEffect(() => {
     const contractConfig =
-      networkEnv === NetworkEnvironment.mainnet
+      networkEnv === EnvironmentNetwork.MainNet
         ? MAINNET_CONFIG
         : TESTNET_CONFIG;
     setConfig(contractConfig);
