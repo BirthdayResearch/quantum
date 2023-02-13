@@ -1,5 +1,5 @@
 # Dockerfile used to build an image for the bridge-api
-FROM node:18-alpine
+FROM node:18.12.1-alpine3.16
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN npm install -g pnpm
