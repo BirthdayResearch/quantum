@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { useState } from "react";
-import { AddressDetails, ProgressStepI } from "types";
+import { ProgressStepI, AddressDetails, TransferData } from "types";
 import useResponsive from "@hooks/useResponsive";
 import ProgressStepIndicator from "@components/commons/ProgressStepIndicator";
 import ProgressStepIndicatorMobile from "@components/commons/ProgressStepIndicatorMobile";
@@ -19,8 +19,10 @@ const DfcToErcTransferSteps: ProgressStepI[] = [
 ];
 
 export default function DeFiChainToERC20Transfer({
+  data,
   addressDetail,
 }: {
+  data: TransferData;
   addressDetail?: AddressDetails;
 }) {
   const [activeStep, setActiveStep] = useState(1);
@@ -83,7 +85,13 @@ export default function DeFiChainToERC20Transfer({
       {activeStep === 3 && (
         <StepThreeVerification goToNextStep={handleNextStep} />
       )}
-      {activeStep >= 4 && <StepLastClaim goToNextStep={handleNextStep} />}
+      {activeStep >= 4 && (
+        <StepLastClaim
+          data={data}
+          // TODO: Pass signature and nonce from Verification step here
+          signedClaim={{ signature: "", nonce: 0 }}
+        />
+      )}
     </div>
   );
 }

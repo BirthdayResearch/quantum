@@ -1,10 +1,11 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
 import { ETHERS_RPC_PROVIDER } from './modules/EthersModule';
 import { PrismaService } from './PrismaService';
+import { getEndOfDayTimeStamp } from './utils/MathUtils';
 
 @Injectable()
 export class AppService {
@@ -78,4 +79,64 @@ export class AppService {
     });
     return true;
   }
+
+  async signClaim({ receiverAddress, tokenAddress, amount }: SignClaim): Promise<{ signature: string; nonce: number }> {
+    try {
+      // Connect signer ETH wallet (admin/operational wallet)
+      const wallet = new ethers.Wallet(
+        this.configService.getOrThrow('ethereum.ethWalletPrivKey'),
+        this.ethersRpcProvider,
+      );
+
+      const { chainId } = await this.ethersRpcProvider.getNetwork();
+      const nonce = await this.contract.eoaAddressToNonce(receiverAddress);
+      const domainName = await this.contract.name();
+      const domainVersion = await this.contract.version();
+      const deadline = getEndOfDayTimeStamp();
+
+      const domain = {
+        name: domainName,
+        chainId,
+        verifyingContract: this.contract.address,
+        version: domainVersion,
+      };
+      const types = {
+        CLAIM: [
+          { name: 'to', type: 'address' },
+          { name: 'amount', type: 'uint256' },
+          { name: 'nonce', type: 'uint256' },
+          { name: 'deadline', type: 'uint256' },
+          { name: 'tokenAddress', type: 'address' },
+        ],
+      };
+      const data = {
+        to: receiverAddress,
+        amount: ethers.utils.parseEther(amount),
+        nonce,
+        deadline,
+        tokenAddress,
+      };
+
+      // eslint-disable-next-line no-underscore-dangle
+      const signature = await wallet._signTypedData(domain, types, data);
+      return { signature, nonce };
+    } catch (e: any) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'There is a problem in signing this claim',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
+  }
+}
+
+interface SignClaim {
+  receiverAddress: string;
+  tokenAddress: string;
+  amount: string;
 }
