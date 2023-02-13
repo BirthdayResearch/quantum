@@ -2,14 +2,14 @@
 CREATE TYPE "EthereumTransactionStatus" AS ENUM ('NOT_CONFIRMED', 'CONFIRMED');
 
 -- CreateTable
-CREATE TABLE "PathIndex" (
+CREATE TABLE "DeFiChainAddressIndex" (
     "id" BIGSERIAL NOT NULL,
     "index" INTEGER NOT NULL,
     "address" TEXT NOT NULL,
     "refundAddress" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT "PathIndex_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "DeFiChainAddressIndex_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -24,7 +24,7 @@ CREATE TABLE "BridgeEventTransactions" (
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PathIndex_index_key" ON "PathIndex"("index");
+CREATE UNIQUE INDEX "DeFiChainAddressIndex_index_key" ON "DeFiChainAddressIndex"("index");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PathIndex_address_key" ON "PathIndex"("address");
+CREATE UNIQUE INDEX "DeFiChainAddressIndex_address_key" ON "DeFiChainAddressIndex"("address");

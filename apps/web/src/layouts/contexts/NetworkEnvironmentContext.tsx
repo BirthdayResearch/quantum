@@ -11,17 +11,9 @@ import { EnvironmentNetwork, getEnvironment } from "@waveshq/walletkit-core";
 
 interface NetworkContextI {
   networkEnv: EnvironmentNetwork;
-  networkEnvDisplayName: string;
   updateNetworkEnv: (networkEnv: EnvironmentNetwork) => void;
   resetNetworkEnv: () => void;
 }
-const NETWORK_ENV_DISPLAY_NAME: Record<EnvironmentNetwork, string> = {
-  [EnvironmentNetwork.MainNet]: "MainNet",
-  [EnvironmentNetwork.TestNet]: "TestNet",
-  [EnvironmentNetwork.RemotePlayground]: "Playground",
-  [EnvironmentNetwork.DevNet]: "DevNet",
-  [EnvironmentNetwork.LocalPlayground]: "Local",
-};
 
 const NetworkEnvironmentContext = createContext<NetworkContextI>(
   undefined as any
@@ -48,14 +40,9 @@ export function NetworkEnvironmentProvider({
   const initialNetwork = getNetwork(networkQuery as EnvironmentNetwork);
   const [networkEnv, setNetworkEnv] =
     useState<EnvironmentNetwork>(initialNetwork);
-  const [networkEnvDisplayName, setNetworkEnvDisplayName] = useState<string>(
-    NETWORK_ENV_DISPLAY_NAME[initialNetwork]
-  );
 
   const handleNetworkEnvChange = (value: EnvironmentNetwork) => {
-    const networkDisplayName = NETWORK_ENV_DISPLAY_NAME[value];
     setNetworkEnv(value);
-    setNetworkEnvDisplayName(networkDisplayName);
     if (value !== initialNetwork) {
       router.replace(
         {
@@ -74,13 +61,11 @@ export function NetworkEnvironmentProvider({
 
   useEffect(() => {
     setNetworkEnv(initialNetwork);
-    setNetworkEnvDisplayName(NETWORK_ENV_DISPLAY_NAME[initialNetwork]);
   }, [initialNetwork]);
 
   const context: NetworkContextI = useMemo(
     () => ({
       networkEnv,
-      networkEnvDisplayName,
       updateNetworkEnv: handleNetworkEnvChange,
       resetNetworkEnv,
     }),

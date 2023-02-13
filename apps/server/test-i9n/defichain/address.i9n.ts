@@ -43,7 +43,7 @@ describe('DeFiChain Address Integration Testing', () => {
 
   afterAll(async () => {
     // teardown database
-    await prismaService.pathIndex.deleteMany({});
+    await prismaService.deFiChainAddressIndex.deleteMany({});
     await testing.stop();
     await postgres.stop();
     await defichain.stop();
@@ -57,7 +57,7 @@ describe('DeFiChain Address Integration Testing', () => {
     expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
     // db should not have record of transaction
-    const dbAddressDetail = await prismaService.pathIndex.findFirst({
+    const dbAddressDetail = await prismaService.deFiChainAddressIndex.findFirst({
       where: { address: response.address },
     });
     expect(dbAddressDetail?.address).toStrictEqual(response.address);

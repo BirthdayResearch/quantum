@@ -21,7 +21,7 @@ const staggeredBaseQueryWithBailOut = retry(
 );
 
 export const bridgeApi = createApi({
-  reducerPath: "website",
+  reducerPath: "defichain",
   baseQuery: staggeredBaseQueryWithBailOut,
   endpoints: (builder) => ({
     generateAddress: builder.mutation<AddressDetails, any>({

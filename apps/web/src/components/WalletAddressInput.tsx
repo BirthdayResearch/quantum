@@ -79,7 +79,7 @@ export default function WalletAddressInput({
   const [copiedFromClipboard, setCopiedFromClipboard] = useState(false);
 
   const { isConnected } = useAccount();
-  const { networkEnv, networkEnvDisplayName } = useNetworkEnvironmentContext();
+  const { networkEnv } = useNetworkEnvironmentContext();
   const { isMobile } = useResponsive();
   useAutoResizeTextArea(textAreaRef.current, [addressInput, placeholder]);
 
@@ -125,9 +125,7 @@ export default function WalletAddressInput({
       networkEnv === EnvironmentNetwork.TestNet &&
       blockchain === Network.DeFiChain
     ) {
-      setPlaceholder(
-        `Enter ${displayedName} (${networkEnvDisplayName}) address`
-      );
+      setPlaceholder(`Enter ${displayedName} (${networkEnv}) address`);
     } else {
       setPlaceholder(`Enter ${displayedName} address`);
     }
@@ -146,7 +144,7 @@ export default function WalletAddressInput({
     const isDeFiChain = blockchain === "DeFiChain";
     const hasInvalidInput = !!(addressInput && !isValidAddress);
     if (hasInvalidInput) {
-      const dfiNetwork = isDeFiChain ? ` ${networkEnvDisplayName}` : "";
+      const dfiNetwork = isDeFiChain ? ` ${networkEnv}` : "";
       message = `Use correct address for ${NetworkName[blockchain]}${dfiNetwork}`;
     } else {
       const isTestnet =
@@ -156,7 +154,7 @@ export default function WalletAddressInput({
           EnvironmentNetwork.LocalPlayground,
         ].includes(networkEnv);
       message = isTestnet
-        ? `Make sure to only use ${networkEnvDisplayName} for testing`
+        ? `Make sure to only use ${networkEnv} for testing`
         : "";
     }
     setError({ message, isError: hasInvalidInput });
