@@ -27,4 +27,4 @@ RUN pnpm fetch
 RUN pnpm install -r --offline
 RUN pnpm build --filter="./apps/server"
 
-CMD node
+CMD node bridge-api
