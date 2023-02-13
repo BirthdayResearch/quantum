@@ -25,6 +25,6 @@ COPY packages ./packages
 RUN pnpm fetch
 
 RUN pnpm install -r --offline
-RUN pnpm build --filter="./apps/server"
+RUN pnpm build --filter="server"
 
 CMD node bridge-api
