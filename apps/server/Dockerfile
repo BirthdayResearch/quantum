@@ -29,4 +29,4 @@ RUN pnpm fetch
 RUN pnpm install -r --offline
 RUN pnpm build --filter="server"
 
-CMD node bridge-api
+CMD node apps/server/dist/main.js
