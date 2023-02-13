@@ -21,6 +21,6 @@ COPY apps ./apps
 COPY packages ./packages
 
 RUN pnpm install
-RUN pnpm build --scope="server"
+RUN pnpm build --filter="server"
 
 CMD node bridge-api
