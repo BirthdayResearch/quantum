@@ -7,6 +7,7 @@ import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';
+import { HealthModule } from './modules/HealthModule';
 import { PrismaService } from './PrismaService';
 
 @Module({
@@ -33,6 +34,7 @@ import { PrismaService } from './PrismaService';
         module: EthereumModule,
       },
     ]),
+    HealthModule,
   ],
   controllers: [],
   providers: [
