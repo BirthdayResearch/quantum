@@ -8,7 +8,6 @@ import { AppController } from './AppController';
 import { AppService } from './AppService';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
-import { EVMTransactionConfirmerService } from './ethereum/services/EVMTransactionConfirmerService';
 import { EthersModule } from './modules/EthersModule';
 import { PrismaService } from './PrismaService';
 
@@ -31,6 +30,10 @@ import { PrismaService } from './PrismaService';
         path: 'defichain',
         module: DeFiChainModule,
       },
+      {
+        path: 'ethereum',
+        module: EthereumModule,
+      },
     ]),
   ],
   controllers: [AppController],
@@ -38,7 +41,7 @@ import { PrismaService } from './PrismaService';
     AppService,
     DeFiChainModule,
     PrismaService,
-    EVMTransactionConfirmerService,
+    EthereumModule,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

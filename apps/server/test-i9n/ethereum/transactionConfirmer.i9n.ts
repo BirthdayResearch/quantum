@@ -8,10 +8,10 @@ import {
   TestToken,
 } from 'smartcontracts';
 
-import { PrismaService } from '../src/PrismaService';
-import { BridgeContractFixture } from './testing/BridgeContractFixture';
-import { BridgeServerTestingApp } from './testing/BridgeServerTestingApp';
-import { buildTestConfig, TestingModule } from './testing/TestingModule';
+import { PrismaService } from '../../src/PrismaService';
+import { BridgeContractFixture } from '../testing/BridgeContractFixture';
+import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
+import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 
 describe('Bridge Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
