@@ -55,35 +55,45 @@ describe('DeFiChain Verify fund Testing', () => {
 
   afterAll(async () => {
     // teardown database
+    await prismaService.deFiChainAddressIndex.deleteMany({});
     await startedPostgresContainer.stop();
     await testing.stop();
   });
 
-  it('should throw error if symbol is not valid', async () => {
+  // needs some setup
+  type MockedPayload = {
+    amount: string;
+    symbol: string;
+    address: string;
+  };
+
+  async function verify(mockedPayload: MockedPayload) {
     const initialResponse = await testing.inject({
       method: 'POST',
       url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '1',
-        symbol: '_invalid_symbol_',
-        address: localAddress,
-      },
+      payload: mockedPayload,
     });
     const response = JSON.parse(initialResponse.body);
+
+    return response;
+  }
+
+  it('should throw error if symbol is not valid', async () => {
+    const response = await verify({
+      amount: '1',
+      symbol: '_invalid_symbol_',
+      address: localAddress,
+    });
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.TokenSymbolNotValid });
   });
 
   it('should throw error if address is invalid', async () => {
-    const initialResponse = await testing.inject({
-      method: 'POST',
-      url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '1',
-        symbol: 'BTC',
-        address: '_invalid_address_',
-      },
+    const response = await verify({
+      amount: '1',
+      symbol: 'BTC',
+      address: '_invalid_address_',
     });
-    const response = JSON.parse(initialResponse.body);
+
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotValid });
   });
 
@@ -94,17 +104,12 @@ describe('DeFiChain Verify fund Testing', () => {
       url: `${WALLET_ENDPOINT}generate-address`,
     });
 
-    const initialResponse = await testing.inject({
-      method: 'POST',
-      url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '3',
-        symbol: 'BTC',
-        address: localAddress,
-      },
+    const response = await verify({
+      amount: '3',
+      symbol: 'BTC',
+      address: localAddress,
     });
 
-    const response = JSON.parse(initialResponse.body);
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.IsZeroBalance });
   });
 
@@ -113,16 +118,12 @@ describe('DeFiChain Verify fund Testing', () => {
     const newWallet = whaleWalletProvider.createWallet(3);
     const newLocalAddress = await newWallet.getAddress();
 
-    const initialResponse = await testing.inject({
-      method: 'POST',
-      url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '2',
-        symbol: 'BTC',
-        address: newLocalAddress,
-      },
+    const response = await verify({
+      amount: '2',
+      symbol: 'BTC',
+      address: newLocalAddress,
     });
-    const response = JSON.parse(initialResponse.body);
+
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotFound });
   });
 
@@ -149,17 +150,12 @@ describe('DeFiChain Verify fund Testing', () => {
     );
     await defichain.generateBlock();
 
-    const initialResponse = await testing.inject({
-      method: 'POST',
-      url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '3',
-        symbol: 'BTC',
-        address: newLocalAddress,
-      },
+    const response = await verify({
+      amount: '3',
+      symbol: 'BTC',
+      address: newLocalAddress,
     });
 
-    const response = JSON.parse(initialResponse.body);
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched });
   });
 
@@ -171,32 +167,22 @@ describe('DeFiChain Verify fund Testing', () => {
     };
     await prismaService.deFiChainAddressIndex.update({ where: { index: 3 }, data });
 
-    const initialResponse = await testing.inject({
-      method: 'POST',
-      url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '3',
-        symbol: 'BTC',
-        address: randomAddress,
-      },
+    const response = await verify({
+      amount: '3',
+      symbol: 'BTC',
+      address: randomAddress,
     });
 
-    const response = JSON.parse(initialResponse.body);
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotOwned });
   });
 
   it('should throw error if amount is invalid', async () => {
-    const initialResponse = await testing.inject({
-      method: 'POST',
-      url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '-3',
-        symbol: 'BTC',
-        address: localAddress,
-      },
+    const response = await verify({
+      amount: '-3',
+      symbol: 'BTC',
+      address: localAddress,
     });
 
-    const response = JSON.parse(initialResponse.body);
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AmountNotValid });
   });
 
@@ -215,17 +201,12 @@ describe('DeFiChain Verify fund Testing', () => {
     );
     await defichain.generateBlock();
 
-    const initialResponse = await testing.inject({
-      method: 'POST',
-      url: `${VERIFY_ENDPOINT}`,
-      payload: {
-        amount: '10',
-        symbol: 'BTC',
-        address: localAddress,
-      },
+    const response = await verify({
+      amount: '10',
+      symbol: 'BTC',
+      address: localAddress,
     });
 
-    const response = JSON.parse(initialResponse.body);
     expect(response).toStrictEqual({ isValid: true });
   });
 });
