@@ -114,7 +114,7 @@ importers:
       '@waveshq/standard-web': ^0.42.1
       '@waveshq/standard-web-linter': ^0.42.1
       autoprefixer: ^10.4.13
-      axios: ^1.3.2
+      axios: ^1.3.3
       babel-plugin-istanbul: ^6.1.1
       babel-plugin-jsx-remove-data-test-id: ^3.0.0
       bignumber.js: ^9.1.1
@@ -136,7 +136,7 @@ importers:
       '@reduxjs/toolkit': 1.9.2_react@18.2.0
       '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.6
       '@waveshq/standard-web': 0.42.1_nnsqpsfniix5l3jb6izsemjfiy
-      axios: 1.3.2
+      axios: 1.3.3
       bignumber.js: 9.1.1
       clsx: 1.2.1
       connectkit: 1.1.3_2dlpuewk7wijbwqf4t645gccz4
@@ -6363,8 +6363,8 @@ packages:
       - debug
     dev: false
 
-  /axios/1.3.2:
-    resolution: {integrity: sha512-1M3O703bYqYuPhbHeya5bnhpYVsDDRyQSabNja04mZtboLNSuZ4YrltestrLXfHgmzua4TpUqRiVKbiQuo2epw==}
+  /axios/1.3.3:
+    resolution: {integrity: sha512-eYq77dYIFS77AQlhzEL937yUBSepBfPIe8FcgEDN35vMNZKMrs81pgnyrQpwfy4NF4b4XWX1Zgx7yX+25w8QJA==}
     dependencies:
       follow-redirects: 1.15.2_debug@4.3.4
       form-data: 4.0.0
