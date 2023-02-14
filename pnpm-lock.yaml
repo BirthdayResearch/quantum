@@ -51,7 +51,7 @@ importers:
       smartcontracts: workspace:0.0.0
       source-map-support: ^0.5.21
       supertest: ^6.3.3
-      testcontainers: ^9.1.2
+      testcontainers: ^9.1.3
       ts-jest: ^29.0.5
       ts-loader: ^9.4.2
       ts-node: ^10.9.1
@@ -94,7 +94,7 @@ importers:
       smartcontracts: link:../../packages/smartcontracts
       source-map-support: 0.5.21
       supertest: 6.3.3
-      testcontainers: 9.1.2
+      testcontainers: 9.1.3
       ts-jest: 29.0.5_qr63b5u6y75qc5d5redu2mbquu
       ts-loader: 9.4.2_hhrrucqyg4eysmfpujvov2ym5u
       ts-node: 10.9.1_3fk7qfkuemqflumbj4dlt34bfa
@@ -1660,7 +1660,7 @@ packages:
   /@birthdayresearch/sticky-testcontainers/0.4.1:
     resolution: {integrity: sha512-Kt5Yt4vSIf8/Rh0OBF9ymzlH0dMjiBx+nuCv8V3t+Yf3r61pDgVrtNUm5YtMdhdRAJO87QDDEbRtbqKUAPdPkQ==}
     dependencies:
-      testcontainers: 9.1.2
+      testcontainers: 9.1.3
       uuid: 9.0.0
     transitivePeerDependencies:
       - encoding
@@ -2029,7 +2029,7 @@ packages:
       defichain: 3.28.2
       dockerode: 3.3.4
       tar-fs: 2.1.1
-      testcontainers: 9.1.2
+      testcontainers: 9.1.3
       uuid: 9.0.0
     transitivePeerDependencies:
       - encoding
@@ -3453,7 +3453,7 @@ packages:
       micromatch: 4.0.5
       mkdirp: 1.0.4
       murmurhash: 2.0.1
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       ufo: 1.0.1
       unstorage: 1.0.1
     transitivePeerDependencies:
@@ -4195,7 +4195,7 @@ packages:
       chalk: 4.1.2
       find-up: 5.0.0
       mime: 2.6.0
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       open: 6.4.0
       ora: 5.4.1
       semver: 6.3.0
@@ -4521,7 +4521,7 @@ packages:
       fast-stable-stringify: 1.0.0
       jayson: 3.7.0
       js-sha3: 0.8.0
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       react-native-url-polyfill: 1.3.0_react-native@0.70.6
       rpc-websockets: 7.5.0
       secp256k1: 4.0.3
@@ -6746,6 +6746,9 @@ packages:
     resolution: {integrity: sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==}
     dev: false
 
+  /async-lock/1.4.0:
+    resolution: {integrity: sha512-coglx5yIWuetakm3/1dsX9hxCNox22h7+V80RQOu2XUUMidtArxKoZoOtHUPuR84SycKTXzgGzAUR5hJxujyJQ==}
+
   /async-mutex/0.2.6:
     resolution: {integrity: sha512-Hs4R+4SPgamu6rSGW8C7cV9gaWUKEHykfzCCvIRuaVv636Ju10ZdeUbvb4TBEW0INuq2DHZqXbK4Nd3yG4RaRw==}
     dependencies:
@@ -8647,8 +8650,8 @@ packages:
   /dlv/1.1.3:
     resolution: {integrity: sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==}
 
-  /docker-compose/0.23.17:
-    resolution: {integrity: sha512-YJV18YoYIcxOdJKeFcCFihE6F4M2NExWM/d4S1ITcS9samHKnNUihz9kjggr0dNtsrbpFNc7/Yzd19DWs+m1xg==}
+  /docker-compose/0.23.19:
+    resolution: {integrity: sha512-v5vNLIdUqwj4my80wxFDkNH+4S85zsRuH29SO7dCWVWPCMt/ohZBsGN6g6KXWifT0pzQ7uOxqEKCYCDPJ8Vz4g==}
     engines: {node: '>= 6.0.0'}
     dependencies:
       yaml: 1.10.2
@@ -9489,7 +9492,7 @@ packages:
       ethereumjs-util: 5.2.1
       json-rpc-engine: 5.4.0
       json-stable-stringify: 1.0.2
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       pify: 3.0.0
       safe-event-emitter: 1.0.1
     transitivePeerDependencies:
@@ -13371,7 +13374,7 @@ packages:
       metro-transform-plugins: 0.72.3
       metro-transform-worker: 0.72.3
       mime-types: 2.1.35
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       nullthrows: 1.1.1
       rimraf: 2.7.1
       serialize-error: 2.1.0
@@ -13894,6 +13897,17 @@ packages:
 
   /node-fetch/2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+
+  /node-fetch/2.6.9:
+    resolution: {integrity: sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
       encoding: ^0.1.0
@@ -17005,20 +17019,21 @@ packages:
       glob: 7.2.3
       minimatch: 3.1.2
 
-  /testcontainers/9.1.2:
-    resolution: {integrity: sha512-a4VbUUntbrnTsxD20u8TBhFRpdHufGbBQ3ZlPHsROK7JXh9mLDsx7qk272bt+jBm6yUf0SBBhBynC+B6uxb9Mg==}
+  /testcontainers/9.1.3:
+    resolution: {integrity: sha512-Kw7GZC8nD84Uuq2oxa2Ln9F5vIALWIZoQHywOGuiiVthSHzOVl4CtebO25whMf3CrVICwy8CBUimvSdVgU9N7g==}
     engines: {node: '>= 10.16'}
     dependencies:
       '@balena/dockerignore': 1.0.2
       '@types/archiver': 5.3.1
       '@types/dockerode': 3.3.14
       archiver: 5.3.1
+      async-lock: 1.4.0
       byline: 5.0.0
       debug: 4.3.4
-      docker-compose: 0.23.17
+      docker-compose: 0.23.19
       dockerode: 3.3.4
       get-port: 5.1.1
-      node-fetch: 2.6.7
+      node-fetch: 2.6.9
       properties-reader: 2.2.0
       ssh-remote-port-forward: 1.0.4
       tar-fs: 2.1.1
