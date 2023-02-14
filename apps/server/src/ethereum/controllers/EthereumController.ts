@@ -2,8 +2,7 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
 
 import { EthereumTransactionValidationPipe } from '../../pipes/EthereumTransactionValidation.pipe';
-import { HandledEVMTransaction } from '../../types/HandledEVMTransaction';
-import { EVMTransactionConfirmerService } from '../services/EVMTransactionConfirmerService';
+import { EVMTransactionConfirmerService, HandledEVMTransaction } from '../services/EVMTransactionConfirmerService';
 
 @Controller()
 export class EthereumController {

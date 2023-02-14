@@ -5,7 +5,6 @@ import { BridgeV1__factory } from 'smartcontracts';
 
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
-import { HandledEVMTransaction } from '../../types/HandledEVMTransaction';
 import { getEndOfDayTimeStamp } from '../../utils/MathUtils';
 
 @Injectable()
@@ -128,4 +127,9 @@ interface SignClaim {
   receiverAddress: string;
   tokenAddress: string;
   amount: string;
+}
+
+export interface HandledEVMTransaction {
+  numberOfConfirmations: number;
+  isConfirmed: boolean;
 }
