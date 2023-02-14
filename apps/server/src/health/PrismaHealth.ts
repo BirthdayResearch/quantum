@@ -10,11 +10,10 @@ export class PrismaHealthIndicator extends HealthIndicator {
   }
 
   async isHealthy(key: string): Promise<HealthIndicatorResult> {
-    try {
-      await this.prismaService.$queryRaw`SELECT 1`;
-      return this.getStatus(key, true);
-    } catch (e) {
-      throw new HealthCheckError('Prisma check failed', e);
-    }
+    return this.prismaService.$queryRaw`SELECT 1`
+      .then(() => this.getStatus(key, true))
+      .catch((e) => {
+        throw new HealthCheckError(e.message, this.getStatus(key, false, e));
+      });
   }
 }

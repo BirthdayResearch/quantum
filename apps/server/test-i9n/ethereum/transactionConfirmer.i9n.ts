@@ -120,4 +120,25 @@ describe('Bridge Service Integration Tests', () => {
     });
     expect(transactionDbRecord?.status).toStrictEqual('CONFIRMED');
   });
+
+  it('Health check service should be ok', async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/health`,
+    });
+    expect(JSON.parse(txReceipt.payload).status).toStrictEqual('ok');
+  });
+
+  it('Health check service should be error when database is down', async () => {
+    // mock error on Prisma query
+    jest.spyOn(prismaService, '$queryRaw').mockRejectedValue(new Error('Database Error!'));
+
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/health`,
+    });
+
+    expect(JSON.parse(txReceipt.payload).status).toStrictEqual('error');
+    expect(JSON.parse(txReceipt.payload).error.database.status).toStrictEqual('down');
+  });
 });
