@@ -1,13 +1,11 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 
-import { PrismaService } from '../../src/PrismaService';
 import { BridgeServerTestingApp } from './BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from './TestingModule';
 
 describe('Health Service Test', () => {
   let testing: BridgeServerTestingApp;
   let startedPostgresContainer: StartedPostgreSqlContainer;
-  let prismaService: PrismaService;
 
   beforeAll(async () => {
     startedPostgresContainer = await new PostgreSqlContainer().start();
@@ -20,8 +18,7 @@ describe('Health Service Test', () => {
       ),
     );
 
-    const app = await testing.start();
-    prismaService = app.get<PrismaService>(PrismaService);
+    await testing.start();
   });
 
   afterAll(async () => {
@@ -38,8 +35,7 @@ describe('Health Service Test', () => {
   });
 
   it('Health check service should be error when database is down', async () => {
-    // mock error on Prisma query
-    jest.spyOn(prismaService, '$queryRaw').mockRejectedValue(new Error('Database Error!'));
+    await startedPostgresContainer.stop();
 
     const txReceipt = await testing.inject({
       method: 'GET',
