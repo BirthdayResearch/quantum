@@ -18,6 +18,7 @@ export function appConfig() {
           address: process.env.BRIDGE_PROXY_ADDRESS,
         },
       },
+      ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
     },
   };
 }

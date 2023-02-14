@@ -212,7 +212,7 @@ export default function ConfirmTransferModal({
       {isSendingToDFC ? (
         <EvmToDeFiChainTransfer data={data} />
       ) : (
-        <DeFiChainToERC20Transfer />
+        <DeFiChainToERC20Transfer data={data} />
       )}
     </Modal>
   );

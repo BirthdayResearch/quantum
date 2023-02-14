@@ -47,18 +47,19 @@ jobs:
       - run: .github/workflows/ci/wait-for http://localhost:3002/_actuator/probes/liveness -t 240
       - run: .github/workflows/ci/wait-for http://localhost:19551/ping -t 240
 
-      - uses: cypress-io/github-action@ca3f666049f4ac2267a75de769535a7cbdc7bfd7 # v5.0.8
-        working-directory: ./apps/web
+      ## Implement ping on server side to do full e2e
+
+      - uses: cypress-io/github-action@327178c8042fbb3be13870105eece3c8abf348c9 # v5.0.9
         with:
           config-file: cypress.config.js
           install: false
           record: true
           parallel: true
-          start: pnpm run start
-          wait-on: "http://localhost:5173"
+          start: pnpm dev
           browser: chrome
           spec: cypress/e2e/**
           tag: ${{ github.event_name }}
+          working-directory: ./apps/web
         env:
           CYPRESS_E2E: true
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}

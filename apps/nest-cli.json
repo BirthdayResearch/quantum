@@ -1,0 +1,21 @@
+{
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "server/src",
+  "monorepo": true,
+  "root": "server",
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "server/tsconfig.json"
+  },
+  "projects": {
+    "bridge-api": {
+      "type": "application",
+      "root": "server",
+      "entryFile": "main",
+      "sourceRoot": "server/src",
+      "compilerOptions": {
+        "tsConfigPath": "server/tsconfig.json"
+      }
+    }
+  }
+}

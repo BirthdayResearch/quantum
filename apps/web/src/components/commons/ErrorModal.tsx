@@ -5,7 +5,6 @@ import ActionButton from "./ActionButton";
 import Modal from "./Modal";
 
 interface Props {
-  hasError: boolean;
   title: string;
   message: string;
   primaryButtonLabel: string;
@@ -24,7 +23,7 @@ export default function ErrorModal({
 }: PropsWithChildren<Props>) {
   const router = useRouter();
   return (
-    <Modal isOpen={hasError} onClose={() => router.reload()}>
+    <Modal isOpen onClose={() => router.reload()}>
       <div className="flex flex-col items-center md:mt-[29px] md:mb-10">
         <FiAlertCircle className="text-8xl text-error ml-1" />
         <div className="mt-8 md:px-[37px] text-center">
