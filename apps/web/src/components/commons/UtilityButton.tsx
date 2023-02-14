@@ -1,3 +1,4 @@
+import { PropsWithChildren } from "react";
 import clsx from "clsx";
 import { RiLoader2Line } from "react-icons/ri";
 import { FiRefreshCw, FiArrowRight } from "react-icons/fi";
@@ -10,15 +11,18 @@ export default function UtilityButton({
   withArrowIcon = false,
   variant = "primary",
   withRefreshIcon,
-}: {
+  disabledClass,
+  children,
+}: PropsWithChildren<{
   label: string;
   onClick?: () => void;
   disabled?: boolean;
   isLoading?: boolean;
   withArrowIcon?: boolean;
   variant?: "primary" | "secondary";
+  disabledClass?: string;
   withRefreshIcon?: boolean;
-}) {
+}>) {
   const isPrimary = variant === "primary";
   const defaultSecondaryStyle =
     "bg-transparent border border-dark-1000 text-sm text-dark-1000 px-4 py-2 hover:border-brand-100 active:opacity-70";
@@ -35,12 +39,14 @@ export default function UtilityButton({
         {
           "dark-cta-pressed": isLoading,
           "pointer-events-none opacity-30": disabled || isLoading,
-        }
+        },
+        disabled && disabledClass
       )}
       disabled={disabled}
       onClick={onClick}
     >
       {label}
+      {children}
       {isLoading && (
         <RiLoader2Line
           size={16}

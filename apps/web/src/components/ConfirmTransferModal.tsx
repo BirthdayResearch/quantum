@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import BigNumber from "bignumber.js";
 import Image from "next/image";
-import { NetworkName, RowDataI, TransferData } from "types";
+import { AddressDetails, NetworkName, RowDataI, TransferData } from "types";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import useDisableEscapeKey from "@hooks/useDisableEscapeKey";
 import useTransferFee from "@hooks/useTransferFee";
@@ -109,12 +109,14 @@ export default function ConfirmTransferModal({
   amount,
   fromAddress,
   toAddress,
+  addressDetail,
 }: {
   show: boolean;
   onClose: () => void;
   amount: string;
   fromAddress: string;
   toAddress: string;
+  addressDetail?: AddressDetails;
 }) {
   const {
     selectedNetworkA,
@@ -212,7 +214,7 @@ export default function ConfirmTransferModal({
       {isSendingToDFC ? (
         <EvmToDeFiChainTransfer data={data} />
       ) : (
-        <DeFiChainToERC20Transfer data={data} />
+        <DeFiChainToERC20Transfer data={data} addressDetail={addressDetail} />
       )}
     </Modal>
   );
