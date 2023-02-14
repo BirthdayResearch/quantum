@@ -1,10 +1,9 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
-import { execSync } from 'child_process';
 
 import { CustomErrorCodes } from '../../src/CustomErrorCodes';
 import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
-import { Prisma } from '../../src/prisma/Client';
+import { PrismaService } from '../../src/PrismaService';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
@@ -18,43 +17,36 @@ jest.mock('../../src/ThrottleLimitConfig', () => ({
 }));
 
 describe('DeFiChain Verify fund Testing', () => {
-  const container = new PostgreSqlContainer();
-  let postgreSqlContainer: StartedPostgreSqlContainer;
+  let testing: BridgeServerTestingApp;
+  let startedPostgresContainer: StartedPostgreSqlContainer;
+  let defichain: StartedDeFiChainStubContainer;
+  let prismaService: PrismaService;
 
   // Tests are slower because it's running 3 containers at the same time
   jest.setTimeout(3600000);
   let whaleWalletProvider: WhaleWalletProvider;
   let localAddress: string;
   let wallet: WhaleWalletAccount;
-  let testing: BridgeServerTestingApp;
-  let defichain: StartedDeFiChainStubContainer;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
   const VERIFY_ENDPOINT = `${WALLET_ENDPOINT}verify`;
 
   beforeAll(async () => {
-    postgreSqlContainer = await container
-      .withDatabase('bridge')
-      .withUsername('playground')
-      .withPassword('playground')
-      .withExposedPorts({
-        container: 5432,
-        host: 5432,
-      })
-      .start();
-    // deploy migration
-    execSync('pnpm run migration:deploy');
-
+    startedPostgresContainer = await new PostgreSqlContainer().start();
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          startedPostgresContainer,
         }),
       ),
     );
 
     const app = await testing.start();
+
+    // init postgres database
+    prismaService = app.get<PrismaService>(PrismaService);
 
     whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
     wallet = whaleWalletProvider.createWallet(2);
@@ -62,9 +54,9 @@ describe('DeFiChain Verify fund Testing', () => {
   });
 
   afterAll(async () => {
+    // teardown database
+    await startedPostgresContainer.stop();
     await testing.stop();
-    await postgreSqlContainer.stop();
-    await defichain.stop();
   });
 
   it('should throw error if symbol is not valid', async () => {
@@ -177,7 +169,7 @@ describe('DeFiChain Verify fund Testing', () => {
     const data = {
       address: randomAddress,
     };
-    await Prisma.pathIndex.update({ where: { index: 3 }, data });
+    await prismaService.deFiChainAddressIndex.update({ where: { index: 3 }, data });
 
     const initialResponse = await testing.inject({
       method: 'POST',
