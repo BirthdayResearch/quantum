@@ -14,13 +14,6 @@ interface NetworkContextI {
   updateNetworkEnv: (networkEnv: EnvironmentNetwork) => void;
   resetNetworkEnv: () => void;
 }
-const NETWORK_ENV_DISPLAY_NAME: Record<EnvironmentNetwork, string> = {
-  [EnvironmentNetwork.MainNet]: "MainNet",
-  [EnvironmentNetwork.TestNet]: "TestNet",
-  [EnvironmentNetwork.RemotePlayground]: "Playground",
-  [EnvironmentNetwork.DevNet]: "DevNet",
-  [EnvironmentNetwork.LocalPlayground]: "Local",
-};
 
 const NetworkEnvironmentContext = createContext<NetworkContextI>(
   undefined as any
