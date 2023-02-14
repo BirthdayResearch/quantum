@@ -1,12 +1,11 @@
 import ErrorModal from "@components/commons/ErrorModal";
 import IconTooltip from "@components/commons/IconTooltip";
 
-export default function DailyLimitErrorModal({ show }: { show: boolean }) {
+export default function DailyLimitErrorModal() {
   return (
     <ErrorModal
       title="Daily limit has been reached"
       message="Your transaction cannot be processed now and funds will be refunded back to the sending address. Please try your transaction again when the daily limit is reset tomorrow."
-      hasError={show}
       primaryButtonLabel="Close"
       // onPrimaryButtonClick={() => ()}
     >
