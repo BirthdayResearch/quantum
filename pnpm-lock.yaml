@@ -5575,7 +5575,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.7.1_react@18.2.0
-      react-redux: 8.0.5_fxtgt6bjwd6p4cwoordejim2zi
+      react-redux: 8.0.5_r7hvvldj6g2s5chfsdsflfq664
       react-responsive: 9.0.2_react@18.2.0
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -13692,39 +13692,6 @@ packages:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 18.2.0
-    dev: false
-
-  /react-redux/8.0.5_fxtgt6bjwd6p4cwoordejim2zi:
-    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
-    peerDependencies:
-      '@types/react': ^16.8 || ^17.0 || ^18.0
-      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-      react-native: '>=0.59'
-      redux: ^4
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      '@types/react-dom':
-        optional: true
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-      redux:
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.20.13
-      '@types/hoist-non-react-statics': 3.3.1
-      '@types/react': 18.0.27
-      '@types/react-dom': 18.0.10
-      '@types/use-sync-external-store': 0.0.3
-      hoist-non-react-statics: 3.3.2
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-is: 18.2.0
-      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /react-redux/8.0.5_r7hvvldj6g2s5chfsdsflfq664:

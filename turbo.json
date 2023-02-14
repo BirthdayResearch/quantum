@@ -49,9 +49,6 @@
     "playground:start": {
       "cache": false
     },
-    "playground:start": {
-      "cache": false
-    },
     "docker:pull": {
       "inputs": [
         "tsconfig.json",
