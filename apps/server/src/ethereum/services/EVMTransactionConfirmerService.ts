@@ -1,14 +1,14 @@
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { BigNumber, Contract, ethers } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
-import { ETHERS_RPC_PROVIDER } from './modules/EthersModule';
-import { PrismaService } from './PrismaService';
-import { getEndOfDayTimeStamp } from './utils/MathUtils';
+import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
+import { PrismaService } from '../../PrismaService';
+import { getEndOfDayTimeStamp } from '../../utils/MathUtils';
 
 @Injectable()
-export class AppService {
+export class EVMTransactionConfirmerService {
   private contract: Contract;
 
   constructor(
@@ -23,14 +23,6 @@ export class AppService {
     );
   }
 
-  async getBlockHeight(): Promise<number> {
-    return this.ethersRpcProvider.getBlockNumber();
-  }
-
-  async getBalance(address: string): Promise<BigNumber> {
-    return this.ethersRpcProvider.getBalance(address);
-  }
-
   async handleTransaction(transactionHash: string): Promise<boolean> {
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
     const isReverted = txReceipt.status === 0;
@@ -39,13 +31,11 @@ export class AppService {
     }
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
     const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
-
     const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
       where: {
         transactionHash,
       },
     });
-
     if (txHashFound === null) {
       if (numberOfConfirmations < 65) {
         await this.prisma.bridgeEventTransactions.create({
@@ -64,11 +54,9 @@ export class AppService {
       });
       return true;
     }
-
     if (numberOfConfirmations < 65) {
       return false;
     }
-
     await this.prisma.bridgeEventTransactions.update({
       where: {
         id: txHashFound?.id,
