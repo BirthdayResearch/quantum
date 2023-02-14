@@ -69,7 +69,7 @@ error EXPIRED_CLAIM();
 */
 error AMOUNT_CAN_NOT_BE_ZERO();
 
-contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
+contract TestBridge is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     using EnumerableSet for EnumerableSet.AddressSet;
     struct TokenAllowance {
         uint256 latestResetTimestamp;
@@ -282,15 +282,15 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 tokenAllowanceStartTime = tokenAllowances[_tokenAddress].latestResetTimestamp;
         if (block.timestamp < tokenAllowanceStartTime) revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();
         if (_amount == 0) revert AMOUNT_CAN_NOT_BE_ZERO();
-        // Transaction is within the last tracked day's daily allowance
-        if (tokenAllowances[_tokenAddress].latestResetTimestamp + (3600) > block.timestamp) {
+        // Transaction is within the last tracked hour's daily allowance
+        if (tokenAllowances[_tokenAddress].latestResetTimestamp + (1 hours) > block.timestamp) {
             tokenAllowances[_tokenAddress].currentDailyUsage += _amount;
             if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)
                 revert EXCEEDS_DAILY_ALLOWANCE();
         } else {
             tokenAllowances[_tokenAddress].latestResetTimestamp +=
-                ((block.timestamp - tokenAllowances[_tokenAddress].latestResetTimestamp) / (3600)) *
-                3600;
+                ((block.timestamp - tokenAllowances[_tokenAddress].latestResetTimestamp) / (1 hours)) *
+                1 hours;
             tokenAllowances[_tokenAddress].currentDailyUsage = _amount;
             if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)
                 revert EXCEEDS_DAILY_ALLOWANCE();
