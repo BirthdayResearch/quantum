@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 
 import { CustomErrorCodes } from '../../CustomErrorCodes';
 import { PrismaService } from '../../PrismaService';
-import { VerifyDto } from '../model/VerifyDto';
+import { VerifyObject } from '../model/VerifyDto';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
 @Injectable()
@@ -14,15 +14,9 @@ export class WhaleWalletService {
   constructor(private readonly whaleWalletProvider: WhaleWalletProvider, private prisma: PrismaService) {}
 
   async verify(
-    verify: VerifyDto,
+    verify: VerifyObject,
     network: EnvironmentNetwork = EnvironmentNetwork.MainNet,
   ): Promise<{ isValid: boolean; statusCode?: CustomErrorCodes }> {
-    // Verify if the token symbol is valid
-    const { isTokenSymbolValid } = this.verifyTokenSymbol(verify.symbol);
-    if (!isTokenSymbolValid) {
-      return { isValid: false, statusCode: CustomErrorCodes.TokenSymbolNotValid };
-    }
-
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
     if (!isAddressValid) {
@@ -55,7 +49,7 @@ export class WhaleWalletService {
       }
 
       const tokens = await wallet.client.address.listToken(address);
-      const token = tokens.find((t) => t.symbol === verify.symbol);
+      const token = tokens.find((t) => t.symbol === verify.symbol.toString());
 
       // If no amount has been received yet
       if (token === undefined || new BigNumber(token?.amount).isZero()) {
@@ -116,11 +110,5 @@ export class WhaleWalletService {
   private verifyValidAddress(address: string, network: EnvironmentNetwork): { isAddressValid: boolean } {
     const decodedAddress = fromAddress(address, getJellyfishNetwork(network).name);
     return { isAddressValid: decodedAddress !== undefined };
-  }
-
-  private verifyTokenSymbol(tokenSymbol: string): { isTokenSymbolValid: boolean } {
-    // TODO(pierregee): Convert string -> enum of allowed token symbols
-    const tokenSymbols = ['BTC', 'USDT', 'USDC', 'ETH'];
-    return { isTokenSymbolValid: tokenSymbols.includes(tokenSymbol) };
   }
 }
