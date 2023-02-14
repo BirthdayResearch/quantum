@@ -14,7 +14,6 @@ interface Props {
 
 export default function ErrorModal({
   children,
-  hasError,
   title,
   message,
   primaryButtonLabel,
