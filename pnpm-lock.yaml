@@ -7,13 +7,13 @@ importers:
       '@birthdayresearch/sticky-turbo': ^0.4.1
       '@waveshq/standard-defichain-jellyfishsdk': ^0.42.1
       husky: ^8.0.3
-      lint-staged: ^13.1.0
+      lint-staged: ^13.1.2
     dependencies:
       '@waveshq/standard-defichain-jellyfishsdk': 0.42.1_@types+tar-fs@2.0.1
     devDependencies:
       '@birthdayresearch/sticky-turbo': 0.4.1
       husky: 8.0.3
-      lint-staged: 13.1.1
+      lint-staged: 13.1.2
 
   apps/server:
     specifiers:
@@ -5552,7 +5552,7 @@ packages:
       eslint-plugin-react-hooks: 4.6.0_eslint@8.34.0
       eslint-plugin-simple-import-sort: 9.0.0_eslint@8.34.0
       husky: 8.0.3
-      lint-staged: 13.1.1
+      lint-staged: 13.1.2
       next: 13.1.6_pjwopsidmaokadturxaafygjp4
       prettier: 2.8.4
       typescript: 4.9.5
@@ -11636,6 +11636,29 @@ packages:
 
   /lint-staged/13.1.1:
     resolution: {integrity: sha512-LLJLO0Kdbcv2a+CvSF4p1M7jBZOajKSMpBUvyR8+bXccsqPER0/NxTFQSpNHjqwV9kM3tkHczYerTB5wI+bksQ==}
+    engines: {node: ^14.13.1 || >=16.0.0}
+    hasBin: true
+    dependencies:
+      cli-truncate: 3.1.0
+      colorette: 2.0.19
+      commander: 9.5.0
+      debug: 4.3.4
+      execa: 6.1.0
+      lilconfig: 2.0.6
+      listr2: 5.0.7
+      micromatch: 4.0.5
+      normalize-path: 3.0.0
+      object-inspect: 1.12.3
+      pidtree: 0.6.0
+      string-argv: 0.3.1
+      yaml: 2.2.1
+    transitivePeerDependencies:
+      - enquirer
+      - supports-color
+    dev: true
+
+  /lint-staged/13.1.2:
+    resolution: {integrity: sha512-K9b4FPbWkpnupvK3WXZLbgu9pchUJ6N7TtVZjbaPsoizkqFUDkUReUL25xdrCljJs7uLUF3tZ7nVPeo/6lp+6w==}
     engines: {node: ^14.13.1 || >=16.0.0}
     hasBin: true
     dependencies:
