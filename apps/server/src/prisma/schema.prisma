@@ -8,9 +8,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model PathIndex {
+enum EthereumTransactionStatus {
+  NOT_CONFIRMED
+  CONFIRMED
+}
+
+model DeFiChainAddressIndex {
   id        BigInt   @id @default(autoincrement())
   index     Int      @unique
   address   String   @unique
   createdAt DateTime @default(now())
+}
+
+model BridgeEventTransactions {
+  id              BigInt                    @id @default(autoincrement())
+  transactionHash String
+  status          EthereumTransactionStatus
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime?                 @updatedAt
 }

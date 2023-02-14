@@ -1,3 +1,4 @@
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { ethers } from 'ethers';
 import {
   BridgeV1,
@@ -7,6 +8,7 @@ import {
   TestToken,
 } from 'smartcontracts';
 
+import { PrismaService } from '../src/PrismaService';
 import { BridgeContractFixture } from './testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from './testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from './testing/TestingModule';
@@ -18,8 +20,11 @@ describe('Bridge Service Integration Tests', () => {
   let bridgeContract: BridgeV1;
   let bridgeContractFixture: BridgeContractFixture;
   let musdcContract: TestToken;
+  let prismaService: PrismaService;
+  let startedPostgresContainer: StartedPostgreSqlContainer;
 
   beforeAll(async () => {
+    startedPostgresContainer = await new PostgreSqlContainer().start();
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
 
@@ -33,92 +38,86 @@ describe('Bridge Service Integration Tests', () => {
     // initialize config variables
     testing = new BridgeServerTestingApp(
       TestingModule.register(
-        buildTestConfig({ startedHardhatContainer, testnet: { bridgeContractAddress: bridgeContract.address } }),
+        buildTestConfig({
+          startedHardhatContainer,
+          testnet: { bridgeContractAddress: bridgeContract.address },
+          startedPostgresContainer,
+        }),
       ),
     );
-    await testing.start();
+    const app = await testing.start();
+
+    // init postgres database
+    prismaService = app.get<PrismaService>(PrismaService);
   });
 
   afterAll(async () => {
+    // teardown database
+    await prismaService.bridgeEventTransactions.deleteMany({});
+    await startedPostgresContainer.stop();
     await hardhatNetwork.stop();
     await testing.stop();
   });
 
-  it('Returns an array of confirmed events from a given block number', async () => {
-    // Given a call to bridgeToDeFiChain
-    await bridgeContract.bridgeToDeFiChain(
+  it('Validates that the transaction inputted is of the correct format', async () => {
+    const txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/app/handleTransaction`,
+      payload: {
+        transactionHash: 'wrong_transaction_test',
+      },
+    });
+    expect(JSON.parse(txReceipt.body).error).toBe('Bad Request');
+    expect(JSON.parse(txReceipt.body).message).toBe('Invalid Ethereum transaction hash: wrong_transaction_test');
+    expect(JSON.parse(txReceipt.body).statusCode).toBe(400);
+  });
+
+  it('Checks if a transaction is confirmed, and stores it in the database', async () => {
+    // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function and mine the block
+    const transactionCall = await bridgeContract.bridgeToDeFiChain(
       ethers.constants.AddressZero,
       musdcContract.address,
       ethers.utils.parseEther('5'),
     );
     await hardhatNetwork.generate(1);
 
-    let currBlockRequest = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
+    // Step 2: db should not have record of transaction
+    let transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: transactionCall.hash },
     });
-    const originalBlock = currBlockRequest.body;
+    expect(transactionDbRecord).toStrictEqual(null);
 
-    // When getting the current number of events
-    let eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=${originalBlock}`,
+    let txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/app/handleTransaction`,
+      payload: {
+        transactionHash: transactionCall.hash,
+      },
     });
+    expect(JSON.parse(txReceipt.body)).toStrictEqual(false);
 
-    // Then the array should be empty since the events have not been confirmed
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
+    // Step 3: db should create a record of transaction with status='NOT_CONFIRMED', as number of confirmations = 0.
+    transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: transactionCall.hash },
+    });
+    expect(transactionDbRecord?.status).toStrictEqual('NOT_CONFIRMED');
 
-    // When generating the necessary number of confirmations
+    // Step 4: mine 65 blocks to make the transaction confirmed
     await hardhatNetwork.generate(65);
 
-    // Then there should be one event in the array from the previous bridgeToDeFiChain call
-    eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=${originalBlock}`,
+    // Step 5: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
+    txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/app/handleTransaction`,
+      payload: {
+        transactionHash: transactionCall.hash,
+      },
     });
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
+    expect(JSON.parse(txReceipt.body)).toStrictEqual(true);
 
-    // Given another call to bridgeToDeFiChain again
-    await bridgeContract.bridgeToDeFiChain(
-      ethers.constants.AddressZero,
-      musdcContract.address,
-      ethers.utils.parseEther('5'),
-    );
-    await hardhatNetwork.generate(1);
-
-    // When generating some blocks that do not meet the necessary number of confirmations
-    await hardhatNetwork.generate(30);
-
-    currBlockRequest = await testing.inject({
-      method: 'GET',
-      url: '/app/blockheight',
+    transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: transactionCall.hash },
     });
-    const nextBlock = currBlockRequest.body;
-
-    eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=${originalBlock}`,
-    });
-    // Then the array should still only have 1 event
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(1);
-
-    // When generating the additional confirmations to hit the necessary number
-    await hardhatNetwork.generate(35);
-
-    // Then there should be two events in the array
-    eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=${originalBlock}`,
-    });
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(2);
-
-    // When doing a sanity check from the nextBlock + 1 onwards
-    eventsArray = await testing.inject({
-      method: 'GET',
-      url: `/app/getAllEventsFromBlockNumber?blockNumber=${nextBlock + 1}`,
-    });
-
-    // Then there should be no events
-    await expect(JSON.parse(eventsArray.body)).toHaveLength(0);
+    expect(transactionDbRecord?.status).toStrictEqual('CONFIRMED');
   });
 });

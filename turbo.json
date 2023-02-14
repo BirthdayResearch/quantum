@@ -3,7 +3,9 @@
   "pipeline": {
     "write": {
       "cache": false,
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "clean": {
       "cache": false
@@ -13,39 +15,98 @@
     },
     "generate": {
       "cache": false,
-      "dependsOn": ["^build"]
+      "dependsOn": [
+        "^build"
+      ]
     },
     "build": {
-      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
-      "outputs": ["dist/**", ".next/**"],
-      "dependsOn": ["^build", "generate:client", "generate:schema"]
+      "inputs": [
+        "tsconfig.json",
+        "tsconfig.build.json",
+        "src/**"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**"
+      ],
+      "dependsOn": [
+        "^build",
+        "generate:client",
+        "generate:schema",
+        "generate:prisma"
+      ]
     },
     "build:docker": {
-      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
-      "dependsOn": ["^build"]
+      "inputs": [
+        "tsconfig.json",
+        "tsconfig.build.json",
+        "src/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "playground:start": {
+      "cache": false
     },
     "playground:start": {
       "cache": false
     },
     "docker:pull": {
-      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
-      "dependsOn": ["^build"]
+      "inputs": [
+        "tsconfig.json",
+        "tsconfig.build.json",
+        "src/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "generate:prisma": {
+      "inputs": [
+        "prisma/schema.prisma"
+      ],
+      "outputs": [
+        "node_modules/@prisma/client"
+      ]
     },
     "generate:schema": {
-      "outputs": ["dist/**"],
-      "dependsOn": ["^build"]
+      "outputs": [
+        "dist/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
     },
     "generate:client": {
-      "outputs": ["generated/**"],
-      "dependsOn": ["^build", "^generate:schema"]
+      "outputs": [
+        "generated/**"
+      ],
+      "dependsOn": [
+        "^build",
+        "^generate:schema"
+      ]
     },
     "generate:contract-types": {
-      "inputs": ["contracts/**/*.sol"],
-      "outputs": ["artifacts", "cache", "generated"],
-      "dependsOn": ["^build"]
+      "inputs": [
+        "contracts/**/*.sol"
+      ],
+      "outputs": [
+        "artifacts",
+        "cache",
+        "generated"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
     },
     "test": {
-      "inputs": ["src/**", "src/**/*.unit.ts", "tests-i9n/**", "tests-e2e/**"],
+      "inputs": [
+        "src/**",
+        "src/**/*.unit.ts",
+        "tests-i9n/**",
+        "tests-e2e/**"
+      ],
       "dependsOn": [
         "^build",
         "^build:docker",
@@ -56,11 +117,21 @@
       ]
     },
     "test:unit": {
-      "inputs": ["src/**", "src/**/*.unit.ts"],
-      "dependsOn": ["^build", "generate:client", "generate:schema"]
+      "inputs": [
+        "src/**",
+        "src/**/*.unit.ts"
+      ],
+      "dependsOn": [
+        "^build",
+        "generate:client",
+        "generate:schema"
+      ]
     },
     "test:i9n": {
-      "inputs": ["src/**", "tests-i9n/**"],
+      "inputs": [
+        "src/**",
+        "tests-i9n/**"
+      ],
       "dependsOn": [
         "^build",
         "^build:docker",
@@ -71,7 +142,10 @@
       ]
     },
     "test:e2e": {
-      "inputs": ["src/**", "tests-e2e/**"],
+      "inputs": [
+        "src/**",
+        "tests-e2e/**"
+      ],
       "dependsOn": [
         "build:docker",
         "^build:docker",
@@ -80,8 +154,13 @@
       ]
     },
     "test:hardhat": {
-      "inputs": ["src/**", "tests/**"],
-      "dependsOn": ["^build"]
+      "inputs": [
+        "src/**",
+        "tests/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
     },
     "lint": {
       "outputs": []

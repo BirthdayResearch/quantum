@@ -10,7 +10,7 @@ const staggeredBaseQuery = retry(
 );
 
 export const bridgeApi = createApi({
-  reducerPath: "website",
+  reducerPath: "defichain",
   baseQuery: staggeredBaseQuery,
   endpoints: (builder) => ({
     generateAddress: builder.mutation<{ address: string }, any>({

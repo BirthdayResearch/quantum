@@ -8,21 +8,26 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
   const operationalAdminSigner = await ethers.getSigner(accounts[1]);
   const arbitrarySigner = await ethers.getSigner(accounts[2]);
+  const flushReceiveSigner = await ethers.getSigner(accounts[3]);
   const BridgeUpgradeable = await ethers.getContractFactory('BridgeV1');
   const bridgeUpgradeable = await BridgeUpgradeable.deploy();
   await bridgeUpgradeable.deployed();
   const BridgeProxy = await ethers.getContractFactory('BridgeProxy');
   // deployment arguments for the Proxy contract
   const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-    'CAKE_BRIDGE',
-    '0.1',
     // admin address
     accounts[0],
     // operational address
     accounts[1],
     // relayer address
     accounts[0],
+    // community wallet address
+    accounts[4],
     30,
+    // flushReceiveAddress
+    accounts[3],
+    // minimum days of allowance for the bridge to be operational
+    2,
   ]);
   const bridgeProxy = await BridgeProxy.deploy(bridgeUpgradeable.address, encodedData);
   await bridgeProxy.deployed();
@@ -39,6 +44,8 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
     defaultAdminSigner,
     operationalAdminSigner,
     arbitrarySigner,
+    communityAddress: accounts[4],
+    flushReceiveSigner,
   };
 }
 
@@ -49,4 +56,6 @@ interface BridgeDeploymentResult {
   defaultAdminSigner: SignerWithAddress;
   operationalAdminSigner: SignerWithAddress;
   arbitrarySigner: SignerWithAddress;
+  communityAddress: string;
+  flushReceiveSigner: SignerWithAddress;
 }

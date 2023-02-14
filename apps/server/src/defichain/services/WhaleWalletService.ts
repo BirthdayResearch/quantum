@@ -5,13 +5,13 @@ import { EnvironmentNetwork } from '@waveshq/walletkit-core/dist/api/environment
 import BigNumber from 'bignumber.js';
 
 import { CustomErrorCodes } from '../../CustomErrorCodes';
-import { Prisma } from '../../prisma/Client';
+import { PrismaService } from '../../PrismaService';
 import { VerifyDto } from '../model/VerifyDto';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
 @Injectable()
 export class WhaleWalletService {
-  constructor(private readonly whaleWalletProvider: WhaleWalletProvider) {}
+  constructor(private readonly whaleWalletProvider: WhaleWalletProvider, private prisma: PrismaService) {}
 
   async verify(
     verify: VerifyDto,
@@ -34,7 +34,7 @@ export class WhaleWalletService {
     }
 
     try {
-      const pathIndex = await Prisma.pathIndex.findFirst({
+      const pathIndex = await this.prisma.deFiChainAddressIndex.findFirst({
         where: {
           address: verify.address,
         },
@@ -84,14 +84,14 @@ export class WhaleWalletService {
 
   async generateAddress(): Promise<{ address: string }> {
     try {
-      const lastIndex = await Prisma.pathIndex.findFirst({
+      const lastIndex = await this.prisma.deFiChainAddressIndex.findFirst({
         orderBy: [{ index: 'desc' }],
       });
       const index = lastIndex?.index;
-      const nextIndex = index ? Number(index) + 1 : 2;
+      const nextIndex = index ? index + 1 : 2;
       const wallet = this.whaleWalletProvider.createWallet(nextIndex);
       const address = await wallet.getAddress();
-      await Prisma.pathIndex.create({
+      await this.prisma.deFiChainAddressIndex.create({
         data: {
           index: nextIndex,
           address,
@@ -115,7 +115,6 @@ export class WhaleWalletService {
 
   private verifyValidAddress(address: string, network: EnvironmentNetwork): { isAddressValid: boolean } {
     const decodedAddress = fromAddress(address, getJellyfishNetwork(network).name);
-
     return { isAddressValid: decodedAddress !== undefined };
   }
 

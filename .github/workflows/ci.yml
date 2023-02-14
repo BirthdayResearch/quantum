@@ -45,6 +45,7 @@ jobs:
       - run: npx --no-install prettier --check "apps/web/src/**/*.{js,jsx,ts,tsx}"
 
   build:
+    name: "Build (Apps & Packages)"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
@@ -90,3 +91,25 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:hardhat
+
+  docker-buildx:
+    name: Docker Buildx
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [ linux/amd64 ]
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18 # v2.1.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8c0edbc76e98fa90f69d9a2c020dcb50019dc325 # v2.2.1
+
+      - name: Build bridge-api
+        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
+        with:
+          file: apps/server/Dockerfile
+          push: false
+          build-args: APP=bridge-api
+          platforms: ${{ matrix.platform }}
+          tags: ghcr.io/waveshq/bridge-api:latest

@@ -26,6 +26,11 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
     operationalAddress: eoaOperationalAddress,
     relayerAddress: eoaAddress,
     bridgeV1Address: bridgeV1.address,
+    txFeeAddress: accounts[3],
+    // flushReceiveAddress
+    flushReceiveAddress: accounts[4],
+    // minimum days of allowance for the bridge to be operational
+    acceptableRemainingDays: 2,
   });
   const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
   const { usdtContract, usdcContract } = await tokenDeployment();

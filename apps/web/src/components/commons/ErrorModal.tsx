@@ -4,13 +4,11 @@ import ActionButton from "./ActionButton";
 import Modal from "./Modal";
 
 export default function ErrorModal({
-  hasError,
   title,
   message,
   primaryButtonLabel,
   onPrimaryButtonClick,
 }: {
-  hasError: boolean;
   title: string;
   message: string;
   primaryButtonLabel: string;
@@ -18,7 +16,7 @@ export default function ErrorModal({
 }): JSX.Element {
   const router = useRouter();
   return (
-    <Modal isOpen={hasError} onClose={() => router.reload()}>
+    <Modal isOpen onClose={() => router.reload()}>
       <div className="flex flex-col items-center mt-6 mb-14">
         <FiAlertCircle className="text-8xl text-error ml-1" />
         <span className="font-bold text-2xl text-dark-900 mt-12">{title}</span>
