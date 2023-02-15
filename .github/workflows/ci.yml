@@ -115,7 +115,7 @@ jobs:
           tags: ghcr.io/waveshq/bridge-api:latest
 
   test_db:
-    name: Prisma DB Test
+    name: "Test (DB Schema)"
     runs-on: ubuntu-latest
     services:
       # Label used to access the service container
