@@ -3,9 +3,30 @@ import WelcomeHeader from "@components/WelcomeHeader";
 import ProofOfAssetsCard from "@components/ProofOfAssetsCard";
 import MobileBottomMenu from "@components/MobileBottomMenu";
 import useResponsive from "@hooks/useResponsive";
+import { useEffect } from "react";
+import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
+import { getStorageItem } from "../utils/localStorage";
+import { UnconfirmedTxnI } from "../types";
+import { useNetworkEnvironmentContext } from "../layouts/contexts/NetworkEnvironmentContext";
 
 function Home() {
   const { isMd } = useResponsive();
+  const { TXN_KEY } = useBridgeFormStorageKeys();
+  const { networkEnv } = useNetworkEnvironmentContext();
+
+  useEffect(() => {
+    const unloadCallback = (event) => {
+      const localData = getStorageItem<UnconfirmedTxnI>(TXN_KEY);
+      if (localData !== null) {
+        // display native reload modal if there is unconfirmed txn ongoing
+        event.preventDefault();
+        event.returnValue = "";
+        return "";
+      }
+    };
+    window.addEventListener("beforeunload", unloadCallback);
+    return () => window.removeEventListener("beforeunload", unloadCallback);
+  }, [networkEnv]);
 
   return (
     <section
