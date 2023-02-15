@@ -148,4 +148,4 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # run the migration in the test database
-      - run: turbo run db:push
+      - run: pnpm run db:push
