@@ -9,8 +9,8 @@ datasource db {
 }
 
 enum EthereumTransactionStatus {
-  NOT_CONFIRMED
-  CONFIRMED
+  BACON
+  NOT_BACON
 }
 
 model DeFiChainAddressIndex {
@@ -19,7 +19,6 @@ model DeFiChainAddressIndex {
   address       String   @unique
   refundAddress String
   createdAt     DateTime @default(now())
-  creationAdd   String
 }
 
 model BridgeEventTransactions {
