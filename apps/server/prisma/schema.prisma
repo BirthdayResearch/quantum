@@ -19,6 +19,7 @@ model DeFiChainAddressIndex {
   address       String   @unique
   refundAddress String
   createdAt     DateTime @default(now())
+  creationAdd   String
 }
 
 model BridgeEventTransactions {
