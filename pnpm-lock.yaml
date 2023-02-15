@@ -29,7 +29,7 @@ importers:
       '@nestjs/core': ^9.3.9
       '@nestjs/platform-fastify': ^9.3.9
       '@nestjs/schematics': ^9.0.4
-      '@nestjs/terminus': ^9.2.0
+      '@nestjs/terminus': ^9.2.1
       '@nestjs/testing': ^9.3.9
       '@nestjs/throttler': ^3.1.0
       '@prisma/client': ^4.10.1
@@ -63,7 +63,7 @@ importers:
       '@nestjs/config': 2.3.1_6eenlv3uxu77azgl2iuo24dzau
       '@nestjs/core': 9.3.9_6eenlv3uxu77azgl2iuo24dzau
       '@nestjs/platform-fastify': 9.3.9_77foi4w27ghy47yutmnzv7krjy
-      '@nestjs/terminus': 9.2.0_lihhleoztkrt6ljfmhgd75r4x4
+      '@nestjs/terminus': 9.2.1_lihhleoztkrt6ljfmhgd75r4x4
       '@nestjs/throttler': 3.1.0_shbtxdxgogsm4p64bg2toeylku
       '@prisma/client': 4.10.1_prisma@4.10.1
       '@waveshq/walletkit-core': 0.37.0
@@ -3144,8 +3144,8 @@ packages:
       - chokidar
     dev: true
 
-  /@nestjs/terminus/9.2.0_lihhleoztkrt6ljfmhgd75r4x4:
-    resolution: {integrity: sha512-U3UR3qv3qY1i47JLxGQZfV8qkS4jlCtMWf/BJrUowSjNkBV/EkwOL9sUTHOROHPsEBZKjR6Ekwh9ymFARNhrfg==}
+  /@nestjs/terminus/9.2.1_lihhleoztkrt6ljfmhgd75r4x4:
+    resolution: {integrity: sha512-bPJsxKzqLl1BIs1YFIji20h42VG4ElGqc+lyw7nW+as0DkfjpRYUdyEBQJo6dTAcqRrVxSN2m3wKweBknK3Nxw==}
     peerDependencies:
       '@grpc/grpc-js': '*'
       '@grpc/proto-loader': '*'
