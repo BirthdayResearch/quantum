@@ -84,7 +84,7 @@ export default function BridgeForm() {
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
-  const { dailyLimit, currentUsage } = useDailyLimiterContext();
+  const { dailyLimit, limitPercentage } = useDailyLimiterContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -257,7 +257,13 @@ export default function BridgeForm() {
     floating,
   };
 
-  const limitReached = false; // will be change once the endpoint is created
+  const [limitReached, setLimitReached] = useState(false);
+
+  useEffect(() => {
+    if (limitPercentage.isEqualTo(100)) {
+      setLimitReached(true);
+    } else setLimitReached(false);
+  }, [limitPercentage]);
 
   const isFormValid =
     amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
@@ -403,7 +409,7 @@ export default function BridgeForm() {
         />
       </div>
       <div className="block md:hidden px-4 mt-4">
-        <DailyLimit dailyLimit={dailyLimit} reachedLimit={currentUsage} />
+        <DailyLimit dailyLimit={dailyLimit} limitPercentage={limitPercentage} />
       </div>
       <div className="mt-8 px-6 md:mt-6 md:px-4 lg:mt-16 lg:mb-0 lg:px-0 xl:px-20">
         <ConnectKitButton.Custom>
@@ -437,6 +443,7 @@ export default function BridgeForm() {
         toAddress={addressInput}
       />
       {limitReached && <DailyLimitErrorModal />}
+      {/* To add the logic to mid transacrion */}
     </div>
   );
 }

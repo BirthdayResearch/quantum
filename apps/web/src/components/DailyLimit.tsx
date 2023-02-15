@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import clsx from "clsx";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import BigNumber from "bignumber.js";
@@ -15,23 +15,14 @@ enum LimitMessageType {
 
 interface Props {
   dailyLimit: string;
-  reachedLimit: string;
+  limitPercentage: BigNumber;
 }
 
 export default function DailyLimit(props: Props) {
-  const { dailyLimit, reachedLimit } = props;
+  const { dailyLimit, limitPercentage } = props;
   const { selectedTokensB } = useNetworkContext();
   const { isMobile } = useResponsive();
   const [limitMessage, setLimitMessageState] = useState<string | null>(null);
-
-  const limitPercentage = useMemo(
-    () =>
-      new BigNumber(reachedLimit)
-        .dividedBy(dailyLimit)
-        .multipliedBy(100)
-        .decimalPlaces(2),
-    [dailyLimit, reachedLimit]
-  );
 
   const getFillColor = () => {
     let color = "bg-error";
@@ -95,7 +86,7 @@ export default function DailyLimit(props: Props) {
             },
             { "text-dark-900": !DailyLimitReached }
           )}
-          value={dailyLimit}
+          value={dailyLimit || 0}
           decimalScale={DailyLimitReached ? 0 : 3}
           thousandSeparator
           suffix={` ${selectedTokensB.tokenA.name}`}
@@ -113,7 +104,7 @@ export default function DailyLimit(props: Props) {
         ) : (
           <NumericFormat
             className="self-end text-right text-dark-700 grow ml-0.5"
-            value={dailyLimit}
+            value={dailyLimit || 0}
             decimalScale={0}
             thousandSeparator
             prefix="/"

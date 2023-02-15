@@ -91,4 +91,5 @@ export interface ContractContextI {
 export interface DailyLimiterContextI {
   dailyLimit: string;
   currentUsage: string;
+  limitPercentage: BigNumber;
 }

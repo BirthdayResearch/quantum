@@ -28,7 +28,7 @@ export default function ProofOfAssetsCard() {
   const { isMd, isLg } = useResponsive();
   const { selectedTokensB } = useNetworkContext();
   const { address } = useAccount();
-  const { dailyLimit, currentUsage } = useDailyLimiterContext();
+  const { dailyLimit, limitPercentage } = useDailyLimiterContext();
 
   return (
     <div className="h-full md:h-auto relative w-full md:dark-card-bg-image md:rounded-lg lg:rounded-xl md:border md:border-dark-200 md:backdrop-blur-[18px] md:px-6 md:pt-6 lg:px-8 lg:pt-8">
@@ -47,7 +47,7 @@ export default function ProofOfAssetsCard() {
         </div>
       </Link>
       <div className="hidden md:block mt-5 lg:mt-6">
-        <DailyLimit dailyLimit={dailyLimit} reachedLimit={currentUsage} />
+        <DailyLimit dailyLimit={dailyLimit} limitPercentage={limitPercentage} />
       </div>
       <div className="flex items-center border-t-[0.5px] border-t-dark-200 md:border-t-0 rounded-b-lg lg:rounded-b-xl md:dark-bg-card-section md:-mx-6 mt-5 md:mt-4 lg:mt-6 lg:-mx-8 pt-4 pb-0 md:pb-5 md:px-6 lg:px-8">
         <div className="hidden md:block">

@@ -6,6 +6,7 @@ import React, {
   useContext,
   PropsWithChildren,
 } from "react";
+import BigNumber from "bignumber.js";
 import { ethers, utils } from "ethers";
 import { DailyLimiterContextI } from "types";
 import { useNetworkContext } from "@contexts/NetworkContext";
@@ -30,8 +31,8 @@ export function DailyLimiterProvider({
     provider
   );
 
-  const [dailyLimit, setDailyLimit] = useState<string>("0");
-  const [currentUsage, setCurrentUsage] = useState<string>("0");
+  const [dailyLimit, setDailyLimit] = useState<string>("");
+  const [currentUsage, setCurrentUsage] = useState<string>("");
 
   const tokenAllowances = async () => {
     try {
@@ -66,13 +67,25 @@ export function DailyLimiterProvider({
 
     if (!isSendingErcToken) {
       //  TODO: To replace this with DFC > EVM limiter
-      setDailyLimit("0");
-      setCurrentUsage("0");
+      setDailyLimit("");
+      setCurrentUsage("");
     }
   }, [selectedTokensB, isSendingErcToken]);
 
+  const limitPercentage = useMemo(() => {
+    if (dailyLimit) {
+      return new BigNumber(currentUsage)
+        .dividedBy(dailyLimit)
+        .multipliedBy(100)
+        .decimalPlaces(2);
+    }
+
+    // To not show NaN values
+    return new BigNumber(0);
+  }, [dailyLimit, currentUsage]);
+
   const LimiterData: DailyLimiterContextI = useMemo(
-    () => ({ dailyLimit, currentUsage }),
+    () => ({ dailyLimit, currentUsage, limitPercentage }),
     [dailyLimit, currentUsage]
   );
 
