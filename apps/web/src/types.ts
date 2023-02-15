@@ -77,6 +77,12 @@ interface ContractConfigI {
 
 export interface ContractContextI {
   ExplorerURL: string;
+  EthereumRpcUrl: string;
   BridgeV1: ContractConfigI;
   Erc20Tokens: Record<Erc20Token, ContractConfigI>;
+}
+
+export interface DailyLimiterContextI {
+  dailyLimit: string;
+  currentUsage: string;
 }

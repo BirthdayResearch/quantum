@@ -23,18 +23,14 @@ import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
+import { useDailyLimiterContext } from "@contexts/DailyLimiterContext";
 import useTransferFee from "@hooks/useTransferFee";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import DailyLimit from "./DailyLimit";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import DailyLimitErrorModal from "./DailyLimitErrorModal";
-import {
-  ETHEREUM_SYMBOL,
-  FEES_INFO,
-  STORAGE_DFC_ADDR_KEY,
-  STORAGE_TXN_KEY,
-} from "../constants";
+import { FEES_INFO, STORAGE_DFC_ADDR_KEY, STORAGE_TXN_KEY } from "../constants";
 
 function SwitchButton({
   onClick,
@@ -78,10 +74,12 @@ export default function BridgeForm() {
     setSelectedNetworkB,
     setSelectedTokensB,
     resetNetworkSelection,
+    isSendingErcToken,
   } = useNetworkContext();
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
+  const { dailyLimit, currentUsage } = useDailyLimiterContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -92,9 +90,6 @@ export default function BridgeForm() {
   const [fee, feeSymbol] = useTransferFee(amount);
 
   const { address, isConnected } = useAccount();
-  const isSendingErcToken =
-    selectedNetworkA.name === Network.Ethereum &&
-    selectedTokensA.tokenA.name !== ETHEREUM_SYMBOL;
   const { data } = useBalance({
     address,
     watch: true,
@@ -226,7 +221,7 @@ export default function BridgeForm() {
     floating,
   };
 
-  const limitReached = true; // will be change once the endpoint is created
+  const limitReached = false; // will be change once the endpoint is created
 
   const isFormValid =
     amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
@@ -372,7 +367,7 @@ export default function BridgeForm() {
         />
       </div>
       <div className="block md:hidden px-4 mt-4">
-        <DailyLimit />
+        <DailyLimit dailyLimit={dailyLimit} reachedLimit={currentUsage} />
       </div>
       <div className="mt-8 px-6 md:mt-6 md:px-4 lg:mt-16 lg:mb-0 lg:px-0 xl:px-20">
         <ConnectKitButton.Custom>

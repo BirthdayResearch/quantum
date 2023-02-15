@@ -20,6 +20,7 @@ import { getInitialTheme, ThemeProvider } from "@contexts/ThemeProvider";
 import { NetworkEnvironmentProvider } from "@contexts/NetworkEnvironmentContext";
 import { NetworkProvider } from "@contexts/NetworkContext";
 import { ContractProvider } from "@contexts/ContractContext";
+import { DailyLimiterProvider } from "@contexts/DailyLimiterContext";
 import {
   NetworkProvider as WhaleNetworkProvider,
   WhaleProvider,
@@ -117,16 +118,18 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
                   <WhaleProvider>
                     <NetworkEnvironmentProvider>
                       <ContractProvider>
-                        <ThemeProvider theme={initialTheme}>
-                          <div className="relative">
-                            <Header />
-                            <main className="relative z-[1] flex-grow">
-                              {children}
-                            </main>
-                            <div className="absolute top-0 left-0 z-auto h-full w-full bg-[url('/background/mobile.png')] bg-cover bg-local bg-clip-padding bg-top bg-no-repeat bg-origin-padding mix-blend-screen md:bg-[url('/background/tablet.png')] lg:bg-[url('/background/desktop.png')] lg:bg-center" />
-                            <Footer />
-                          </div>
-                        </ThemeProvider>
+                        <DailyLimiterProvider>
+                          <ThemeProvider theme={initialTheme}>
+                            <div className="relative">
+                              <Header />
+                              <main className="relative z-[1] flex-grow">
+                                {children}
+                              </main>
+                              <div className="absolute top-0 left-0 z-auto h-full w-full bg-[url('/background/mobile.png')] bg-cover bg-local bg-clip-padding bg-top bg-no-repeat bg-origin-padding mix-blend-screen md:bg-[url('/background/tablet.png')] lg:bg-[url('/background/desktop.png')] lg:bg-center" />
+                              <Footer />
+                            </div>
+                          </ThemeProvider>
+                        </DailyLimiterProvider>
                       </ContractProvider>
                     </NetworkEnvironmentProvider>
                   </WhaleProvider>

@@ -7,6 +7,7 @@ import React, {
   useEffect,
 } from "react";
 import { Erc20Token, Network, NetworkOptionsI, TokensI } from "types";
+import { ETHEREUM_SYMBOL } from "../../constants";
 
 interface NetworkContextI {
   selectedNetworkA: NetworkOptionsI;
@@ -18,6 +19,7 @@ interface NetworkContextI {
   setSelectedNetworkB: (networkB: NetworkOptionsI) => void;
   setSelectedTokensB: (tokenB: TokensI) => void;
   resetNetworkSelection: () => void;
+  isSendingErcToken: boolean;
 }
 
 interface TokenDetailI<T> {
@@ -216,6 +218,10 @@ export function NetworkProvider({
     setSelectedTokensB(defaultNetworkB.tokens[0]);
   };
 
+  const isSendingErcToken =
+    selectedNetworkA.name === Network.Ethereum &&
+    selectedTokensA.tokenA.name !== ETHEREUM_SYMBOL;
+
   const context: NetworkContextI = useMemo(
     () => ({
       selectedNetworkA,
@@ -227,6 +233,7 @@ export function NetworkProvider({
       setSelectedNetworkB,
       setSelectedTokensB,
       resetNetworkSelection,
+      isSendingErcToken,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [selectedTokensA, selectedTokensB]

@@ -13,23 +13,24 @@ enum LimitMessageType {
   LimitReached = "Max limit reached",
 }
 
-export default function DailyLimit() {
+interface Props {
+  dailyLimit: string;
+  reachedLimit: string;
+}
+
+export default function DailyLimit(props: Props) {
+  const { dailyLimit, reachedLimit } = props;
   const { selectedTokensB } = useNetworkContext();
   const { isMobile } = useResponsive();
   const [limitMessage, setLimitMessageState] = useState<string | null>(null);
 
-  const DAILY_CAP = {
-    dailyLimit: 25,
-    reachedLimit: 22,
-  };
-
   const limitPercentage = useMemo(
     () =>
-      new BigNumber(DAILY_CAP.reachedLimit)
-        .dividedBy(DAILY_CAP.dailyLimit)
+      new BigNumber(reachedLimit)
+        .dividedBy(dailyLimit)
         .multipliedBy(100)
         .decimalPlaces(2),
-    [DAILY_CAP.dailyLimit, DAILY_CAP.reachedLimit]
+    [dailyLimit, reachedLimit]
   );
 
   const getFillColor = () => {
@@ -94,7 +95,7 @@ export default function DailyLimit() {
             },
             { "text-dark-900": !DailyLimitReached }
           )}
-          value={DAILY_CAP.dailyLimit}
+          value={dailyLimit}
           decimalScale={DailyLimitReached ? 0 : 3}
           thousandSeparator
           suffix={` ${selectedTokensB.tokenA.name}`}
@@ -112,7 +113,7 @@ export default function DailyLimit() {
         ) : (
           <NumericFormat
             className="self-end text-right text-dark-700 grow ml-0.5"
-            value={DAILY_CAP.dailyLimit}
+            value={dailyLimit}
             decimalScale={0}
             thousandSeparator
             prefix="/"

@@ -4,7 +4,7 @@ A package which contains the Ethereum smart contracts for the DeFiChain to Ether
 
 ## Deployed Smart Contracts on development testnet (http://127.0.0.1:8545/)
 
-Before running the below script, devs need to run a local hardhat node. This can be achieve by running `nx hardhat node` in the package/smartcontracts/src directory.
+Before running the below script, devs need to run a local hardhat node. This can be achieve by running `npx hardhat node` in the package/smartcontracts/src directory.
 
 If local node is running on different port other than `8545`. Devs need to update the port in `./src/hardhat.config.ts` under development network.
 
