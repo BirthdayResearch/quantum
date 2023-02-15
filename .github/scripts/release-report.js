@@ -23,10 +23,14 @@ You can also get an immutable image with the commit hash
 
 function getContainerPRLinks({ payload: { number } }) {
   const apps = process.env.APPS.split(",");
-  return apps.map((app) => `ghcr.io/waveshq/${app}:pr-${number}`);
+  return apps.map((app) => {
+    return `ghcr.io/waveshq/${app}:pr-${number},public.ecr.aws/w1x3w8l6/${app}:pr-${number}`
+  });
 }
 
 function getContainerHashLinks({ sha }) {
   const apps = process.env.APPS.split(",");
-  return apps.map((app) => `ghcr.io/waveshq/${app}:${sha}`);
+  return apps.map((app) => {
+    return `ghcr.io/waveshq/${app}:${sha},public.ecr.aws/w1x3w8l6/${app}:pr-${sha}`
+  });
 }
