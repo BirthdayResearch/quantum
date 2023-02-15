@@ -6,6 +6,7 @@ CREATE TABLE "DeFiChainAddressIndex" (
     "id" BIGSERIAL NOT NULL,
     "index" INTEGER NOT NULL,
     "address" TEXT NOT NULL,
+    "refundAddress" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "DeFiChainAddressIndex_pkey" PRIMARY KEY ("id")

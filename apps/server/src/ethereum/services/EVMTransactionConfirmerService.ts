@@ -23,7 +23,7 @@ export class EVMTransactionConfirmerService {
     );
   }
 
-  async handleTransaction(transactionHash: string): Promise<boolean> {
+  async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
@@ -44,7 +44,7 @@ export class EVMTransactionConfirmerService {
             status: 'NOT_CONFIRMED',
           },
         });
-        return false;
+        return { numberOfConfirmations, isConfirmed: false };
       }
       await this.prisma.bridgeEventTransactions.create({
         data: {
@@ -52,10 +52,10 @@ export class EVMTransactionConfirmerService {
           status: 'CONFIRMED',
         },
       });
-      return true;
+      return { numberOfConfirmations, isConfirmed: true };
     }
     if (numberOfConfirmations < 65) {
-      return false;
+      return { numberOfConfirmations, isConfirmed: false };
     }
     await this.prisma.bridgeEventTransactions.update({
       where: {
@@ -65,7 +65,7 @@ export class EVMTransactionConfirmerService {
         status: 'CONFIRMED',
       },
     });
-    return true;
+    return { numberOfConfirmations, isConfirmed: true };
   }
 
   async signClaim({ receiverAddress, tokenAddress, amount }: SignClaim): Promise<{ signature: string; nonce: number }> {
@@ -127,4 +127,9 @@ interface SignClaim {
   receiverAddress: string;
   tokenAddress: string;
   amount: string;
+}
+
+export interface HandledEVMTransaction {
+  numberOfConfirmations: number;
+  isConfirmed: boolean;
 }

@@ -16,12 +16,12 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@waveshq/standard-defichain-jellyfishsdk": "^0.42.0"
+    "@waveshq/standard-defichain-jellyfishsdk": "^0.42.1"
   },
   "devDependencies": {
     "@birthdayresearch/sticky-turbo": "^0.4.1",
     "husky": "^8.0.3",
-    "lint-staged": "^13.1.0"
+    "lint-staged": "^13.1.2"
   },
   "engines": {
     "node": "^18.0.0 || ^16.16.0",

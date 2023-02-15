@@ -14,6 +14,7 @@ import {
   NetworkOptionsI,
   NetworkName,
   UnconfirmedTxnI,
+  AddressDetails,
 } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
@@ -24,13 +25,16 @@ import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
 import { useDailyLimiterContext } from "@contexts/DailyLimiterContext";
+import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
+import { useGetAddressDetailMutation } from "@store/website";
+import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import DailyLimit from "./DailyLimit";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import DailyLimitErrorModal from "./DailyLimitErrorModal";
-import { FEES_INFO, STORAGE_DFC_ADDR_KEY, STORAGE_TXN_KEY } from "../constants";
+import { DFC_TO_ERC_RESET_FORM_TIME_LIMIT, FEES_INFO } from "../constants";
 
 function SwitchButton({
   onClick,
@@ -76,6 +80,7 @@ export default function BridgeForm() {
     resetNetworkSelection,
     isSendingErcToken,
   } = useNetworkContext();
+
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
@@ -102,8 +107,10 @@ export default function BridgeForm() {
   const [fromAddress, setFromAddress] = useState<string>(address || "");
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
 
-  // Local storage txn key grouped by network
-  const TXN_KEY = `${networkEnv}.${STORAGE_TXN_KEY}`;
+  const [getAddressDetail] = useGetAddressDetailMutation();
+  const [addressDetail, setAddressDetail] = useState<AddressDetails>();
+
+  const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
 
   const switchNetwork = () => {
     setSelectedNetworkA(selectedNetworkB);
@@ -147,7 +154,8 @@ export default function BridgeForm() {
 
   const onResetTransferForm = () => {
     setStorageItem(TXN_KEY, null);
-    setStorageItem(STORAGE_DFC_ADDR_KEY, null);
+    setStorageItem(DFC_ADDR_KEY, null);
+    setAddressDetail(undefined);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
@@ -191,6 +199,34 @@ export default function BridgeForm() {
     } else {
       setHasUnconfirmedTxn(false);
     }
+  }, [networkEnv]);
+
+  const fetchAddressDetail = async (): Promise<void> => {
+    try {
+      const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
+      if (localDfcAddress) {
+        const addressDetailRes = await getAddressDetail({
+          address: localDfcAddress,
+          network: networkEnv,
+        }).unwrap();
+        const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
+        if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
+          setStorageItem(TXN_KEY, null);
+          setStorageItem(DFC_ADDR_KEY, null);
+        } else {
+          setAddressDetail(addressDetailRes);
+        }
+      } else {
+        setAddressDetail(undefined);
+      }
+    } catch {
+      setAddressDetail(undefined);
+    }
+  };
+
+  useEffect(() => {
+    // fetch address details
+    fetchAddressDetail();
   }, [networkEnv]);
 
   const { y, reference, floating, strategy, refs } = useFloating({
@@ -394,6 +430,7 @@ export default function BridgeForm() {
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
+        addressDetail={addressDetail}
         onClose={() => setShowConfirmModal(false)}
         amount={amount}
         fromAddress={fromAddress}
