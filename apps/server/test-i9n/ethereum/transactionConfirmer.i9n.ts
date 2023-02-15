@@ -94,7 +94,7 @@ describe('Bridge Service Integration Tests', () => {
         transactionHash: transactionCall.hash,
       },
     });
-    expect(JSON.parse(txReceipt.body)).toStrictEqual(false);
+    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 0, isConfirmed: false });
 
     // Step 3: db should create a record of transaction with status='NOT_CONFIRMED', as number of confirmations = 0.
     transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
@@ -113,7 +113,7 @@ describe('Bridge Service Integration Tests', () => {
         transactionHash: transactionCall.hash,
       },
     });
-    expect(JSON.parse(txReceipt.body)).toStrictEqual(true);
+    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 65, isConfirmed: true });
 
     transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
       where: { transactionHash: transactionCall.hash },

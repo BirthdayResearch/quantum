@@ -2,7 +2,7 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ThrottlerGuard } from '@nestjs/throttler';
 
 import { EthereumTransactionValidationPipe } from '../../pipes/EthereumTransactionValidation.pipe';
-import { EVMTransactionConfirmerService } from '../services/EVMTransactionConfirmerService';
+import { EVMTransactionConfirmerService, HandledEVMTransaction } from '../services/EVMTransactionConfirmerService';
 
 @Controller()
 export class EthereumController {
@@ -12,7 +12,7 @@ export class EthereumController {
   @UseGuards(ThrottlerGuard)
   async handleTransaction(
     @Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
-  ): Promise<boolean> {
+  ): Promise<HandledEVMTransaction> {
     return this.evmTransactionConfirmerService.handleTransaction(transactionHash);
   }
 }

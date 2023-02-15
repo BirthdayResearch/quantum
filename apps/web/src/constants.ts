@@ -36,8 +36,9 @@ export const TRANSACTION_ERROR_INFO: TooltipInfoI = {
 export const DISCLAIMER_MESSAGE =
   "Transactions are irreversible. Make sure that you send the exact amount to the correct destination address for your DeFiChain wallet.";
 
-// export const DFC_TO_ERC_TIME_LIMIT = 1800; // 30 mins
-export const DFC_TO_ERC_TIME_LIMIT = 10; // TODO: Remove this 10 sec, for testing purposes only
+export const DFC_TO_API_RESET_TIME_LIMIT = 1000 * 60; // 1 min api reset time
+
+export const DFC_TO_ERC_RESET_FORM_TIME_LIMIT = 1000 * 60 * 60 * 24; // 1 Day address expiry time
 
 export const STORAGE_TXN_KEY = "unconfirmed-txn";
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
