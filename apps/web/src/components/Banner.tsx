@@ -10,13 +10,13 @@ export default function Banner(): JSX.Element {
         <span className="inline-block md:inline">
           Make sure you are visiting&nbsp;
         </span>
-        <span className="inline font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#42F9C2] to-[#082FD4]">
+        <a
+          href="https://quantumbridge.app"
+          className="inline font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#42F9C2] to-[#082FD4]"
+        >
           https://quantumbridge.app&nbsp;
-        </span>
-        – check the URL correctly.&nbsp;
-        <span className="md:inline-block lg:inline">
-          This is still in Beta. Use at your own risk.
-        </span>
+        </a>
+        – check the URL correctly.
       </div>
     </div>
   );
