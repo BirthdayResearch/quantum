@@ -12,6 +12,7 @@ concurrency:
 
 jobs:
   deploy:
+    name: "Deploy Staging DB"
     environment: AWS Staging DB
     runs-on: ubuntu-latest
     steps:
