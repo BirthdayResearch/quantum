@@ -9,8 +9,8 @@ datasource db {
 }
 
 enum EthereumTransactionStatus {
-  BACON
-  NOT_BACON
+  NOT_CONFIRMED
+  CONFIRMED
 }
 
 model DeFiChainAddressIndex {

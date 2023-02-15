@@ -14,7 +14,6 @@
     "migration:deploy": "npx prisma migrate deploy",
     "migration:create": "npx prisma migrate dev --create-only",
     "migration:dev": "npx prisma migrate dev",
-    "db:push": "npx prisma db push",
     "test": "jest",
     "test:unit": "jest --selectProjects test:unit",
     "test:i9n": "jest --selectProjects test:i9n",
