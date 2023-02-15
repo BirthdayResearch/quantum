@@ -97,7 +97,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: bridge-api:${{ steps.ecr-tags.outputs.result }}
         run: |
-          docker build -t $ECR_REGISTRY/$IMAGE_TAG . --file apps/server/Dockerfile --platform amd64,arm64v8
+          docker buildx build -t $ECR_REGISTRY/$IMAGE_TAG . --file apps/server/Dockerfile --platform linux/amd64,linux/arm64
           docker push $ECR_REGISTRY/$IMAGE_TAG
 
 
