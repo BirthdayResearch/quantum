@@ -70,7 +70,7 @@ jobs:
           cache-to: type=registry,ref=ghcr.io/waveshq/bridge:buildcache,mode=max
 
   aws_ecr:
-    name: Publish to AWS ECR
+    name: Publish AWS ECR
     environment: AWS ECR
     runs-on: ubuntu-latest
     strategy:
