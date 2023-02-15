@@ -98,8 +98,8 @@ jobs:
           ECR_REPOSITORY: bridge-api
           IMAGE_TAG: bridge-api:${{ steps.ecr-tags.outputs.result }}
         run: |
-          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG . --file apps/server/Dockerfile --platform linux/amd64,linux/arm64
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker build -t $ECR_REPOSITORY:$IMAGE_TAG . --file apps/server/Dockerfile --platform linux/amd64,linux/arm64
+          docker push $ECR_REPOSITORY:$IMAGE_TAG
 
 
   report:

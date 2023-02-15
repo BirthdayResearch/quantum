@@ -27,11 +27,11 @@ function getReleaseTag(context) {
 }
 
 function getMainTag({ sha }) {
-  return `public.ecr.aws/w1x3w8l6/bridge-api:main,public.ecr.aws/w1x3w8l6/bridge-api:${sha}`
+  return `${sha}`
 }
 
 function getPullRequestTag({ payload: { number }, sha }) {
-  return `public.ecr.aws/w1x3w8l6/bridge-api:pr-${number},public.ecr.aws/w1x3w8l6/bridge-api:${sha}`
+  return `pr-${number}`
 }
 
 function isStaging(context) {
