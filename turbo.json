@@ -49,7 +49,7 @@
     "playground:start": {
       "cache": false
     },
-    "db:push": {
+    "migration:deploy": {
       "cache": false
     },
     "docker:pull": {

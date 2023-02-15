@@ -14,7 +14,7 @@
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint -- --fix",
     "format": "prettier --write .",
-    "db:push": "turbo run db:push"
+    "migration:deploy": "turbo run migration:deploy"
   },
   "dependencies": {
     "@waveshq/standard-defichain-jellyfishsdk": "^0.42.1"
