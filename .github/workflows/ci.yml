@@ -134,8 +134,8 @@ jobs:
         ports:
           # Maps tcp port 5432 on service container to the host
           - 5432:5432
-      env:
-        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bridge-api
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bridge-api
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
