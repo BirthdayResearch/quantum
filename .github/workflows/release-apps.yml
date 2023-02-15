@@ -106,19 +106,7 @@ jobs:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: bridge-api:${{ steps.ecr-tags.outputs.result }}
         run: |
-          docker buildx build -t $ECR_REGISTRY/$IMAGE_TAG . --cache-from type=registry,ref=public.ecr.aws/w1x3w8l6/bridge-api:buildcache --cache-to type=registry,ref=public.ecr.aws/w1x3w8l6/bridge-api:buildcache,mode=max --file apps/server/Dockerfile --platform linux/amd64,linux/arm64
-
-      - name: Build and push
-        uses: docker/build-push-action@1104d471370f9806843c095c1db02b5a90c5f8b6 # v3.3.1
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: bridge-api:${{ steps.ecr-tags.outputs.result }}
-        with:
-          context: .
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            public.ecr.aws/w1x3w8l6/$IMAGE_TAG
+          docker buildx build -t $ECR_REGISTRY/$IMAGE_TAG . --cache-from type=registry,ref=public.ecr.aws/w1x3w8l6/bridge-api:buildcache --cache-to type=registry,ref=public.ecr.aws/w1x3w8l6/bridge-api:buildcache,mode=max --file apps/server/Dockerfile --platform linux/amd64,linux/arm64 --push .
 
   report:
     if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
