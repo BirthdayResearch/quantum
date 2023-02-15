@@ -28,6 +28,7 @@ export class WhaleWalletService {
       return { isValid: false, statusCode: CustomErrorCodes.AddressNotValid };
     }
 
+    // Verify if amount > 0
     if (new BigNumber(verify.amount).isLessThanOrEqualTo(0)) {
       return { isValid: false, statusCode: CustomErrorCodes.AmountNotValid };
     }

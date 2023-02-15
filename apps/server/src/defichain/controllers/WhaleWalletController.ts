@@ -1,13 +1,12 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Throttle } from '@nestjs/throttler';
 import { DeFiChainAddressIndex } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
-import BigNumber from 'bignumber.js';
 import { CustomErrorCodes } from 'src/CustomErrorCodes';
 
 import { ThrottleLimitConfig } from '../../ThrottleLimitConfig';
-import { VerifyDto, VerifyObject } from '../model/VerifyDto';
+import { VerifyDto } from '../model/VerifyDto';
 import { WhaleWalletService } from '../services/WhaleWalletService';
 
 @Controller('/wallet')
@@ -33,10 +32,8 @@ export class WhaleWalletController {
 
   @Throttle(ThrottleLimitConfig.limit, ThrottleLimitConfig.ttl)
   @Post('verify')
+  @UsePipes(new ValidationPipe({ transform: true }))
   async verify(@Body() body: VerifyDto): Promise<{ isValid: boolean; statusCode?: CustomErrorCodes }> {
-    return this.whaleWalletService.verify(
-      new VerifyObject(new BigNumber(body.amount), body.address, body.symbol),
-      this.network,
-    );
+    return this.whaleWalletService.verify(body.toObj(), this.network);
   }
 }

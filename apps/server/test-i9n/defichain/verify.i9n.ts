@@ -84,7 +84,12 @@ describe('DeFiChain Verify fund Testing', () => {
       symbol: '_invalid_symbol_',
       address: localAddress,
     });
-    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.TokenSymbolNotValid });
+
+    expect(response).toStrictEqual({
+      error: 'Bad Request',
+      message: ['symbol must be one of the following values: BTC, USDT, USDC, ETH'],
+      statusCode: 400,
+    });
   });
 
   it('should throw error if address is invalid', async () => {
@@ -149,7 +154,7 @@ describe('DeFiChain Verify fund Testing', () => {
       [
         {},
         {
-          [newLocalAddress]: `10@BTC`,
+          [newLocalAddress]: `3@BTC`,
         },
       ],
       'number',
@@ -157,7 +162,7 @@ describe('DeFiChain Verify fund Testing', () => {
     await defichain.generateBlock();
 
     const response = await verify({
-      amount: '3',
+      amount: '10',
       symbol: 'BTC',
       address: newLocalAddress,
     });
