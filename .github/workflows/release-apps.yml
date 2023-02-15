@@ -100,7 +100,8 @@ jobs:
           ECR_REGISTRY: public.ecr.aws/w1x3w8l6
           IMAGE_TAG: bridge-api:${{ steps.ecr-tags.outputs.result }}
         run: |
-          docker build --file apps/server/Dockerfile -t $ECR_REGISTRY/$IMAGE_TAG .
+          docker build --file apps/server/Dockerfile -t bridge-api .
+          docker tag $IMAGE_TAG $ECR_REGISTRY/$IMAGE_TAG
           docker push $ECR_REGISTRY/$IMAGE_TAG
 
   report:
