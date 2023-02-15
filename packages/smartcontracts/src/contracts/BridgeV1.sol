@@ -71,11 +71,6 @@ error AMOUNT_CAN_NOT_BE_ZERO();
 
 contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     using EnumerableSet for EnumerableSet.AddressSet;
-    struct TokenAllowance {
-        uint256 latestResetTimestamp;
-        uint256 dailyAllowance;
-        uint256 currentDailyUsage;
-    }
 
     // Mapping to track the address's nonce
     mapping(address => uint256) public eoaAddressToNonce;
@@ -88,8 +83,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     bytes32 constant DATA_TYPE_HASH =
         keccak256('CLAIM(address to,uint256 amount,uint256 nonce,uint256 deadline,address tokenAddress)');
 
-    // Mapping to track token address to TokenAllowance
-    mapping(address => TokenAllowance) public tokenAllowances;
+    // Mapping to track token address to assigned cap: check on this later
+    mapping(address => uint256) public tokenAllowances;
 
     bytes32 public constant OPERATIONAL_ROLE = keccak256('OPERATIONAL_ROLE');
 
@@ -279,22 +274,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         uint256 _amount
     ) external {
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
-        uint256 tokenAllowanceStartTime = tokenAllowances[_tokenAddress].latestResetTimestamp;
-        if (block.timestamp < tokenAllowanceStartTime) revert STILL_IN_CHANGE_ALLOWANCE_PERIOD();
         if (_amount == 0) revert AMOUNT_CAN_NOT_BE_ZERO();
-        // Transaction is within the last tracked day's daily allowance
-        if (tokenAllowances[_tokenAddress].latestResetTimestamp + (1 days) > block.timestamp) {
-            tokenAllowances[_tokenAddress].currentDailyUsage += _amount;
-            if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)
-                revert EXCEEDS_DAILY_ALLOWANCE();
-        } else {
-            tokenAllowances[_tokenAddress].latestResetTimestamp +=
-                ((block.timestamp - tokenAllowances[_tokenAddress].latestResetTimestamp) / (1 days)) *
-                1 days;
-            tokenAllowances[_tokenAddress].currentDailyUsage = _amount;
-            if (tokenAllowances[_tokenAddress].currentDailyUsage > tokenAllowances[_tokenAddress].dailyAllowance)
-                revert EXCEEDS_DAILY_ALLOWANCE();
-        }
         uint256 netAmountInWei = amountAfterFees(_amount);
         uint256 netTxFee = _amount - netAmountInWei;
         IERC20(_tokenAddress).transferFrom(msg.sender, address(this), netAmountInWei);
@@ -305,24 +285,14 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice Used by addresses with Admin and Operational roles to add a new supported token and daily allowance
      * @param _tokenAddress The token address to be added to supported list
-     * @param _dailyAllowance Daily allowance set for the token
-     * @param _startAllowanceTimeFrom TimeStamp of when token will be supported.
+     * @param _currentCap To do: not sure about this
      */
-    function addSupportedTokens(
-        address _tokenAddress,
-        uint256 _dailyAllowance,
-        uint256 _startAllowanceTimeFrom
-    ) external {
+    function addSupportedTokens(address _tokenAddress, uint256 _currentCap) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (block.timestamp > _startAllowanceTimeFrom) revert INVALID_RESET_EPOCH_TIME();
         if (_tokenAddress == address(0)) revert ZERO_ADDRESS();
         if (supportedTokens.contains(_tokenAddress)) revert TOKEN_ALREADY_SUPPORTED();
-        // Token will be added on the supported list regardless of `_startAllowanceTimeFrom`
         supportedTokens.add(_tokenAddress);
-        tokenAllowances[_tokenAddress].latestResetTimestamp = _startAllowanceTimeFrom;
-        tokenAllowances[_tokenAddress].dailyAllowance = _dailyAllowance;
-        tokenAllowances[_tokenAddress].currentDailyUsage = 0;
-        emit ADD_SUPPORTED_TOKEN(_tokenAddress, _dailyAllowance);
+        tokenAllowances[_tokenAddress] = _currentCap;
     }
 
     /**
@@ -333,32 +303,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
         supportedTokens.remove(_tokenAddress);
-        tokenAllowances[_tokenAddress].latestResetTimestamp = 0;
-        tokenAllowances[_tokenAddress].dailyAllowance = 0;
-        tokenAllowances[_tokenAddress].currentDailyUsage = 0;
+        tokenAllowances[_tokenAddress] = 0;
         emit REMOVE_SUPPORTED_TOKEN(_tokenAddress);
-    }
-
-    /**
-     * @notice Used by addresses with Admin and Operational roles to set the new daily allowance
-     * for corresponding token
-     * @param _tokenAddress The token address to set the allowance
-     * @param _dailyAllowance Daily allowance set for the token
-     * @param _newResetTimeStamp new time stamp in seconds
-     */
-    function changeDailyAllowance(
-        address _tokenAddress,
-        uint256 _dailyAllowance,
-        uint256 _newResetTimeStamp
-    ) external {
-        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (!supportedTokens.contains(_tokenAddress)) revert ONLY_SUPPORTED_TOKENS();
-        if (_newResetTimeStamp < block.timestamp + 1 days) revert INVALID_RESET_EPOCH_TIME();
-        tokenAllowances[_tokenAddress].dailyAllowance = _dailyAllowance;
-        uint256 prevTimeStamp = tokenAllowances[_tokenAddress].latestResetTimestamp;
-        tokenAllowances[_tokenAddress].latestResetTimestamp = _newResetTimeStamp;
-        tokenAllowances[_tokenAddress].currentDailyUsage = 0;
-        emit CHANGE_DAILY_ALLOWANCE(_tokenAddress, _dailyAllowance, prevTimeStamp, _newResetTimeStamp);
     }
 
     /**
