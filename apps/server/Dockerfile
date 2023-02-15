@@ -6,7 +6,7 @@ RUN npm install -g pnpm
 RUN pnpm config set auto-install-peers true
 
 RUN apk --no-cache add curl git
-RUN apk add --no-cache --virtual .gyp make g++
+RUN apk add --no-cache --virtual .gyp python3 make g++
 # See: https://github.com/vercel/turbo/issues/2198#issuecomment-1276475618
 RUN apk add --no-cache libc6-compat
 
