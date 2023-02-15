@@ -113,3 +113,36 @@ jobs:
           build-args: APP=bridge-api
           platforms: ${{ matrix.platform }}
           tags: ghcr.io/waveshq/bridge-api:latest
+
+  test_db:
+    name: Prisma DB Test
+    runs-on: ubuntu-latest
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres:14.7-alpine
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps tcp port 5432 on service container to the host
+          - 5432:5432
+      env:
+        DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bridge-api
+
+      steps:
+        - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+        - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+          with:
+            node-version: 18
+            cache: pnpm
+        - run: pnpm install --frozen-lockfile
+        # run the migration in the test database
+        - run: pnpm db:push
