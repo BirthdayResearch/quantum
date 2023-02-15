@@ -7,15 +7,14 @@ import { useEffect } from "react";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 import { getStorageItem } from "../utils/localStorage";
 import { UnconfirmedTxnI } from "../types";
-import { useNetworkEnvironmentContext } from "../layouts/contexts/NetworkEnvironmentContext";
 
 function Home() {
   const { isMd } = useResponsive();
   const { TXN_KEY } = useBridgeFormStorageKeys();
-  const { networkEnv } = useNetworkEnvironmentContext();
 
   useEffect(() => {
-    const unloadCallback = (event) => {
+    const unloadCallback = (e) => {
+      const event = e;
       const localData = getStorageItem<UnconfirmedTxnI>(TXN_KEY);
       if (localData !== null) {
         // display native reload modal if there is unconfirmed txn ongoing
@@ -27,7 +26,7 @@ function Home() {
     };
     window.addEventListener("beforeunload", unloadCallback);
     return () => window.removeEventListener("beforeunload", unloadCallback);
-  }, [networkEnv]);
+  }, [TXN_KEY]);
 
   return (
     <section
