@@ -83,6 +83,7 @@ jobs:
         with:
           aws-region: eu-west-1
           role-to-assume: arn:aws:iam::738942439028:role/GITHUB_OIDC_WAVESHQ_BRIDGE_ECR
+          role-duration-seconds: 900
 
       - name: Login to Amazon ECR
         id: login-ecr
