@@ -10,13 +10,16 @@ import { TRANSACTION_ERROR_INFO } from "../../constants";
 
 export default function StepOneInitiate({
   goToNextStep,
+  refundAddress,
+  setRefundAddress,
 }: {
+  refundAddress: string;
+  setRefundAddress: (value: string) => void;
   goToNextStep: () => void;
 }) {
   const { selectedNetworkA } = useNetworkContext();
   const { isConnected } = useAccount();
 
-  const [addressInput, setAddressInput] = useState<string>("");
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
 
   return (
@@ -46,8 +49,8 @@ export default function StepOneInitiate({
         <WalletAddressInput
           label=""
           blockchain={selectedNetworkA.name as Network}
-          addressInput={addressInput}
-          onAddressInputChange={(addrInput) => setAddressInput(addrInput)}
+          addressInput={refundAddress}
+          onAddressInputChange={(addrInput) => setRefundAddress(addrInput)}
           onAddressInputError={(hasError) => setHasAddressInputErr(hasError)}
           disabled={!isConnected}
           isPrimary={false}

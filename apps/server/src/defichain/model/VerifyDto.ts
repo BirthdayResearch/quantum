@@ -18,13 +18,19 @@ export class VerifyObject {
 
 export class VerifyDto {
   @IsNumberString()
-  amount!: string;
+  amount: string;
 
   @IsString()
-  address!: string;
+  address: string;
 
   @IsEnum(TokenSymbol)
-  symbol!: TokenSymbol;
+  symbol: TokenSymbol;
+
+  constructor(address: string, amount: string, symbol: TokenSymbol) {
+    this.address = address;
+    this.amount = amount;
+    this.symbol = symbol;
+  }
 
   toObj(): VerifyObject {
     return new VerifyObject(new BigNumber(this.amount), this.address, this.symbol);

@@ -8,10 +8,10 @@ import {
   TestToken,
 } from 'smartcontracts';
 
-import { PrismaService } from '../src/PrismaService';
-import { BridgeContractFixture } from './testing/BridgeContractFixture';
-import { BridgeServerTestingApp } from './testing/BridgeServerTestingApp';
-import { buildTestConfig, TestingModule } from './testing/TestingModule';
+import { PrismaService } from '../../src/PrismaService';
+import { BridgeContractFixture } from '../testing/BridgeContractFixture';
+import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
+import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 
 describe('Bridge Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
@@ -62,7 +62,7 @@ describe('Bridge Service Integration Tests', () => {
   it('Validates that the transaction inputted is of the correct format', async () => {
     const txReceipt = await testing.inject({
       method: 'POST',
-      url: `/app/handleTransaction`,
+      url: `/ethereum/handleTransaction`,
       payload: {
         transactionHash: 'wrong_transaction_test',
       },
@@ -89,12 +89,12 @@ describe('Bridge Service Integration Tests', () => {
 
     let txReceipt = await testing.inject({
       method: 'POST',
-      url: `/app/handleTransaction`,
+      url: `/ethereum/handleTransaction`,
       payload: {
         transactionHash: transactionCall.hash,
       },
     });
-    expect(JSON.parse(txReceipt.body)).toStrictEqual(false);
+    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 0, isConfirmed: false });
 
     // Step 3: db should create a record of transaction with status='NOT_CONFIRMED', as number of confirmations = 0.
     transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
@@ -108,12 +108,12 @@ describe('Bridge Service Integration Tests', () => {
     // Step 5: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
     txReceipt = await testing.inject({
       method: 'POST',
-      url: `/app/handleTransaction`,
+      url: `/ethereum/handleTransaction`,
       payload: {
         transactionHash: transactionCall.hash,
       },
     });
-    expect(JSON.parse(txReceipt.body)).toStrictEqual(true);
+    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 65, isConfirmed: true });
 
     transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
       where: { transactionHash: transactionCall.hash },

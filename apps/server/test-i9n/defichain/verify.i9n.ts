@@ -58,9 +58,9 @@ describe('DeFiChain Verify fund Testing', () => {
     await prismaService.deFiChainAddressIndex.deleteMany({});
     await startedPostgresContainer.stop();
     await testing.stop();
+    await defichain.stop();
   });
 
-  // needs some setup
   type MockedPayload = {
     amount: string;
     symbol: string;
@@ -101,7 +101,10 @@ describe('DeFiChain Verify fund Testing', () => {
     // Generate address (index = 2)
     await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address`,
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
     });
 
     const response = await verify({
@@ -131,7 +134,10 @@ describe('DeFiChain Verify fund Testing', () => {
     // Generate address (index = 3)
     await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address`,
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
     });
 
     const newWallet = whaleWalletProvider.createWallet(3);

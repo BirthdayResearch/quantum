@@ -1,9 +1,17 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { fromAddress } from '@defichain/jellyfish-address';
 
+import { PrismaService } from '../../src/PrismaService';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
+
+const sleep = (time: number) =>
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve('');
+    }, time);
+  });
 
 describe('DeFiChain Address Integration Testing', () => {
   // Tests are slower because it's running 3 containers at the same time
@@ -11,6 +19,7 @@ describe('DeFiChain Address Integration Testing', () => {
   let testing: BridgeServerTestingApp;
   let defichain: StartedDeFiChainStubContainer;
   let startedPostgresContainer: StartedPostgreSqlContainer;
+  let prismaService: PrismaService;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
 
   beforeAll(async () => {
@@ -27,10 +36,14 @@ describe('DeFiChain Address Integration Testing', () => {
       ),
     );
 
-    await testing.start();
+    const app = await testing.start();
+    // init postgres database
+    prismaService = app.get<PrismaService>(PrismaService);
   });
 
   afterAll(async () => {
+    // teardown database
+    await prismaService.deFiChainAddressIndex.deleteMany({});
     await testing.stop();
     await startedPostgresContainer.stop();
     await defichain.stop();
@@ -39,35 +52,104 @@ describe('DeFiChain Address Integration Testing', () => {
   it('should be able to generate a wallet address', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address`,
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
-    await expect(initialResponse.statusCode).toStrictEqual(200);
+    expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
+    // db should not have record of transaction
+    const dbAddressDetail = await prismaService.deFiChainAddressIndex.findFirst({
+      where: { address: response.address },
+    });
+    expect(dbAddressDetail?.address).toStrictEqual(response.address);
+    expect(dbAddressDetail?.createdAt.toISOString()).toStrictEqual(response.createdAt);
+    expect(dbAddressDetail?.refundAddress).toStrictEqual(response.refundAddress);
+
     const decodedAddress = fromAddress(response.address, 'regtest');
-    await expect(decodedAddress).not.toBeUndefined();
+    expect(decodedAddress).not.toBeUndefined();
   });
 
   it('should be able to generate a wallet address for a specific network', async () => {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}generate-address`,
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
     });
 
-    await expect(initialResponse.statusCode).toStrictEqual(200);
+    expect(initialResponse.statusCode).toStrictEqual(200);
     // will return undefined if the address is not a valid address or not a network address
     const response = JSON.parse(initialResponse.body);
     const decodedAddress = fromAddress(response.address, 'mainnet');
-    await expect(decodedAddress).toBeUndefined();
+    expect(decodedAddress).toBeUndefined();
   });
 
   it('should be able to fail rate limiting for generating addresses', async () => {
-    for (let x = 0; x < 5; x += 1) {
+    // await 1min before continuing further
+    await sleep(60000);
+    for (let x = 0; x < 6; x += 1) {
       const initialResponse = await testing.inject({
         method: 'GET',
-        url: `${WALLET_ENDPOINT}generate-address`,
+        url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
       });
 
-      expect(initialResponse.statusCode).toStrictEqual(x < 3 ? 200 : 429);
+      expect(initialResponse.statusCode).toStrictEqual(x < 5 ? 200 : 429);
     }
+    // await 1min before continuing further
+    await sleep(60000);
+    const initialResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+    });
+
+    expect(initialResponse.statusCode).toStrictEqual(200);
+  });
+
+  it('should throw error while calling without refund address while creating new address', async () => {
+    const initialResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+    });
+    expect(initialResponse.statusCode).toStrictEqual(500);
+  });
+
+  it('should be able to get address detail', async () => {
+    const initialResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+    });
+    expect(initialResponse.statusCode).toStrictEqual(200);
+    const response = JSON.parse(initialResponse.body);
+    const decodedAddress = fromAddress(response.address, 'regtest');
+    expect(decodedAddress).not.toBeUndefined();
+    const addressDetailsResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/${response.address}`,
+    });
+    expect(addressDetailsResponse.statusCode).toStrictEqual(200);
+    const addressDetails = JSON.parse(addressDetailsResponse.body);
+    expect(addressDetails.address).toStrictEqual(response.address);
+  });
+
+  it('should throw error while calling address detail with invalid address', async () => {
+    const initialResponse = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/random-address`,
+    });
+    expect(initialResponse.statusCode).toStrictEqual(500);
+  });
+
+  it.skip('should be able to handel concurrent request on', async () => {
+    const promiseArr = Array(2)
+      .fill(0)
+      .map(() =>
+        testing.inject({
+          method: 'GET',
+          url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+        }),
+      );
+    const responses = await Promise.all(promiseArr);
+    expect(responses.length).toStrictEqual(2);
+    const successRes = responses.filter((res) => res.statusCode === 200);
+    expect(successRes.length).toStrictEqual(1);
+    const failureRes = responses.filter((res) => res.statusCode !== 200);
+    expect(failureRes.length).toStrictEqual(1);
   });
 });

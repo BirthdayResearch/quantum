@@ -22,6 +22,12 @@ export interface TokenDetailI {
   supply: string;
 }
 
+export interface AddressDetails {
+  address: string;
+  refundAddress: string;
+  createdAt: Date;
+}
+
 export enum SelectionType {
   "Network" = "Network",
   "Token" = "Token",

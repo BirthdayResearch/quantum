@@ -1,21 +1,26 @@
 import { fromAddress } from '@defichain/jellyfish-address';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { getJellyfishNetwork } from '@waveshq/walletkit-core';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core/dist/api/environment';
+import { DeFiChainAddressIndex } from '@prisma/client';
+import { EnvironmentNetwork, getJellyfishNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 
 import { CustomErrorCodes } from '../../CustomErrorCodes';
 import { PrismaService } from '../../PrismaService';
 import { VerifyObject } from '../model/VerifyDto';
+import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
 @Injectable()
 export class WhaleWalletService {
-  constructor(private readonly whaleWalletProvider: WhaleWalletProvider, private prisma: PrismaService) {}
+  constructor(
+    private readonly whaleWalletProvider: WhaleWalletProvider,
+    private readonly clientProvider: WhaleApiClientProvider,
+    private prisma: PrismaService,
+  ) {}
 
   async verify(
     verify: VerifyObject,
-    network: EnvironmentNetwork = EnvironmentNetwork.MainNet,
+    network: EnvironmentNetwork,
   ): Promise<{ isValid: boolean; statusCode?: CustomErrorCodes }> {
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
@@ -76,8 +81,15 @@ export class WhaleWalletService {
     }
   }
 
-  async generateAddress(): Promise<{ address: string }> {
+  async generateAddress(
+    refundAddress: string,
+    network: EnvironmentNetwork,
+  ): Promise<Omit<DeFiChainAddressIndex, 'id' | 'index'>> {
     try {
+      const decodedAddress = fromAddress(refundAddress, this.clientProvider.remapNetwork(network));
+      if (decodedAddress === undefined) {
+        throw new Error(`Invalid refund address for DeFiChain ${network}`);
+      }
       const lastIndex = await this.prisma.deFiChainAddressIndex.findFirst({
         orderBy: [{ index: 'desc' }],
       });
@@ -85,19 +97,55 @@ export class WhaleWalletService {
       const nextIndex = index ? index + 1 : 2;
       const wallet = this.whaleWalletProvider.createWallet(nextIndex);
       const address = await wallet.getAddress();
-      await this.prisma.deFiChainAddressIndex.create({
+      const data = await this.prisma.deFiChainAddressIndex.create({
         data: {
           index: nextIndex,
           address,
+          refundAddress,
         },
       });
-      return { address };
+      return {
+        address: data.address,
+        createdAt: data.createdAt,
+        refundAddress: data.refundAddress,
+      };
     } catch (e: any) {
       // TODO: Improve error handling
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
           error: 'There is a problem in generating an address',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
+  }
+
+  async getAddressDetails(address: string): Promise<Omit<DeFiChainAddressIndex, 'id' | 'index'>> {
+    try {
+      const data = await this.prisma.deFiChainAddressIndex.findFirst({
+        where: {
+          address,
+        },
+        select: {
+          address: true,
+          refundAddress: true,
+          createdAt: true,
+        },
+      });
+      if (!data) {
+        throw new Error('Address detail not available');
+      }
+      return data;
+    } catch (e: any) {
+      // TODO: Improve error handling
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'There is a problem in fetching an address',
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
         {
