@@ -2,8 +2,7 @@
  * Hook to write `approve` function from specific ERC20 token contract
  */
 
-import BigNumber from "bignumber.js";
-import { utils } from "ethers";
+import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import {
   erc20ABI,
@@ -13,30 +12,15 @@ import {
 } from "wagmi";
 import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
-import { DEFAULT_SPENDING_LIMIT } from "../constants";
 
 interface ApproveTokenI {
-  transferAmount: BigNumber;
   tokenName: Erc20Token;
-  tokenDecimals: number | "gwei";
-  tokenAllowance: string;
   setErrorMessage: any;
   refetchBridge?: () => Promise<any>;
 }
 
-function getSpendLimitToApprove(amount: BigNumber, allowance: string | number) {
-  if (amount.gt(allowance)) {
-    // TODO: Check if additional `0.1` is enough
-    return amount.plus(0.1).toString();
-  }
-  return DEFAULT_SPENDING_LIMIT;
-}
-
 export default function useWriteApproveToken({
-  transferAmount,
   tokenName,
-  tokenDecimals,
-  tokenAllowance,
   refetchBridge,
   setErrorMessage,
 }: ApproveTokenI) {
@@ -52,13 +36,7 @@ export default function useWriteApproveToken({
   const { config: tokenConfig } = usePrepareContractWrite({
     ...erc20TokenContract,
     functionName: "approve",
-    args: [
-      BridgeV1.address,
-      utils.parseUnits(
-        getSpendLimitToApprove(transferAmount, tokenAllowance),
-        tokenDecimals
-      ),
-    ],
+    args: [BridgeV1.address, ethers.constants.MaxInt256],
   });
 
   // Write (ERC20 token) contract for `approve` function
