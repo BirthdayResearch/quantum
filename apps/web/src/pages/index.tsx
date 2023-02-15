@@ -23,6 +23,7 @@ function Home() {
         event.returnValue = "";
         return "";
       }
+      return false;
     };
     window.addEventListener("beforeunload", unloadCallback);
     return () => window.removeEventListener("beforeunload", unloadCallback);
