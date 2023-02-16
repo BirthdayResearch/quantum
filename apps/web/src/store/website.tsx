@@ -39,18 +39,26 @@ export const bridgeApi = createApi({
     verify: builder.query<
       any,
       {
-        network: string;
         address: string;
+        ethReceiverAddress: string;
+        tokenAddress: string;
         amount: string;
         symbol: string;
       }
     >({
-      query: ({ network, address, amount, symbol }) => ({
+      query: ({
+        address,
+        ethReceiverAddress,
+        tokenAddress,
+        amount,
+        symbol,
+      }) => ({
         url: "/wallet/verify",
-        params: { network },
         method: "POST",
         body: {
           address,
+          ethReceiverAddress,
+          tokenAddress,
           amount,
           symbol,
         },

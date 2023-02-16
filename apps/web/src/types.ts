@@ -95,3 +95,8 @@ export enum CustomErrorCodes {
   IsZeroBalance = 4,
   AmountNotValid = 5,
 }
+
+export interface SignedClaim {
+  signature: string;
+  nonce: number;
+}
