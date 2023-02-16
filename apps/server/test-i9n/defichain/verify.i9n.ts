@@ -197,7 +197,6 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AmountNotValid });
   });
 
-  // TODO: Return the signed claim
   it('should verify fund in the wallet address', async () => {
     // Sends token to the address
     await defichain.playgroundClient?.rpc.call(
@@ -218,6 +217,8 @@ describe('DeFiChain Verify fund Testing', () => {
       address: localAddress,
     });
 
-    expect(response).toStrictEqual({ isValid: true });
+    expect(response.isValid).toBeTruthy();
+    expect(response.signature).toBeDefined();
+    expect(response.nonce).toBeDefined();
   });
 });
