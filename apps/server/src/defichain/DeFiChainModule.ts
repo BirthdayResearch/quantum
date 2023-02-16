@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 
+import { EthereumModule } from '../ethereum/EthereumModule';
 import { PrismaService } from '../PrismaService';
 import { StatsController } from './controllers/StatsController';
 import { WhaleWalletController } from './controllers/WhaleWalletController';
@@ -21,6 +22,7 @@ import { WhaleWalletService } from './services/WhaleWalletService';
     SendService,
   ],
   controllers: [StatsController, WhaleWalletController],
+  imports: [EthereumModule],
   exports: [],
 })
 export class DeFiChainModule {}

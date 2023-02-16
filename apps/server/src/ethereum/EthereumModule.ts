@@ -9,6 +9,6 @@ import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirm
   providers: [EVMTransactionConfirmerService, PrismaService],
   controllers: [EthereumController],
   imports: [EthersModule],
-  exports: [],
+  exports: [EVMTransactionConfirmerService],
 })
 export class EthereumModule {}
