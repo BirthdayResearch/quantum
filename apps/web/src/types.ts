@@ -99,4 +99,5 @@ export enum CustomErrorCodes {
 export interface SignedClaim {
   signature: string;
   nonce: number;
+  deadline: number;
 }
