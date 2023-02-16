@@ -109,9 +109,9 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice Emitted when a new token is being added to the supported list by only Admin accounts
      * @param supportedToken Address of the token being added to the supported list
-     * @param dailyAllowance Daily allowance of the token
+     * @param tokenCap Maximum allocation per supported token
      */
-    event ADD_SUPPORTED_TOKEN(address indexed supportedToken, uint256 indexed dailyAllowance);
+    event ADD_SUPPORTED_TOKEN(address indexed supportedToken, uint256 indexed tokenCap);
 
     /**
      * @notice Emitted when the existing supported token is removed from the supported list by only Admin accounts
@@ -252,6 +252,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (supportedTokens.contains(_tokenAddress)) revert TOKEN_ALREADY_SUPPORTED();
         supportedTokens.add(_tokenAddress);
         tokenCap[_tokenAddress] = _currentCap;
+        emit ADD_SUPPORTED_TOKEN(_tokenAddress, _currentCap);
     }
 
     /**
@@ -297,6 +298,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     function changeFlushReceiveAddress(address _newAddress) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        if (_newAddress == address(0)) revert ZERO_ADDRESS();
         address _oldAddress = flushReceiveAddress;
         flushReceiveAddress = _newAddress;
         emit CHANGE_FLUSH_RECEIVE_ADDRESS(_oldAddress, _newAddress);

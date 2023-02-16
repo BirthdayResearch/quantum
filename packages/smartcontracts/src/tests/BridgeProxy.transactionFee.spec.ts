@@ -7,10 +7,10 @@ import { deployContracts } from './testUtils/deployment';
 describe('Transaction fee tests', () => {
   describe('Tx Fee tests', () => {
     describe('DEFAULT_ADMIN_ROLE', () => {
-      it('Successfully implemented the 0.3% fee', async () => {
+      it('Successfully implemented the 0.1% fee', async () => {
         const { proxyBridge } = await loadFixture(deployContracts);
         // Checking if the implemented fee is 0.3%
-        await expect(await proxyBridge.transactionFee()).to.equal(30);
+        await expect(await proxyBridge.transactionFee()).to.equal(10);
       });
 
       it('Successfully changes the fee by Admin account', async () => {
@@ -26,7 +26,7 @@ describe('Transaction fee tests', () => {
           // Event called TRANSACTION_FEE_CHANGED should be emitted on Successful withdrawal by the Admin only
           await expect(proxyBridge.connect(defaultAdminSigner).changeTxFee(50))
             .to.emit(proxyBridge, 'TRANSACTION_FEE_CHANGED')
-            .withArgs(30, 50);
+            .withArgs(10, 50);
         });
       });
     });

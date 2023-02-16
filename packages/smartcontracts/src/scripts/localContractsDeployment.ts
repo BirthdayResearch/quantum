@@ -1,4 +1,3 @@
-import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { ethers } from 'hardhat';
 
 import { BridgeV1, TestToken } from '../generated';
@@ -30,8 +29,6 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
     txFeeAddress: accounts[3],
     // flushReceiveAddress
     flushReceiveAddress: accounts[4],
-    // minimum days of allowance for the bridge to be operational
-    acceptableRemainingDays: 2,
   });
   const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
   const { usdtContract, usdcContract } = await tokenDeployment();
@@ -42,27 +39,18 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
   // Approving max token to `bridgeProxyAddress` by accounts[0]
   await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await usdcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
-  const supportedTime = (await time.latest()) + 60;
-  // Adding mUsdt and mUsdc as supported tokens
-  await bridgeImplementationContract.addSupportedTokens(
-    usdtContract.address,
-    ethers.constants.MaxUint256,
-    supportedTime,
-  );
-  await bridgeImplementationContract.addSupportedTokens(
-    usdcContract.address,
-    ethers.constants.MaxUint256,
-    supportedTime,
-  );
 
-  return { usdtContract, usdcContract, bridgeImplementationContract, supportedTime };
+  // Adding mUsdt and mUsdc as supported tokens
+  await bridgeImplementationContract.addSupportedTokens(usdtContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(usdcContract.address, ethers.constants.MaxUint256);
+
+  return { usdtContract, usdcContract, bridgeImplementationContract };
 }
 
 interface ReturnContracts {
   usdtContract: TestToken;
   usdcContract: TestToken;
   bridgeImplementationContract: BridgeV1;
-  supportedTime: number;
 }
 
 mintAndApproveTestTokensLocal().catch((error) => {
