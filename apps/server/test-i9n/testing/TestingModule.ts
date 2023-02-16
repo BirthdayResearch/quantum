@@ -44,6 +44,7 @@ export function buildTestConfig({
           address: testnet?.bridgeContractAddress ?? '',
         },
       },
+      ethWalletPrivKey: testnet?.ethWalletPrivKey,
     },
   };
 }
@@ -62,5 +63,6 @@ type OptionalBuildTestConfigParams = {
   startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {
     bridgeContractAddress: string;
+    ethWalletPrivKey: string;
   };
 };

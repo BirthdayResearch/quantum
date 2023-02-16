@@ -14,7 +14,6 @@ export function appConfig() {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
       contracts: {
         bridgeProxy: {
-          //
           address: process.env.BRIDGE_PROXY_ADDRESS,
         },
       },

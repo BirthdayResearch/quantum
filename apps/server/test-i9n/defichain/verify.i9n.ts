@@ -1,9 +1,17 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
+import {
+  BridgeV1,
+  HardhatNetwork,
+  HardhatNetworkContainer,
+  StartedHardhatNetworkContainer,
+  TestToken,
+} from 'smartcontracts';
 
 import { CustomErrorCodes } from '../../src/CustomErrorCodes';
 import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
 import { PrismaService } from '../../src/PrismaService';
+import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
@@ -22,6 +30,13 @@ describe('DeFiChain Verify fund Testing', () => {
   let defichain: StartedDeFiChainStubContainer;
   let prismaService: PrismaService;
 
+  let bridgeContract: BridgeV1;
+  let startedHardhatContainer: StartedHardhatNetworkContainer;
+  let hardhatNetwork: HardhatNetwork;
+  let bridgeContractFixture: BridgeContractFixture;
+  let ethWalletAddress: string;
+  let mwbtcContract: TestToken;
+
   // Tests are slower because it's running 3 containers at the same time
   jest.setTimeout(3600000);
   let whaleWalletProvider: WhaleWalletProvider;
@@ -34,10 +49,25 @@ describe('DeFiChain Verify fund Testing', () => {
     startedPostgresContainer = await new PostgreSqlContainer().start();
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
+
+    // Hardhat - get signer
+    startedHardhatContainer = await new HardhatNetworkContainer().start();
+    hardhatNetwork = await startedHardhatContainer.ready();
+    bridgeContractFixture = new BridgeContractFixture(hardhatNetwork);
+    ethWalletAddress = await hardhatNetwork.contractSigner.getAddress();
+    await bridgeContractFixture.setup();
+    ({ bridgeProxy: bridgeContract, musdt: mwbtcContract } =
+      bridgeContractFixture.contractsWithAdminAndOperationalSigner);
+
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          startedHardhatContainer,
+          testnet: {
+            bridgeContractAddress: bridgeContract.address,
+            ethWalletPrivKey: '0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80', // local hardhat wallet
+          },
           startedPostgresContainer,
         }),
       ),
@@ -65,6 +95,8 @@ describe('DeFiChain Verify fund Testing', () => {
     amount: string;
     symbol: string;
     address: string;
+    ethReceiverAddress: string;
+    tokenAddress: string;
   };
 
   async function verify(mockedPayload: MockedPayload) {
@@ -83,6 +115,8 @@ describe('DeFiChain Verify fund Testing', () => {
       amount: '1',
       symbol: '_invalid_symbol_',
       address: localAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
     });
 
     expect(response).toStrictEqual({
@@ -97,6 +131,8 @@ describe('DeFiChain Verify fund Testing', () => {
       amount: '1',
       symbol: 'BTC',
       address: '_invalid_address_',
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
     });
 
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotValid });
@@ -116,6 +152,8 @@ describe('DeFiChain Verify fund Testing', () => {
       amount: '3',
       symbol: 'BTC',
       address: localAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
     });
 
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.IsZeroBalance });
@@ -130,6 +168,8 @@ describe('DeFiChain Verify fund Testing', () => {
       amount: '2',
       symbol: 'BTC',
       address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
     });
 
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotFound });
@@ -165,6 +205,8 @@ describe('DeFiChain Verify fund Testing', () => {
       amount: '10',
       symbol: 'BTC',
       address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
     });
 
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched });
@@ -182,6 +224,8 @@ describe('DeFiChain Verify fund Testing', () => {
       amount: '3',
       symbol: 'BTC',
       address: randomAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
     });
 
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotOwned });
@@ -192,6 +236,8 @@ describe('DeFiChain Verify fund Testing', () => {
       amount: '-3',
       symbol: 'BTC',
       address: localAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
     });
 
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AmountNotValid });
@@ -215,6 +261,8 @@ describe('DeFiChain Verify fund Testing', () => {
       amount: '10',
       symbol: 'BTC',
       address: localAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
     });
 
     expect(response.isValid).toBeTruthy();
