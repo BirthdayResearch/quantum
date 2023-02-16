@@ -327,7 +327,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Called by addresses with Admin and Operational roles to set the new txn fee
      * @param fee The new fee
      */
-    function changeTxFee(uint256 fee) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function changeTxFee(uint256 fee) external {
+        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
         uint256 oldTxFee = transactionFee;
         transactionFee = fee;
         emit TRANSACTION_FEE_CHANGED(oldTxFee, transactionFee);

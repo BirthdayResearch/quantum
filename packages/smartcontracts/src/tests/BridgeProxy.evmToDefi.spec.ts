@@ -37,8 +37,6 @@ describe('EVM --> DeFiChain', () => {
     it('Successfully revert if sending zero ERC20 token', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
       await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
-      // Increase time by 60 secs
-      await time.increase(60);
       // This txn should fail. User sending 0 ERC20 along with ETHER. only checking the _amount not value
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 0),
