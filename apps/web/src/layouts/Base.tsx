@@ -2,6 +2,7 @@ import Head from "next/head";
 import { PropsWithChildren, useEffect, useState } from "react";
 import {
   appName,
+  keywords,
   longDescription,
   shortDescription,
   siteTitle,
@@ -70,6 +71,7 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
         <meta charSet="UTF-8" />
         <title key="title">{siteTitle}</title>
         <meta key="description" name="description" content={longDescription} />
+        <meta key="keywords" name="keywords" content={keywords} />
         <meta key="robots" name="robots" content="follow,index" />
         <meta name="googlebot" content="index,follow" />
         <meta name="google" content="notranslate" />
@@ -103,9 +105,18 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
         <meta name="twitter:card" content="summary_large_image" />
 
         <link rel="icon" href="/favicon.ico" />
-        <link rel="icon" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="icon" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" sizes="64x64" href="/favicon-64x64.png" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
       </Head>
 
       <WagmiConfig client={client}>
