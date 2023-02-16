@@ -13,7 +13,7 @@ import { WhaleApiService } from './services/WhaleApiService';
 import { WhaleWalletService } from './services/WhaleWalletService';
 
 @Module({
-  imports: [CacheModule.register({ max: 10_000 })],
+  imports: [CacheModule.register({ max: 10_000 }), EthereumModule],
   providers: [
     WhaleApiClientProvider,
     WhaleApiService,
@@ -25,7 +25,6 @@ import { WhaleWalletService } from './services/WhaleWalletService';
     SendService,
   ],
   controllers: [StatsController, WhaleWalletController],
-  imports: [EthereumModule],
   exports: [],
 })
 export class DeFiChainModule {}
