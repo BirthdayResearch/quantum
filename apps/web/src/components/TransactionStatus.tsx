@@ -17,7 +17,7 @@ export default function TransactionStatus({
   txnHash?: string;
 }) {
   const { ExplorerURL } = useContractContext();
-  const { isLg } = useResponsive();
+  const { isLg, isMd } = useResponsive();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
 
@@ -36,10 +36,11 @@ export default function TransactionStatus({
   return (
     <div
       className={clsx(
-        "w-full px-8 py-6 mb-6 text-dark-1000  rounded-xl border  bg-dark-100 ",
+        "flex-1 px-8 py-6 text-dark-1000 rounded-xl border bg-dark-100 ",
         ethTxnStatus.isConfirmed
           ? "border-dark-card-stroke"
-          : "dark-bg-gradient-1 border-transparent"
+          : "dark-bg-gradient-1 border-transparent",
+        isMd ? "mb-6" : "m-6"
       )}
     >
       <div className="leading-5 lg:text-xl lg:font-semibold">{title}</div>
