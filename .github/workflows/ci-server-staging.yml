@@ -73,6 +73,5 @@ jobs:
           cpu: 2
           memory: 3
 
-
       - name: App Runner URL
         run: echo "App runner URL ${{ steps.deploy-apprunner.outputs.service-url }}"
