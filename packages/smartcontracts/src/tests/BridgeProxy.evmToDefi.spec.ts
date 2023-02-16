@@ -51,10 +51,9 @@ describe('EVM --> DeFiChain', () => {
       // Testing with testToken (already added in supported token)
       // Contract address balance should be zero
       expect(await testToken.balanceOf(proxyBridge.address)).to.equal(0);
-      const blockNumBefore = await ethers.provider.getBlockNumber();
-      const blockBefore = await ethers.provider.getBlock(blockNumBefore);
+
       // Need to add to the timestamp of the previous block to match the next block the tx is mined in
-      const expectedTimestamp = blockBefore.timestamp + 1;
+      const expectedTimestamp = (await time.latest()) + 1;
       // Checking contract balance: should be 10 - txFee test tokens
       const txFee = await proxyBridge.transactionFee();
       const amount = toWei('10');
