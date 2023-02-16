@@ -1,0 +1,77 @@
+name: CI - Server - Staging
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'apps/web'
+      - 'packages/**'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - 'apps/web'
+      - 'packages/**'
+
+permissions:
+  id-token: write
+  contents: read
+  packages: write
+
+concurrency:
+  group: ${{ github.workflows }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  aws_app_runner:
+    name: "Deploy Staging Server"
+    environment: AWS Staging Server
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
+        with:
+          version: 7.27.0
+
+      - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
+        with:
+          node-version: 18
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - uses: aws-actions/configure-aws-credentials@67fbcbb121271f7775d2e7715933280b06314838 # v1.7.0
+        with:
+          aws-region: eu-west-1
+          role-to-assume: arn:aws:iam::738942439028:role/GITHUB_OIDC_WAVESHQ_BRIDGE_ECR
+          role-duration-seconds: 900
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@261a7de32bda11ba01f4d75c4ed6caf3739e54be # v1.5.3
+        with:
+          registry-type: public
+
+      - name: Resolve ECR Tags
+        uses: actions/github-script@d556feaca394842dc55e4734bf3bb9f685482fa0 # v6.3.3
+        id: ecr-tags
+        with:
+          script: return require('./.github/scripts/release-ecr-tags.js')({ context })
+          result-encoding: string
+
+      - name: Deploy to App Runner Image
+        id: deploy-apprunner
+        uses: awslabs/amazon-app-runner-deploy@4ed3685d49ebd5532189083703a6c6bde0447092
+        with:
+          service: bridge-api-staging
+          image: public.ecr.aws/w1x3w8l6/bridge-api:${{ steps.ecr-tags.outputs.result }}
+          region: eu-west-1
+          cpu: 2
+          memory: 3
+          environment:
+            DATABASE_URL: ${{ secrets.DATABASE_URL }}
+            DEFICHAIN_NETWORK: ${{ secrets.DEFICHAIN_NETWORK }}
+            DEFICHAIN_PRIVATE_KEY: ${{ secrets.DEFICHAIN_PRIVATE_KEY }}
+            DEFICHAIN_WHALE_URL: ${{ secrets.DEFICHAIN_WHALE_URL }}
+
+      - name: App Runner URL
+        run: echo "App runner URL ${{ steps.deploy-apprunner.outputs.service-url }}"
