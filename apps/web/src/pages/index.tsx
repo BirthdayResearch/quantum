@@ -1,6 +1,6 @@
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
-import MobileBottomMenu from "@components/MobileBottomMenu";
+// import MobileBottomMenu from "@components/MobileBottomMenu";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
 
@@ -21,9 +21,9 @@ function Home() {
           <BridgeForm hasPendingTxn={txnHash !== undefined} />
         </div>
       </div>
-      <div className="md:hidden mt-6 mb-12 mx-6">
+      {/* <div className="md:hidden mt-6 mb-12 mx-6"> TODO:: Hide Temporary
         <MobileBottomMenu />
-      </div>
+      </div> */}
     </section>
   );
 }

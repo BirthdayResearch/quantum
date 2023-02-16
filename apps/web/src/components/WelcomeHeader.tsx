@@ -1,4 +1,4 @@
-import { FiBook, FiHelpCircle } from "react-icons/fi";
+// import { FiBook, FiHelpCircle } from "react-icons/fi"; TODO:: Hide temporary
 import IconTooltip from "./commons/IconTooltip";
 import { CONSORTIUM_INFO } from "../constants";
 
@@ -23,7 +23,7 @@ export default function WelcomeHeader() {
           />
         </button>
       </div>
-      <div className="hidden md:block">
+      {/* <div className="hidden md:block">
         <div className="flex flex-row items-center md:mt-5">
           <button type="button" className="flex flex-row items-center">
             <FiBook size={20} className="text-dark-700" />
@@ -38,7 +38,7 @@ export default function WelcomeHeader() {
             </span>
           </button>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
