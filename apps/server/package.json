@@ -71,7 +71,7 @@
     "@types/jest": "^29.4.0",
     "@types/node": "^18.11.9",
     "@types/supertest": "^2.0.12",
-    "light-my-request": "^5.8.0",
+    "light-my-request": "^5.9.1",
     "prisma": "^4.10.1",
     "smartcontracts": "workspace:0.0.0",
     "source-map-support": "^0.5.21",

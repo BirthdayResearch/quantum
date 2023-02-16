@@ -44,7 +44,7 @@ importers:
       class-validator: ^0.14.0
       ethers: ^5.7.2
       joi: ^17.7.1
-      light-my-request: ^5.8.0
+      light-my-request: ^5.9.1
       nestjs-pino: ^3.1.2
       pg: ^8.9.0
       prisma: ^4.10.1
@@ -89,7 +89,7 @@ importers:
       '@types/jest': 29.4.0
       '@types/node': 18.11.11
       '@types/supertest': 2.0.12
-      light-my-request: 5.8.0
+      light-my-request: 5.9.1
       prisma: 4.10.1
       smartcontracts: link:../../packages/smartcontracts
       source-map-support: 0.5.21
@@ -10003,7 +10003,7 @@ packages:
       avvio: 8.2.0
       fast-content-type-parse: 1.0.0
       find-my-way: 7.3.1
-      light-my-request: 5.8.0
+      light-my-request: 5.9.1
       pino: 8.7.0
       process-warning: 2.1.0
       proxy-addr: 2.0.7
@@ -12596,6 +12596,14 @@ packages:
 
   /light-my-request/5.8.0:
     resolution: {integrity: sha512-4BtD5C+VmyTpzlDPCZbsatZMJVgUIciSOwYhJDCbLffPZ35KoDkDj4zubLeHDEb35b4kkPeEv5imbh+RJxK/Pg==}
+    dependencies:
+      cookie: 0.5.0
+      process-warning: 2.1.0
+      set-cookie-parser: 2.5.1
+    dev: false
+
+  /light-my-request/5.9.1:
+    resolution: {integrity: sha512-UT7pUk8jNCR1wR7w3iWfIjx32DiB2f3hFdQSOwy3/EPQ3n3VocyipUxcyRZR0ahoev+fky69uA+GejPa9KuHKg==}
     dependencies:
       cookie: 0.5.0
       process-warning: 2.1.0
