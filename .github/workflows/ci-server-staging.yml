@@ -42,7 +42,7 @@ jobs:
       - uses: aws-actions/configure-aws-credentials@67fbcbb121271f7775d2e7715933280b06314838 # v1.7.0
         with:
           aws-region: eu-west-1
-          role-to-assume: arn:aws:iam::738942439028:role/GITHUB_OIDC_WAVESHQ_BRIDGE_ECR
+          role-to-assume: arn:aws:iam::738942439028:role/GITHUB_OIDC_WAVESHQ_BRIDGE
           role-duration-seconds: 900
 
       - name: Login to Amazon ECR
