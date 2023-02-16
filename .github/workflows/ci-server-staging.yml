@@ -61,17 +61,18 @@ jobs:
       - name: Deploy to App Runner Image
         id: deploy-apprunner
         uses: awslabs/amazon-app-runner-deploy@4ed3685d49ebd5532189083703a6c6bde0447092
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DEFICHAIN_NETWORK: ${{ secrets.DEFICHAIN_NETWORK }}
+          DEFICHAIN_PRIVATE_KEY: ${{ secrets.DEFICHAIN_PRIVATE_KEY }}
+          DEFICHAIN_WHALE_URL: ${{ secrets.DEFICHAIN_WHALE_URL }}
         with:
           service: bridge-api-staging
           image: public.ecr.aws/w1x3w8l6/bridge-api:${{ steps.ecr-tags.outputs.result }}
           region: eu-west-1
           cpu: 2
           memory: 3
-          env:
-            DATABASE_URL: ${{ secrets.DATABASE_URL }}
-            DEFICHAIN_NETWORK: ${{ secrets.DEFICHAIN_NETWORK }}
-            DEFICHAIN_PRIVATE_KEY: ${{ secrets.DEFICHAIN_PRIVATE_KEY }}
-            DEFICHAIN_WHALE_URL: ${{ secrets.DEFICHAIN_WHALE_URL }}
+
 
       - name: App Runner URL
         run: echo "App runner URL ${{ steps.deploy-apprunner.outputs.service-url }}"
