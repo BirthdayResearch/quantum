@@ -1,13 +1,16 @@
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import useResponsive from "../hooks/useResponsive";
+import clsx from "clsx";
 
 export default function ConfirmationProgress({
   confirmationBlocksTotal,
   confirmationBlocksCurrent,
+  isConfirmed,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
+  isConfirmed: boolean;
 }) {
   const { isLg } = useResponsive();
   const [valuePercentage, setValuePercentage] = useState<number>(0);
@@ -24,13 +27,22 @@ export default function ConfirmationProgress({
         <div className="w-[136px] h-[136px]">
           <svg style={{ height: 0, width: 0 }}>
             <defs>
-              <linearGradient
-                id="circularProgress"
-                gradientTransform="rotate(90)"
-              >
-                <stop offset="0%" stopColor="#FF00FF" />
-                <stop offset="100.4%" stopColor="#EC0C8D" />
-              </linearGradient>
+              {isConfirmed ? (
+                <linearGradient
+                  id="circularProgress"
+                  gradientTransform="rotate(90)"
+                >
+                  <stop offset="0%" stopColor="#0CC72C" />
+                </linearGradient>
+              ) : (
+                <linearGradient
+                  id="circularProgress"
+                  gradientTransform="rotate(90)"
+                >
+                  <stop offset="0%" stopColor="#FF00FF" />
+                  <stop offset="100.4%" stopColor="#EC0C8D" />
+                </linearGradient>
+              )}
             </defs>
           </svg>
           <CircularProgressbarWithChildren
@@ -51,15 +63,23 @@ export default function ConfirmationProgress({
       ) : (
         <div>
           <div className="flex text-sm text-dark-700">
-            <span className="font-semibold text-brand-100">
-              {`${confirmationBlocksCurrent} of ${confirmationBlocksTotal} \u00A0`}
+            <span
+              className={clsx(
+                "font-semibold",
+                isConfirmed ? "text-valid" : "text-brand-100"
+              )}
+            >
+              {`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}\u00A0`}
             </span>
             confirmations
           </div>
           <div className="h-1.5 w-full bg-dark-200 rounded-md">
             <div
               style={{ width: `${valuePercentage}%` }}
-              className="h-full rounded-md bg-brand-100"
+              className={clsx(
+                "h-full rounded-md mt-1",
+                isConfirmed ? "bg-valid" : "bg-brand-100"
+              )}
             />
           </div>
         </div>

@@ -64,6 +64,7 @@ export default function TransactionStatus({
                 ? ConfirmationBlocksTotal.toString()
                 : ethTxnStatus.numberOfConfirmations
             }
+            isConfirmed={ethTxnStatus.isConfirmed}
           />
         </div>
       )}
@@ -93,14 +94,14 @@ export default function TransactionStatus({
           <div className="pl-8">
             <ConfirmationProgress
               confirmationBlocksTotal={ConfirmationBlocksTotal}
-              // confirmationBlocksCurrent={
-              //   new BigNumber(ethTxnStatus.numberOfConfirmations).isGreaterThan(
-              //     65
-              //   )
-              //     ? ConfirmationBlocksTotal.toString()
-              //     : ethTxnStatus.numberOfConfirmations
-              // }
-              confirmationBlocksCurrent={"65"}
+              confirmationBlocksCurrent={
+                new BigNumber(ethTxnStatus.numberOfConfirmations).isGreaterThan(
+                  65
+                )
+                  ? ConfirmationBlocksTotal.toString()
+                  : ethTxnStatus.numberOfConfirmations
+              }
+              isConfirmed={ethTxnStatus.isConfirmed}
             />
           </div>
         )}
