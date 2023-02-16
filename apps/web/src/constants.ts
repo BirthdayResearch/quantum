@@ -28,7 +28,7 @@ export const TRANSACTION_ERROR_INFO: TooltipInfoI = {
 };
 
 export const DISCLAIMER_MESSAGE =
-  "Transactions are irreversible. Make sure that you send the exact amount to the correct destination address for your DeFiChain wallet.";
+  "Transactions are irreversible. Ensure the amount and DeFiChain address is correct.";
 
 export const DFC_TO_API_RESET_TIME_LIMIT = 1000 * 60; // 1 min api reset time
 
