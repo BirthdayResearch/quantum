@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoCloseOutline, IoHelpCircle } from "react-icons/io5";
+import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
 import { useContractContext } from "../layouts/contexts/ContractContext";
 import { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ export default function TransactionStatus({
   const { isLg, isMd } = useResponsive();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const ConfirmationBlocksTotal = 65;
 
   useEffect(() => {
     if (ethTxnStatus.isConfirmed) {
@@ -58,6 +60,7 @@ export default function TransactionStatus({
           className="flex flex-row items-center hover:opacity-70"
           href={`${ExplorerURL}/tx/${txnHash}`}
           target="_blank"
+          rel="noreferrer"
         >
           <FiArrowUpRight size={20} className="mr-2" />
           View on Etherscan
@@ -69,24 +72,16 @@ export default function TransactionStatus({
           </a>
         )}
       </div>
-      <div>{`${
-        new BigNumber(ethTxnStatus.numberOfConfirmations).isGreaterThan(65)
-          ? "65"
-          : ethTxnStatus.numberOfConfirmations
-      } of 65 Confirmations`}</div>
-    </div>
-  );
-}
-
-function ProgressCircle(): JSX.Element {
-  return <div></div>;
-}
-
-function ProgressBar(): JSX.Element {
-  return (
-    <div className="flex text-sm text-dark-700">
-      <span className="font-semibold text-brand-100">0 of 65&nbsp;</span>
-      confirmations
+      <div className="mb-4 md:mb-0">
+        <ConfirmationProgress
+          confirmationBlocksTotal={ConfirmationBlocksTotal}
+          confirmationBlocksCurrent={
+            new BigNumber(ethTxnStatus.numberOfConfirmations).isGreaterThan(65)
+              ? ConfirmationBlocksTotal.toString()
+              : ethTxnStatus.numberOfConfirmations
+          }
+        />
+      </div>
     </div>
   );
 }
