@@ -1,4 +1,6 @@
 import BigNumber from "bignumber.js";
+import { FiArrowUpRight } from "react-icons/fi";
+import useResponsive from "../hooks/useResponsive";
 
 export default function TransactionStatus({
   ethTxnStatus,
@@ -8,19 +10,43 @@ export default function TransactionStatus({
     numberOfConfirmations: string;
   };
 }) {
+  const { isLg } = useResponsive();
   return (
-    <div className="w-full text-dark-1000">
-      <div>Processing Transaction</div>
-      <div>
+    <div className="w-full px-8 py-6 mb-6 text-dark-1000 dark-bg-gradient-1 rounded-xl border border-transparent">
+      <div className="leading-5 lg:text-xl lg:font-semibold">
+        Processing transaction
+      </div>
+      <div className="pt-1 text-sm text-dark-700">
         Do not refresh, leave the browser, or close the tab until transaction is
         complete. Doing so may interrupt the transaction and cause loss of
         funds.
       </div>
+      <a
+        className="flex flex-row items-center mt-2 text-dark-900 text-xl font-bold hover:opacity-70"
+        href="https://google.com"
+        target="_blank"
+      >
+        <FiArrowUpRight size={20} className="mr-2" />
+        View on Etherscan
+      </a>
       <div>{`${
         new BigNumber(ethTxnStatus.numberOfConfirmations).isGreaterThan(65)
           ? "65"
           : ethTxnStatus.numberOfConfirmations
       } of 65 Confirmations`}</div>
+    </div>
+  );
+}
+
+function ProgressCircle(): JSX.Element {
+  return <div></div>;
+}
+
+function ProgressBar(): JSX.Element {
+  return (
+    <div className="flex text-sm text-dark-700">
+      <span className="font-semibold text-brand-100">0 of 65&nbsp;</span>
+      confirmations
     </div>
   );
 }
