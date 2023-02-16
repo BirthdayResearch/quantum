@@ -56,7 +56,7 @@ export default function ConfirmationProgress({
             </span>
             confirmations
           </div>
-          <div className="h-2 w-full bg-dark-200 rounded-md">
+          <div className="h-1.5 w-full bg-dark-200 rounded-md">
             <div
               style={{ width: `${valuePercentage}%` }}
               className="h-full rounded-md bg-brand-100"
