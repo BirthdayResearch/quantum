@@ -29,7 +29,6 @@ import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
-import DailyLimit from "./DailyLimit";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
@@ -392,9 +391,6 @@ export default function BridgeForm({
           suffix={` ${feeSymbol}`}
           trimTrailingZeros
         />
-      </div>
-      <div className="block md:hidden px-5 mt-4">
-        <DailyLimit />
       </div>
       <div className="mt-8 px-6 md:mt-6 md:px-4 lg:mt-16 lg:mb-0 lg:px-0 xl:px-20">
         <ConnectKitButton.Custom>

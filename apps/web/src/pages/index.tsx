@@ -1,13 +1,10 @@
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
-import ProofOfAssetsCard from "@components/ProofOfAssetsCard";
 import MobileBottomMenu from "@components/MobileBottomMenu";
-import useResponsive from "@hooks/useResponsive";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
 
 function Home() {
-  const { isMd } = useResponsive();
   const { ethTxnStatus, txnHash } = useWatchEthTxn();
 
   return (
@@ -18,7 +15,6 @@ function Home() {
       <div className="flex flex-col md:flex-row w-full px-0 md:px-12 lg:px-[120px]">
         <div className="flex flex-col justify-between px-6 pb-6 md:px-0 md:pb-0 md:w-5/12 md:mr-8 lg:mr-[72px]">
           <WelcomeHeader />
-          {isMd && <ProofOfAssetsCard />}
         </div>
         <div className="flex-1">
           {txnHash && <TransactionStatus ethTxnStatus={ethTxnStatus} />}

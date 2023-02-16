@@ -21,12 +21,6 @@ export const TOKEN_SUPPLY_INFO: TooltipInfoI = {
     "Token supply indicates the amount of liquidity currently available for a particular token pair on DeFiChain Bridge",
 };
 
-export const DAILY_LIMIT_INFO: TooltipInfoI = {
-  title: "Daily Limit",
-  content:
-    "DeFiChain Bridge has a daily hard cap for each token pair. Once this limit is reached, you will not be able to transfer to DeFiChain or Ethereum until the next day.",
-};
-
 export const TRANSACTION_ERROR_INFO: TooltipInfoI = {
   title: "Transaction Error",
   content:
