@@ -36,6 +36,27 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 3 },
     }),
+    verify: builder.query<
+      any,
+      {
+        network: string;
+        address: string;
+        amount: string;
+        symbol: string;
+      }
+    >({
+      query: ({ network, address, amount, symbol }) => ({
+        url: "/wallet/verify",
+        params: { network },
+        method: "POST",
+        body: {
+          address,
+          amount,
+          symbol,
+        },
+      }),
+      extraOptions: { maxRetries: 3 },
+    }),
     getAddressDetail: builder.mutation<AddressDetails, any>({
       query: ({ network, address }) => ({
         url: `/wallet/address/${address}`,
@@ -51,6 +72,14 @@ export const bridgeApi = createApi({
   }),
 });
 
-const { useGenerateAddressMutation, useGetAddressDetailMutation } = bridgeApi;
+const {
+  useGenerateAddressMutation,
+  useLazyVerifyQuery,
+  useGetAddressDetailMutation,
+} = bridgeApi;
 
-export { useGenerateAddressMutation, useGetAddressDetailMutation };
+export {
+  useGenerateAddressMutation,
+  useLazyVerifyQuery,
+  useGetAddressDetailMutation,
+};

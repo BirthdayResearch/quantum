@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { HealthCheck,HealthCheckService } from '@nestjs/terminus';
+import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
 
 import { PrismaHealthIndicator } from './health/PrismaHealth';
 

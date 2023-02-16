@@ -1,69 +1,113 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import UtilityButton from "@components/commons/UtilityButton";
 import UtilitySecondaryButton from "@components/erc-transfer/VerifiedUtilityButton";
-import { DISCLAIMER_MESSAGE } from "../../constants";
+import { useLazyVerifyQuery } from "@store/website";
+import BigNumber from "bignumber.js";
+import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
+import { getStorageItem } from "@utils/localStorage";
+import { UnconfirmedTxnI } from "types";
+import { HttpStatusCode } from "axios";
+import {
+  DISCLAIMER_MESSAGE,
+  STORAGE_DFC_ADDR_KEY,
+  STORAGE_TXN_KEY,
+} from "../../constants";
+
+enum ButtonLabel {
+  Validating = "Verifying",
+  Validated = "Verified",
+  Rejected = "Rejected",
+}
+
+enum TitleLabel {
+  Validating = "Validating your transaction",
+  Validated = "Transaction has been validated",
+  Rejected = "Validation failed",
+  ThrottleLimit = "Verification attempt limit reached",
+}
+type RejectedLabelType = `Something went wrong${string}`;
+
+enum ContentLabel {
+  Validating = "Please wait as your transaction is being verified. This usually takes 10 confirmations from the blockchain. Once verified, you will be redirected to the next step.",
+  Validated = "Please wait as we redirect you to the next step.",
+  Rejected = "Please check our Error guide and try again.",
+  ThrottleLimit = "Please wait for a minute and try again.",
+}
 
 export default function StepThreeVerification({
   goToNextStep,
 }: {
   goToNextStep: () => void;
 }) {
-  const VALIDATING_TITLE = "Validating your transaction";
-  const VALIDATED_TITLE = "Transaction has been validated";
-  const REJECTED_TITLE = "Validation failed";
+  const { networkEnv } = useNetworkEnvironmentContext();
+  const [trigger] = useLazyVerifyQuery();
+  const [title, setTitle] = useState<TitleLabel | RejectedLabelType>(
+    TitleLabel.Validating
+  );
+  const [content, setContent] = useState<ContentLabel>(ContentLabel.Rejected);
+  const [buttonLabel, setButtonLabel] = useState<ButtonLabel>(
+    ButtonLabel.Validating
+  );
 
-  const VALIDATING_CONTENT =
-    "Please wait as your transaction is being verified. This usually takes 10 confirmations from the blockchain. Once verified, you will be redirected to the next step.";
-  const VALIDATED_CONTENT = "Please wait as we redirect you to the next step.";
-  const REJECTED_CONTENT =
-    "Something went wrong. Please check your network connection and try again.";
-
-  const VALIDATING_BUTTON = "Verifying";
-  const VALIDATED_BUTTON = "Verified";
-  const REJECTED_BUTTON = "Try again";
-
-  const [title, setTitle] = useState(VALIDATING_TITLE);
-  const [content, setContent] = useState(VALIDATING_CONTENT);
-  const [buttonLabel, setButtonLabel] = useState(VALIDATING_BUTTON);
-
-  // TODO use api response
+  const dfcAddress = getStorageItem<string>(STORAGE_DFC_ADDR_KEY);
+  const txn = getStorageItem<UnconfirmedTxnI>(
+    `${networkEnv}.${STORAGE_TXN_KEY}`
+  );
   const [validationSuccess, setValidationSuccess] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
 
-  useEffect(() => {
-    // TODO: Replace with real loading time from api
-    setTimeout(() => {
-      setValidationSuccess(true);
-      setIsValidating(false);
-    }, 3000);
-  }, [isValidating, validationSuccess]);
+  const triggerVerify = useCallback(async () => {
+    if (
+      isValidating === true &&
+      dfcAddress !== null &&
+      txn?.amount !== undefined &&
+      txn?.selectedTokensA.tokenA.symbol !== undefined
+    ) {
+      try {
+        const { data } = await trigger({
+          network: networkEnv,
+          address: dfcAddress,
+          amount: new BigNumber(txn.amount).toFixed(8),
+          symbol: txn.selectedTokensA.tokenA.symbol,
+        });
 
-  useEffect(() => {
-    if (validationSuccess && !isValidating) {
-      setTitle(VALIDATED_TITLE);
-      setContent(VALIDATED_CONTENT);
-    } else if (!validationSuccess && !isValidating) {
-      setTitle(REJECTED_TITLE);
-      setContent(REJECTED_CONTENT);
-      setButtonLabel(REJECTED_BUTTON);
-    } else {
-      setTitle(VALIDATING_TITLE);
-      setContent(VALIDATING_CONTENT);
-      setButtonLabel(VALIDATING_BUTTON);
-    }
-  }, [validationSuccess, isValidating]);
+        console.log("trycatch", data);
+        if (data?.statusCode !== undefined) {
+          console.log({ code: data?.statusCode });
+          setContent(ContentLabel.Rejected);
+          setTitle(`Something went wrong (Error code ${data.statusCode})`);
+          setValidationSuccess(false);
+          setIsValidating(false);
+          setButtonLabel(ButtonLabel.Rejected);
+          return;
+        }
 
-  // TODO: might need to remove this once api is up
-  useEffect(() => {
-    // go to next step once validated after some time
-    setTimeout(() => {
-      if (validationSuccess && !isValidating) {
+        setTitle(TitleLabel.Validated);
+        setContent(ContentLabel.Validated);
+        setButtonLabel(ButtonLabel.Validated);
+        setValidationSuccess(true);
         goToNextStep();
+      } catch ({ data }) {
+        setButtonLabel(ButtonLabel.Rejected);
+        setIsValidating(false);
+        setValidationSuccess(false);
+
+        if (data?.statusCode === HttpStatusCode.TooManyRequests) {
+          setTitle(TitleLabel.ThrottleLimit);
+          setContent(ContentLabel.ThrottleLimit);
+        } else {
+          setTitle(TitleLabel.Rejected);
+          setContent(ContentLabel.Rejected);
+        }
       }
-    }, 3000);
-  });
+    }
+  }, []);
+
+  useEffect(() => {
+    triggerVerify();
+  }, [isValidating, validationSuccess]);
 
   return (
     <div
@@ -85,22 +129,18 @@ export default function StepThreeVerification({
       />
       <div className={clsx("w-full px-6 pt-12", "md:px-0 md:pt-0 md:w-auto")}>
         {validationSuccess ? (
-          <UtilitySecondaryButton label={VALIDATED_BUTTON} disabled />
+          <UtilitySecondaryButton label={ButtonLabel.Validated} disabled />
         ) : (
           <UtilityButton
             label={buttonLabel}
             isLoading={isValidating}
             disabled={isValidating || validationSuccess}
             withRefreshIcon={!validationSuccess && !isValidating}
-            // to retry validation
             onClick={() => {
-              // TODO attempt to validate via api
-              setValidationSuccess(false);
-              setIsValidating(true);
-
-              setTitle(VALIDATING_TITLE);
-              setContent(VALIDATING_CONTENT);
-              setButtonLabel(VALIDATING_BUTTON);
+              setTitle(TitleLabel.Validating);
+              setContent(ContentLabel.Validating);
+              setButtonLabel(ButtonLabel.Validating);
+              triggerVerify();
             }}
           />
         )}
