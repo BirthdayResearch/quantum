@@ -68,7 +68,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     bytes32 constant DATA_TYPE_HASH =
         keccak256('CLAIM(address to,uint256 amount,uint256 nonce,uint256 deadline,address tokenAddress)');
 
-    // Mapping to track the maximum allocation per token address.
+    // Mapping to track the maximum balance of tokens the contract can hold per token address.
     mapping(address => uint256) public tokenCap;
 
     bytes32 public constant OPERATIONAL_ROLE = keccak256('OPERATIONAL_ROLE');
@@ -109,7 +109,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice Emitted when a new token is being added to the supported list by only Admin accounts
      * @param supportedToken Address of the token being added to the supported list
-     * @param tokenCap Maximum allocation per supported token
+     * @param tokenCap Maximum balance per supported token
      */
     event ADD_SUPPORTED_TOKEN(address indexed supportedToken, uint256 indexed tokenCap);
 
@@ -163,6 +163,14 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param newAddress The new address to be flushed to
      */
     event CHANGE_FLUSH_RECEIVE_ADDRESS(address oldAddress, address newAddress);
+
+    /**
+     * @notice Emitted when the tokenCap of an existing supported token is changed by only Admin accounts
+     * @param supportedToken Address of the supported token
+     * @param oldTokenCap The old maximum balance this contract can hold
+     * @param newTokenCap The new maximum balance this contract can hold
+     */
+    event CHANGE_TOKEN_CAP(address indexed supportedToken, uint256 indexed oldTokenCap, uint256 indexed newTokenCap);
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
@@ -244,11 +252,10 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice Used by addresses with Admin and Operational roles to add a new supported token and daily allowance
      * @param _tokenAddress The token address to be added to supported list
-     * @param _currentCap To do: not sure about this
+     * @param _currentCap maximum balance of tokens the contract can hold per `_tokenAddress`
      */
     function addSupportedTokens(address _tokenAddress, uint256 _currentCap) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
-        if (_tokenAddress == address(0)) revert ZERO_ADDRESS();
         if (supportedTokens.contains(_tokenAddress)) revert TOKEN_ALREADY_SUPPORTED();
         supportedTokens.add(_tokenAddress);
         tokenCap[_tokenAddress] = _currentCap;
@@ -336,6 +343,18 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address oldAddress = communityWallet;
         communityWallet = _newAddress;
         emit TRANSACTION_FEE_ADDRESS_CHANGED(oldAddress, _newAddress);
+    }
+
+    /**
+     * @notice Called by addresses with Admin and Operational roles to reset the maximum balance of tokens the contract
+     * @param _newTokenCap The new maximum balance of tokens the contract can hold per token address.
+     */
+    function changeTokenCap(address _tokenAddress, uint256 _newTokenCap) external {
+        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
+        uint256 oldTokenCap = tokenCap[_tokenAddress];
+        tokenCap[_tokenAddress] = _newTokenCap;
+        emit CHANGE_TOKEN_CAP(_tokenAddress, oldTokenCap, _newTokenCap);
     }
 
     /**

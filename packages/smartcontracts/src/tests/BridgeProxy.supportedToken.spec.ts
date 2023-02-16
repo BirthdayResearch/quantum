@@ -1,13 +1,12 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
-import { ethers } from 'hardhat';
 
 import { deployContracts } from './testUtils/deployment';
 import { toWei } from './testUtils/mathUtils';
 
-describe('Add and Removed Supported ERC20 tokens', () => {
+describe('Add and Removed Supported ERC20 tokens, and Token`s hard cap tests', () => {
   describe('DEFAULT_ADMIN_ROLE', () => {
-    it('Successfully add token to supported list & allowance by Admin role address', async () => {
+    it('Successfully add token to supported list & changed token`s hard cap by Admin role address', async () => {
       const { proxyBridge, testToken, testToken2, defaultAdminSigner } = await loadFixture(deployContracts);
       // Supporting testToken with hard cap of 15
       await proxyBridge.connect(defaultAdminSigner).addSupportedTokens(testToken.address, toWei('15'));
@@ -21,6 +20,9 @@ describe('Add and Removed Supported ERC20 tokens', () => {
       // Checking testToken2 and hard cap
       expect(await proxyBridge.isSupported(testToken2.address)).to.equal(true);
       expect(await proxyBridge.tokenCap(testToken2.address)).to.equal(toWei('20'));
+      // Changing testToken `tokenCap` to 50 testTokens
+      await expect(proxyBridge.connect(defaultAdminSigner).changeTokenCap(testToken.address, toWei('50')));
+      expect(await proxyBridge.tokenCap(testToken.address)).to.be.equal(toWei('50'));
     });
 
     it('Unable to add existing token to supported list', async () => {
@@ -50,17 +52,10 @@ describe('Add and Removed Supported ERC20 tokens', () => {
         proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(testToken2.address),
       ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
     });
-
-    it('Successfully revert if added token Address is 0x0', async () => {
-      const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
-      await expect(
-        proxyBridge.connect(defaultAdminSigner).addSupportedTokens(ethers.constants.AddressZero, toWei('15')),
-      ).to.be.revertedWithCustomError(proxyBridge, 'ZERO_ADDRESS');
-    });
   });
 
   describe('OPERATIONAL_ROLE', () => {
-    it('OPERATIONAL_ROLE address able to add token', async () => {
+    it('OPERATIONAL_ROLE address able to add token and change token`s cap', async () => {
       const { proxyBridge, testToken2, operationalAdminSigner } = await loadFixture(deployContracts);
       // Adding the supported toke by OPERATIONAL_ROLE address
       // Supporting testToken with hard cap of 15
@@ -68,6 +63,9 @@ describe('Add and Removed Supported ERC20 tokens', () => {
       // Checking testToken2 and hard cap
       expect(await proxyBridge.isSupported(testToken2.address)).to.equal(true);
       expect(await proxyBridge.tokenCap(testToken2.address)).to.equal(toWei('15'));
+      // Changing testToken `tokenCap` to 50 testTokens
+      await expect(proxyBridge.connect(operationalAdminSigner).changeTokenCap(testToken2.address, toWei('50')));
+      expect(await proxyBridge.tokenCap(testToken2.address)).to.be.equal(toWei('50'));
     });
 
     it('Unable to add existing token to supported list', async () => {
@@ -117,6 +115,16 @@ describe('Add and Removed Supported ERC20 tokens', () => {
         proxyBridge.connect(arbitrarySigner).removeSupportedTokens(testToken.address),
       ).to.be.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
     });
+
+    it('NON-ADMIN_ROLES address unable to change token`s cap', async () => {
+      const { proxyBridge, testToken, defaultAdminSigner, arbitrarySigner } = await loadFixture(deployContracts);
+      // Supporting testToken with hard cap of 15
+      await proxyBridge.connect(defaultAdminSigner).addSupportedTokens(testToken.address, toWei('15'));
+      // Revert with the custom error 'NON_AUTHORIZED_ADDRESS'
+      await expect(
+        proxyBridge.connect(arbitrarySigner).changeTokenCap(testToken.address, toWei('50')),
+      ).to.be.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
+    });
   });
 
   describe('Emitted Events', () => {
@@ -145,6 +153,18 @@ describe('Add and Removed Supported ERC20 tokens', () => {
       await expect(proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(testToken.address))
         .to.emit(proxyBridge, 'REMOVE_SUPPORTED_TOKEN')
         .withArgs(testToken.address);
+    });
+
+    it('Successfully emitted the event when the supported token`s cap changed by Admin Addresses', async () => {
+      const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
+      // Supporting testToken with hard cap of 10
+      await proxyBridge.connect(defaultAdminSigner).addSupportedTokens(testToken.address, toWei('10'));
+      const capBefore = await proxyBridge.tokenCap(testToken.address);
+      expect(capBefore).to.be.equal(toWei('10'));
+      // Changing testToken's cap to 40 testTokens
+      await expect(proxyBridge.changeTokenCap(testToken.address, toWei('40')))
+        .to.emit(proxyBridge, 'CHANGE_TOKEN_CAP')
+        .withArgs(testToken.address, capBefore, toWei('40'));
     });
   });
 });
