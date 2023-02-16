@@ -67,7 +67,7 @@ jobs:
           region: eu-west-1
           cpu: 2
           memory: 3
-          environment:
+          env:
             DATABASE_URL: ${{ secrets.DATABASE_URL }}
             DEFICHAIN_NETWORK: ${{ secrets.DEFICHAIN_NETWORK }}
             DEFICHAIN_PRIVATE_KEY: ${{ secrets.DEFICHAIN_PRIVATE_KEY }}
