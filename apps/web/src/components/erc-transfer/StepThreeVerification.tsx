@@ -73,9 +73,8 @@ export default function StepThreeVerification({
           symbol: txn.selectedTokensA.tokenA.symbol,
         });
 
-        console.log("trycatch", data);
         if (data?.statusCode !== undefined) {
-          console.log({ code: data?.statusCode });
+          Logging.info(`Returned statusCode: ${data?.statusCode}`);
           setContent(ContentLabel.Rejected);
           setTitle(`Something went wrong (Error code ${data.statusCode})`);
           setValidationSuccess(false);

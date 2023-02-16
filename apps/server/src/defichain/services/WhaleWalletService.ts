@@ -73,7 +73,7 @@ export class WhaleWalletService {
         amount: verify.amount.toString(),
       });
 
-      return { isValid: true, signature: claim.signature, nonce: claim.nonce };
+      return { isValid: true, signature: claim.signature, nonce: claim.nonce, deadline: claim.deadline };
     } catch (error) {
       throw new HttpException(
         {
@@ -176,4 +176,5 @@ export interface VerifyResponse {
   statusCode?: CustomErrorCodes;
   signature?: string;
   nonce?: number;
+  deadline?: number;
 }

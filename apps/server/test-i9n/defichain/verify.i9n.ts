@@ -268,5 +268,6 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response.isValid).toBeTruthy();
     expect(response.signature).toBeDefined();
     expect(response.nonce).toBeDefined();
+    expect(response.deadline).toBeDefined();
   });
 });
