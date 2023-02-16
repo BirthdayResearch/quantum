@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
-import { IoHelpCircle } from "react-icons/io5";
+import { IoCloseOutline, IoHelpCircle } from "react-icons/io5";
 import useResponsive from "../hooks/useResponsive";
 import { useContractContext } from "../layouts/contexts/ContractContext";
 import { useEffect, useState } from "react";
@@ -43,6 +43,14 @@ export default function TransactionStatus({
         isMd ? "mb-6" : "m-6"
       )}
     >
+      {ethTxnStatus.isConfirmed && (
+        <div className="flex justify-end">
+          <IoCloseOutline
+            size={20}
+            className="hover:opacity-70 cursor-pointer"
+          />
+        </div>
+      )}
       <div className="leading-5 lg:text-xl lg:font-semibold">{title}</div>
       <div className="pt-1 text-sm text-dark-700">{description}</div>
       <div className="flex flex-row items-center mt-2 text-dark-900 text-xl font-bold ">
