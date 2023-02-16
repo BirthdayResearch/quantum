@@ -21,7 +21,9 @@ function Home() {
           {isMd && <ProofOfAssetsCard />}
         </div>
         <div className="flex-1">
-          {txnHash && <TransactionStatus ethTxnStatus={ethTxnStatus} />}
+          {txnHash && (
+            <TransactionStatus ethTxnStatus={ethTxnStatus} txnHash={txnHash} />
+          )}
           <BridgeForm hasPendingTxn={txnHash !== undefined} />
         </div>
       </div>

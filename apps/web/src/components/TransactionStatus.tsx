@@ -1,15 +1,19 @@
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
 import useResponsive from "../hooks/useResponsive";
+import { useContractContext } from "../layouts/contexts/ContractContext";
 
 export default function TransactionStatus({
   ethTxnStatus,
+  txnHash,
 }: {
   ethTxnStatus: {
     isConfirmed: boolean;
     numberOfConfirmations: string;
   };
+  txnHash?: string;
 }) {
+  const { ExplorerURL } = useContractContext();
   const { isLg } = useResponsive();
   return (
     <div className="w-full px-8 py-6 mb-6 text-dark-1000 dark-bg-gradient-1 rounded-xl border border-transparent">
@@ -23,7 +27,7 @@ export default function TransactionStatus({
       </div>
       <a
         className="flex flex-row items-center mt-2 text-dark-900 text-xl font-bold hover:opacity-70"
-        href="https://google.com"
+        href={`${ExplorerURL}/tx/${txnHash}`}
         target="_blank"
       >
         <FiArrowUpRight size={20} className="mr-2" />
