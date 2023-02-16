@@ -3,12 +3,6 @@ interface TooltipInfoI {
   content: string;
 }
 
-export const CONSORTIUM_INFO: TooltipInfoI = {
-  title: "DeFiChain Consortium",
-  content:
-    "DeFiChain members that have been given the rights to mint and burn the Tokenized Assets on DeFiChain.",
-};
-
 export const FEES_INFO: TooltipInfoI = {
   title: "Fees",
   content:
