@@ -15,7 +15,6 @@ import Modal from "@components/commons/Modal";
 import ErrorModal from "@components/commons/ErrorModal";
 import { TransferData } from "types";
 import UtilityButton from "@components/commons/UtilityButton";
-import { getEndOfDayTimeStamp } from "@utils/durationHelper";
 import { setStorageItem } from "@utils/localStorage";
 import { STORAGE_TXN_KEY } from "../../constants";
 
@@ -27,7 +26,7 @@ export default function StepLastClaim({
   signedClaim,
 }: {
   data: TransferData;
-  signedClaim: { signature: string; nonce: number };
+  signedClaim: { signature: string; nonce: number; deadline: number };
 }) {
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
@@ -46,7 +45,7 @@ export default function StepLastClaim({
       data.to.address,
       utils.parseEther(data.to.amount.toString()),
       signedClaim.nonce,
-      getEndOfDayTimeStamp(),
+      signedClaim.deadline,
       tokenAddress,
       signedClaim.signature,
     ],
