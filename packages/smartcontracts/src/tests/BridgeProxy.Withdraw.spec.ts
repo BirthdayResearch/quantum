@@ -30,10 +30,14 @@ describe('Withdrawal tests', () => {
 
     it('Succesful withdrawal of ETH by Admin only', async () => {
       const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
-      await defaultAdminSigner.sendTransaction({
-        to: proxyBridge.address,
-        value: toWei('100'),
-      });
+      await expect(
+        defaultAdminSigner.sendTransaction({
+          to: proxyBridge.address,
+          value: toWei('100'),
+        }),
+      )
+        .to.emit(proxyBridge, 'ETH_RECEIVED_VIA_RECEIVE_FUNCTION')
+        .withArgs(defaultAdminSigner.address, toWei('100'));
       expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('100'));
       const balanceBeforeWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
       const tx = await proxyBridge.connect(defaultAdminSigner).withdraw(ethers.constants.AddressZero, toWei('10'));

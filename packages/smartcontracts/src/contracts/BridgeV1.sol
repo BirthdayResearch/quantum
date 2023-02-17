@@ -192,7 +192,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Emitted when ETH is received via receive external payable
      * @param ethAmount The amount of ETH sent to the smart contract
      */
-    event ETH_RECEIVED_VIA_RECEIVE_FUNCTION(uint256 ethAmount);
+    event ETH_RECEIVED_VIA_RECEIVE_FUNCTION(address indexed sender, uint256 indexed ethAmount);
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
@@ -425,7 +425,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice to receive ether
      */
     receive() external payable {
-        emit ETH_RECEIVED_VIA_RECEIVE_FUNCTION(msg.value);
+        emit ETH_RECEIVED_VIA_RECEIVE_FUNCTION(msg.sender, msg.value);
     }
 
     /**
