@@ -23,7 +23,7 @@ export default function useWatchEthTxn() {
   useEffect(() => {
     const pollConfirmEthTxn = async function poll() {
       try {
-        if (txnHash.unconfirmed === undefined) {
+        if (txnHash.unconfirmed) {
           return;
         }
 
@@ -33,7 +33,7 @@ export default function useWatchEthTxn() {
 
         if (data) {
           if (data?.isConfirmed) {
-            setTxnHash("confirmed", txnHash.unconfirmed);
+            setTxnHash("confirmed", txnHash.unconfirmed ?? null);
             setTxnHash("unconfirmed", null);
           }
 

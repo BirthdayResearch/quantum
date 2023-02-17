@@ -68,8 +68,10 @@ export function TransactionHashProvider({
 
     return {
       txnHash: {
-        confirmed: confirmedTxnHashKey,
-        unconfirmed: unconfirmedTxnHashKey,
+        confirmed:
+          confirmedTxnHashKey === null ? undefined : confirmedTxnHashKey,
+        unconfirmed:
+          unconfirmedTxnHashKey === null ? undefined : unconfirmedTxnHashKey,
       },
       getTxnHash,
       setTxnHash,
