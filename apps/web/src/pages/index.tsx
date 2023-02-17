@@ -10,7 +10,7 @@ import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 
 function Home() {
   const { isMd } = useResponsive();
-  const { ethTxnStatus } = useWatchEthTxn();
+  const { ethTxnStatus, isApiSuccess } = useWatchEthTxn();
   const { txnHash, setTxnHash } = useTransactionHashContext();
 
   return (
@@ -36,6 +36,7 @@ function Home() {
                   ? CONFIRMATIONS_BLOCK_TOTAL.toString()
                   : ethTxnStatus?.numberOfConfirmations
               }
+              isApiSuccess={isApiSuccess}
             />
           )}
           <BridgeForm hasPendingTxn={txnHash.unconfirmed !== undefined} />

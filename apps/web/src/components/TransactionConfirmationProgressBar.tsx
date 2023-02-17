@@ -2,20 +2,20 @@ import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import { useEffect, useState } from "react";
 import useResponsive from "../hooks/useResponsive";
 import clsx from "clsx";
-import useWatchEthTxn from "../hooks/useWatchEthTxn";
 import ContentLoader from "react-content-loader";
 
 export default function ConfirmationProgress({
   confirmationBlocksTotal,
   confirmationBlocksCurrent,
   isConfirmed,
+  isApiSuccess,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
   isConfirmed: boolean;
+  isApiSuccess: boolean;
 }) {
   const { isLg } = useResponsive();
-  const { isApiSuccess } = useWatchEthTxn();
   const [valuePercentage, setValuePercentage] = useState<number>(0);
 
   useEffect(() => {
