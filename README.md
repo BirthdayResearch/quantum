@@ -45,37 +45,46 @@ Once approved, user will call the `bridgeToDeFiChain()` function with following 
 
 ### Add supported token
 
-Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for an ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
-User are not allowed to bridge more than the dailyAllowance per day.
+Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
 
-For `Instant support`, administrators can set `_startAllowanceTimeFrom` to the current timestamp plus 60 seconds or more if the network is congested when adding a supported token. This will result in immediate support for the token. The additional 60 seconds account for the time required by the network to execute this transaction.
+`_tokenCap` represent the maximum balance of tokens the contract can hold per `_tokenAddress`
 
 ### Remove supported token
 
-Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function.
-
-### Withdraw ERC20
-
-Only the Admin can call the `withdraw()` function with the token's address and amount.
-
-### Change Daily Allowance
-
-Both the Admin and Operational addresses can change the `_dailyAllowance` (the new daily allowance) and `_newResetTimeStamp` (the timestamp when the token will start being supported) via the `changeDailyAllowance()` function. The changes will only come into effect when the current timestamp has reached the `_newResetTimeStamp`. This new timestamp will have to be at least 24 hours in the future, if not the function will revert with `INVALID_RESET_EPOCH_TIME`
-
-During this 'change in allowance' period, no bridging to DeFiChain will be allowed. However, it is still possible to make additional changes by calling `changeDailyAllowance()` in case mistakes were made.
+Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function. This also sets the `_tokenCap` to `0`.
 
 ### Withdraw
 
 `withdraw()` function when called will withdraw an ERC20 token. Only the address with the Admin role can call this function.
 
+### FlushFund
+
+`flushFund` function to flush the excess funds `(token.balanceOf(Bridge) - tokenCap)` across supported tokens to a hardcoded address (`flushReceiveAddress`) anyone can call this function.
+
+### Change Flush Receive Address
+
+Both the Admin and Operational addresses can change `flushReceiveAddress`.
+`changeFlushReceiveAddress` function will reset the `flushReceiveAddress` to new address.
+
 ### Change relayer address
 
 Both the Admin and Operational addresses can change `relayerAddress`.
+
 The relayer address will primarily be used for verifying the signature that is signed by the server. The server will need to sign with the corresponding private key of the relayer address.
 
 ### Transaction fee change
 
-Only address with admin role can change `transactionFee`. Initial fee will be set to 0.3%. This means that if the user bridges `X` tokens, he will only bridge 99.7% of X. The other 0.3% will be taken as fees.
+Only addresses with admin roles can change `transactionFee`.
+
+Initial fee will be set to 0.1%. This means that if the user bridges `X` tokens, 99.9% of X will be bridged. The other 0.1% will be taken as fees and sent to `communityWallet`.
+
+### Change Tx Fee Address
+
+Only addresses with admin roles can change `communityWallet`. This is where the tx fees upon bridging will go.
+
+### Change Token Cap
+
+Only addresses with admin roles can change `tokenCap`.
 
 ### Modify admin and operational address
 
@@ -156,4 +165,4 @@ After making changes to the database schema in schema.prisma, run `cd apps/serve
 
 Run `./with-db generate` to generate the Prisma Client.
 
-Run `./with-db migrate dev` to migrate and apply database migrations in the development environment. 
+Run `./with-db migrate dev` to migrate and apply database migrations in the development environment.

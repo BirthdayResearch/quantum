@@ -252,14 +252,14 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice Used by addresses with Admin and Operational roles to add a new supported token and daily allowance
      * @param _tokenAddress The token address to be added to supported list
-     * @param _currentCap maximum balance of tokens the contract can hold per `_tokenAddress`
+     * @param _tokenCap maximum balance of tokens the contract can hold per `_tokenAddress`
      */
-    function addSupportedTokens(address _tokenAddress, uint256 _currentCap) external {
+    function addSupportedTokens(address _tokenAddress, uint256 _tokenCap) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
         if (supportedTokens.contains(_tokenAddress)) revert TOKEN_ALREADY_SUPPORTED();
         supportedTokens.add(_tokenAddress);
-        tokenCap[_tokenAddress] = _currentCap;
-        emit ADD_SUPPORTED_TOKEN(_tokenAddress, _currentCap);
+        tokenCap[_tokenAddress] = _tokenCap;
+        emit ADD_SUPPORTED_TOKEN(_tokenAddress, _tokenCap);
     }
 
     /**
@@ -368,7 +368,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice to check whether a token is supported
      */
-    function isSupported(address _tokenAddress) public view returns (bool) {
+    function isSupported(address _tokenAddress) external view returns (bool) {
         return supportedTokens.contains(_tokenAddress);
     }
 
