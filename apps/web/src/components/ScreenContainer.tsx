@@ -18,7 +18,7 @@ export default function ScreenContainer({
 
   // background picture has 2 conditions/designs: connected wallet bg design vs preconnected wallet bg design
   const bgPicture =
-    isMaintenanceEnabled || router.pathname === "/404"
+    isMaintenanceEnabled === true || router.pathname === "/404"
       ? "bg-[url('/background/error_mobile.png')] md:bg-[url('/background/error_tablet.png')] lg:bg-[url('/background/error_desktop.png')]"
       : "bg-[url('/background/mobile.png')] md:bg-[url('/background/tablet.png')] lg:bg-[url('/background/desktop.png')]";
 
