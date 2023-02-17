@@ -131,7 +131,7 @@ describe('DeFiChain --> EVM', () => {
 
       const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
       expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('100'));
-      // This should revert with custom error 'NOT_ENOUGH_ETHEREUM'. Proxy contract has only 100 tokens
+      // This should revert because proxy contract has only 100 tokens
       await expect(
         proxyBridge.claimFund(
           defaultAdminSigner.address,
@@ -252,9 +252,7 @@ describe('DeFiChain --> EVM', () => {
         deadline: ethers.constants.MaxUint256,
         tokenAddress: ethers.constants.AddressZero,
       };
-
       const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
-      // Checking Balance before claiming fund, should be 0
       const ethBalanceBeforeClaim = await ethers.provider.getBalance(defaultAdminSigner.address);
       const tx = await proxyBridge.claimFund(
         defaultAdminSigner.address,

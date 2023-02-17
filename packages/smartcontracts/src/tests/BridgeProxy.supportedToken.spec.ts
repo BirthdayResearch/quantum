@@ -54,7 +54,7 @@ describe('Add and Removed Supported ERC20 tokens, and Token`s hard cap tests', (
       ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
     });
 
-    it('Unable to remove ETH when not supporting yet', async () => {
+    it('Unable to remove ETH when not supported yet', async () => {
       const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
       await expect(
         proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(ethers.constants.AddressZero),
