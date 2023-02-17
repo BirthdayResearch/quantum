@@ -55,11 +55,7 @@ export default function useWriteBridgeToDeFiChain({
           }
         : {}),
       onError: (err) => {
-        // Note: For some reason, wETH token is not giving specific error for `insufficient allowance`
-        const unapprovedWETHtoken =
-          tokenName === "wETH" && err.message.includes("cannot estimate gas");
-        const unApprovedToken = err.message.includes("insufficient allowance");
-        if (unapprovedWETHtoken || unApprovedToken) {
+        if (err.message.includes("insufficient allowance")) {
           // Need to request approval from user
           onInsufficientAllowanceError();
         } else {
