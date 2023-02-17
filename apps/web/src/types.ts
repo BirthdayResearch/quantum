@@ -29,7 +29,7 @@ export interface AddressDetails {
 }
 
 export interface BridgeStatus {
-  isUrl: boolean;
+  isUp: boolean;
 }
 
 export enum SelectionType {
