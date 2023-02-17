@@ -1,5 +1,6 @@
 import Footer from "@components/Footer";
 import Header from "@components/Header";
+import { useGetBridgeStatusQuery } from "@store/website";
 import clsx from "clsx";
 import { useRouter } from "next/router";
 import Maintenance from "./Maintenance";
@@ -9,10 +10,9 @@ export default function ScreenContainer({
 }: {
   children: JSX.Element;
 }): JSX.Element {
-  // TODO update logic when endpoint is ready
   // if isMaintenanceEnabled is true, this condition will supersede /404 page display
-  const isMaintenanceEnabled = false;
-
+  // const isMaintenanceEnabled = useGetBridgeStatusQuery("getBridgeStatus");
+  const isMaintenanceEnabled = useGetBridgeStatusQuery("getBridgeStatus");
   const router = useRouter();
 
   // background picture has 2 conditions/designs: connected wallet bg design vs preconnected wallet bg design

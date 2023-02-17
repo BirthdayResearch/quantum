@@ -27,6 +27,8 @@ import SecuredStoreAPI from "@api/secure-storage";
 import Logging from "@api/logging";
 import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
 import { bridgeApi } from "@store/website";
+// import { Provider } from "@reduxjs/toolkit/query/react/package.json"
+import StoreProvider from "@contexts/StoreProvider";
 import ScreenContainer from "../components/ScreenContainer";
 
 const metamask = new MetaMaskConnector({
@@ -127,9 +129,11 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
                   <WhaleProvider>
                     <NetworkEnvironmentProvider>
                       <ContractProvider>
-                        <ThemeProvider theme={initialTheme}>
-                          <ScreenContainer>{children}</ScreenContainer>
-                        </ThemeProvider>
+                        <StoreProvider>
+                          <ThemeProvider theme={initialTheme}>
+                            <ScreenContainer>{children}</ScreenContainer>
+                          </ThemeProvider>
+                        </StoreProvider>
                       </ContractProvider>
                     </NetworkEnvironmentProvider>
                   </WhaleProvider>

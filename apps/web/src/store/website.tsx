@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { FetchArgs } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
-import { AddressDetails } from "types";
+import { AddressDetails, BridgeStatus } from "types";
 import { HttpStatusCode } from "axios";
 
 const staggeredBaseQueryWithBailOut = retry(
@@ -72,14 +72,34 @@ export const bridgeApi = createApi({
   }),
 });
 
+export const announcementWebsiteSlice = createApi({
+  reducerPath: "website",
+  baseQuery: fetchBaseQuery({ baseUrl: "https://wallet.defichain.com/api/v0" }),
+  endpoints: (builder) => ({
+    getBridgeStatus: builder.query<BridgeStatus, any>({
+      query: () => ({
+        url: "/bridge/status",
+        method: "GET",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          mode: "no-cors",
+        },
+      }),
+    }),
+  }),
+});
+
 const {
   useGenerateAddressMutation,
   useLazyVerifyQuery,
   useGetAddressDetailMutation,
 } = bridgeApi;
 
+const { useGetBridgeStatusQuery } = announcementWebsiteSlice;
+
 export {
   useGenerateAddressMutation,
   useLazyVerifyQuery,
   useGetAddressDetailMutation,
+  useGetBridgeStatusQuery,
 };
