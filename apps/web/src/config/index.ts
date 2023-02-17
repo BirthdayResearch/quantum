@@ -20,7 +20,7 @@ export const MAINNET_CONFIG: ContractContextI = {
 export const TESTNET_CONFIG: ContractContextI = {
   ExplorerURL: "https://goerli.etherscan.io",
   BridgeV1: {
-    address: "0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C",
+    address: "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef",
     abi: BridgeV1Testnet,
   },
   Erc20Tokens: {
