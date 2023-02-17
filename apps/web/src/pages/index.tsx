@@ -1,15 +1,12 @@
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
-import ProofOfAssetsCard from "@components/ProofOfAssetsCard";
-import MobileBottomMenu from "@components/MobileBottomMenu";
-import useResponsive from "@hooks/useResponsive";
+// import MobileBottomMenu from "@components/MobileBottomMenu";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
 import { useTransactionHashContext } from "@contexts/TransactionHashContext";
 import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 
 function Home() {
-  const { isMd } = useResponsive();
   const { ethTxnStatus, isApiSuccess } = useWatchEthTxn();
   const { txnHash, setTxnHash } = useTransactionHashContext();
 
@@ -21,7 +18,6 @@ function Home() {
       <div className="flex flex-col md:flex-row w-full px-0 md:px-12 lg:px-[120px]">
         <div className="flex flex-col justify-between px-6 pb-7 md:px-0 md:pb-0 md:w-5/12 md:mr-8 lg:mr-[72px]">
           <WelcomeHeader />
-          {isMd && <ProofOfAssetsCard />}
         </div>
         <div className="flex-1">
           {(txnHash.unconfirmed || txnHash.confirmed) && (
@@ -42,9 +38,9 @@ function Home() {
           <BridgeForm hasPendingTxn={txnHash.unconfirmed !== undefined} />
         </div>
       </div>
-      <div className="md:hidden mt-6 mb-12 mx-6">
+      {/* <div className="md:hidden mt-6 mb-12 mx-6"> TODO:: Hide Temporary
         <MobileBottomMenu />
-      </div>
+      </div> */}
     </section>
   );
 }
