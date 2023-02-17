@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import UtilityButton from "@components/commons/UtilityButton";
 import UtilitySecondaryButton from "@components/erc-transfer/VerifiedUtilityButton";
-import { useLazyVerifyQuery } from "@store/website";
+import { useLazyVerifyQuery } from "@store/index";
 import BigNumber from "bignumber.js";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { getStorageItem } from "@utils/localStorage";

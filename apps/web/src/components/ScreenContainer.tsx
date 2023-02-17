@@ -1,6 +1,6 @@
 import Footer from "@components/Footer";
 import Header from "@components/Header";
-import { useGetBridgeStatusQuery } from "@store/website";
+import { useGetBridgeStatusQuery } from "@store/index";
 import clsx from "clsx";
 import { useRouter } from "next/router";
 import Maintenance from "./Maintenance";

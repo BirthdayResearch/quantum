@@ -7,7 +7,7 @@ import { getStorageItem, setStorageItem } from "@utils/localStorage";
 import Tooltip from "@components/commons/Tooltip";
 import UtilityButton from "@components/commons/UtilityButton";
 import { useRouter } from "next/router";
-import { useGenerateAddressMutation } from "@store/website";
+import { useGenerateAddressMutation } from "@store/index";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { HttpStatusCode } from "axios";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
