@@ -19,23 +19,24 @@ export default function useWatchEthTxn() {
     isConfirmed: boolean;
     numberOfConfirmations: string;
   }>({ isConfirmed: false, numberOfConfirmations: "0" });
+  var pollInterval;
 
   /* Poll to check if the txn is already confirmed */
   useEffect(() => {
     setIsApiSuccess(false);
-    const pollConfirmEthTxn = async function poll() {
+    const pollConfirmEthTxn = async function poll(unconfirmed?: string) {
       try {
-        if (txnHash.unconfirmed === undefined) {
+        if (unconfirmed === undefined) {
           return;
         }
 
         const data = await confirmEthTxn({
-          txnHash: txnHash.unconfirmed,
+          txnHash: unconfirmed,
         }).unwrap();
 
         if (data) {
           if (data?.isConfirmed) {
-            setTxnHash("confirmed", txnHash.unconfirmed ?? null);
+            setTxnHash("confirmed", unconfirmed ?? null);
             setTxnHash("unconfirmed", null);
           }
 
@@ -52,9 +53,20 @@ export default function useWatchEthTxn() {
         }
         setIsApiLoading(false);
       }
-      setTimeout(pollConfirmEthTxn, 20000);
     };
-    pollConfirmEthTxn();
+
+    if (pollInterval !== undefined) {
+      clearInterval(pollInterval);
+    }
+    pollInterval = setInterval(() => {
+      pollConfirmEthTxn(txnHash.unconfirmed);
+    }, 20000);
+
+    return () => {
+      if (pollInterval !== undefined) {
+        clearInterval(pollInterval);
+      }
+    };
   }, [networkEnv, txnHash]);
 
   return { ethTxnStatus, isApiLoading, isApiSuccess };
