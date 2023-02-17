@@ -49,18 +49,10 @@ export default function TransactionStatus({
         isConfirmed
           ? "border-dark-card-stroke"
           : "dark-bg-gradient-1 border-transparent",
-        isMd ? "mb-6" : "m-6"
+        isMd ? "mb-6" : "m-6",
+        { "pr-6": isLg && isConfirmed }
       )}
     >
-      {isConfirmed && isLg && (
-        <div className="flex justify-end">
-          <IoCloseOutline
-            onClick={onClose}
-            size={20}
-            className="hover:opacity-70 cursor-pointer"
-          />
-        </div>
-      )}
       {!isLg && (
         <div className="pb-4">
           <ConfirmationProgress
@@ -101,12 +93,21 @@ export default function TransactionStatus({
           )}
         </div>
         {isLg && (
-          <div className="pl-8">
+          <div className="flex flex-row pl-8">
             <ConfirmationProgress
               confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
               confirmationBlocksCurrent={confirmationBlocksCurrent}
               isConfirmed={isConfirmed}
             />
+            {isConfirmed && (
+              <div>
+                <IoCloseOutline
+                  onClick={onClose}
+                  size={20}
+                  className="hover:opacity-70 cursor-pointer"
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
