@@ -23,7 +23,7 @@ async function main() {
 }
 
 async function mintAndApproveTestTokens(tokenAddress: string, amount: BigNumber) {
-  const bridgeAddress = '0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C';
+  const bridgeAddress = '0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef';
   const provider = new ethers.providers.JsonRpcProvider(process.env.GOERLI_URL);
   const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
   const tokenContract = new ethers.Contract(tokenAddress, TestToken__factory.createInterface(), wallet);

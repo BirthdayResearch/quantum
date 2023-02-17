@@ -6,8 +6,9 @@ import { BridgeV1 } from '../generated';
 export async function bridgeImplementation(): Promise<BridgeV1> {
   const { chainId } = network.config;
   const BridgeV1Contract = await ethers.getContractFactory('BridgeV1');
-  const bridgeV1 = await BridgeV1Contract.deploy();
+  const bridgeV1 = await BridgeV1Contract.deploy({ nonce: 232 });
   await bridgeV1.deployed();
+  console.log('test');
   console.log('Bridge V1 address is ', bridgeV1.address);
   if (chainId !== 1337) {
     console.log(
@@ -16,3 +17,8 @@ export async function bridgeImplementation(): Promise<BridgeV1> {
   }
   return bridgeV1;
 }
+
+bridgeImplementation().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

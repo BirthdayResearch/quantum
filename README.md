@@ -135,11 +135,11 @@ MUSDC Contract address: [0xB200af2b733B831Fbb3d98b13076BC33F605aD58](https://goe
 
 ### BridgeV1
 
-BridgeV1 Contract address: [0xE029B5156c2e597c72f7c8D279411e1fD9a30126](https://goerli.etherscan.io/address/0xE029B5156c2e597c72f7c8D279411e1fD9a30126)
+BridgeV1 Contract address: [0xB5AA3ba3F4bF825AAF96F1ee9Fa0D6b3702Dc8B6](https://goerli.etherscan.io/address/0xB5AA3ba3F4bF825AAF96F1ee9Fa0D6b3702Dc8B6)
 
 ### BridgeProxy
 
-BridgeProxy Contract address: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C)
+BridgeProxy Contract address: [0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef](https://goerli.etherscan.io/address/0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef)
 
 ## Fund Bridge ERC20 tokens
 
