@@ -12,11 +12,13 @@ import ActionButton from "./commons/ActionButton";
 
 export default function TransactionStatus({
   isConfirmed,
+  isApiSuccess,
   numberOfConfirmations,
   txnHash,
   onClose,
 }: {
   isConfirmed: boolean;
+  isApiSuccess: boolean;
   numberOfConfirmations: string;
   txnHash: string | undefined;
   onClose: () => void;
@@ -59,6 +61,7 @@ export default function TransactionStatus({
             confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
             confirmationBlocksCurrent={confirmationBlocksCurrent}
             isConfirmed={isConfirmed}
+            isApiSuccess={isApiSuccess}
           />
         </div>
       )}
@@ -98,6 +101,7 @@ export default function TransactionStatus({
               confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
               confirmationBlocksCurrent={confirmationBlocksCurrent}
               isConfirmed={isConfirmed}
+              isApiSuccess={isApiSuccess}
             />
             {isConfirmed && (
               <div>

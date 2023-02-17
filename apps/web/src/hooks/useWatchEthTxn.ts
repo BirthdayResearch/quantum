@@ -14,6 +14,7 @@ export default function useWatchEthTxn() {
   const [confirmEthTxn] = useConfirmEthTxnMutation();
 
   const [isApiLoading, setIsApiLoading] = useState(true);
+  const [isApiSuccess, setIsApiSuccess] = useState(false);
   const [ethTxnStatus, setEthTxnStatus] = useState<{
     isConfirmed: boolean;
     numberOfConfirmations: string;
@@ -21,6 +22,7 @@ export default function useWatchEthTxn() {
 
   /* Poll to check if the txn is already confirmed */
   useEffect(() => {
+    setIsApiSuccess(false);
     const pollConfirmEthTxn = async function poll() {
       try {
         if (txnHash.unconfirmed === undefined) {
@@ -42,6 +44,7 @@ export default function useWatchEthTxn() {
             numberOfConfirmations: data?.numberOfConfirmations,
           });
           setIsApiLoading(false);
+          setIsApiSuccess(true);
         }
       } catch ({ data }) {
         if (data?.statusCode === HttpStatusCode.TooManyRequests) {
@@ -54,5 +57,5 @@ export default function useWatchEthTxn() {
     pollConfirmEthTxn();
   }, [networkEnv, txnHash]);
 
-  return { ethTxnStatus, isApiLoading };
+  return { ethTxnStatus, isApiLoading, isApiSuccess };
 }
