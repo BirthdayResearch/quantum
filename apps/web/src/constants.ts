@@ -50,6 +50,7 @@ export enum BridgeStatus {
   IsTokenRejected = 2,
   NoTxCreated = 3,
   TxHashBridgetoDfcError = 4,
+  IsBridgeToDfcInProgress = 5,
 }
 
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";

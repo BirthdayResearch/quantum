@@ -58,7 +58,13 @@ export default function useWriteApproveToken({
 
   useEffect(() => {
     if (writeApproveError || approveTxnError) {
-      setErrorMessage(writeApproveError?.message ?? approveTxnError?.message);
+      if (writeApproveError?.message?.includes("User rejected request")) {
+        setErrorMessage(
+          "The transaction was rejected in your wallet. No funds have been transferred. Please retry your transaction."
+        );
+      } else {
+        setErrorMessage(writeApproveError?.message ?? approveTxnError?.message);
+      }
     }
   }, [writeApproveError, approveTxnError]);
 
