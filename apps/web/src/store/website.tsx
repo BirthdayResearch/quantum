@@ -36,6 +36,27 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 3 },
     }),
+    verify: builder.query<
+      any,
+      {
+        network: string;
+        address: string;
+        amount: string;
+        symbol: string;
+      }
+    >({
+      query: ({ network, address, amount, symbol }) => ({
+        url: "/wallet/verify",
+        params: { network },
+        method: "POST",
+        body: {
+          address,
+          amount,
+          symbol,
+        },
+      }),
+      extraOptions: { maxRetries: 3 },
+    }),
     getAddressDetail: builder.mutation<AddressDetails, any>({
       query: ({ network, address }) => ({
         url: `defichain/wallet/address/${address}`,
@@ -68,10 +89,12 @@ const {
   useGenerateAddressMutation,
   useGetAddressDetailMutation,
   useConfirmEthTxnMutation,
+  useLazyVerifyQuery,
 } = bridgeApi;
 
 export {
   useGenerateAddressMutation,
   useGetAddressDetailMutation,
   useConfirmEthTxnMutation,
+  useLazyVerifyQuery,
 };

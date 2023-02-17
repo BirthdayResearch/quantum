@@ -8,7 +8,6 @@ import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
-import { PrismaService } from './PrismaService';
 
 @Module({
   imports: [
@@ -39,7 +38,6 @@ import { PrismaService } from './PrismaService';
   controllers: [],
   providers: [
     DeFiChainModule,
-    PrismaService,
     EthereumModule,
     {
       provide: APP_GUARD,

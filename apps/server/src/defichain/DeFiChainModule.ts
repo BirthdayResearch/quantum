@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { CacheModule, Module } from '@nestjs/common';
 
+import { SemaphoreCache } from '../libs/caches/SemaphoreCache';
 import { PrismaService } from '../PrismaService';
 import { StatsController } from './controllers/StatsController';
 import { WhaleWalletController } from './controllers/WhaleWalletController';
@@ -11,12 +12,14 @@ import { WhaleApiService } from './services/WhaleApiService';
 import { WhaleWalletService } from './services/WhaleWalletService';
 
 @Module({
+  imports: [CacheModule.register({ max: 10_000 })],
   providers: [
     WhaleApiClientProvider,
     WhaleApiService,
     WhaleWalletProvider,
     WhaleWalletService,
     DeFiChainTransactionService,
+    SemaphoreCache,
     PrismaService,
     SendService,
   ],

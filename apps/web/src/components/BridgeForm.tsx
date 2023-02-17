@@ -398,12 +398,18 @@ export default function BridgeForm({
             <ActionButton
               testId="transfer-btn"
               label={getActionBtnLabel()}
+              isLoading={hasPendingTxn}
               disabled={(isConnected && !isFormValid) || hasPendingTxn}
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
           )}
         </ConnectKitButton.Custom>
-        {hasUnconfirmedTxn && (
+        {hasPendingTxn && (
+          <span className="block pt-2 text-xs text-warning text-center lg:px-6 lg:text-sm">
+            Unable to edit while transaction is pending
+          </span>
+        )}
+        {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton
               label="Reset form"

@@ -36,9 +36,8 @@ describe('DeFiChain --> EVM', () => {
     };
     // Minting 100 testToken to ProxyContract
     await testToken.mint(proxyBridge.address, toWei('100'));
-    // Adding testToken in supported token with daily allowance of 15 tokens
-    // TestToken supports in currentTime + 15 secs
-    await proxyBridge.addSupportedTokens(testToken.address, toWei('15'), getCurrentTimeStamp({ additionalTime: 15 }));
+    // Supporting testToken with hard cap of 15
+    await proxyBridge.addSupportedTokens(testToken.address, toWei('15'));
   });
 
   it('Valid Signature', async () => {

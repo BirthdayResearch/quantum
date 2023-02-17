@@ -23,11 +23,10 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
     accounts[0],
     // community wallet address
     accounts[4],
-    30,
+    // 0.1%
+    10,
     // flushReceiveAddress
     accounts[3],
-    // minimum days of allowance for the bridge to be operational
-    2,
   ]);
   const bridgeProxy = await BridgeProxy.deploy(bridgeUpgradeable.address, encodedData);
   await bridgeProxy.deployed();

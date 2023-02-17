@@ -43,9 +43,8 @@ describe('Bridge Contract', () => {
       operationalAdminAddress,
       defaultAdminAddress,
       communityAddress,
-      30, // 0.3% txn fee
+      10, // 0.1% txn fee
       defaultAdminAddress, // flush funds back to admin
-      2, // 2 day buffer for flush
     ]);
     // Deploying proxy contract
     bridgeProxy = await evmContractManager.deployContract<BridgeProxy>({
@@ -83,8 +82,8 @@ describe('Bridge Contract', () => {
     it('Community address should be  Community address', async () => {
       expect(await bridgeUpgradeable.communityWallet()).toBe(communityAddress);
     });
-    it('Successfully implemented the 0.3% txn fee', async () => {
-      expect((await bridgeUpgradeable.transactionFee()).toString()).toBe('30');
+    it('Successfully implemented the 0.1% txn fee', async () => {
+      expect((await bridgeUpgradeable.transactionFee()).toString()).toBe('10');
     });
   });
 });

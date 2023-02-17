@@ -2,7 +2,7 @@ import { ethers, network } from 'hardhat';
 
 import { BridgeProxy, BridgeV1__factory } from '../generated';
 
-const TRANSACTION_FEE = 30;
+const TRANSACTION_FEE = 10;
 
 export async function deployBridgeProxy({
   adminAddress,
@@ -11,7 +11,6 @@ export async function deployBridgeProxy({
   bridgeV1Address,
   txFeeAddress,
   flushReceiveAddress,
-  acceptableRemainingDays,
 }: InputsForInitialization): Promise<BridgeProxy> {
   const { chainId } = network.config;
   const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
@@ -26,7 +25,6 @@ export async function deployBridgeProxy({
     txFeeAddress,
     TRANSACTION_FEE,
     flushReceiveAddress,
-    acceptableRemainingDays,
   ]);
   const bridgeProxy = await bridgeProxyContract.deploy(bridgeV1Address, encodedData);
   await bridgeProxy.deployed();
@@ -47,5 +45,4 @@ interface InputsForInitialization {
   bridgeV1Address: string;
   txFeeAddress: string;
   flushReceiveAddress: string;
-  acceptableRemainingDays: Number;
 }

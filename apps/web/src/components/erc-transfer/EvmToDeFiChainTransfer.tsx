@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import { setStorageItem } from "@utils/localStorage";
 import useResponsive from "@hooks/useResponsive";
 import useWriteApproveToken from "@hooks/useWriteApproveToken";
 import useWriteBridgeToDeFiChain from "@hooks/useWriteBridgeToDeFiChain";
@@ -13,7 +12,9 @@ import ActionButton from "@components/commons/ActionButton";
 import ErrorModal from "@components/commons/ErrorModal";
 import Modal from "@components/commons/Modal";
 import { Erc20Token, TransferData } from "types";
+import { useTransactionHashContext } from "@contexts/TransactionHashContext";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
+import { setStorageItem } from "@utils/localStorage";
 import {
   BridgeStatus,
   DISCLAIMER_MESSAGE,
@@ -34,11 +35,12 @@ export default function EvmToDeFiChainTransfer({
     BridgeStatus.NoTxCreated
   );
 
-  const { TXN_HASH_KEY } = useBridgeFormStorageKeys();
   const { isMobile } = useResponsive();
   const { networkEnv } = useNetworkEnvironmentContext();
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const sendingFromETH = data.from.tokenName === ETHEREUM_SYMBOL;
+  const { setTxnHash } = useTransactionHashContext();
+  const { TXN_KEY } = useBridgeFormStorageKeys();
 
   // Read details from token contract
   const erc20TokenContract = {
@@ -94,7 +96,9 @@ export default function EvmToDeFiChainTransfer({
 
   useEffect(() => {
     if (transactionHash !== undefined) {
-      setStorageItem(TXN_HASH_KEY, transactionHash);
+      setTxnHash("unconfirmed", transactionHash);
+      setTxnHash("confirmed", null);
+      setStorageItem(TXN_KEY, null);
       onClose();
     }
   }, [transactionHash]);

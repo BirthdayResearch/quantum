@@ -9,9 +9,7 @@ import { toWei } from './testUtils/mathUtils';
 describe('SetupLocalTestTask', () => {
   it('should set up the expected local testnet state', async () => {
     // Given that the setupLocalTest task is run
-    const { usdtContract, usdcContract, bridgeImplementationContract, supportedTime } =
-      await mintAndApproveTestTokensLocal();
-    const expectedTimeStamp = supportedTime; // Math.floor(Date.now() / 1000);
+    const { usdtContract, usdcContract, bridgeImplementationContract } = await mintAndApproveTestTokensLocal();
     // suppressing type error - method is actually properly typed
     // @ts-ignore
     const [adminSigner, operationalSigner] = await ethers.getSigners();
@@ -36,22 +34,15 @@ describe('SetupLocalTestTask', () => {
     const OPERATIONAL_ROLE = ethers.utils.solidityKeccak256(['string'], ['OPERATIONAL_ROLE']);
     expect(await proxyBridge.hasRole(OPERATIONAL_ROLE, operationalSigner.address)).to.equal(true);
 
-    // When checking that MUSDT is supported on the bridge
-    // Then the token should be supported
+    // Checking that MUSDT is supported on the bridge
     expect(await proxyBridge.isSupported(musdtAddress)).to.equal(true);
-    const musdtSupportedTokenInfo = await proxyBridge.tokenAllowances(musdtAddress);
-    // And the token should have the expected reset time
-    expect(musdtSupportedTokenInfo[0].eq(expectedTimeStamp)).to.equal(true);
-    // // And the token should have the expected daily allowance
-    expect(musdtSupportedTokenInfo[1].eq(ethers.constants.MaxUint256)).to.equal(true);
+    // Checking the hard cap on MUSDT token
+    expect(await proxyBridge.tokenCap(musdtAddress)).to.be.equal(ethers.constants.MaxUint256);
     // When checking that MUSDC is supported on the bridge
     // Then the token should be supported
     expect(await proxyBridge.isSupported(musdcAddress)).to.equal(true);
-    const musdcSupportedTokenInfo = await proxyBridge.tokenAllowances(musdcAddress);
-    // And the token should have the expected reset time
-    expect(musdcSupportedTokenInfo[0].eq(expectedTimeStamp)).to.equal(true);
-    // And the token should have the expected daily allowance
-    expect(musdcSupportedTokenInfo[1].eq(ethers.constants.MaxUint256)).to.equal(true);
+    expect(await proxyBridge.tokenCap(musdcAddress)).to.be.equal(ethers.constants.MaxUint256);
+
     // Before bridging, approval needed for the proxy contracts. `approve()` is being called for both mUsdc and mUsdt in `mintAndApproveTestTokensLocal()`
     // Then the call should not revert
     await time.increase(90);

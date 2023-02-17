@@ -1,9 +1,12 @@
 import { fromAddress } from '@defichain/jellyfish-address';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DeFiChainAddressIndex } from '@prisma/client';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
+import { EnvironmentNetwork, getJellyfishNetwork } from '@waveshq/walletkit-core';
+import BigNumber from 'bignumber.js';
 
+import { CustomErrorCodes } from '../../CustomErrorCodes';
 import { PrismaService } from '../../PrismaService';
+import { VerifyObject } from '../model/VerifyDto';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
@@ -14,6 +17,70 @@ export class WhaleWalletService {
     private readonly clientProvider: WhaleApiClientProvider,
     private prisma: PrismaService,
   ) {}
+
+  async verify(
+    verify: VerifyObject,
+    network: EnvironmentNetwork,
+  ): Promise<{ isValid: boolean; statusCode?: CustomErrorCodes }> {
+    // Verify if the address is valid
+    const { isAddressValid } = this.verifyValidAddress(verify.address, network);
+    if (!isAddressValid) {
+      return { isValid: false, statusCode: CustomErrorCodes.AddressNotValid };
+    }
+
+    // Verify if amount > 0
+    if (new BigNumber(verify.amount).isLessThanOrEqualTo(0)) {
+      return { isValid: false, statusCode: CustomErrorCodes.AmountNotValid };
+    }
+
+    try {
+      const pathIndex = await this.prisma.deFiChainAddressIndex.findFirst({
+        where: {
+          address: verify.address,
+        },
+        orderBy: [{ index: 'desc' }],
+      });
+
+      // Address not found
+      if (pathIndex === null) {
+        return { isValid: false, statusCode: CustomErrorCodes.AddressNotFound };
+      }
+
+      // Verify that the address is owned by the wallet
+      const wallet = this.whaleWalletProvider.createWallet(Number(pathIndex.index));
+      const address = await wallet.getAddress();
+
+      if (address !== verify.address) {
+        return { isValid: false, statusCode: CustomErrorCodes.AddressNotOwned };
+      }
+
+      const tokens = await wallet.client.address.listToken(address);
+      const token = tokens.find((t) => t.symbol === verify.symbol.toString());
+
+      // If no amount has been received yet
+      if (token === undefined || new BigNumber(token?.amount).isZero()) {
+        return { isValid: false, statusCode: CustomErrorCodes.IsZeroBalance };
+      }
+
+      // Verify that the amount === token balance
+      if (!new BigNumber(verify.amount).isEqualTo(token.amount)) {
+        return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
+      }
+
+      return { isValid: true };
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: 'There is a problem in verifying the address',
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: error as Error,
+        },
+      );
+    }
+  }
 
   async generateAddress(
     refundAddress: string,
@@ -87,5 +154,10 @@ export class WhaleWalletService {
         },
       );
     }
+  }
+
+  private verifyValidAddress(address: string, network: EnvironmentNetwork): { isAddressValid: boolean } {
+    const decodedAddress = fromAddress(address, getJellyfishNetwork(network).name);
+    return { isAddressValid: decodedAddress !== undefined };
   }
 }
