@@ -12,14 +12,19 @@ require('dotenv').config({
 // 100,000 tokens will be minted. `amount` can be changed. To run this script, run the below command in smartContract directory.
 // npx hardhat run --network goerli ./scripts/goerliMintApprove.ts
 async function main() {
-  const usdcAddress = '0xB200af2b733B831Fbb3d98b13076BC33F605aD58';
-  const usdtAddress = '0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF';
   // Minting 100,000 tokens.
-  const amount = ethers.utils.parseEther('1');
-  // Minting M-USDT
-  await mintAndApproveTestTokens(usdtAddress, amount);
-  // Minting M-USDC
-  await mintAndApproveTestTokens(usdcAddress, amount);
+  const amount = ethers.utils.parseEther('100000');
+
+  // [usdtAddress, usdcAddress, mwbtcAddress]
+  const tokenAddresses = [
+    '0xB200af2b733B831Fbb3d98b13076BC33F605aD58',
+    '0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF',
+    '0xD723D679d1A3b23d0Aafe4C0812f61DDA84fc043',
+  ];
+
+  for (let i = 0; i < tokenAddresses.length; i += 1) {
+    await mintAndApproveTestTokens(tokenAddresses[i], amount);
+  }
 }
 
 async function mintAndApproveTestTokens(tokenAddress: string, amount: BigNumber) {
@@ -29,12 +34,12 @@ async function mintAndApproveTestTokens(tokenAddress: string, amount: BigNumber)
   const tokenContract = new ethers.Contract(tokenAddress, TestToken__factory.createInterface(), wallet);
   const mintTx = await tokenContract.mint(wallet.address, amount);
   await mintTx.wait();
-  console.log('Mint tx hash: ', mintTx.hash);
+  console.log('Mint tx hash', await tokenContract.name(), ': ', mintTx.hash);
   const remainingAllowance = await tokenContract.allowance(wallet.address, bridgeAddress);
   if (remainingAllowance === 0) {
     const approveTx = await tokenContract.approve(bridgeAddress, ethers.constants.MaxUint256);
     await approveTx.wait();
-    console.log('Approve tx hash: ', approveTx.hash);
+    console.log('Approve tx hash', await tokenContract.name(), ': ', approveTx.hash);
   }
 }
 
