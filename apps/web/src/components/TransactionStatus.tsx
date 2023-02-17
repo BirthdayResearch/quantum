@@ -8,6 +8,7 @@ import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
 import { useContractContext } from "../layouts/contexts/ContractContext";
+import ActionButton from "./commons/ActionButton";
 
 export default function TransactionStatus({
   isConfirmed,
@@ -48,18 +49,10 @@ export default function TransactionStatus({
         isConfirmed
           ? "border-dark-card-stroke"
           : "dark-bg-gradient-1 border-transparent",
-        isMd ? "mb-6" : "m-6"
+        isMd ? "mb-6" : "m-6",
+        { "pr-6": isLg && isConfirmed }
       )}
     >
-      {isConfirmed && (
-        <div className="flex justify-end">
-          <IoCloseOutline
-            onClick={onClose}
-            size={20}
-            className="hover:opacity-70 cursor-pointer"
-          />
-        </div>
-      )}
       {!isLg && (
         <div className="pb-4">
           <ConfirmationProgress
@@ -70,7 +63,7 @@ export default function TransactionStatus({
         </div>
       )}
       <div className="flex flex-row items-center">
-        <div className="flex flex-col">
+        <div className="flex-1 flex-col">
           <div className="leading-5 lg:text-xl lg:font-semibold">{title}</div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
           <div className="flex flex-row items-center mt-2 text-dark-900 text-xl font-bold ">
@@ -90,14 +83,31 @@ export default function TransactionStatus({
               </a>
             )} */}
           </div>
+          {isConfirmed && !isLg && (
+            <ActionButton
+              label="Close"
+              variant="secondary"
+              customStyle="mt-6 dark-section-bg"
+              onClick={onClose}
+            />
+          )}
         </div>
         {isLg && (
-          <div className="pl-8">
+          <div className="flex flex-row pl-8">
             <ConfirmationProgress
               confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
               confirmationBlocksCurrent={confirmationBlocksCurrent}
               isConfirmed={isConfirmed}
             />
+            {isConfirmed && (
+              <div>
+                <IoCloseOutline
+                  onClick={onClose}
+                  size={20}
+                  className="hover:opacity-70 cursor-pointer"
+                />
+              </div>
+            )}
           </div>
         )}
       </div>
