@@ -253,7 +253,8 @@ describe('DeFiChain --> EVM', () => {
         tokenAddress: ethers.constants.AddressZero,
       };
       const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
-      const ethBalanceBeforeClaim = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const ethBalanceAdminBeforeClaim = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const ethBalanceBridgeBeforeClaim = await ethers.provider.getBalance(proxyBridge.address);
       const tx = await proxyBridge.claimFund(
         defaultAdminSigner.address,
         toWei('10'),
@@ -263,11 +264,13 @@ describe('DeFiChain --> EVM', () => {
         signature,
       );
       const receipt = await tx.wait();
-      const ethBalanceAfterClaim = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const ethBalanceAdminAfterClaim = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const ethBalanceBridgeAfterClaim = await ethers.provider.getBalance(proxyBridge.address);
       // Checking Balance after claiming fund, should be 10
-      expect(ethBalanceAfterClaim).to.equal(
-        ethBalanceBeforeClaim.sub(receipt.gasUsed.mul(receipt.effectiveGasPrice)).add(toWei('10')),
+      expect(ethBalanceAdminAfterClaim).to.equal(
+        ethBalanceAdminBeforeClaim.sub(receipt.gasUsed.mul(receipt.effectiveGasPrice)).add(toWei('10')),
       );
+      expect(ethBalanceBridgeAfterClaim).to.equal(ethBalanceBridgeBeforeClaim.sub(toWei('10')));
     });
   });
 });
