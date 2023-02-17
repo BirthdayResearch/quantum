@@ -8,8 +8,8 @@ import { ETHEREUM_SYMBOL } from "../constants";
  * Any changes to the fee logic can be updated here
  */
 
-const EVM_TO_DFC_FEE_PERCENTAGE = 0.01;
-const DFC_TO_EVM_FEE_PERCENTAGE = 0.03;
+const EVM_TO_DFC_FEE_PERCENTAGE = 0.001;
+const DFC_TO_EVM_FEE_PERCENTAGE = 0.003;
 export default function useTransferFee(transferAmount: string | number) {
   const { selectedNetworkA, selectedTokensA } = useNetworkContext();
   const isSendingErcToken =
