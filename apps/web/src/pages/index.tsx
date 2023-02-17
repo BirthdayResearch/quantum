@@ -24,9 +24,7 @@ function Home() {
             <TransactionStatus
               onClose={() => setTxnHash("confirmed", null)}
               txnHash={txnHash.confirmed ?? txnHash.unconfirmed}
-              isConfirmed={
-                txnHash.confirmed !== undefined || ethTxnStatus.isConfirmed
-              }
+              isConfirmed={txnHash.confirmed !== undefined}
               numberOfConfirmations={
                 txnHash.confirmed !== undefined
                   ? CONFIRMATIONS_BLOCK_TOTAL.toString()
