@@ -5,14 +5,12 @@ import { AddressDetails, NetworkName, RowDataI, TransferData } from "types";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import useDisableEscapeKey from "@hooks/useDisableEscapeKey";
 import useTransferFee from "@hooks/useTransferFee";
-import truncateTextFromMiddle from "@utils/textHelper";
 import IconTooltip from "@components/commons/IconTooltip";
 import Modal from "@components/commons/Modal";
 import NumericFormat from "@components/commons/NumericFormat";
-import BrLogoIcon from "@components/icons/BrLogoIcon";
 import DeFiChainToERC20Transfer from "@components/erc-transfer/DeFiChainToERC20Transfer";
 import EvmToDeFiChainTransfer from "@components/erc-transfer/EvmToDeFiChainTransfer";
-import { CONSORTIUM_INFO, FEES_INFO } from "../constants";
+import { FEES_INFO } from "../constants";
 
 function RowData({
   data,
@@ -150,9 +148,6 @@ export default function ConfirmTransferModal({
     },
   };
 
-  // TODO: Replace with real address
-  const consortiumAddress = "df10szLaksgysjl088man5vfmsm6wsstquabds9123";
-
   return (
     <Modal title="Review transaction" isOpen={show} onClose={onClose}>
       <RowData
@@ -183,32 +178,6 @@ export default function ConfirmTransferModal({
           suffix={` ${feeSymbol}`}
           trimTrailingZeros
         />
-      </div>
-
-      {/* Consortium */}
-      <div className="flex justify-between items-baseline mt-4 md:mt-2 py-2">
-        <div className="inline-flex items-center">
-          <span className="text-dark-700 text-sm md:text-base">Consortium</span>
-          <div className="ml-2">
-            <IconTooltip
-              title={CONSORTIUM_INFO.title}
-              content={CONSORTIUM_INFO.content}
-              position="right"
-            />
-          </div>
-        </div>
-        {/* TODO: Add link to Scan once available */}
-        <div>
-          <span className="text-right text-dark-900 tracking-[0.01em] md:tracking-normal">
-            {truncateTextFromMiddle(consortiumAddress, 8)}
-          </span>
-          <div className="flex items-center mt-2 md:mt-1">
-            <BrLogoIcon />
-            <span className="text-xs md:text-sm text-dark-700 ml-2">
-              Birthday Research
-            </span>
-          </div>
-        </div>
       </div>
 
       {isSendingToDFC ? (
