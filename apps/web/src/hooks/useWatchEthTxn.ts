@@ -25,7 +25,7 @@ export default function useWatchEthTxn() {
     setIsApiSuccess(false);
     const pollConfirmEthTxn = async function poll() {
       try {
-        if (txnHash.unconfirmed) {
+        if (txnHash.unconfirmed === undefined) {
           return;
         }
 
