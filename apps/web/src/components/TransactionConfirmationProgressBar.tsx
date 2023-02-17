@@ -1,8 +1,31 @@
 import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import { useEffect, useState } from "react";
-import useResponsive from "../hooks/useResponsive";
 import clsx from "clsx";
 import ContentLoader from "react-content-loader";
+import useResponsive from "../hooks/useResponsive";
+
+function SkeletonLoader({ isDesktop }: { isDesktop: boolean }) {
+  const viewBoxWidth = isDesktop ? "90" : "65";
+  const x = isDesktop ? "5" : "0";
+  const width = isDesktop ? "80" : "60";
+  const height = isDesktop ? "20" : "16";
+
+  return (
+    <div className={clsx("flex items-center border-dark-300 text-dark-500")}>
+      <ContentLoader
+        speed={2}
+        height={24}
+        viewBox={`0 0 ${viewBoxWidth} 24`}
+        backgroundColor="#4a4a4a"
+        foregroundColor="#4a4a4a"
+        backgroundOpacity={0.4}
+        foregroundOpacity={1}
+      >
+        <rect x={x} y="2" rx="5" ry="5" width={width} height={height} />
+      </ContentLoader>
+    </div>
+  );
+}
 
 export default function ConfirmationProgress({
   confirmationBlocksTotal,
@@ -61,7 +84,7 @@ export default function ConfirmationProgress({
               {isApiSuccess || isConfirmed ? (
                 <div className="text-lg font-bold text-dark-1000">{`${confirmationBlocksCurrent} of 65`}</div>
               ) : (
-                <SkeletonLoader isDesktop={true} />
+                <SkeletonLoader isDesktop />
               )}
 
               <span className="text-xs text-dark-700">Confirmations</span>
@@ -96,29 +119,6 @@ export default function ConfirmationProgress({
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function SkeletonLoader({ isDesktop }: { isDesktop: boolean }) {
-  const viewBoxWidth = isDesktop ? "90" : "65";
-  const x = isDesktop ? "5" : "0";
-  const width = isDesktop ? "80" : "60";
-  const height = isDesktop ? "20" : "16";
-
-  return (
-    <div className={clsx("flex items-center border-dark-300 text-dark-500")}>
-      <ContentLoader
-        speed={2}
-        height={24}
-        viewBox={`0 0 ${viewBoxWidth} 24`}
-        backgroundColor={"#4a4a4a"}
-        foregroundColor={"#4a4a4a"}
-        backgroundOpacity={0.4}
-        foregroundOpacity={1}
-      >
-        <rect x={x} y="2" rx="5" ry="5" width={width} height={height} />
-      </ContentLoader>
     </div>
   );
 }
