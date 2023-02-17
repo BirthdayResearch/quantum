@@ -131,6 +131,7 @@ importers:
       ethers: ^5.7.2
       postcss: ^8.4.21
       react-circular-progressbar: ^2.1.0
+      react-content-loader: ^6.2.0
       react-qr-code: ^2.0.11
       react-secure-storage: ^1.0.22
       sass: ^1.58.1
@@ -150,6 +151,7 @@ importers:
       dayjs: 1.11.7
       ethers: 5.7.2
       react-circular-progressbar: 2.1.0_react@18.2.0
+      react-content-loader: 6.2.0_react@18.2.0
       react-qr-code: 2.0.11_react@18.2.0
       react-secure-storage: 1.0.22
       sass: 1.58.1
@@ -3497,7 +3499,7 @@ packages:
       chalk: 4.1.2
       destr: 1.2.2
       execa: 5.1.1
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       fs-extra: 10.1.0
       globby: 11.1.0
       merge-stream: 2.0.0
@@ -6008,7 +6010,7 @@ packages:
       '@reduxjs/toolkit': 1.9.2_k4ae6lp43ej6mezo3ztvx6pykq
       '@types/react': 18.0.28
       '@types/react-dom': 18.0.10
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       next: 13.1.6_tzkjaxj6nwpffkcn33dxun5fbq
       next-sitemap: 3.1.52_dlcnecpznf2wc36zwuq5m2ie5q
       nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
@@ -6848,7 +6850,7 @@ packages:
   /axios/0.21.4:
     resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
     transitivePeerDependencies:
       - debug
     dev: false
@@ -6856,7 +6858,7 @@ packages:
   /axios/1.3.3:
     resolution: {integrity: sha512-eYq77dYIFS77AQlhzEL937yUBSepBfPIe8FcgEDN35vMNZKMrs81pgnyrQpwfy4NF4b4XWX1Zgx7yX+25w8QJA==}
     dependencies:
-      follow-redirects: 1.15.2_debug@4.3.4
+      follow-redirects: 1.15.2
       form-data: 4.0.0
       proxy-from-env: 1.1.0
     transitivePeerDependencies:
@@ -10211,7 +10213,6 @@ packages:
     peerDependenciesMeta:
       debug:
         optional: true
-    dev: false
 
   /follow-redirects/1.15.2_debug@4.3.4:
     resolution: {integrity: sha512-VQLG33o04KaQ8uYi2tVNbdrWp1QWxNNea+nmIB4EVM28v0hmP17z7aG1+wAkNzVq4KeXTq3221ye5qTJP91JwA==}
@@ -10223,6 +10224,7 @@ packages:
         optional: true
     dependencies:
       debug: 4.3.4
+    dev: true
 
   /for-each/0.3.3:
     resolution: {integrity: sha512-jqYfLp7mo9vIyQf8ykW2v7A+2N4QjeCeI5+Dz9XraiO1ign81wjiH7Fb9vSOWvQfNtmSa4H2RoQTrrXivdUZmw==}
@@ -15229,6 +15231,15 @@ packages:
     resolution: {integrity: sha512-xp4THTrod4aLpGy68FX/k1Q3nzrfHUjUe5v6FsdwXBl3YVMwgeXYQKDrku7n/D6qsJA9CuunarAboC2xCiKs1g==}
     peerDependencies:
       react: ^0.14.0 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+    dev: false
+
+  /react-content-loader/6.2.0_react@18.2.0:
+    resolution: {integrity: sha512-r1dI6S+uHNLW68qraLE2njJYOuy6976PpCExuCZUcABWbfnF3FMcmuESRI8L4Bj45wnZ7n8g71hkPLzbma7/Cw==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      react: '>=16.0.0'
     dependencies:
       react: 18.2.0
     dev: false
