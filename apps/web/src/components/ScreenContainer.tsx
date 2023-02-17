@@ -11,7 +11,6 @@ export default function ScreenContainer({
   children: JSX.Element;
 }): JSX.Element {
   // if isMaintenanceEnabled is true, this condition will supersede /404 page display
-  // const isMaintenanceEnabled = useGetBridgeStatusQuery("getBridgeStatus");
   const isMaintenanceEnabled = useGetBridgeStatusQuery("getBridgeStatus");
   const router = useRouter();
 
