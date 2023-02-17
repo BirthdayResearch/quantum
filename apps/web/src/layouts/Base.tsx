@@ -26,7 +26,7 @@ import {
 import SecuredStoreAPI from "@api/secure-storage";
 import Logging from "@api/logging";
 import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
-import { announcementWebsiteSlice, bridgeApi } from "@store/website";
+import { statusWebsiteSlice, bridgeApi } from "@store/website";
 import ScreenContainer from "../components/ScreenContainer";
 
 const metamask = new MetaMaskConnector({
@@ -123,7 +123,7 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
           {mounted && (
             <NetworkProvider>
               <ApiProvider api={bridgeApi}>
-                <ApiProvider api={announcementWebsiteSlice}>
+                <ApiProvider api={statusWebsiteSlice}>
                   <WhaleNetworkProvider api={SecuredStoreAPI} logger={Logging}>
                     <WhaleProvider>
                       <NetworkEnvironmentProvider>

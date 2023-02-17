@@ -72,7 +72,7 @@ export const bridgeApi = createApi({
   }),
 });
 
-export const announcementWebsiteSlice = createApi({
+export const statusWebsiteSlice = createApi({
   reducerPath: "website",
   baseQuery: fetchBaseQuery({
     baseUrl: "https://wallet.defichain.com/api/v0",
@@ -97,7 +97,7 @@ const {
   useGetAddressDetailMutation,
 } = bridgeApi;
 
-const { useGetBridgeStatusQuery } = announcementWebsiteSlice;
+const { useGetBridgeStatusQuery } = statusWebsiteSlice;
 
 export {
   useGetBridgeStatusQuery,
