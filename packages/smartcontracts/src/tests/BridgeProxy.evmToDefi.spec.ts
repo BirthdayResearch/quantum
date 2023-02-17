@@ -23,8 +23,6 @@ describe('EVM --> DeFiChain', () => {
   describe('Bridging ERC20 token', () => {
     it('Bridge request before adding support for ERC20 token', async () => {
       const { proxyBridge, testToken } = await loadFixture(deployContracts);
-      // Will need to figure why DFI address On it's own failing Even when adding 0x and 0x00
-      // @dev will look into later
       await expect(
         proxyBridge.bridgeToDeFiChain(
           ethers.utils.toUtf8Bytes('8defichainBurnAddressXXXXXXXdRQkSm'),
@@ -40,7 +38,7 @@ describe('EVM --> DeFiChain', () => {
       // This txn should fail. User sending 0 ERC20 along with ETHER. only checking the _amount not value
       await expect(
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, testToken.address, 0),
-      ).to.be.revertedWithCustomError(proxyBridge, 'REQUESTED_AMOUNT_IS_ZERO');
+      ).to.be.revertedWithCustomError(proxyBridge, 'REQUESTED_BRIDGE_AMOUNT_IS_ZERO');
     });
 
     it('Successfully bridging', async () => {
@@ -80,8 +78,6 @@ describe('EVM --> DeFiChain', () => {
   describe('Bridge ETH', () => {
     it('Bridge request before adding support for ETH', async () => {
       const { proxyBridge } = await loadFixture(deployContracts);
-      // Will need to figure why DFI address On it's own failing Even when adding 0x and 0x00
-      // @dev will look into later
       await expect(
         proxyBridge.bridgeToDeFiChain(
           ethers.utils.toUtf8Bytes('8defichainBurnAddressXXXXXXXdRQkSm'),
@@ -98,7 +94,7 @@ describe('EVM --> DeFiChain', () => {
         proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, ethers.constants.AddressZero, 0, {
           value: 0,
         }),
-      ).to.be.revertedWithCustomError(proxyBridge, 'REQUESTED_AMOUNT_IS_ZERO');
+      ).to.be.revertedWithCustomError(proxyBridge, 'REQUESTED_BRIDGE_AMOUNT_IS_ZERO');
     });
 
     it('Successfully bridging', async () => {

@@ -39,13 +39,16 @@ describe('Withdrawal tests', () => {
         .to.emit(proxyBridge, 'ETH_RECEIVED_VIA_RECEIVE_FUNCTION')
         .withArgs(defaultAdminSigner.address, toWei('100'));
       expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('100'));
-      const balanceBeforeWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const balanceAdminBeforeWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const balanceBridgeBeforeWithdraw = await ethers.provider.getBalance(proxyBridge.address);
       const tx = await proxyBridge.connect(defaultAdminSigner).withdraw(ethers.constants.AddressZero, toWei('10'));
       const receipt = await tx.wait();
-      const balanceAfterWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
-      expect(balanceAfterWithdraw).to.equal(
-        balanceBeforeWithdraw.sub(receipt.gasUsed.mul(receipt.effectiveGasPrice)).add(toWei('10')),
+      const balanceAdminAfterWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const balanceBridgeAfterWithdraw = await ethers.provider.getBalance(proxyBridge.address);
+      expect(balanceAdminAfterWithdraw).to.equal(
+        balanceAdminBeforeWithdraw.sub(receipt.gasUsed.mul(receipt.effectiveGasPrice)).add(toWei('10')),
       );
+      expect(balanceBridgeAfterWithdraw).to.equal(balanceBridgeBeforeWithdraw.sub(toWei('10')));
     });
 
     it('Unable to withdraw more ERC20 than the balance of the Bridge', async () => {

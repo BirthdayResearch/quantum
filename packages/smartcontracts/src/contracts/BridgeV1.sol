@@ -52,7 +52,7 @@ error EXPIRED_CLAIM();
 /** @notice @dev 
 /* This error occurs when `_amount` is zero
 */
-error REQUESTED_AMOUNT_IS_ZERO();
+error REQUESTED_BRIDGE_AMOUNT_IS_ZERO();
 
 /** @notice @dev
 /* This error occurs when transfer of ETH failed
@@ -92,7 +92,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     // Mapping to track the maximum balance of tokens the contract can hold per token address.
     mapping(address => uint256) public tokenCap;
 
-    // Initial Tx fee 0.3%. Based on dps (e.g 1% == 100dps)
+    // Transaction fee when bridging from EVM to DeFiChain. Based on dps (e.g 1% == 100dps)
     uint256 public transactionFee;
     // Community wallet to send tx fees to
     address public communityWallet;
@@ -276,7 +276,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
             if (msg.value > 0) revert MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
             requestedAmount = _amount;
         }
-        if (requestedAmount == 0) revert REQUESTED_AMOUNT_IS_ZERO();
+        if (requestedAmount == 0) revert REQUESTED_BRIDGE_AMOUNT_IS_ZERO();
         uint256 netAmountInWei = amountAfterFees(requestedAmount);
         uint256 netTxFee = requestedAmount - netAmountInWei;
         if (_tokenAddress == ETH) {
@@ -335,8 +335,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         for (uint256 i = 0; i < supportedTokens.length(); ++i) {
             address supToken = supportedTokens.at(i);
             if (supToken == ETH) {
-                if (address(this).balance > tokenCap[supToken]) {
-                    uint256 amountToFlush = address(this).balance - tokenCap[supToken];
+                if (address(this).balance > tokenCap[ETH]) {
+                    uint256 amountToFlush = address(this).balance - tokenCap[ETH];
                     (bool sent, ) = flushReceiveAddress.call{value: amountToFlush}('');
                     if (!sent) revert ETH_TRANSFER_FAILED();
                 }

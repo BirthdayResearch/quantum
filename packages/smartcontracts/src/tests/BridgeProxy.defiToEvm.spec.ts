@@ -120,7 +120,7 @@ describe('DeFiChain --> EVM', () => {
       expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(0);
     });
 
-    it('Successfully revert when claiming fund', async () => {
+    it('Successfully revert when claiming more ERC20 than available balance', async () => {
       const eip712Data = {
         to: defaultAdminSigner.address,
         amount: toWei('110'),
