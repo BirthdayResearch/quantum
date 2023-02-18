@@ -67,7 +67,6 @@ export default function StepThreeVerification({
     ) {
       try {
         const { data } = await trigger({
-          network: networkEnv,
           address: dfcAddress,
           amount: new BigNumber(txn.amount).toFixed(8),
           symbol: txn.selectedTokensA.tokenA.symbol,

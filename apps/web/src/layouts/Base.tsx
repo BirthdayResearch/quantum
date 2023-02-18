@@ -28,6 +28,8 @@ import Logging from "@api/logging";
 import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
 import { statusWebsiteSlice, bridgeApi } from "@store/index";
 import ScreenContainer from "../components/ScreenContainer";
+import { ETHEREUM_MAINNET_ID } from "../constants";
+import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
 
 const metamask = new MetaMaskConnector({
   chains: [mainnet, goerli, localhost, hardhat],
@@ -37,9 +39,14 @@ const { chains } = configureChains(
   [localhost, hardhat, mainnet, goerli],
   [
     jsonRpcProvider({
-      rpc: (c) => ({
-        http: (process.env.RPC_URL || c.rpcUrls.default) as string,
-      }),
+      rpc: (chain) => {
+        const isMainNet = chain.id === ETHEREUM_MAINNET_ID;
+        const config = isMainNet ? MAINNET_CONFIG : TESTNET_CONFIG;
+
+        return {
+          http: (config.EthereumRpcUrl || chain.rpcUrls.default) as string,
+        };
+      },
     }),
     publicProvider(),
   ]

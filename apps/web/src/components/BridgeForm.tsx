@@ -210,7 +210,6 @@ export default function BridgeForm() {
       if (localDfcAddress) {
         const addressDetailRes = await getAddressDetail({
           address: localDfcAddress,
-          network: networkEnv,
         }).unwrap();
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
