@@ -116,15 +116,13 @@ jobs:
 
       - name: Create Report
         uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0
-        id: report
+        id: report_message
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           script: return require('./.github/scripts/release-report.js')({ context })
           result-encoding: string
 
       - name: Post Report
         uses: marocchino/sticky-pull-request-comment@3d60a5b2dae89d44e0c6ddc69dd7536aec2071cd # v2.5.0
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           header: release
-          message: ${{ steps.report.outputs.result }}
+          message: ${{ steps.report_message.outputs.result }}
