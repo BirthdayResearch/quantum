@@ -2,12 +2,12 @@ import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { FetchArgs } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
 import { AddressDetails } from "types";
 import { HttpStatusCode } from "axios";
+import useWrappedMutation from "@hooks/useWrappedMutation";
+import useWrappedLazyQuery from "@hooks/useWrappedLazyQuery";
 
 const staggeredBaseQueryWithBailOut = retry(
   async (args: string | FetchArgs, api, extraOptions) => {
-    const result = await fetchBaseQuery({
-      baseUrl: process.env.BRIDGE_API_URL || "http://localhost:5741/defichain",
-    })(args, api, extraOptions);
+    const result = await fetchBaseQuery()(args, api, extraOptions);
     // bail out of re-tries if TooManyRequests,
     // because we know successive re-retries would be redundant
     if (result.error?.status === HttpStatusCode.TooManyRequests) {
@@ -25,9 +25,9 @@ export const bridgeApi = createApi({
   baseQuery: staggeredBaseQueryWithBailOut,
   endpoints: (builder) => ({
     generateAddress: builder.mutation<AddressDetails, any>({
-      query: ({ network, refundAddress }) => ({
-        url: "/wallet/address/generate",
-        params: { network, refundAddress },
+      query: ({ baseUrl, refundAddress }) => ({
+        url: `${baseUrl}/defichain/wallet/address/generate`,
+        params: { refundAddress },
         method: "GET",
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -39,15 +39,14 @@ export const bridgeApi = createApi({
     verify: builder.query<
       any,
       {
-        network: string;
+        baseUrl?: string;
         address: string;
         amount: string;
         symbol: string;
       }
     >({
-      query: ({ network, address, amount, symbol }) => ({
-        url: "/wallet/verify",
-        params: { network },
+      query: ({ baseUrl, address, amount, symbol }) => ({
+        url: `${baseUrl}/defichain/wallet/verify`,
         method: "POST",
         body: {
           address,
@@ -58,9 +57,8 @@ export const bridgeApi = createApi({
       extraOptions: { maxRetries: 3 },
     }),
     getAddressDetail: builder.mutation<AddressDetails, any>({
-      query: ({ network, address }) => ({
-        url: `/wallet/address/${address}`,
-        params: { network },
+      query: ({ baseUrl, address }) => ({
+        url: `${baseUrl}/defichain/wallet/address/${address}`,
         method: "GET",
         headers: {
           "Access-Control-Allow-Origin": "*",
@@ -72,11 +70,12 @@ export const bridgeApi = createApi({
   }),
 });
 
-const {
-  useGenerateAddressMutation,
-  useLazyVerifyQuery,
-  useGetAddressDetailMutation,
-} = bridgeApi;
+const useGenerateAddressMutation = () =>
+  useWrappedMutation(bridgeApi.useGenerateAddressMutation);
+const useLazyVerifyQuery = () =>
+  useWrappedLazyQuery(bridgeApi.useLazyVerifyQuery);
+const useGetAddressDetailMutation = () =>
+  useWrappedMutation(bridgeApi.useGetAddressDetailMutation);
 
 export {
   useGenerateAddressMutation,
