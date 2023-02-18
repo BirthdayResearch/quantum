@@ -1,5 +1,5 @@
 import { statusWebsiteSlice } from "./status";
-import { bridgeApi } from "./website";
+import { bridgeApi } from "./defichain";
 
 const {
   useGenerateAddressMutation,
