@@ -10,6 +10,18 @@ function Home() {
   const { ethTxnStatus, isApiSuccess } = useWatchEthTxn();
   const { txnHash, setTxnHash } = useTransactionHashContext();
 
+  const getNumberOfConfirmations = () => {
+    let numOfConfirmations = ethTxnStatus?.numberOfConfirmations;
+
+    if (txnHash.confirmed !== undefined) {
+      numOfConfirmations = CONFIRMATIONS_BLOCK_TOTAL.toString();
+    } else if (txnHash.reverted !== undefined) {
+      numOfConfirmations = "0";
+    }
+
+    return numOfConfirmations;
+  };
+
   return (
     <section
       className="relative mt-8 flex min-h-screen flex-col md:mt-7 lg:mt-12"
@@ -20,17 +32,19 @@ function Home() {
           <WelcomeHeader />
         </div>
         <div className="flex-1">
-          {(txnHash.unconfirmed || txnHash.confirmed) && (
+          {(txnHash.unconfirmed || txnHash.confirmed || txnHash.reverted) && (
             <TransactionStatus
-              onClose={() => setTxnHash("confirmed", null)}
-              txnHash={txnHash.confirmed ?? txnHash.unconfirmed}
-              isConfirmed={txnHash.confirmed !== undefined}
-              numberOfConfirmations={
-                txnHash.confirmed !== undefined
-                  ? CONFIRMATIONS_BLOCK_TOTAL.toString()
-                  : ethTxnStatus?.numberOfConfirmations
+              onClose={() => {
+                setTxnHash("confirmed", null);
+                setTxnHash("reverted", null);
+              }}
+              txnHash={
+                txnHash.reverted ?? txnHash.confirmed ?? txnHash.unconfirmed
               }
-              isApiSuccess={isApiSuccess}
+              isReverted={txnHash.reverted !== undefined}
+              isConfirmed={txnHash.confirmed !== undefined}
+              numberOfConfirmations={getNumberOfConfirmations()}
+              isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
             />
           )}
           <BridgeForm hasPendingTxn={txnHash.unconfirmed !== undefined} />

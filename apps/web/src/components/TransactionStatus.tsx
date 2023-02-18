@@ -13,12 +13,14 @@ import ActionButton from "./commons/ActionButton";
 export default function TransactionStatus({
   isConfirmed,
   isApiSuccess,
+  isReverted,
   numberOfConfirmations,
   txnHash,
   onClose,
 }: {
   isConfirmed: boolean;
   isApiSuccess: boolean;
+  isReverted: boolean;
   numberOfConfirmations: string;
   txnHash: string | undefined;
   onClose: () => void;
@@ -33,7 +35,10 @@ export default function TransactionStatus({
   ).toFixed();
 
   useEffect(() => {
-    if (isConfirmed) {
+    if (isReverted) {
+      setTitle("Transaction reverted");
+      setDescription("");
+    } else if (isConfirmed) {
       setTitle("Transaction confirmed");
       setDescription("Expect to receive your tokens in your wallet shortly.");
     } else {
@@ -42,7 +47,7 @@ export default function TransactionStatus({
         "Do not refresh, leave the browser, or close the tab until transaction is complete. Doing so may interrupt the transaction and cause loss of funds."
       );
     }
-  }, [isConfirmed]);
+  }, [isConfirmed, isReverted]);
 
   return (
     <div
@@ -86,7 +91,7 @@ export default function TransactionStatus({
               </a>
             )} */}
           </div>
-          {isConfirmed && !isLg && (
+          {(isConfirmed || isReverted) && !isLg && (
             <ActionButton
               label="Close"
               variant="secondary"
@@ -103,15 +108,16 @@ export default function TransactionStatus({
               isConfirmed={isConfirmed}
               isApiSuccess={isApiSuccess}
             />
-            {isConfirmed && (
-              <div>
-                <IoCloseOutline
-                  onClick={onClose}
-                  size={20}
-                  className="hover:opacity-70 cursor-pointer"
-                />
-              </div>
-            )}
+            {isConfirmed ||
+              (isReverted && (
+                <div>
+                  <IoCloseOutline
+                    onClick={onClose}
+                    size={20}
+                    className="hover:opacity-70 cursor-pointer"
+                  />
+                </div>
+              ))}
           </div>
         )}
       </div>

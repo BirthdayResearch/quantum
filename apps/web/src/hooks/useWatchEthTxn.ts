@@ -46,7 +46,13 @@ export default function useWatchEthTxn() {
           setIsApiSuccess(true);
         }
       } catch ({ data }) {
-        if (data?.statusCode === HttpStatusCode.TooManyRequests) {
+        if (
+          data?.statusCode === HttpStatusCode.BadRequest &&
+          data?.message === "Transaction Reverted"
+        ) {
+          setTxnHash("reverted", unconfirmed ?? null);
+          setTxnHash("unconfirmed", null);
+        } else if (data?.statusCode === HttpStatusCode.TooManyRequests) {
           //   handle throttle error;
         }
       }
