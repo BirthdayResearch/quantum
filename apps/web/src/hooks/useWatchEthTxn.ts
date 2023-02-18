@@ -13,29 +13,29 @@ export default function useWatchEthTxn() {
 
   const [confirmEthTxn] = useConfirmEthTxnMutation();
 
-  const [isApiLoading, setIsApiLoading] = useState(true);
   const [isApiSuccess, setIsApiSuccess] = useState(false);
   const [ethTxnStatus, setEthTxnStatus] = useState<{
     isConfirmed: boolean;
     numberOfConfirmations: string;
   }>({ isConfirmed: false, numberOfConfirmations: "0" });
+  let pollInterval;
 
   /* Poll to check if the txn is already confirmed */
   useEffect(() => {
     setIsApiSuccess(false);
-    const pollConfirmEthTxn = async function poll() {
+    const pollConfirmEthTxn = async function poll(unconfirmed?: string) {
       try {
-        if (txnHash.unconfirmed === undefined) {
+        if (unconfirmed === undefined) {
           return;
         }
 
         const data = await confirmEthTxn({
-          txnHash: txnHash.unconfirmed,
+          txnHash: unconfirmed,
         }).unwrap();
 
         if (data) {
           if (data?.isConfirmed) {
-            setTxnHash("confirmed", txnHash.unconfirmed ?? null);
+            setTxnHash("confirmed", unconfirmed ?? null);
             setTxnHash("unconfirmed", null);
           }
 
@@ -43,19 +43,34 @@ export default function useWatchEthTxn() {
             isConfirmed: data?.isConfirmed,
             numberOfConfirmations: data?.numberOfConfirmations,
           });
-          setIsApiLoading(false);
           setIsApiSuccess(true);
         }
       } catch ({ data }) {
         if (data?.statusCode === HttpStatusCode.TooManyRequests) {
           //   handle throttle error;
         }
-        setIsApiLoading(false);
       }
-      setTimeout(pollConfirmEthTxn, 20000);
     };
-    pollConfirmEthTxn();
+
+    if (pollInterval !== undefined) {
+      clearInterval(pollInterval);
+    }
+
+    // Run on load
+    if (!isApiSuccess) {
+      pollConfirmEthTxn(txnHash.unconfirmed);
+    }
+
+    pollInterval = setInterval(() => {
+      pollConfirmEthTxn(txnHash.unconfirmed);
+    }, 20000);
+
+    return () => {
+      if (pollInterval !== undefined) {
+        clearInterval(pollInterval);
+      }
+    };
   }, [networkEnv, txnHash]);
 
-  return { ethTxnStatus, isApiLoading, isApiSuccess };
+  return { ethTxnStatus, isApiSuccess };
 }
