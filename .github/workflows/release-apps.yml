@@ -106,23 +106,24 @@ jobs:
           docker build --file apps/server/Dockerfile -t $ECR_REGISTRY/$IMAGE_TAG .
           docker push $ECR_REGISTRY/$IMAGE_TAG
 
-  report:
-    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
-    name: Report
-    runs-on: ubuntu-latest
-    needs: [ghcr, aws_ecr]
-    steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
-
-      - name: Create Report
-        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0
-        id: report_message
-        with:
-          script: return require('./.github/scripts/release-report.js')({ context })
-          result-encoding: string
-
-      - name: Post Report
-        uses: marocchino/sticky-pull-request-comment@3d60a5b2dae89d44e0c6ddc69dd7536aec2071cd # v2.5.0
-        with:
-          header: release
-          message: ${{ steps.report_message.outputs.result }}
+# TODO Check why failing permissions
+#  report:
+#    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+#    name: Report
+#    runs-on: ubuntu-latest
+#    needs: [ghcr, aws_ecr]
+#    steps:
+#      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+#
+#      - name: Create Report
+#        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975 # v6.4.0
+#        id: report_message
+#        with:
+#          script: return require('./.github/scripts/release-report.js')({ context })
+#          result-encoding: string
+#
+#      - name: Post Report
+#        uses: marocchino/sticky-pull-request-comment@3d60a5b2dae89d44e0c6ddc69dd7536aec2071cd # v2.5.0
+#        with:
+#          header: release
+#          message: ${{ steps.report_message.outputs.result }}
