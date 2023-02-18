@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import UtilityButton from "@components/commons/UtilityButton";
 import UtilitySecondaryButton from "@components/erc-transfer/VerifiedUtilityButton";
-import { useLazyVerifyQuery } from "@store/website";
+import { useLazyVerifyQuery } from "@store/defichain";
 import BigNumber from "bignumber.js";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { getStorageItem } from "@utils/localStorage";
@@ -67,7 +67,6 @@ export default function StepThreeVerification({
     ) {
       try {
         const { data } = await trigger({
-          network: networkEnv,
           address: dfcAddress,
           amount: new BigNumber(txn.amount).toFixed(8),
           symbol: txn.selectedTokensA.tokenA.symbol,

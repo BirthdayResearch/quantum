@@ -1,5 +1,6 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
+import { ethers } from 'hardhat';
 
 import { deployContracts } from './testUtils/deployment';
 import { toWei } from './testUtils/mathUtils';
@@ -51,6 +52,23 @@ describe('Add and Removed Supported ERC20 tokens, and Token`s hard cap tests', (
       await expect(
         proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(testToken2.address),
       ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
+    });
+
+    it('Unable to remove ETH when not supported yet', async () => {
+      const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
+      await expect(
+        proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(ethers.constants.AddressZero),
+      ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
+    });
+
+    it('Successfully add and remove support for ETH', async () => {
+      const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
+      await proxyBridge.connect(defaultAdminSigner).addSupportedTokens(ethers.constants.AddressZero, toWei('10'));
+      expect(await proxyBridge.isSupported(ethers.constants.AddressZero)).to.equal(true);
+      expect(await proxyBridge.tokenCap(ethers.constants.AddressZero)).to.equal(toWei('10'));
+      await proxyBridge.connect(defaultAdminSigner).removeSupportedTokens(ethers.constants.AddressZero);
+      expect(await proxyBridge.isSupported(ethers.constants.AddressZero)).to.equal(false);
+      expect(await proxyBridge.tokenCap(ethers.constants.AddressZero)).to.equal(0);
     });
   });
 

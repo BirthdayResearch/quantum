@@ -24,7 +24,7 @@ import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
-import { useGetAddressDetailMutation } from "@store/website";
+import { useGetAddressDetailMutation } from "@store/defichain";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import InputSelector from "./InputSelector";
@@ -214,7 +214,6 @@ export default function BridgeForm({
       if (localDfcAddress) {
         const addressDetailRes = await getAddressDetail({
           address: localDfcAddress,
-          network: networkEnv,
         }).unwrap();
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {

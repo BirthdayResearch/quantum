@@ -45,3 +45,5 @@ export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
 
 export const ETHEREUM_SYMBOL = "ETH";
 export const CONFIRMATIONS_BLOCK_TOTAL = 65;
+
+export const ETHEREUM_MAINNET_ID = 1;
