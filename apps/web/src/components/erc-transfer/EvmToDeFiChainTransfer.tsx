@@ -117,7 +117,7 @@ export default function EvmToDeFiChainTransfer({
 
     if ((hasPendingTx && requiresApproval) || isApproveTxnLoading) {
       status = BridgeStatus.IsTokenApprovalInProgress;
-    } else if (hasPendingTx && eventError === undefined) {
+    } else if (hasPendingTx) {
       status = BridgeStatus.IsBridgeToDfcInProgress;
     } else if (
       eventError !== undefined &&
