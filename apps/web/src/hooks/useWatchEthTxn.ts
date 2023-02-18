@@ -1,6 +1,6 @@
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { useTransactionHashContext } from "@contexts/TransactionHashContext";
-import { useConfirmEthTxnMutation } from "@store/defichain";
+import { useConfirmEthTxnMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
 import { useEffect, useState } from "react";
 

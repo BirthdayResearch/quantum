@@ -10,6 +10,8 @@ const useLazyVerifyQuery = () =>
   useWrappedLazyQuery(bridgeApi.useLazyVerifyQuery);
 const useGetAddressDetailMutation = () =>
   useWrappedMutation(bridgeApi.useGetAddressDetailMutation);
+const useConfirmEthTxnMutation = () =>
+  useWrappedMutation(bridgeApi.useConfirmEthTxnMutation);
 
 const { useGetBridgeStatusQuery } = statusWebsiteSlice;
 
@@ -18,6 +20,7 @@ export {
   useGenerateAddressMutation,
   useLazyVerifyQuery,
   useGetAddressDetailMutation,
+  useConfirmEthTxnMutation,
   bridgeApi,
   statusWebsiteSlice,
 };
