@@ -2,14 +2,14 @@ name: Release Apps
 
 on:
   release:
-    types: [ published ]
+    types: [published]
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths-ignore:
-      - 'apps/web'
-      - 'packages/**'
+      - "apps/web"
+      - "packages/**"
 
 permissions:
   id-token: write
@@ -21,7 +21,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  APPS: 'bridge-api'
+  APPS: "bridge-api"
 
 jobs:
   ghcr:
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app: [ bridge-api ]
+        app: [bridge-api]
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app: [ bridge-api ]
+        app: [bridge-api]
     steps:
       - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
 
