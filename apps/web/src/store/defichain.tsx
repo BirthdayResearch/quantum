@@ -20,6 +20,7 @@ const staggeredBaseQueryWithBailOut = retry(
   }
 );
 
+// eslint-disable-next-line import/prefer-default-export
 export const bridgeApi = createApi({
   reducerPath: "defichain",
   baseQuery: staggeredBaseQueryWithBailOut,

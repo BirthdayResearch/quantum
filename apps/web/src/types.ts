@@ -28,6 +28,10 @@ export interface AddressDetails {
   createdAt: Date;
 }
 
+export interface BridgeStatus {
+  isUp: boolean;
+}
+
 export enum SelectionType {
   "Network" = "Network",
   "Token" = "Token",
