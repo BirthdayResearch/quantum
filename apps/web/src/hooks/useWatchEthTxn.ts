@@ -13,13 +13,12 @@ export default function useWatchEthTxn() {
 
   const [confirmEthTxn] = useConfirmEthTxnMutation();
 
-  const [isApiLoading, setIsApiLoading] = useState(true);
   const [isApiSuccess, setIsApiSuccess] = useState(false);
   const [ethTxnStatus, setEthTxnStatus] = useState<{
     isConfirmed: boolean;
     numberOfConfirmations: string;
   }>({ isConfirmed: false, numberOfConfirmations: "0" });
-  var pollInterval;
+  let pollInterval;
 
   /* Poll to check if the txn is already confirmed */
   useEffect(() => {
@@ -44,20 +43,24 @@ export default function useWatchEthTxn() {
             isConfirmed: data?.isConfirmed,
             numberOfConfirmations: data?.numberOfConfirmations,
           });
-          setIsApiLoading(false);
           setIsApiSuccess(true);
         }
       } catch ({ data }) {
         if (data?.statusCode === HttpStatusCode.TooManyRequests) {
           //   handle throttle error;
         }
-        setIsApiLoading(false);
       }
     };
 
     if (pollInterval !== undefined) {
       clearInterval(pollInterval);
     }
+
+    // Run on load
+    if (!isApiSuccess) {
+      pollConfirmEthTxn(txnHash.unconfirmed);
+    }
+
     pollInterval = setInterval(() => {
       pollConfirmEthTxn(txnHash.unconfirmed);
     }, 20000);
@@ -69,5 +72,5 @@ export default function useWatchEthTxn() {
     };
   }, [networkEnv, txnHash]);
 
-  return { ethTxnStatus, isApiLoading, isApiSuccess };
+  return { ethTxnStatus, isApiSuccess };
 }
