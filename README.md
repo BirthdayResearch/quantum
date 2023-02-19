@@ -45,7 +45,7 @@ Once approved, user will call the `bridgeToDeFiChain()` function with following 
 
 ### Add supported token
 
-Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
+Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token and ETH identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
 
 In case of ETH, address(0) will be used as an address.
 
