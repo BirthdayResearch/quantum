@@ -107,7 +107,7 @@ describe('DeFiChain Address Integration Testing', () => {
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/generate`,
     });
-    expect(initialResponse.statusCode).toStrictEqual(500);
+    expect(initialResponse.statusCode).toStrictEqual(400);
   });
 
   it('should be able to get address detail', async () => {

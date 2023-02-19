@@ -40,15 +40,26 @@ export const bridgeApi = createApi({
       {
         baseUrl?: string;
         address: string;
+        ethReceiverAddress: string;
+        tokenAddress: string;
         amount: string;
         symbol: string;
       }
     >({
-      query: ({ baseUrl, address, amount, symbol }) => ({
+      query: ({
+        baseUrl,
+        address,
+        ethReceiverAddress,
+        tokenAddress,
+        amount,
+        symbol,
+      }) => ({
         url: `${baseUrl}/defichain/wallet/verify`,
         method: "POST",
         body: {
           address,
+          ethReceiverAddress,
+          tokenAddress,
           amount,
           symbol,
         },

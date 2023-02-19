@@ -1,10 +1,11 @@
 import { fromAddress } from '@defichain/jellyfish-address';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { DeFiChainAddressIndex } from '@prisma/client';
 import { EnvironmentNetwork, getJellyfishNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 
 import { CustomErrorCodes } from '../../CustomErrorCodes';
+import { EVMTransactionConfirmerService } from '../../ethereum/services/EVMTransactionConfirmerService';
 import { PrismaService } from '../../PrismaService';
 import { VerifyObject } from '../model/VerifyDto';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
@@ -15,13 +16,11 @@ export class WhaleWalletService {
   constructor(
     private readonly whaleWalletProvider: WhaleWalletProvider,
     private readonly clientProvider: WhaleApiClientProvider,
+    private readonly evmTransactionService: EVMTransactionConfirmerService,
     private prisma: PrismaService,
   ) {}
 
-  async verify(
-    verify: VerifyObject,
-    network: EnvironmentNetwork,
-  ): Promise<{ isValid: boolean; statusCode?: CustomErrorCodes }> {
+  async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
     if (!isAddressValid) {
@@ -67,7 +66,14 @@ export class WhaleWalletService {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
-      return { isValid: true };
+      // Successful verification, proceed to sign the claim
+      const claim = await this.evmTransactionService.signClaim({
+        receiverAddress: verify.ethReceiverAddress,
+        tokenAddress: verify.tokenAddress,
+        amount: verify.amount.toString(),
+      });
+
+      return { isValid: true, signature: claim.signature, nonce: claim.nonce, deadline: claim.deadline };
     } catch (error) {
       throw new HttpException(
         {
@@ -89,7 +95,7 @@ export class WhaleWalletService {
     try {
       const decodedAddress = fromAddress(refundAddress, this.clientProvider.remapNetwork(network));
       if (decodedAddress === undefined) {
-        throw new Error(`Invalid refund address for DeFiChain ${network}`);
+        throw new BadRequestException(`Invalid refund address for DeFiChain ${network}`);
       }
       const lastIndex = await this.prisma.deFiChainAddressIndex.findFirst({
         orderBy: [{ index: 'desc' }],
@@ -111,6 +117,9 @@ export class WhaleWalletService {
         refundAddress: data.refundAddress,
       };
     } catch (e: any) {
+      if (e instanceof BadRequestException) {
+        throw e;
+      }
       // TODO: Improve error handling
       throw new HttpException(
         {
@@ -160,4 +169,12 @@ export class WhaleWalletService {
     const decodedAddress = fromAddress(address, getJellyfishNetwork(network).name);
     return { isAddressValid: decodedAddress !== undefined };
   }
+}
+
+export interface VerifyResponse {
+  isValid: boolean;
+  statusCode?: CustomErrorCodes;
+  signature?: string;
+  nonce?: number;
+  deadline?: number;
 }

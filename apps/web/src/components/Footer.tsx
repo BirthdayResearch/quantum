@@ -73,7 +73,7 @@ export default function Footer() {
           <div className="flex flex-row justify-between pt-[19px] md:pt-[26px] lg:pt-0">
             <div className="flex flex-col md:flex-row md:items-end">
               <div className="pb-2 pr-[11px] md:pb-0  xs:pb-[12.5px]">
-                &copy; Birthday Research
+                &copy; {new Date().getFullYear()} Birthday Research
               </div>
               <Socials items={BirthdayResearchSocialItems} />
             </div>

@@ -1,6 +1,11 @@
 import clsx from "clsx";
 import { useState } from "react";
-import { ProgressStepI, AddressDetails, TransferData } from "types";
+import {
+  ProgressStepI,
+  AddressDetails,
+  TransferData,
+  SignedClaim,
+} from "types";
 import useResponsive from "@hooks/useResponsive";
 import ProgressStepIndicator from "@components/commons/ProgressStepIndicator";
 import ProgressStepIndicatorMobile from "@components/commons/ProgressStepIndicatorMobile";
@@ -32,6 +37,8 @@ export default function DeFiChainToERC20Transfer({
   const [refundAddress, setRefundAddress] = useState<string>(
     addressDetail?.refundAddress ?? ""
   );
+
+  const [signedClaim, setSignedClaim] = useState<SignedClaim>();
 
   // TODO: check if transaction validated from api
   const transactionValidated = true;
@@ -83,14 +90,13 @@ export default function DeFiChainToERC20Transfer({
         />
       )}
       {activeStep === 3 && (
-        <StepThreeVerification goToNextStep={handleNextStep} />
-      )}
-      {activeStep >= 4 && (
-        <StepLastClaim
-          data={data}
-          // TODO: Pass signature and nonce from Verification step here
-          signedClaim={{ signature: "", nonce: 0 }}
+        <StepThreeVerification
+          goToNextStep={handleNextStep}
+          onSuccess={(claim) => setSignedClaim(claim)}
         />
+      )}
+      {activeStep >= 4 && signedClaim && (
+        <StepLastClaim data={data} signedClaim={signedClaim} />
       )}
     </div>
   );

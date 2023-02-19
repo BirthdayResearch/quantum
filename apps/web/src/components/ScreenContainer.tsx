@@ -3,6 +3,7 @@ import Header from "@components/Header";
 import { useGetBridgeStatusQuery } from "@store/index";
 import clsx from "clsx";
 import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 import Maintenance from "./Maintenance";
 
 export default function ScreenContainer({
@@ -10,11 +11,19 @@ export default function ScreenContainer({
 }: {
   children: JSX.Element;
 }): JSX.Element {
-  // if isMaintenanceEnabled is true, this condition will supersede /404 page display
-  const { data: getBridgeStatus } = useGetBridgeStatusQuery("");
-  const isBridgeUp = getBridgeStatus?.isUp === true;
-
   const router = useRouter();
+
+  // if isMaintenanceEnabled is true, this condition will supersede /404 page display
+  const { data: bridgeStatus, isSuccess: isBridgeStatusSuccess } =
+    useGetBridgeStatusQuery("");
+  const [isBridgeUp, setIsBridgeUp] = useState(true);
+
+  useEffect(() => {
+    // Assumes that the bridge is up unless the api explicitly returns isUp !== true
+    if (isBridgeStatusSuccess) {
+      setIsBridgeUp(bridgeStatus?.isUp === true);
+    }
+  }, [bridgeStatus, isBridgeStatusSuccess]);
 
   // background picture has 2 conditions/designs: connected wallet bg design vs preconnected wallet bg design
   const bgPicture =
