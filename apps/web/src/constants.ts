@@ -44,3 +44,5 @@ export const STORAGE_TXN_KEY = "unconfirmed-txn";
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
 
 export const ETHEREUM_SYMBOL = "ETH";
+
+export const ETHEREUM_MAINNET_ID = 1;

@@ -156,4 +156,4 @@ After making changes to the database schema in schema.prisma, run `cd apps/serve
 
 Run `./with-db generate` to generate the Prisma Client.
 
-Run `./with-db migrate dev` to migrate and apply database migrations in the development environment. 
+Run `./with-db migrate dev` to migrate and apply database migrations in the development environment.

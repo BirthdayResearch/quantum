@@ -7,7 +7,9 @@ import { toWei } from './testUtils/mathUtils';
 
 describe('Test flushFund functionalities', () => {
   it('Should flush the funds successfully when there is initial redundant funds', async () => {
-    const { proxyBridge, testToken, testToken2, flushReceiveSigner } = await loadFixture(deployContracts);
+    const { proxyBridge, testToken, testToken2, flushReceiveSigner, defaultAdminSigner } = await loadFixture(
+      deployContracts,
+    );
     const ERC20 = await ethers.getContractFactory('TestToken');
     const testToken3 = await ERC20.deploy('Test3', 'T3');
     // Supporting testToken with hard cap of 20
@@ -16,23 +18,32 @@ describe('Test flushFund functionalities', () => {
     await proxyBridge.addSupportedTokens(testToken2.address, toWei('30'));
     // Supporting testToken3 with hard cap of 40
     await proxyBridge.addSupportedTokens(testToken3.address, toWei('40'));
+    // Supporting ether with hard cap of 60
+    await proxyBridge.addSupportedTokens(ethers.constants.AddressZero, toWei('60'));
     // Minting tokens to proxy bridge
     await testToken.mint(proxyBridge.address, toWei('100'));
     await testToken2.mint(proxyBridge.address, toWei('100'));
     await testToken3.mint(proxyBridge.address, toWei('100'));
+    await defaultAdminSigner.sendTransaction({
+      to: proxyBridge.address,
+      value: toWei('100'),
+    });
     // Getting balance of respected tokens before calling `flushFund()`
     const balance1BeforeFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balance2BeforeFlush = await testToken2.balanceOf(flushReceiveSigner.address);
     const balance3BeforeFlush = await testToken3.balanceOf(flushReceiveSigner.address);
+    const balanceETHBeforeFlush = await ethers.provider.getBalance(flushReceiveSigner.address);
     //
     await proxyBridge.flushFund();
     // Getting balance of respected tokens after calling `flushFund()`
     const balance1AfterFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balance2AfterFlush = await testToken2.balanceOf(flushReceiveSigner.address);
     const balance3AfterFlush = await testToken3.balanceOf(flushReceiveSigner.address);
+    const balanceETHAfterFlush = await ethers.provider.getBalance(flushReceiveSigner.address);
     expect(balance1AfterFlush.sub(balance1BeforeFlush)).to.equal(toWei('80'));
     expect(balance2AfterFlush.sub(balance2BeforeFlush)).to.equal(toWei('70'));
     expect(balance3AfterFlush.sub(balance3BeforeFlush)).to.equal(toWei('60'));
+    expect(balanceETHAfterFlush.sub(balanceETHBeforeFlush)).to.equal(toWei('40'));
   });
 
   it('Revert if changing `flushReceiveAddress` to 0x0', async () => {
