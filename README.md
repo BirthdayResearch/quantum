@@ -47,6 +47,8 @@ Once approved, user will call the `bridgeToDeFiChain()` function with following 
 
 Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
 
+In case of ETH, address(0) will be used as an address.
+
 `_tokenCap` represent the maximum balance of tokens the contract can hold per `_tokenAddress`
 
 ### Remove supported token
@@ -55,11 +57,11 @@ Only addresses with the Admin and Operational role can call the `removeSupported
 
 ### Withdraw
 
-`withdraw()` function when called will withdraw an ERC20 token. Only the address with the Admin role can call this function.
+`withdraw()` function when called will withdraw an ERC20 token and ETH (address == 0x0). Only the address with the Admin role can call this function.
 
 ### FlushFund
 
-`flushFund` function to flush the excess funds `(token.balanceOf(Bridge) - tokenCap)` across supported tokens to a hardcoded address (`flushReceiveAddress`) anyone can call this function.
+`flushFund` function to flush the excess funds `(token.balanceOf(Bridge) - tokenCap)` across supported tokens to a hardcoded address (`flushReceiveAddress`) anyone can call this function. This applies to all tokens and ETH.
 
 ### Change Flush Receive Address
 
