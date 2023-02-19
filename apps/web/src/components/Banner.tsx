@@ -17,9 +17,6 @@ export default function Banner(): JSX.Element {
           https://quantumbridge.app&nbsp;
         </a>
         – check the URL correctly.{" "}
-        <span className="inline md:inline-block">
-          This is still on Beta. Use at your own risk.
-        </span>
       </div>
     </div>
   );

@@ -30,7 +30,7 @@
     "react-circular-progressbar": "^2.1.0",
     "react-qr-code": "^2.0.11",
     "react-secure-storage": "^1.0.22",
-    "sass": "^1.58.1",
+    "sass": "^1.58.3",
     "wagmi": "^0.11.5"
   },
   "devDependencies": {
@@ -38,9 +38,9 @@
     "@netlify/plugin-lighthouse": "^4.0.7",
     "@netlify/plugin-nextjs": "^4.30.4",
     "@tailwindcss/typography": "^0.5.9",
-    "@testing-library/cypress": "^8.0.7",
+    "@testing-library/cypress": "^9.0.0",
     "@waveshq/standard-web-linter": "^0.43.0",
-    "@types/node": "18.11.11",
+    "@types/node": "18.14.0",
     "autoprefixer": "^10.4.13",
     "babel-plugin-istanbul": "^6.1.1",
     "babel-plugin-jsx-remove-data-test-id": "^3.0.0",
