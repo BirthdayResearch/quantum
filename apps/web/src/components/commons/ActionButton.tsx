@@ -7,7 +7,7 @@ export default function ActionButton({
   disabled = false,
   isLoading = false,
   variant = "primary",
-  needsResponsiveSizing = true,
+  responsiveStyle,
   testId,
   customStyle,
 }: {
@@ -16,14 +16,12 @@ export default function ActionButton({
   disabled?: boolean;
   isLoading?: boolean;
   variant?: "primary" | "secondary";
-  needsResponsiveSizing?: boolean;
+  responsiveStyle?: string;
   testId?: string;
   customStyle?: string;
 }) {
-  const responsiveSizing = needsResponsiveSizing
-    ? "lg:text-xl lg:leading-8 lg:py-4 lg:px-8 xl:px-14"
-    : // can pass custom style here if needed
-      "";
+  const responsiveSizing =
+    responsiveStyle ?? "lg:text-xl lg:leading-8 lg:py-4 lg:px-8 xl:px-14";
   const isPrimary = variant === "primary";
   const defaultStyle =
     "text-lg md:px-2.5 lg:text-xl lg:leading-8 lg:px-8 xl:px-14 lg:py-4";

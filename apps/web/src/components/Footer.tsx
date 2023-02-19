@@ -1,63 +1,91 @@
 import React from "react";
-import { FaYoutube, FaReddit, FaGithub, FaTwitter } from "react-icons/fa";
-import Container from "./commons/Container";
+import { FaReddit, FaGithub, FaTwitter } from "react-icons/fa";
+import { BsMedium } from "react-icons/bs";
+import Image from "next/image";
+import Socials from "./commons/Socials";
 
-const SocialItems = [
+const DeFiChainSocialItems = [
   {
-    icon: FaYoutube,
-    testId: "youtube",
-    label: "Youtube",
-    href: "https://www.youtube.com/DeFiChain",
+    icon: FaTwitter,
+    testId: "twitter_dfc",
+    label: "Twitter",
+    href: "https://twitter.com/defichain",
   },
   {
     icon: FaReddit,
-    testId: "reddit",
+    testId: "reddit_dfc",
     label: "Reddit",
     href: "https://www.reddit.com/r/defiblockchain",
   },
   {
     icon: FaGithub,
-    testId: "gitHub",
+    testId: "gitHub_dfc",
     label: "GitHub",
     href: "https://github.com/DeFiCh",
   },
+];
+const BirthdayResearchSocialItems = [
   {
     icon: FaTwitter,
-    testId: "twitter",
+    testId: "twitter_br",
     label: "Twitter",
-    href: "https://twitter.com/defichain",
+    href: "https://twitter.com/BirthdayDev/",
+  },
+  {
+    icon: BsMedium,
+    testId: "medium_br",
+    label: "Medium",
+    href: "https://medium.com/@birthdayresearch",
+  },
+  {
+    icon: FaGithub,
+    testId: "gitHub_br",
+    label: "GitHub",
+    href: "https://github.com/BirthdayResearch",
   },
 ];
 
 export default function Footer() {
   return (
-    <footer className="relative z-[1] w-full border-t border-dark-300 bg-dark-00 pb-8 pt-4 md:border-t-0 md:pb-12 md:pt-3">
-      <Container className="px-5 md:px-12 lg:px-[120px]">
-        <div className="flex flex-row items-center justify-between">
-          <div className="flex flex-col md:flex-row">
-            <div className="text-xs font-semibold text-dark-700">
-              Developed by&nbsp;
-            </div>
-            <div className="text-xs font-semibold text-dark-700">
-              Birthday Research
-            </div>
-          </div>
-          <div className="flex flex-row space-x-2 md:space-x-4">
-            {SocialItems.map(({ href, testId, icon: Icon }) => (
-              <a
-                href={href}
-                key={testId}
-                target="_blank"
-                rel="noreferrer"
-                className="p-1"
-                data-testid={testId}
-              >
-                <Icon size={24} className="text-dark-700" />
-              </a>
-            ))}
+    <footer
+      data-testid="footer"
+      className="relative z-[1] w-full border-dark-300 pt-8 bg-gradient-to-r from-[#00000066] to-[#00000000]"
+    >
+      <section
+        data-testid="footer_web"
+        className="text-dark-900 xs:px-[24px] px-5 pb-[51px] md:px-[48px] lg:px-[120px] lg:pb-[34px] text-sm"
+      >
+        <div className="border-t-[0.5px] border-dark-300 pb-[17.5px] pt-[15px]">
+          <div className="relative h-[28px] w-[250px] mt-3">
+            <Image
+              fill
+              data-testid="footer-bridge-logo"
+              src="/header-logo.svg"
+              alt="Bridge Logo"
+            />
           </div>
         </div>
-      </Container>
+        <div className="pl-1 flex-row justify-between">
+          <div className="font-semibold">
+            Quantum is a proud development of Birthday Research — the blockchain
+            R&D arm of Cake DeFi.
+          </div>
+          <div className="flex flex-row justify-between pt-[19px] md:pt-[26px] lg:pt-0">
+            <div className="flex flex-col md:flex-row md:items-end">
+              <div className="pb-2 pr-[11px] md:pb-0  xs:pb-[12.5px]">
+                &copy; Birthday Research
+              </div>
+              <Socials items={BirthdayResearchSocialItems} />
+            </div>
+            <div className="md:flex md:flex-row-reverse lg:flex-col lg:items-end lg:pt-0">
+              <div className="pb-2 xs:pb-[12.5px] md:pl-2 md:pb-0 lg:relative lg:bottom-[20px]">
+                &copy; DeFiChain
+              </div>
+              <Socials items={DeFiChainSocialItems} />
+            </div>
+          </div>
+        </div>
+      </section>
     </footer>
   );
 }
