@@ -32,9 +32,9 @@ describe('Transaction fee tests', () => {
     });
 
     describe('OPERATIONAL_ROLE', () => {
-      it('Unable to change the fee by Operational address', async () => {
+      it('Succesfully change the fee by Operational address', async () => {
         const { proxyBridge, operationalAdminSigner } = await loadFixture(deployContracts);
-        // Event called TRANSACTION_FEE_CHANGED should be emitted on Successful withdrawal by the Admin only
+        // Event called TRANSACTION_FEE_CHANGED should be emitted on Successful change
         await expect(proxyBridge.connect(operationalAdminSigner).changeTxFee(50))
           .to.emit(proxyBridge, 'TRANSACTION_FEE_CHANGED')
           .withArgs(10, 50);

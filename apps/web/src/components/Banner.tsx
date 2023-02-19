@@ -16,7 +16,7 @@ export default function Banner(): JSX.Element {
         >
           https://quantumbridge.app&nbsp;
         </a>
-        – check the URL correctly.
+        – check the URL correctly.{" "}
       </div>
     </div>
   );

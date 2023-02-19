@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Contract, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
@@ -113,16 +113,7 @@ export class EVMTransactionConfirmerService {
       const signature = await wallet._signTypedData(domain, types, data);
       return { signature, nonce, deadline };
     } catch (e: any) {
-      throw new HttpException(
-        {
-          status: HttpStatus.INTERNAL_SERVER_ERROR,
-          error: 'There is a problem in signing this claim',
-        },
-        HttpStatus.INTERNAL_SERVER_ERROR,
-        {
-          cause: e,
-        },
-      );
+      throw new Error('There is a problem in signing this claim', { cause: e });
     }
   }
 }

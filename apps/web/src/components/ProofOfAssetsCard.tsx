@@ -5,8 +5,8 @@ import { TokenDetailI } from "types";
 import truncateTextFromMiddle from "@utils/textHelper";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import useResponsive from "@hooks/useResponsive";
+import { FiBook, FiHelpCircle } from "react-icons/fi";
 import NumericFormat from "./commons/NumericFormat";
-import BrLogo from "./icons/BrLogo";
 import DailyLimit from "./DailyLimit";
 import IconTooltip from "./commons/IconTooltip";
 import { TOKEN_SUPPLY_INFO } from "../constants";
@@ -72,8 +72,20 @@ export default function ProofOfAssetsCard() {
         <DailyLimit />
       </div>
       <div className="flex items-center border-t-[0.5px] border-t-dark-200 md:border-t-0 rounded-b-lg lg:rounded-b-xl md:dark-bg-card-section md:-mx-6 mt-5 md:mt-4 lg:mt-6 lg:-mx-8 pt-4 pb-0 md:pb-5 md:px-6 lg:px-8">
-        <span className="text-xs text-dark-700 mr-2 lg:mr-3">Backed by</span>
-        <BrLogo size={isLg ? 20 : 14} />
+        <div className="flex flex-row items-center">
+          <button type="button" className="flex flex-row items-center">
+            <FiBook size={20} className="text-dark-700" />
+            <span className="ml-2 text-base font-semibold text-dark-700">
+              User Guide
+            </span>
+          </button>
+          <button type="button" className="ml-6 flex flex-row items-center">
+            <FiHelpCircle size={20} className="text-dark-700" />
+            <span className="ml-2 text-base font-semibold text-dark-700">
+              FAQs
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
