@@ -1,7 +1,6 @@
 import useWrappedMutation from "@hooks/useWrappedMutation";
 import useWrappedLazyQuery from "@hooks/useWrappedLazyQuery";
 
-import { statusWebsiteSlice } from "./status";
 import { bridgeApi } from "./defichain";
 
 const useGenerateAddressMutation = () =>
@@ -13,14 +12,14 @@ const useGetAddressDetailMutation = () =>
 const useConfirmEthTxnMutation = () =>
   useWrappedMutation(bridgeApi.useConfirmEthTxnMutation);
 
-const { useGetBridgeStatusQuery } = statusWebsiteSlice;
+const useLazyBridgeStatusQuery = () =>
+  useWrappedLazyQuery(bridgeApi.useLazyBridgeStatusQuery, true);
 
 export {
-  useGetBridgeStatusQuery,
   useGenerateAddressMutation,
   useLazyVerifyQuery,
   useGetAddressDetailMutation,
   useConfirmEthTxnMutation,
   bridgeApi,
-  statusWebsiteSlice,
+  useLazyBridgeStatusQuery,
 };
