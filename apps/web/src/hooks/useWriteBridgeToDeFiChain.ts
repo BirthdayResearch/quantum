@@ -79,7 +79,9 @@ export default function useWriteBridgeToDeFiChain({
       args: [
         utils.hexlify(utils.toUtf8Bytes(receiverAddress)) as `0x${string}`,
         Erc20Tokens[tokenName].address,
-        utils.parseUnits(transferAmount.toString(), tokenDecimals),
+        sendingFromETH
+          ? 0 // ETH amount is set inside overrides' `value` field
+          : utils.parseUnits(transferAmount.toString(), tokenDecimals),
       ],
       ...(sendingFromETH
         ? {
