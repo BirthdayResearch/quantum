@@ -78,7 +78,7 @@ export interface TransferData {
   to: RowDataI;
 }
 
-export type Erc20Token = "wBTC" | "USDT" | "USDC" | "wETH";
+export type Erc20Token = "wBTC" | "USDT" | "USDC" | "ETH";
 
 interface ContractConfigI {
   address: `0x${string}`;

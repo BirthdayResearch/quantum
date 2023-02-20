@@ -31,11 +31,19 @@ export function NetworkEnvironmentProvider({
   const networkQuery = router.query.network;
 
   function getNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
+    if (env.networks.includes(n) && n !== EnvironmentNetwork.MainNet) {
+      return n;
+    }
+    return EnvironmentNetwork.TestNet;
+  }
+
+  // TODO: Use `getNetwork` fn below once MainNet is ready
+  /* function getNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
     if (env.networks.includes(n)) {
       return n;
     }
     return EnvironmentNetwork.MainNet;
-  }
+  } */
 
   const initialNetwork = getNetwork(networkQuery as EnvironmentNetwork);
   const [networkEnv, setNetworkEnv] =

@@ -33,11 +33,11 @@ import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
 
 const metamask = new MetaMaskConnector({
-  chains: [mainnet, goerli, localhost, hardhat],
+  chains: [goerli, localhost, hardhat], // TODO: Add `mainnet` here once MainNet is ready
 });
 
 const { chains } = configureChains(
-  [localhost, hardhat, mainnet, goerli],
+  [localhost, hardhat, goerli], // TODO: Add `mainnet` here once MainNet is ready
   [
     jsonRpcProvider({
       rpc: (chain) => {

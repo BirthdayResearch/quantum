@@ -43,11 +43,7 @@ export default function useWriteBridgeToDeFiChain({
 
   const handlePrepContractError = (err) => {
     let customErrorDisplay: EventErrorI["customErrorDisplay"];
-    // Note: For some reason, wETH token is not giving specific error for `insufficient allowance`
-    const unapprovedWETHtoken =
-      tokenName === "wETH" && err.message.includes("cannot estimate gas");
-    const unApprovedToken = err.message.includes("insufficient allowance");
-    if (unapprovedWETHtoken || unApprovedToken) {
+    if (err.message.includes("insufficient allowance")) {
       // Need to request approval from user - Insufficient allowance
       setRequiresApproval(true);
       customErrorDisplay = "InsufficientAllowanceError";
@@ -83,7 +79,9 @@ export default function useWriteBridgeToDeFiChain({
       args: [
         utils.hexlify(utils.toUtf8Bytes(receiverAddress)) as `0x${string}`,
         Erc20Tokens[tokenName].address,
-        utils.parseUnits(transferAmount.toString(), tokenDecimals),
+        sendingFromETH
+          ? 0 // ETH amount is set inside overrides' `value` field
+          : utils.parseUnits(transferAmount.toString(), tokenDecimals),
       ],
       ...(sendingFromETH
         ? {

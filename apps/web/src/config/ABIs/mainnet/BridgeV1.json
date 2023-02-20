@@ -1,43 +1,23 @@
 [
   {
     "inputs": [],
-    "name": "AMOUNT_CAN_NOT_BE_ZERO",
+    "name": "AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH",
     "type": "error"
   },
+  { "inputs": [], "name": "ETH_TRANSFER_FAILED", "type": "error" },
+  { "inputs": [], "name": "EXPIRED_CLAIM", "type": "error" },
+  { "inputs": [], "name": "FAKE_SIGNATURE", "type": "error" },
+  { "inputs": [], "name": "INCORRECT_NONCE", "type": "error" },
   {
     "inputs": [],
-    "name": "EXPIRED_CLAIM",
+    "name": "MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20",
     "type": "error"
   },
-  {
-    "name": "FAKE_SIGNATURE",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "INCORRECT_NONCE",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NON_AUTHORIZED_ADDRESS",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TOKEN_ALREADY_SUPPORTED",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "TOKEN_NOT_SUPPORTED",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "ZERO_ADDRESS",
-    "type": "error"
-  },
+  { "inputs": [], "name": "NON_AUTHORIZED_ADDRESS", "type": "error" },
+  { "inputs": [], "name": "REQUESTED_BRIDGE_AMOUNT_IS_ZERO", "type": "error" },
+  { "inputs": [], "name": "TOKEN_ALREADY_SUPPORTED", "type": "error" },
+  { "inputs": [], "name": "TOKEN_NOT_SUPPORTED", "type": "error" },
+  { "inputs": [], "name": "ZERO_ADDRESS", "type": "error" },
   {
     "anonymous": false,
     "inputs": [
@@ -191,10 +171,24 @@
   },
   {
     "anonymous": false,
-    "inputs": [],
-    "name": "FLUSH_FUND",
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "sender",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "ethAmount",
+        "type": "uint256"
+      }
+    ],
+    "name": "ETH_RECEIVED_VIA_RECEIVE_FUNCTION",
     "type": "event"
   },
+  { "anonymous": false, "inputs": [], "name": "FLUSH_FUND", "type": "event" },
   {
     "anonymous": false,
     "inputs": [
@@ -394,41 +388,28 @@
   {
     "inputs": [],
     "name": "DEFAULT_ADMIN_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "ETH",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "OPERATIONAL_ROLE",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_tokenCap",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_tokenAddress", "type": "address" },
+      { "internalType": "uint256", "name": "_currentCap", "type": "uint256" }
     ],
     "name": "addSupportedTokens",
     "outputs": [],
@@ -437,34 +418,18 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes",
-        "name": "_defiAddress",
-        "type": "bytes"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      }
+      { "internalType": "bytes", "name": "_defiAddress", "type": "bytes" },
+      { "internalType": "address", "name": "_tokenAddress", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "bridgeToDeFiChain",
     "outputs": [],
-    "stateMutability": "nonpayable",
+    "stateMutability": "payable",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newAddress",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_newAddress", "type": "address" }
     ],
     "name": "changeFlushReceiveAddress",
     "outputs": [],
@@ -486,16 +451,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_newTokenCap",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_tokenAddress", "type": "address" },
+      { "internalType": "uint256", "name": "_newTokenCap", "type": "uint256" }
     ],
     "name": "changeTokenCap",
     "outputs": [],
@@ -503,13 +460,7 @@
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "fee",
-        "type": "uint256"
-      }
-    ],
+    "inputs": [{ "internalType": "uint256", "name": "fee", "type": "uint256" }],
     "name": "changeTxFee",
     "outputs": [],
     "stateMutability": "nonpayable",
@@ -517,11 +468,7 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_newAddress",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_newAddress", "type": "address" }
     ],
     "name": "changeTxFeeAddress",
     "outputs": [],
@@ -530,36 +477,12 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_amount",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_nonce",
-        "type": "uint256"
-      },
-      {
-        "internalType": "uint256",
-        "name": "_deadline",
-        "type": "uint256"
-      },
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "bytes",
-        "name": "signature",
-        "type": "bytes"
-      }
+      { "internalType": "address", "name": "_to", "type": "address" },
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" },
+      { "internalType": "uint256", "name": "_nonce", "type": "uint256" },
+      { "internalType": "uint256", "name": "_deadline", "type": "uint256" },
+      { "internalType": "address", "name": "_tokenAddress", "type": "address" },
+      { "internalType": "bytes", "name": "signature", "type": "bytes" }
     ],
     "name": "claimFund",
     "outputs": [],
@@ -569,32 +492,14 @@
   {
     "inputs": [],
     "name": "communityWallet",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "eoaAddressToNonce",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -608,32 +513,16 @@
   {
     "inputs": [],
     "name": "flushReceiveAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" }
     ],
     "name": "getRoleAdmin",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -641,27 +530,15 @@
     "inputs": [],
     "name": "getSupportedTokens",
     "outputs": [
-      {
-        "internalType": "address[]",
-        "name": "",
-        "type": "address[]"
-      }
+      { "internalType": "address[]", "name": "", "type": "address[]" }
     ],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "grantRole",
     "outputs": [],
@@ -670,35 +547,17 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "hasRole",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_initialAdmin",
-        "type": "address"
-      },
+      { "internalType": "address", "name": "_initialAdmin", "type": "address" },
       {
         "internalType": "address",
         "name": "_initialOperational",
@@ -714,11 +573,7 @@
         "name": "_communityWallet",
         "type": "address"
       },
-      {
-        "internalType": "uint256",
-        "name": "_fee",
-        "type": "uint256"
-      },
+      { "internalType": "uint256", "name": "_fee", "type": "uint256" },
       {
         "internalType": "address",
         "name": "_flushReceiveAddress",
@@ -732,69 +587,37 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_tokenAddress", "type": "address" }
     ],
     "name": "isSupported",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "proxiableUUID",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
+    "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "relayerAddress",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      }
+      { "internalType": "address", "name": "_tokenAddress", "type": "address" }
     ],
     "name": "removeSupportedTokens",
     "outputs": [],
@@ -803,16 +626,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "renounceRole",
     "outputs": [],
@@ -821,16 +636,8 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "role",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "account",
-        "type": "address"
-      }
+      { "internalType": "bytes32", "name": "role", "type": "bytes32" },
+      { "internalType": "address", "name": "account", "type": "address" }
     ],
     "name": "revokeRole",
     "outputs": [],
@@ -839,52 +646,24 @@
   },
   {
     "inputs": [
-      {
-        "internalType": "bytes4",
-        "name": "interfaceId",
-        "type": "bytes4"
-      }
+      { "internalType": "bytes4", "name": "interfaceId", "type": "bytes4" }
     ],
     "name": "supportsInterface",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
+    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
+    "inputs": [{ "internalType": "address", "name": "", "type": "address" }],
     "name": "tokenCap",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [],
     "name": "transactionFee",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
     "stateMutability": "view",
     "type": "function"
   },
@@ -908,11 +687,7 @@
         "name": "newImplementation",
         "type": "address"
       },
-      {
-        "internalType": "bytes",
-        "name": "data",
-        "type": "bytes"
-      }
+      { "internalType": "bytes", "name": "data", "type": "bytes" }
     ],
     "name": "upgradeToAndCall",
     "outputs": [],
@@ -922,32 +697,19 @@
   {
     "inputs": [],
     "name": "version",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
+    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
     "type": "function"
   },
   {
     "inputs": [
-      {
-        "internalType": "address",
-        "name": "_tokenAddress",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amount",
-        "type": "uint256"
-      }
+      { "internalType": "address", "name": "_tokenAddress", "type": "address" },
+      { "internalType": "uint256", "name": "amount", "type": "uint256" }
     ],
     "name": "withdraw",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
-  }
+  },
+  { "stateMutability": "payable", "type": "receive" }
 ]

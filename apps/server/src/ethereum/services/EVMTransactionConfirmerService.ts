@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Contract, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
+import { SupportedTokenSymbols } from '../../AppConfig';
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
 import { getNextDayTimestamp } from '../../utils/DateUtils';
@@ -23,12 +24,38 @@ export class EVMTransactionConfirmerService {
     );
   }
 
+  async getBalance(tokenSymbol: SupportedTokenSymbols): Promise<string> {
+    const contractABI = ['function balanceOf(address) view returns (uint256)'];
+    if (!SupportedTokenSymbols[tokenSymbol]) {
+      throw new BadRequestException(`Token: "${tokenSymbol}" is not supported`);
+    }
+
+    if (tokenSymbol === SupportedTokenSymbols.ETH) {
+      const balance = await this.ethersRpcProvider.getBalance(this.contract.address);
+      return ethers.utils.formatEther(balance);
+    }
+
+    const tokenContract = new ethers.Contract(
+      this.configService.getOrThrow(`ethereum.contracts.${SupportedTokenSymbols[tokenSymbol]}.address`),
+      contractABI,
+      this.ethersRpcProvider,
+    );
+    const balance = await tokenContract.balanceOf(this.contract.address);
+    return ethers.utils.formatUnits(balance, 6);
+  }
+
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+    // if transaction is still pending
+    if (txReceipt === null) {
+      return { numberOfConfirmations: 0, isConfirmed: false };
+    }
+    // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
       throw new BadRequestException(`Transaction Reverted`);
     }
+
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
     const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
     const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
