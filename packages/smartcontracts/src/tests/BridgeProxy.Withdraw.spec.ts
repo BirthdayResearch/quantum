@@ -1,12 +1,13 @@
 import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
+import { ethers } from 'hardhat';
 
 import { deployContracts } from './testUtils/deployment';
 import { toWei } from './testUtils/mathUtils';
 
 describe('Withdrawal tests', () => {
   describe('DEFAULT_ADMIN_ROLE', () => {
-    it('Successful Withdrawal by Admin only', async () => {
+    it('Successful Withdrawal of ERC20 by Admin only', async () => {
       const { proxyBridge, testToken, testToken2, defaultAdminSigner } = await loadFixture(deployContracts);
       // Minting 100 tokens to Bridge
       await testToken.mint(proxyBridge.address, toWei('100'));
@@ -27,13 +28,48 @@ describe('Withdrawal tests', () => {
       expect(await testToken2.balanceOf(defaultAdminSigner.address)).to.equal(toWei('30'));
     });
 
-    it('Unable to withdraw more than the balance of the Bridge', async () => {
+    it('Succesful withdrawal of ETH by Admin only', async () => {
+      const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
+      await expect(
+        defaultAdminSigner.sendTransaction({
+          to: proxyBridge.address,
+          value: toWei('100'),
+        }),
+      )
+        .to.emit(proxyBridge, 'ETH_RECEIVED_VIA_RECEIVE_FUNCTION')
+        .withArgs(defaultAdminSigner.address, toWei('100'));
+      expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('100'));
+      const balanceAdminBeforeWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const balanceBridgeBeforeWithdraw = await ethers.provider.getBalance(proxyBridge.address);
+      const tx = await proxyBridge.connect(defaultAdminSigner).withdraw(ethers.constants.AddressZero, toWei('10'));
+      const receipt = await tx.wait();
+      const balanceAdminAfterWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const balanceBridgeAfterWithdraw = await ethers.provider.getBalance(proxyBridge.address);
+      expect(balanceAdminAfterWithdraw).to.equal(
+        balanceAdminBeforeWithdraw.sub(receipt.gasUsed.mul(receipt.effectiveGasPrice)).add(toWei('10')),
+      );
+      expect(balanceBridgeAfterWithdraw).to.equal(balanceBridgeBeforeWithdraw.sub(toWei('10')));
+    });
+
+    it('Unable to withdraw more ERC20 than the balance of the Bridge', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
       // Contract balance of testToken is '0'
       // Test should be revert with a mention string if Admin requesting amount bigger than actual balance of the Bridge.
       await expect(
         proxyBridge.connect(defaultAdminSigner).withdraw(testToken.address, toWei('110')),
       ).to.be.revertedWith('ERC20: transfer amount exceeds balance');
+    });
+
+    it('Unable to withdraw more ETH than the balance of the Bridge', async () => {
+      const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
+      await defaultAdminSigner.sendTransaction({
+        to: proxyBridge.address,
+        value: toWei('2'),
+      });
+      expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('2'));
+      await expect(
+        proxyBridge.connect(defaultAdminSigner).withdraw(ethers.constants.AddressZero, toWei('10')),
+      ).to.revertedWithCustomError(proxyBridge, 'ETH_TRANSFER_FAILED');
     });
   });
   describe('OPERATIONAL_ROLE', () => {

@@ -7,8 +7,7 @@ import { getStorageItem, setStorageItem } from "@utils/localStorage";
 import Tooltip from "@components/commons/Tooltip";
 import UtilityButton from "@components/commons/UtilityButton";
 import { useRouter } from "next/router";
-import { useGenerateAddressMutation } from "@store/website";
-import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
+import { useGenerateAddressMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
 import { AddressDetails } from "types";
@@ -109,7 +108,6 @@ export default function StepTwoSendConfirmation({
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddressExpired, setIsAddressExpired] = useState(false);
-  const { networkEnv } = useNetworkEnvironmentContext();
   const { DFC_ADDR_KEY } = useBridgeFormStorageKeys();
   const [createdBeforeInMSec, setCreatedBeforeInMSec] = useState(
     getTimeDifference(addressDetail?.createdAt)
@@ -137,7 +135,6 @@ export default function StepTwoSendConfirmation({
       } else {
         try {
           const { address, createdAt } = await generateAddress({
-            network: networkEnv,
             refundAddress,
           }).unwrap();
           setCreatedBeforeInMSec(getTimeDifference(createdAt));

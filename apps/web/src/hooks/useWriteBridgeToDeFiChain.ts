@@ -4,7 +4,7 @@
 
 import BigNumber from "bignumber.js";
 import { ethers, utils } from "ethers";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   useContractWrite,
   usePrepareContractWrite,
@@ -14,14 +14,19 @@ import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
 import { ETHEREUM_SYMBOL } from "../constants";
 
+interface EventErrorI {
+  customErrorDisplay?:
+    | "InsufficientAllowanceError"
+    | "UserRejectedRequestError";
+  message: string;
+}
+
 interface BridgeToDeFiChainI {
   receiverAddress: string;
   transferAmount: BigNumber;
   tokenName: Erc20Token;
   tokenDecimals: number | "gwei";
-  setErrorMessage: any;
   onBridgeTxnSettled: () => void;
-  onInsufficientAllowanceError: () => void;
 }
 
 export default function useWriteBridgeToDeFiChain({
@@ -29,12 +34,41 @@ export default function useWriteBridgeToDeFiChain({
   transferAmount,
   tokenName,
   tokenDecimals,
-  setErrorMessage,
   onBridgeTxnSettled,
-  onInsufficientAllowanceError,
 }: BridgeToDeFiChainI) {
   const { BridgeV1, Erc20Tokens } = useContractContext();
   const sendingFromETH = (tokenName as string) === ETHEREUM_SYMBOL;
+  const [eventError, setEventError] = useState<EventErrorI>();
+  const [requiresApproval, setRequiresApproval] = useState(false);
+
+  const handlePrepContractError = (err) => {
+    let customErrorDisplay: EventErrorI["customErrorDisplay"];
+    if (err.message.includes("insufficient allowance")) {
+      // Need to request approval from user - Insufficient allowance
+      setRequiresApproval(true);
+      customErrorDisplay = "InsufficientAllowanceError";
+    }
+
+    setEventError({
+      customErrorDisplay,
+      message: err?.message,
+    });
+  };
+
+  const handleWriteContractError = (err) => {
+    let customErrorMessage;
+    let customErrorDisplay: EventErrorI["customErrorDisplay"];
+    if (err?.name === "UserRejectedRequestError") {
+      customErrorDisplay = "UserRejectedRequestError";
+      customErrorMessage =
+        "The transaction was rejected in your wallet. No funds have been transferred. Please retry your transaction.";
+    }
+
+    setEventError({
+      customErrorDisplay,
+      message: customErrorMessage ?? err?.message,
+    });
+  };
 
   // Prepare write contract for `bridgeToDeFiChain` function
   const { config: bridgeConfig, refetch: refetchBridge } =
@@ -54,15 +88,7 @@ export default function useWriteBridgeToDeFiChain({
             },
           }
         : {}),
-      onError: (err) => {
-        if (err.message.includes("insufficient allowance")) {
-          // Need to request approval from user
-          onInsufficientAllowanceError();
-        } else {
-          // Display error message
-          setErrorMessage(err.message);
-        }
-      },
+      onError: handlePrepContractError,
     });
 
   // Write contract for `bridgeToDeFiChain` function
@@ -75,7 +101,7 @@ export default function useWriteBridgeToDeFiChain({
   // Wait and get result from write contract for `bridgeToDeFiChain` function
   const {
     error: bridgeTxnError,
-    isSuccess: isBridgeTxnSuccess,
+    isSuccess: isBridgeTxnCreated,
     isLoading: isBridgeTxnLoading,
   } = useWaitForTransaction({
     hash: bridgeContract?.hash,
@@ -84,15 +110,17 @@ export default function useWriteBridgeToDeFiChain({
 
   useEffect(() => {
     if (writeBridgeTxnError || bridgeTxnError) {
-      setErrorMessage(writeBridgeTxnError?.message ?? bridgeTxnError?.message);
+      handleWriteContractError(writeBridgeTxnError ?? bridgeTxnError);
     }
   }, [writeBridgeTxnError, bridgeTxnError]);
 
   return {
     isBridgeTxnLoading,
-    isBridgeTxnSuccess,
+    isBridgeTxnCreated,
     refetchBridge,
     writeBridgeToDeFiChain,
     transactionHash: bridgeContract?.hash,
+    requiresApproval,
+    eventError,
   };
 }

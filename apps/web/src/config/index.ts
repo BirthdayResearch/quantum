@@ -4,10 +4,11 @@ import BridgeV1 from "./ABIs/mainnet/BridgeV1.json";
 import BridgeV1Testnet from "./ABIs/testnet/BridgeV1.json";
 
 export const MAINNET_CONFIG: ContractContextI = {
+  EthereumRpcUrl: "https://cloudflare-eth.com/", // TODO: Replace with MainNet RPC URL
   ExplorerURL: "https://etherscan.io",
   BridgeV1: {
-    address: "0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C",
-    abi: BridgeV1, // TODO: Replace with deployed contract address on mainnet
+    address: "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef", // TODO: Replace with deployed contract address on mainnet
+    abi: BridgeV1,
   },
   Erc20Tokens: {
     wBTC: { address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599" },
@@ -19,9 +20,10 @@ export const MAINNET_CONFIG: ContractContextI = {
 
 // Goerli
 export const TESTNET_CONFIG: ContractContextI = {
+  EthereumRpcUrl: "https://rpc.ankr.com/eth_goerli",
   ExplorerURL: "https://goerli.etherscan.io",
   BridgeV1: {
-    address: "0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C",
+    address: "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef",
     abi: BridgeV1Testnet,
   },
   Erc20Tokens: {

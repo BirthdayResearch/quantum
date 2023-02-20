@@ -23,14 +23,17 @@ export const SocialItems = [
 
 export default function Maintenance(): JSX.Element {
   return (
-    <div className="mx-0 min-h-screen" data-testid="homepage">
+    <div className="mx-0 min-h-screen" data-testid="maintenance">
       <div className="flex flex-col md:flex-row w-full md:px-[40px] lg:px-[120px]">
         <div className="flex flex-col justify-between px-6 pb-6 md:px-0 md:pb-0 md:mr-8 lg:mr-[72px]">
           <div>
             <div className="md:text-[16px] leading-4 text-error tracking-[0.04em] pb-2">
               SCHEDULED MAINTENANCE
             </div>
-            <h1 className="text-dark-1000 xs:text-[36px] xs:leading-10 xs:w-11/12 md:w-7/12 md:text-[52px] md:leading-[52px] lg:text-[52px] lg:leading-[52px]">
+            <h1
+              data-testid="maintenance_title"
+              className="text-dark-1000 xs:text-[36px] xs:leading-10 xs:w-11/12 md:w-7/12 md:text-[52px] md:leading-[52px] lg:text-[52px] lg:leading-[52px]"
+            >
               Bridge is currently closed
             </h1>
             <div className="pt-2 pb-12">
