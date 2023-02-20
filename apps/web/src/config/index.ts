@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import { ContractContextI } from "types";
 import BridgeV1 from "./ABIs/mainnet/BridgeV1.json";
 import BridgeV1Testnet from "./ABIs/testnet/BridgeV1.json";
