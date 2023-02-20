@@ -76,21 +76,21 @@ The relayer address will primarily be used for verifying the signature that is s
 
 ### Transaction fee change
 
-Only addresses with admin roles can change `transactionFee`.
+Only addresses with Admin and Operational roles can change `transactionFee`.
 
 Initial fee will be set to 0.1%. This means that if the user bridges `X` tokens, 99.9% of X will be bridged. The other 0.1% will be taken as fees and sent to `communityWallet`.
 
 ### Change Tx Fee Address
 
-Only addresses with admin roles can change `communityWallet`. This is where the tx fees upon bridging will go.
+Only addresses with admin and Operational roles can change `communityWallet`. This is where the tx fees upon bridging will go.
 
 ### Change Token Cap
 
-Only addresses with admin roles can change `tokenCap`.
+Only addresses with admin and Operational roles can change `tokenCap`.
 
 ### Modify admin and operational address
 
-`grantRole` and `revokeRole` will be used to a grant role to new addresses and revoke the existing addresses role respectively.
+`grantRole` and `revokeRole` will be used to a grant role to new addresses and revoke the existing addresses role respectively. Only Admin address can make these changes.
 
 ## Deployed Smart Contracts on Goerli testnet
 
