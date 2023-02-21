@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
 // import MobileBottomMenu from "@components/MobileBottomMenu";
@@ -6,7 +7,6 @@ import TransactionStatus from "@components/TransactionStatus";
 import { useTransactionHashContext } from "@contexts/TransactionHashContext";
 import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
-import { useEffect } from "react";
 import { getStorageItem } from "../utils/localStorage";
 
 function Home() {
