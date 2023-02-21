@@ -83,12 +83,10 @@ export default function StepThreeVerification({
           symbol: txn.selectedTokensA.tokenA.symbol,
         }).unwrap();
 
-        if (response.data?.statusCode !== undefined) {
-          Logging.info(`Returned statusCode: ${response.data.statusCode}`);
+        if (response.statusCode !== undefined) {
+          Logging.info(`Returned statusCode: ${response.statusCode}`);
           setContent(contentLabelRejected);
-          setTitle(
-            `Something went wrong (Error code ${response.data.statusCode})`
-          );
+          setTitle(`Something went wrong (Error code ${response.statusCode})`);
           setValidationSuccess(false);
           setIsValidating(false);
           setButtonLabel(ButtonLabel.Rejected);
