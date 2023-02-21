@@ -75,18 +75,20 @@ export default function StepThreeVerification({
       txn?.selectedTokensA.tokenA.symbol !== undefined
     ) {
       try {
-        const { data } = await trigger({
+        const response = await trigger({
           address: dfcAddress,
           ethReceiverAddress: txn.toAddress,
           tokenAddress: Erc20Tokens[txn.selectedTokensB.tokenA.name].address,
           amount: new BigNumber(txn.amount).toFixed(8),
           symbol: txn.selectedTokensA.tokenA.symbol,
-        });
+        }).unwrap();
 
-        if (data?.statusCode !== undefined) {
-          Logging.info(`Returned statusCode: ${data?.statusCode}`);
+        if (response.data?.statusCode !== undefined) {
+          Logging.info(`Returned statusCode: ${response.data.statusCode}`);
           setContent(contentLabelRejected);
-          setTitle(`Something went wrong (Error code ${data.statusCode})`);
+          setTitle(
+            `Something went wrong (Error code ${response.data.statusCode})`
+          );
           setValidationSuccess(false);
           setIsValidating(false);
           setButtonLabel(ButtonLabel.Rejected);
@@ -97,7 +99,7 @@ export default function StepThreeVerification({
         setContent(ContentLabel.Validated);
         setButtonLabel(ButtonLabel.Validated);
         setValidationSuccess(true);
-        onSuccess(data);
+        onSuccess(response.data);
         goToNextStep();
       } catch (e) {
         setButtonLabel(ButtonLabel.Rejected);
