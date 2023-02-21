@@ -22,6 +22,8 @@ async function main() {
     operationalAddress: OPERATIONAL_ADDRESS,
     relayerAddress: RELAYER_ADDRESS,
     bridgeV1Address: bridgeV1.address,
+    txFeeAddress: ADMIN_ADDRESS,
+    flushReceiveAddress: ADMIN_ADDRESS,
   });
 }
 

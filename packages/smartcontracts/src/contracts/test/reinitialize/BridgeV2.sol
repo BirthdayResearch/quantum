@@ -7,6 +7,7 @@ import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 import 'hardhat/console.sol';
 
 /** @notice @dev  
@@ -78,7 +79,6 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     bytes32 public constant OPERATIONAL_ROLE = keccak256('OPERATIONAL_ROLE');
 
     string public constant name = 'QUANTUM_BRIDGE';
-    string public constant version = '2.0';
 
     address public constant ETH = address(0);
 
@@ -92,6 +92,8 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     // Mapping to track the maximum balance of tokens the contract can hold per token address.
     mapping(address => uint256) public tokenCap;
 
+    // Contract version
+    string public version;
     // Transaction fee when bridging from EVM to DeFiChain. Based on dps (e.g 1% == 100dps)
     uint256 public transactionFee;
     // Community wallet to send tx fees to
@@ -210,12 +212,14 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address _relayerAddress,
         address _communityWallet,
         uint256 _fee,
-        address _flushReceiveAddress
-    ) external initializer {
+        address _flushReceiveAddress,
+        uint8 _version
+    ) external reinitializer(_version) {
         __UUPSUpgradeable_init();
-        __EIP712_init(name, version);
+        __EIP712_init(name, Strings.toString(_version));
         _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
         _grantRole(OPERATIONAL_ROLE, _initialOperational);
+        version = Strings.toString(_version);
         communityWallet = _communityWallet;
         relayerAddress = _relayerAddress;
         transactionFee = _fee;
