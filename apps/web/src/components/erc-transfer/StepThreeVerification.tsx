@@ -97,7 +97,7 @@ export default function StepThreeVerification({
         setContent(ContentLabel.Validated);
         setButtonLabel(ButtonLabel.Validated);
         setValidationSuccess(true);
-        onSuccess(response.data);
+        onSuccess(response);
         goToNextStep();
       } catch (e) {
         setButtonLabel(ButtonLabel.Rejected);
