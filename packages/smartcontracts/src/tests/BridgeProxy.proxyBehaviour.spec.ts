@@ -158,7 +158,7 @@ describe('Proxy behaviour', () => {
     );
   });
 
-  it('UnSuccessfully reverting when claiming with new contract version', async () => {
+  it('should revert when claiming with new contract version', async () => {
     const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
     // Supporting testToken with hard cap of 15
     await proxyBridge.addSupportedTokens(testToken.address, toWei('15'));
