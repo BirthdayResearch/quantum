@@ -5,10 +5,30 @@ import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
 import { useTransactionHashContext } from "@contexts/TransactionHashContext";
 import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
+import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
+import { useEffect } from "react";
+import { getStorageItem } from "../utils/localStorage";
 
 function Home() {
   const { ethTxnStatus, isApiSuccess } = useWatchEthTxn();
   const { txnHash, setTxnHash } = useTransactionHashContext();
+  const { UNCONFIRMED_TXN_HASH_KEY } = useBridgeFormStorageKeys();
+
+  useEffect(() => {
+    const unloadCallback = (e) => {
+      const event = e;
+      const unconfirmedHash = getStorageItem<string>(UNCONFIRMED_TXN_HASH_KEY);
+      if (unconfirmedHash !== undefined) {
+        // display native reload warning modal if there is unconfirmed txn ongoing
+        event.preventDefault();
+        event.returnValue = "";
+        return "";
+      }
+      return false;
+    };
+    window.addEventListener("beforeunload", unloadCallback);
+    return () => window.removeEventListener("beforeunload", unloadCallback);
+  }, [UNCONFIRMED_TXN_HASH_KEY]);
 
   const getNumberOfConfirmations = () => {
     let numOfConfirmations = ethTxnStatus?.numberOfConfirmations;
