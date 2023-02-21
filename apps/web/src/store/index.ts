@@ -13,7 +13,8 @@ const useConfirmEthTxnMutation = () =>
   useWrappedMutation(bridgeApi.useConfirmEthTxnMutation);
 const useAllocateDfcFundMutation = () =>
   useWrappedMutation(bridgeApi.useAllocateDfcFundMutation);
-
+const useBalanceMutation = () =>
+  useWrappedMutation(bridgeApi.useBalanceMutation);
 const useLazyBridgeStatusQuery = () =>
   useWrappedLazyQuery(bridgeApi.useLazyBridgeStatusQuery, true);
 
@@ -23,6 +24,7 @@ export {
   useGetAddressDetailMutation,
   useConfirmEthTxnMutation,
   useAllocateDfcFundMutation,
-  bridgeApi,
+  useBalanceMutation,
   useLazyBridgeStatusQuery,
+  bridgeApi,
 };

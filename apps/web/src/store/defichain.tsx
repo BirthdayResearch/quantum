@@ -114,5 +114,12 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 0 },
     }),
+    balance: builder.mutation<string, any>({
+      query: ({ baseUrl, tokenSymbol }) => ({
+        url: `${baseUrl}/ethereum/balance/${tokenSymbol}`,
+        method: "GET",
+      }),
+      extraOptions: { maxRetries: 1 },
+    }),
   }),
 });
