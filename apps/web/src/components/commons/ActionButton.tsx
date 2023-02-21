@@ -1,11 +1,13 @@
 import clsx from "clsx";
 import { RiLoader2Line } from "react-icons/ri";
+import { FiRefreshCw } from "react-icons/fi";
 
 export default function ActionButton({
   label,
   onClick,
   disabled = false,
   isLoading = false,
+  isRefresh = false,
   variant = "primary",
   responsiveStyle,
   testId,
@@ -19,6 +21,7 @@ export default function ActionButton({
   responsiveStyle?: string;
   testId?: string;
   customStyle?: string;
+  isRefresh?: boolean;
 }) {
   const responsiveSizing =
     responsiveStyle ?? "lg:text-xl lg:leading-8 lg:py-4 lg:px-8 xl:px-14";
@@ -51,6 +54,12 @@ export default function ActionButton({
         <RiLoader2Line
           size={24}
           className="inline-block animate-spin text-dark-100 ml-2"
+        />
+      )}
+      {isRefresh && (
+        <FiRefreshCw
+          size={16}
+          className="text-dark-100 ml-2 hidden lg:inline-block"
         />
       )}
     </button>

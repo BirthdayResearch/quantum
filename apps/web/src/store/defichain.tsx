@@ -90,5 +90,19 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 0 },
     }),
+    allocateDfcFund: builder.mutation<{ transactionHash: string }, any>({
+      query: ({ baseUrl, txnHash }) => ({
+        url: `${baseUrl}/ethereum/allocateDFCFund`,
+        body: {
+          transactionHash: txnHash,
+        },
+        method: "POST",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      }),
+      extraOptions: { maxRetries: 0 },
+    }),
   }),
 });

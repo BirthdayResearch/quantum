@@ -12,6 +12,8 @@ const useGetAddressDetailMutation = () =>
   useWrappedMutation(bridgeApi.useGetAddressDetailMutation);
 const useConfirmEthTxnMutation = () =>
   useWrappedMutation(bridgeApi.useConfirmEthTxnMutation);
+const useAllocateDfcFundMutation = () =>
+  useWrappedMutation(bridgeApi.useAllocateDfcFundMutation);
 
 const { useGetBridgeStatusQuery } = statusWebsiteSlice;
 
@@ -21,6 +23,7 @@ export {
   useLazyVerifyQuery,
   useGetAddressDetailMutation,
   useConfirmEthTxnMutation,
+  useAllocateDfcFundMutation,
   bridgeApi,
   statusWebsiteSlice,
 };

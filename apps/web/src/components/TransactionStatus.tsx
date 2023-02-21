@@ -4,6 +4,9 @@ import { IoCloseOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
+import { useAllocateDfcFundMutation } from "@store/index";
+import { useTransactionHashContext } from "@contexts/TransactionHashContext";
+import { HttpStatusCode } from "axios";
 import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
@@ -14,6 +17,7 @@ export default function TransactionStatus({
   isConfirmed,
   isApiSuccess,
   isReverted,
+  isUnsentFund,
   numberOfConfirmations,
   txnHash,
   onClose,
@@ -21,6 +25,7 @@ export default function TransactionStatus({
   isConfirmed: boolean;
   isApiSuccess: boolean;
   isReverted: boolean;
+  isUnsentFund: boolean;
   numberOfConfirmations: string;
   txnHash: string | undefined;
   onClose: () => void;
@@ -33,9 +38,16 @@ export default function TransactionStatus({
     CONFIRMATIONS_BLOCK_TOTAL,
     numberOfConfirmations
   ).toFixed();
+  const [allocateDfcFund] = useAllocateDfcFundMutation();
+  const { setTxnHash } = useTransactionHashContext();
 
   useEffect(() => {
-    if (isReverted) {
+    if (isUnsentFund) {
+      setTitle("Transaction failed");
+      setDescription(
+        "We encountered an error while processing your transaction. Please try again after a few minutes."
+      );
+    } else if (isReverted) {
       setTitle("Transaction reverted");
       setDescription("");
     } else if (isConfirmed) {
@@ -49,6 +61,30 @@ export default function TransactionStatus({
     }
   }, [isConfirmed, isReverted]);
 
+  const handleRetrySend = async () => {
+    if (txnHash !== undefined) {
+      try {
+        const fundData = await allocateDfcFund({
+          txnHash,
+        }).unwrap();
+
+        if (fundData?.transactionHash !== undefined) {
+          setTxnHash("confirmed", txnHash);
+          setTxnHash("unsent-fund", null);
+        }
+      } catch ({ data }) {
+        if (data?.statusCode === HttpStatusCode.TooManyRequests) {
+          setDescription(
+            "Retry limit has been reached, please wait for a minute and try again"
+          );
+        } else if (data?.error?.includes("Fund already allocated")) {
+          setTxnHash("confirmed", txnHash);
+          setTxnHash("unsent-fund", null);
+        }
+      }
+    }
+  };
+
   return (
     <div
       className={clsx(
@@ -60,7 +96,7 @@ export default function TransactionStatus({
         { "pr-6": isLg && isConfirmed }
       )}
     >
-      {!isLg && (
+      {!isLg && !isUnsentFund && (
         <div className="pb-4">
           <ConfirmationProgress
             confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
@@ -70,7 +106,12 @@ export default function TransactionStatus({
           />
         </div>
       )}
-      <div className="flex flex-row items-center">
+
+      <div
+        className={clsx("flex flex-col lg:flex-row", {
+          "items-center": !isUnsentFund,
+        })}
+      >
         <div className="flex-1 flex-col">
           <div className="leading-5 lg:text-xl lg:font-semibold">{title}</div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
@@ -91,33 +132,44 @@ export default function TransactionStatus({
               </a>
             )} */}
           </div>
-          {(isConfirmed || isReverted) && !isLg && (
-            <ActionButton
-              label="Close"
-              variant="secondary"
-              customStyle="mt-6 dark-section-bg"
-              onClick={onClose}
-            />
-          )}
         </div>
+        {isUnsentFund && (
+          <ActionButton
+            label="Try again"
+            variant="primary"
+            customStyle="mt-6 lg:mt-0 text-dark-100 w-full lg:w-fit lg:h-[40px] lg:self-center lg:text-xs"
+            onClick={handleRetrySend}
+            isRefresh
+          />
+        )}
+        {(isConfirmed || isUnsentFund) && !isLg && (
+          <ActionButton
+            label="Close"
+            variant="secondary"
+            customStyle="mt-6 dark-section-bg"
+            onClick={onClose}
+          />
+        )}
         {isLg && (
           <div className="flex flex-row pl-8">
-            <ConfirmationProgress
-              confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
-              confirmationBlocksCurrent={confirmationBlocksCurrent}
-              isConfirmed={isConfirmed}
-              isApiSuccess={isApiSuccess}
-            />
-            {isConfirmed ||
-              (isReverted && (
-                <div>
-                  <IoCloseOutline
-                    onClick={onClose}
-                    size={20}
-                    className="hover:opacity-70 cursor-pointer"
-                  />
-                </div>
-              ))}
+            {!isUnsentFund && (
+              <ConfirmationProgress
+                confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
+                confirmationBlocksCurrent={confirmationBlocksCurrent}
+                isConfirmed={isConfirmed}
+                isApiSuccess={isApiSuccess}
+              />
+            )}
+
+            {(isConfirmed || isReverted || isUnsentFund) && (
+              <div>
+                <IoCloseOutline
+                  onClick={onClose}
+                  size={20}
+                  className="hover:opacity-70 cursor-pointer"
+                />
+              </div>
+            )}
           </div>
         )}
       </div>

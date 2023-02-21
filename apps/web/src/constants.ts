@@ -32,6 +32,7 @@ export const STORAGE_TXN_KEY = "unconfirmed-txn";
 export const STORAGE_UNCONFIRMED_TXN_HASH_KEY = "unconfirmed-txn-hash";
 export const STORAGE_CONFIRMED_TXN_HASH_KEY = "confirmed-txn-hash";
 export const STORAGE_REVERTED_TXN_HASH_KEY = "reverted-txn-hash";
+export const STORAGE_UNSENT_FUND_TXN_HASH_KEY = "unsent-txn-hash";
 
 export enum BridgeStatus {
   IsTokenApprovalInProgress = 0,

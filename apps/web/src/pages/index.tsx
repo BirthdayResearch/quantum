@@ -13,7 +13,7 @@ function Home() {
   const getNumberOfConfirmations = () => {
     let numOfConfirmations = ethTxnStatus?.numberOfConfirmations;
 
-    if (txnHash.confirmed !== undefined) {
+    if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
       numOfConfirmations = CONFIRMATIONS_BLOCK_TOTAL.toString();
     } else if (txnHash.reverted !== undefined) {
       numOfConfirmations = "0";
@@ -32,17 +32,24 @@ function Home() {
           <WelcomeHeader />
         </div>
         <div className="flex-1">
-          {(txnHash.unconfirmed || txnHash.confirmed || txnHash.reverted) && (
+          {(txnHash.unconfirmed ||
+            txnHash.confirmed ||
+            txnHash.reverted ||
+            txnHash.unsentFund) && (
             <TransactionStatus
               onClose={() => {
                 setTxnHash("confirmed", null);
                 setTxnHash("reverted", null);
               }}
               txnHash={
-                txnHash.reverted ?? txnHash.confirmed ?? txnHash.unconfirmed
+                txnHash.unsentFund ??
+                txnHash.reverted ??
+                txnHash.confirmed ??
+                txnHash.unconfirmed
               }
               isReverted={txnHash.reverted !== undefined}
               isConfirmed={txnHash.confirmed !== undefined}
+              isUnsentFund={txnHash.unsentFund !== undefined}
               numberOfConfirmations={getNumberOfConfirmations()}
               isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
             />

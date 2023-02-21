@@ -1,6 +1,9 @@
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { useTransactionHashContext } from "@contexts/TransactionHashContext";
-import { useConfirmEthTxnMutation } from "@store/index";
+import {
+  useAllocateDfcFundMutation,
+  useConfirmEthTxnMutation,
+} from "@store/index";
 import { HttpStatusCode } from "axios";
 import { useEffect, useState } from "react";
 
@@ -12,6 +15,7 @@ export default function useWatchEthTxn() {
   const { txnHash, setTxnHash } = useTransactionHashContext();
 
   const [confirmEthTxn] = useConfirmEthTxnMutation();
+  const [allocateDfcFund] = useAllocateDfcFundMutation();
 
   const [isApiSuccess, setIsApiSuccess] = useState(false);
   const [ethTxnStatus, setEthTxnStatus] = useState<{
@@ -35,8 +39,14 @@ export default function useWatchEthTxn() {
 
         if (data) {
           if (data?.isConfirmed) {
-            setTxnHash("confirmed", unconfirmed ?? null);
-            setTxnHash("unconfirmed", null);
+            const fundData = await allocateDfcFund({
+              txnHash: unconfirmed,
+            }).unwrap();
+
+            if (fundData?.transactionHash !== undefined) {
+              setTxnHash("confirmed", unconfirmed ?? null);
+              setTxnHash("unconfirmed", null);
+            }
           }
 
           setEthTxnStatus({
@@ -46,7 +56,15 @@ export default function useWatchEthTxn() {
           setIsApiSuccess(true);
         }
       } catch ({ data }) {
-        if (
+        if (data?.error?.includes("Fund already allocated")) {
+          setTxnHash("unsent-fund", unconfirmed ?? null);
+          setTxnHash("unconfirmed", null);
+        } else if (
+          data?.error?.includes("There is a problem in allocating fund")
+        ) {
+          setTxnHash("unsent-fund", unconfirmed ?? null);
+          setTxnHash("unconfirmed", null);
+        } else if (
           data?.statusCode === HttpStatusCode.BadRequest &&
           data?.message === "Transaction Reverted"
         ) {
