@@ -1,5 +1,5 @@
 import { fromAddress } from '@defichain/jellyfish-address';
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { DeFiChainAddressIndex } from '@prisma/client';
 import { EnvironmentNetwork, getJellyfishNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
@@ -13,14 +13,20 @@ import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
 @Injectable()
 export class WhaleWalletService {
+  private readonly logger: Logger;
+
   constructor(
     private readonly whaleWalletProvider: WhaleWalletProvider,
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly evmTransactionService: EVMTransactionConfirmerService,
     private prisma: PrismaService,
-  ) {}
+  ) {
+    this.logger = new Logger(WhaleWalletService.name);
+  }
 
   async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
+    this.logger.log(`verify - amount: '${verify.amount} ${verify.symbol}', dfc wallet address: '${verify.address}'`);
+
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
     if (!isAddressValid) {
@@ -73,6 +79,10 @@ export class WhaleWalletService {
         amount: verify.amount.toString(),
       });
 
+      this.logger.log(
+        `verify SUCCESS - amount: '${verify.amount} ${verify.symbol}', dfcAddress: '${verify.address}', ethAddress(receiver) '${verify.ethReceiverAddress}'`,
+      );
+
       return { isValid: true, signature: claim.signature, nonce: claim.nonce, deadline: claim.deadline };
     } catch (error) {
       throw new HttpException(
@@ -93,6 +103,8 @@ export class WhaleWalletService {
     network: EnvironmentNetwork,
   ): Promise<Omit<DeFiChainAddressIndex, 'id' | 'index'>> {
     try {
+      this.logger.log(`generateAddress - refundAddress: '${refundAddress}', network: '${network}'`);
+
       const decodedAddress = fromAddress(refundAddress, this.clientProvider.remapNetwork(network));
       if (decodedAddress === undefined) {
         throw new BadRequestException(`Invalid refund address for DeFiChain ${network}`);
@@ -111,6 +123,11 @@ export class WhaleWalletService {
           refundAddress,
         },
       });
+
+      this.logger.log(
+        `generateAddress SUCCESS - refundAddress: '${refundAddress}', network: '${network}', generatedAddress: '${data.address}', index:' ${nextIndex}'`,
+      );
+
       return {
         address: data.address,
         createdAt: data.createdAt,
