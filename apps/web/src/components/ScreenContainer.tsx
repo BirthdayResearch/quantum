@@ -1,10 +1,11 @@
 import Footer from "@components/Footer";
 import Header from "@components/Header";
-import { useGetBridgeStatusQuery } from "@store/index";
 import clsx from "clsx";
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Maintenance from "./Maintenance";
+import { useLazyBridgeStatusQuery } from "../store";
+import { BridgeStatus } from "../types";
 
 export default function ScreenContainer({
   children,
@@ -14,9 +15,21 @@ export default function ScreenContainer({
   const router = useRouter();
 
   // if isMaintenanceEnabled is true, this condition will supersede /404 page display
-  const { data: bridgeStatus, isSuccess: isBridgeStatusSuccess } =
-    useGetBridgeStatusQuery("");
+  const [trigger] = useLazyBridgeStatusQuery();
+
   const [isBridgeUp, setIsBridgeUp] = useState(true);
+  const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>();
+  const [isBridgeStatusSuccess, setIsBridgeStatusSuccess] = useState<boolean>();
+
+  useEffect(() => {
+    async function checkBridgeStatus() {
+      const { data, isSuccess } = await trigger({});
+      setBridgeStatus(data);
+      setIsBridgeStatusSuccess(isSuccess);
+    }
+
+    checkBridgeStatus();
+  }, []);
 
   useEffect(() => {
     // Assumes that the bridge is up unless the api explicitly returns isUp !== true

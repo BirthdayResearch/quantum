@@ -53,7 +53,7 @@ function RowData({
           <span
             className={clsx(
               "text-sm text-dark-900 !leading-5 break-all",
-              "md:text-base md:break-normal"
+              "md:text-base md:w-5/6"
             )}
           >
             {data.address}

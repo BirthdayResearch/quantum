@@ -11,13 +11,13 @@ export default function ProgressStepIndicator({
   const getProgressWidth = () => {
     switch (activeStep) {
       case 1:
-        return "after:w-1/5";
+        return "after:w-[10%]";
       case 2:
-        return "after:w-1/2";
+        return "after:w-[35%]";
       case 3:
-        return "after:w-4/5";
+        return "after:w-[65%]";
       default:
-        return "after:w-full";
+        return "after:w-[100%]";
     }
   };
 

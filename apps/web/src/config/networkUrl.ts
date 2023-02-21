@@ -9,4 +9,6 @@ const BASE_URLS: { [key in EnvironmentNetwork]: string } = {
   [EnvironmentNetwork.MainNet]: "http://localhost:5741",
 };
 
+export const DEFICHAIN_WALLET_URL = "https://wallet.defichain.com/api/v0";
+
 export default BASE_URLS;

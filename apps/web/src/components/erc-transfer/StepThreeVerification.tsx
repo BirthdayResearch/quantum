@@ -30,7 +30,6 @@ type RejectedLabelType = `Something went wrong${string}`;
 enum ContentLabel {
   Validating = "Please wait as your transaction is being verified. This usually takes 10 confirmations from the blockchain. Once verified, you will be redirected to the next step.",
   Validated = "Please wait as we redirect you to the next step.",
-  Rejected = "Please check our Error guide and try again.",
   ThrottleLimit = "Please wait for a minute and try again.",
 }
 
@@ -46,7 +45,18 @@ export default function StepThreeVerification({
   const [title, setTitle] = useState<TitleLabel | RejectedLabelType>(
     TitleLabel.Validating
   );
-  const [content, setContent] = useState<ContentLabel>(ContentLabel.Rejected);
+  const contentLabelRejected = (
+    <span>
+      <span>Please check our {/* TODO insert link once available */}</span>
+      <button type="button" onClick={() => {}} className="underline">
+        Error guide
+      </button>
+      <span> and try again</span>
+    </span>
+  );
+  const [content, setContent] = useState<ContentLabel | JSX.Element>(
+    contentLabelRejected
+  );
   const [buttonLabel, setButtonLabel] = useState<ButtonLabel>(
     ButtonLabel.Validating
   );
@@ -75,7 +85,7 @@ export default function StepThreeVerification({
 
         if (data?.statusCode !== undefined) {
           Logging.info(`Returned statusCode: ${data?.statusCode}`);
-          setContent(ContentLabel.Rejected);
+          setContent(contentLabelRejected);
           setTitle(`Something went wrong (Error code ${data.statusCode})`);
           setValidationSuccess(false);
           setIsValidating(false);
@@ -99,7 +109,7 @@ export default function StepThreeVerification({
           setContent(ContentLabel.ThrottleLimit);
         } else {
           setTitle(TitleLabel.Rejected);
-          setContent(ContentLabel.Rejected);
+          setContent(contentLabelRejected);
         }
         Logging.error(e);
       }
