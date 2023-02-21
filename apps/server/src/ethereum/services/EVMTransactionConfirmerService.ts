@@ -180,6 +180,9 @@ export class EVMTransactionConfirmerService {
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+      if (!txReceipt) {
+        throw new Error('Transaction is not yet available');
+      }
       const isReverted = txReceipt.status === 0;
 
       if (isReverted === true) {
