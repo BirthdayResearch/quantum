@@ -158,20 +158,6 @@ export class EVMTransactionConfirmerService {
 
   async allocateDFCFund(transactionHash: string): Promise<{ transactionHash: string }> {
     try {
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const isReverted = txReceipt.status === 0;
-
-      if (isReverted === true) {
-        throw new BadRequestException(`Transaction Reverted`);
-      }
-      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-      const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
-
-      // check if tx is confirmed with min required confirmation
-      if (numberOfConfirmations < 65) {
-        throw new Error('Transaction is not yet confirmed with min block threshold');
-      }
-
       const txDetails = await this.prisma.bridgeEventTransactions.findFirst({
         where: {
           transactionHash,
@@ -191,6 +177,20 @@ export class EVMTransactionConfirmerService {
       // check if txn is confirmed or not
       if (txDetails.status !== EthereumTransactionStatus.CONFIRMED) {
         throw new Error('Transaction is not yet confirmed');
+      }
+
+      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+      const isReverted = txReceipt.status === 0;
+
+      if (isReverted === true) {
+        throw new BadRequestException(`Transaction Reverted`);
+      }
+      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+      const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
+
+      // check if tx is confirmed with min required confirmation
+      if (numberOfConfirmations < 65) {
+        throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
