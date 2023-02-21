@@ -14,7 +14,7 @@ import {
 import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
 import { PrismaService } from '../../src/PrismaService';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from '../defichain/containers/DeFiChainStubContainer';
-import { sleep } from '../sleep';
+import { sleep } from '../helper/sleep';
 import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';

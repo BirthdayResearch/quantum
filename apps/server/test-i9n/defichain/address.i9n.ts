@@ -2,7 +2,7 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresear
 import { fromAddress } from '@defichain/jellyfish-address';
 
 import { PrismaService } from '../../src/PrismaService';
-import { sleep } from '../sleep';
+import { sleep } from '../helper/sleep';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
