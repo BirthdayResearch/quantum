@@ -28,6 +28,7 @@ import Logging from "@api/logging";
 import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
 import { TransactionHashProvider } from "@contexts/TransactionHashContext";
 import { bridgeApi } from "@store/defichain";
+import { GoogleTagManager } from "@components/GoogleTagManager";
 import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
@@ -124,6 +125,7 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
           sizes="16x16"
           href="/favicon-16x16.png"
         />
+        <GoogleTagManager />
       </Head>
 
       <WagmiConfig client={client}>

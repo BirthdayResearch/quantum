@@ -11,7 +11,9 @@ const securityHeaders = [
       `media-src 'self';` +
       `object-src 'none';` +
       `script-src 'self' app.netlify.com netlify-cdp-loader.netlify.app *.googletagmanager.com ${
-        process.env.NODE_ENV === "development" ? `'unsafe-eval'` : ""
+        process.env.NODE_ENV === "development"
+          ? `'unsafe-eval' 'unsafe-inline'`
+          : ""
       };` +
       `style-src 'self' fonts.googleapis.com 'unsafe-inline';` +
       `font-src fonts.gstatic.com;` +
