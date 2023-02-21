@@ -13,10 +13,11 @@
     "test:hardhat": "turbo run test:hardhat --filter=./packages/smartcontracts",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint -- --fix",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "migration:deploy": "turbo run migration:deploy"
   },
   "dependencies": {
-    "@waveshq/standard-defichain-jellyfishsdk": "^0.42.1"
+    "@waveshq/standard-defichain-jellyfishsdk": "^0.43.0"
   },
   "devDependencies": {
     "@birthdayresearch/sticky-turbo": "^0.4.1",

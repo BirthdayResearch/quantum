@@ -32,8 +32,7 @@ export class StartedDeFiChainStubContainer {
 
   public whaleClient: WhaleApiClient;
 
-  public static LOCAL_MNEMONIC =
-    'avoid between cupboard there nerve sugar quote foot broom intact seminar culture much anger hold rival moral silly volcano fog service decline tortoise combine';
+  public static LOCAL_MNEMONIC = process.env.DEFICHAIN_PRIVATE_KEY;
 
   constructor(
     protected defid: StartedNativeChainContainer,

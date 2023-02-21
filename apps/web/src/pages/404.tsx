@@ -15,11 +15,10 @@ function Page404() {
     >
       <div
         className={clsx(
-          "text-dark-500 text-xl font-bold pb-2",
-          "lg:text-[28px] lg:leading-9 lg:font-semibold"
+          "md:text-[16px] leading-4 text-error tracking-[0.04em] pb-2"
         )}
       >
-        Error 404
+        ERROR 404
       </div>
       <h1
         className={clsx(
@@ -29,7 +28,7 @@ function Page404() {
       >
         Page Not Found
       </h1>
-      <p className="text-dark-700 sm:text-xl">
+      <p className="text-dark-700 leading-7 sm:text-xl w-10/12 lg:w-6/12">
         The page you are looking for might have been changed or removed. Make
         sure the URL that you entered is correct.
       </p>

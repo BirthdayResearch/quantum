@@ -1,8 +1,7 @@
-const footerLinks = [
-  { id: "youtube", url: "https://www.youtube.com/DeFiChain" },
-  { id: "reddit", url: "https://www.reddit.com/r/defiblockchain" },
-  { id: "gitHub", url: "https://github.com/DeFiCh" },
-  { id: "twitter", url: "https://twitter.com/defichain" },
+const BirthdayResearchSocialItems = [
+  { id: "twitter_br", url: "https://twitter.com/BirthdayDev" },
+  { id: "medium_br", url: "https://medium.com/@birthdayresearch" },
+  { id: "gitHub_br", url: "https://github.com/BirthdayResearch" },
 ];
 
 describe("Navigation", () => {
@@ -10,14 +9,15 @@ describe("Navigation", () => {
     cy.visit("http://localhost:3000/");
 
     cy.findByTestId("homepage").should("exist");
-    cy.findByTestId("bridge-logo").should("exist");
+    cy.findByTestId("header-bridge-logo").should("exist");
     cy.findByTestId("connect-button").should("exist");
+    cy.findByTestId("footer_web").should("be.visible");
 
-    footerLinks.forEach((footerLink) => {
-      cy.findByTestId(footerLink.id)
+    BirthdayResearchSocialItems.forEach((BirthdayResearchSocialItem) => {
+      cy.findByTestId(BirthdayResearchSocialItem.id)
         .should("be.visible")
         .should("have.attr", "href")
-        .and("contain", footerLink.url);
+        .and("contain", BirthdayResearchSocialItem.url);
     });
   });
 

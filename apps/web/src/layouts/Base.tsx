@@ -2,20 +2,19 @@ import Head from "next/head";
 import { PropsWithChildren, useEffect, useState } from "react";
 import {
   appName,
+  keywords,
   longDescription,
   shortDescription,
   siteTitle,
   website,
 } from "@components/siteInfo";
-import { WagmiConfig, createClient, configureChains } from "wagmi";
-import { localhost, hardhat, mainnet, goerli } from "wagmi/chains";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { goerli, hardhat, localhost, mainnet } from "wagmi/chains";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 import { ConnectKitProvider, getDefaultClient } from "connectkit";
-import Footer from "@components/Footer";
-import Header from "@components/Header";
 import { getInitialTheme, ThemeProvider } from "@contexts/ThemeProvider";
 import { NetworkEnvironmentProvider } from "@contexts/NetworkEnvironmentContext";
 import { NetworkProvider } from "@contexts/NetworkContext";
@@ -27,19 +26,28 @@ import {
 import SecuredStoreAPI from "@api/secure-storage";
 import Logging from "@api/logging";
 import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
-import { bridgeApi } from "@store/website";
+import { TransactionHashProvider } from "@contexts/TransactionHashContext";
+import { bridgeApi } from "@store/defichain";
+import ScreenContainer from "../components/ScreenContainer";
+import { ETHEREUM_MAINNET_ID } from "../constants";
+import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
 
 const metamask = new MetaMaskConnector({
-  chains: [mainnet, goerli, localhost, hardhat],
+  chains: [goerli, localhost, hardhat], // TODO: Add `mainnet` here once MainNet is ready
 });
 
 const { chains } = configureChains(
-  [localhost, hardhat, mainnet, goerli],
+  [localhost, hardhat, goerli], // TODO: Add `mainnet` here once MainNet is ready
   [
     jsonRpcProvider({
-      rpc: (c) => ({
-        http: (process.env.RPC_URL || c.rpcUrls.default) as string,
-      }),
+      rpc: (chain) => {
+        const isMainNet = chain.id === ETHEREUM_MAINNET_ID;
+        const config = isMainNet ? MAINNET_CONFIG : TESTNET_CONFIG;
+
+        return {
+          http: (config.EthereumRpcUrl || chain.rpcUrls.default) as string,
+        };
+      },
     }),
     publicProvider(),
   ]
@@ -70,6 +78,7 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
         <meta charSet="UTF-8" />
         <title key="title">{siteTitle}</title>
         <meta key="description" name="description" content={longDescription} />
+        <meta key="keywords" name="keywords" content={keywords} />
         <meta key="robots" name="robots" content="follow,index" />
         <meta name="googlebot" content="index,follow" />
         <meta name="google" content="notranslate" />
@@ -103,9 +112,18 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
         <meta name="twitter:card" content="summary_large_image" />
 
         <link rel="icon" href="/favicon.ico" />
-        <link rel="icon" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="icon" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" sizes="64x64" href="/favicon-64x64.png" />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
       </Head>
 
       <WagmiConfig client={client}>
@@ -118,14 +136,9 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
                     <NetworkEnvironmentProvider>
                       <ContractProvider>
                         <ThemeProvider theme={initialTheme}>
-                          <div className="relative">
-                            <Header />
-                            <main className="relative z-[1] flex-grow">
-                              {children}
-                            </main>
-                            <div className="absolute top-0 left-0 z-auto h-full w-full bg-[url('/background/mobile.png')] bg-cover bg-local bg-clip-padding bg-top bg-no-repeat bg-origin-padding mix-blend-screen md:bg-[url('/background/tablet.png')] lg:bg-[url('/background/desktop.png')] lg:bg-center" />
-                            <Footer />
-                          </div>
+                          <TransactionHashProvider>
+                            <ScreenContainer>{children}</ScreenContainer>
+                          </TransactionHashProvider>
                         </ThemeProvider>
                       </ContractProvider>
                     </NetworkEnvironmentProvider>

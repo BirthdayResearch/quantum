@@ -33,8 +33,8 @@ export default function StepOneInitiate({
           details are correct and funds are sent in a single transaction, with a
           stable network connection.
         </p>
-        <div>
-          <div className={clsx("inline text-sm text-dark-900 mt-1", "md:mt-2")}>
+        <div className="pt-4">
+          <div className={clsx("inline text-sm text-dark-900", "md:mt-2")}>
             Provide your DeFiChain wallet address below in the event that there
             is a need for a refund.
           </div>
@@ -59,7 +59,6 @@ export default function StepOneInitiate({
           <ActionButton
             label="Continue"
             variant="primary"
-            needsResponsiveSizing={false}
             disabled={hasAddressInputErr}
             // TODO to save return address to the localstorage - have to move the entire saving of unconfirmed txn
             onClick={goToNextStep}
