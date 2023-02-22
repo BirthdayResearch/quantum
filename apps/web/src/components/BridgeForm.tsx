@@ -180,7 +180,7 @@ export default function BridgeForm({
       case hasUnconfirmedTxn:
         return "Retry transfer";
       case isConnected:
-        return `Transfer to ${NetworkName[selectedNetworkB.name]}`;
+        return "Review transaction";
       default:
         return "Connect wallet";
     }
