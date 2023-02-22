@@ -211,7 +211,7 @@ export class EVMTransactionConfirmerService {
       if (decodedAddress === undefined) {
         throw new Error(`Invalid send address for DeFiChain ${this.network}`);
       }
-      this.logger.log(`[Send] ${dTokenDetails.amount} ${dTokenDetails.id} ${dTokenDetails.symbol}`);
+      this.logger.log(`[Send] ${dTokenDetails.amount} ${dTokenDetails.id} ${dTokenDetails.symbol} ${toAddress}`);
 
       const sendTransactionHash = await this.sendService.send(toAddress, dTokenDetails);
       // update status in db
