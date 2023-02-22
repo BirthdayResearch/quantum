@@ -40,23 +40,25 @@ export class EVMTransactionConfirmerService {
   }
 
   async getBalance(tokenSymbol: SupportedEVMTokenSymbols): Promise<string> {
-    const contractABI = ['function balanceOf(address) view returns (uint256)'];
     if (!SupportedEVMTokenSymbols[tokenSymbol]) {
       throw new BadRequestException(`Token: "${tokenSymbol}" is not supported`);
     }
 
+    // Format for ETH
     if (tokenSymbol === SupportedEVMTokenSymbols.ETH) {
       const balance = await this.ethersRpcProvider.getBalance(this.contract.address);
       return ethers.utils.formatEther(balance);
     }
 
+    // Format for all other assets
     const tokenContract = new ethers.Contract(
       this.configService.getOrThrow(`ethereum.contracts.${SupportedEVMTokenSymbols[tokenSymbol]}.address`),
-      contractABI,
+      ERC20__factory.abi,
       this.ethersRpcProvider,
     );
     const balance = await tokenContract.balanceOf(this.contract.address);
-    return ethers.utils.formatUnits(balance, 6);
+    const assetDecimalPlaces = await tokenContract.decimals();
+    return ethers.utils.formatUnits(balance, assetDecimalPlaces);
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
