@@ -1,13 +1,13 @@
 import { fromAddress } from '@defichain/jellyfish-address';
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EthereumTransactionStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, Contract, ethers } from 'ethers';
-import { BridgeV1__factory, ERC20__factory } from 'smartcontracts';
+import { BridgeV2__factory, ERC20__factory } from 'smartcontracts';
 
-import { SupportedTokenSymbols } from '../../AppConfig';
+import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
 import { SendService } from '../../defichain/services/SendService';
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
@@ -21,6 +21,8 @@ export class EVMTransactionConfirmerService {
 
   private network: EnvironmentNetwork;
 
+  private readonly logger: Logger;
+
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private readonly clientProvider: WhaleApiClientProvider,
@@ -31,24 +33,25 @@ export class EVMTransactionConfirmerService {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
     this.contract = new ethers.Contract(
       this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address'),
-      BridgeV1__factory.abi,
+      BridgeV2__factory.abi,
       this.ethersRpcProvider,
     );
+    this.logger = new Logger(EVMTransactionConfirmerService.name);
   }
 
-  async getBalance(tokenSymbol: SupportedTokenSymbols): Promise<string> {
+  async getBalance(tokenSymbol: SupportedEVMTokenSymbols): Promise<string> {
     const contractABI = ['function balanceOf(address) view returns (uint256)'];
-    if (!SupportedTokenSymbols[tokenSymbol]) {
+    if (!SupportedEVMTokenSymbols[tokenSymbol]) {
       throw new BadRequestException(`Token: "${tokenSymbol}" is not supported`);
     }
 
-    if (tokenSymbol === SupportedTokenSymbols.ETH) {
+    if (tokenSymbol === SupportedEVMTokenSymbols.ETH) {
       const balance = await this.ethersRpcProvider.getBalance(this.contract.address);
       return ethers.utils.formatEther(balance);
     }
 
     const tokenContract = new ethers.Contract(
-      this.configService.getOrThrow(`ethereum.contracts.${SupportedTokenSymbols[tokenSymbol]}.address`),
+      this.configService.getOrThrow(`ethereum.contracts.${SupportedEVMTokenSymbols[tokenSymbol]}.address`),
       contractABI,
       this.ethersRpcProvider,
     );
@@ -113,6 +116,8 @@ export class EVMTransactionConfirmerService {
     amount,
   }: SignClaim): Promise<{ signature: string; nonce: number; deadline: number }> {
     try {
+      this.logger.log(`[Sign] ${amount} ${tokenAddress} ${receiverAddress}`);
+
       // Connect signer ETH wallet (admin/operational wallet)
       const wallet = new ethers.Wallet(
         this.configService.getOrThrow('ethereum.ethWalletPrivKey'),
@@ -150,6 +155,8 @@ export class EVMTransactionConfirmerService {
 
       // eslint-disable-next-line no-underscore-dangle
       const signature = await wallet._signTypedData(domain, types, data);
+
+      this.logger.log(`[Sign SUCCESS] ${amount} ${tokenAddress} ${receiverAddress}`);
       return { signature, nonce, deadline };
     } catch (e: any) {
       throw new Error('There is a problem in signing this claim', { cause: e });
@@ -158,19 +165,7 @@ export class EVMTransactionConfirmerService {
 
   async allocateDFCFund(transactionHash: string): Promise<{ transactionHash: string }> {
     try {
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const isReverted = txReceipt.status === 0;
-
-      if (isReverted === true) {
-        throw new BadRequestException(`Transaction Reverted`);
-      }
-      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-      const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
-
-      // check if tx is confirmed with min required confirmation
-      if (numberOfConfirmations < 65) {
-        throw new Error('Transaction is not yet confirmed with min block threshold');
-      }
+      this.logger.log(`[AllocateDFCFund] ${transactionHash}`);
 
       const txDetails = await this.prisma.bridgeEventTransactions.findFirst({
         where: {
@@ -191,6 +186,23 @@ export class EVMTransactionConfirmerService {
       // check if txn is confirmed or not
       if (txDetails.status !== EthereumTransactionStatus.CONFIRMED) {
         throw new Error('Transaction is not yet confirmed');
+      }
+
+      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+      if (!txReceipt) {
+        throw new Error('Transaction is not yet available');
+      }
+      const isReverted = txReceipt.status === 0;
+
+      if (isReverted === true) {
+        throw new BadRequestException(`Transaction Reverted`);
+      }
+      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+      const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
+
+      // check if tx is confirmed with min required confirmation
+      if (numberOfConfirmations < 65) {
+        throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
@@ -222,6 +234,8 @@ export class EVMTransactionConfirmerService {
           sendTransactionHash,
         },
       });
+
+      this.logger.log(`[AllocateDFCFund SUCCESS] ${transactionHash} ${sendTransactionHash}`);
       return { transactionHash: sendTransactionHash };
     } catch (e: any) {
       throw new HttpException(
@@ -238,19 +252,8 @@ export class EVMTransactionConfirmerService {
   }
 }
 
-interface SignClaim {
-  receiverAddress: string;
-  tokenAddress: string;
-  amount: string;
-}
-
-export interface HandledEVMTransaction {
-  numberOfConfirmations: number;
-  isConfirmed: boolean;
-}
-
 const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
-  const iface = new ethers.utils.Interface(BridgeV1__factory.abi);
+  const iface = new ethers.utils.Interface(BridgeV2__factory.abi);
   const decodedData = iface.parseTransaction({ data: txDetail.data, value: txDetail.value });
   const fragment = iface.getFunction(decodedData.name);
   const params = decodedData.args.reduce((res, param, i) => {
@@ -289,3 +292,14 @@ const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
     name: decodedData.name,
   };
 };
+
+interface SignClaim {
+  receiverAddress: string;
+  tokenAddress: string;
+  amount: string;
+}
+
+export interface HandledEVMTransaction {
+  numberOfConfirmations: number;
+  isConfirmed: boolean;
+}

@@ -1,6 +1,5 @@
 # Dockerfile used to build an image for the bridge-api
-FROM node:18.12.1-alpine3.16
-ENV NODE_OPTIONS="--max-old-space-size=4096"
+FROM node:18.12.1-alpine3.17
 
 RUN npm install -g pnpm
 RUN pnpm config set auto-install-peers true
@@ -9,6 +8,7 @@ RUN apk --no-cache add curl git
 RUN apk add --no-cache --virtual .gyp python3 make g++
 # See: https://github.com/vercel/turbo/issues/2198#issuecomment-1276475618
 RUN apk add --no-cache libc6-compat
+RUN apk update
 
 WORKDIR /app
 
@@ -24,7 +24,6 @@ COPY .npmrc ./
 COPY apps ./apps
 COPY packages ./packages
 
-ENV APP_PORT 5741
 EXPOSE 5741
 
 RUN pnpm fetch

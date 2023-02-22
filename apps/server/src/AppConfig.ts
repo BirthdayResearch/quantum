@@ -16,13 +16,13 @@ export function appConfig() {
         bridgeProxy: {
           address: process.env.BRIDGE_PROXY_ADDRESS,
         },
-        [SupportedTokenSymbols.USDT]: {
+        [SupportedEVMTokenSymbols.USDT]: {
           address: process.env.USDT_ADDRESS,
         },
-        [SupportedTokenSymbols.USDC]: {
+        [SupportedEVMTokenSymbols.USDC]: {
           address: process.env.USDC_ADDRESS,
         },
-        [SupportedTokenSymbols.WBTC]: {
+        [SupportedEVMTokenSymbols.WBTC]: {
           address: process.env.WBTC_ADDRESS,
         },
       },
@@ -45,9 +45,16 @@ export const ENV_VALIDATION_SCHEMA = Joi.object({
   DEFICHAIN_WHALE_URL: Joi.string().uri(),
 });
 
-export enum SupportedTokenSymbols {
+export enum SupportedEVMTokenSymbols {
   USDC = 'USDC',
   USDT = 'USDT',
   WBTC = 'WBTC',
   ETH = 'ETH',
+}
+export enum SupportedDFCTokenSymbols {
+  USDC = 'USDC',
+  USDT = 'USDT',
+  BTC = 'BTC',
+  ETH = 'ETH',
+  DFI = 'DFI',
 }
