@@ -104,7 +104,7 @@ describe('Bridge Service Integration Tests', () => {
     const transactionCall = await bridgeContract.bridgeToDeFiChain(
       ethers.constants.AddressZero,
       musdcContract.address,
-      100000000,
+      5,
     );
 
     // to test pending transaction (unmined block)
@@ -159,11 +159,13 @@ describe('Bridge Service Integration Tests', () => {
     expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
   });
 
-  it('Returns the usdc balance of the bridge after bridging 100 usdc and transaction fee', async () => {
+  it('Returns the usdc balance of the bridge after bridging 5 usdc', async () => {
     const balance = await testing.inject({
       method: 'GET',
       url: `/ethereum/balance/USDC`,
     });
-    expect(JSON.parse(balance.body)).toStrictEqual(99.7);
+
+    // 18 dp because MUSDC contract is set at 18
+    expect(JSON.parse(balance.body)).toStrictEqual(5e-18);
   });
 });
