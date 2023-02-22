@@ -4,6 +4,7 @@ import { Throttle } from '@nestjs/throttler';
 import { DeFiChainAddressIndex } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
+import { SupportedDFCTokenSymbols } from '../../AppConfig';
 import { SemaphoreCache } from '../../libs/caches/SemaphoreCache';
 import { ThrottleLimitConfig } from '../../ThrottleLimitConfig';
 import { VerifyDto } from '../model/VerifyDto';
@@ -19,6 +20,11 @@ export class WhaleWalletController {
     protected readonly cache: SemaphoreCache,
   ) {
     this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
+  }
+
+  @Get('balance/:tokenSymbol')
+  async getBalance(@Param('tokenSymbol') tokenSymbol: SupportedDFCTokenSymbols): Promise<string> {
+    return this.whaleWalletService.getBalance(tokenSymbol);
   }
 
   @Throttle(5, 60)
