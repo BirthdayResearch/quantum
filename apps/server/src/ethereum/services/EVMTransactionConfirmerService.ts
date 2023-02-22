@@ -205,26 +205,15 @@ export class EVMTransactionConfirmerService {
         throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 
-      const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-      const { params } = decodeTxnData(onChainTxnDetail);
-      const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
-      const address = ethers.utils.toUtf8String(defiAddress);
-
+      const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
       // check is send address belongs to current network or
-      const decodedAddress = fromAddress(address, this.clientProvider.remapNetwork(this.network));
+      const decodedAddress = fromAddress(toAddress, this.clientProvider.remapNetwork(this.network));
       if (decodedAddress === undefined) {
         throw new Error(`Invalid send address for DeFiChain ${this.network}`);
       }
+      this.logger.log(`[Send] ${dTokenDetails.amount} ${dTokenDetails.id} ${dTokenDetails.symbol} ${toAddress}`);
 
-      const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
-      const wTokenSymbol = await evmTokenContract.symbol();
-      const wTokenDecimals = await evmTokenContract.decimals();
-      const transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
-      const dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
-      const sendTransactionHash = await this.sendService.send(address, {
-        ...dTokenDetails,
-        amount: transferAmount,
-      });
+      const sendTransactionHash = await this.sendService.send(toAddress, dTokenDetails);
       // update status in db
       await this.prisma.bridgeEventTransactions.update({
         where: {
@@ -249,6 +238,33 @@ export class EVMTransactionConfirmerService {
         },
       );
     }
+  }
+
+  private async getEVMTxnDetails(transactionHash: string): Promise<{
+    id: string;
+    symbol: string;
+    amount: BigNumber;
+    toAddress: string;
+  }> {
+    const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
+    const { params } = decodeTxnData(onChainTxnDetail);
+    const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
+    const toAddress = ethers.utils.toUtf8String(defiAddress);
+    // eth transfer
+    if (tokenAddress === ethers.constants.AddressZero) {
+      const ethAmount = EthBigNumber.from(onChainTxnDetail.value).toString();
+      const transferAmount = new BigNumber(ethAmount).dividedBy(new BigNumber(10).pow(18));
+      const dTokenDetails = getDTokenDetailsByWToken('ETH', this.network);
+      return { ...dTokenDetails, amount: transferAmount, toAddress };
+    }
+    // wToken transfer
+    const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
+    const wTokenSymbol = await evmTokenContract.symbol();
+    const wTokenDecimals = await evmTokenContract.decimals();
+    const transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
+    const dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
+
+    return { ...dTokenDetails, amount: transferAmount, toAddress };
   }
 }
 
