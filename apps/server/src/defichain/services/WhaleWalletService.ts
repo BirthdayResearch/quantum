@@ -85,7 +85,9 @@ export class WhaleWalletService {
       });
 
       this.logger.log(
-        `[Verify SUCCESS] ${verify.amount} ${fee} ${amountLessFee} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`,
+        `[Verify SUCCESS] ${verify.amount} ${fee.toString()} ${amountLessFee} ${verify.symbol} ${verify.address} ${
+          verify.ethReceiverAddress
+        }`,
       );
 
       return { isValid: true, signature: claim.signature, nonce: claim.nonce, deadline: claim.deadline };
