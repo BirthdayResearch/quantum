@@ -3,18 +3,18 @@ import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
-import { shift, autoUpdate, size, useFloating } from "@floating-ui/react-dom";
+import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
 import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { getStorageItem, setStorageItem } from "@utils/localStorage";
 import {
+  AddressDetails,
   Network,
+  NetworkName,
+  NetworkOptionsI,
   SelectionType,
   TokensI,
-  NetworkOptionsI,
-  NetworkName,
   UnconfirmedTxnI,
-  AddressDetails,
 } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
@@ -32,9 +32,11 @@ import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
-  FEES_INFO,
   ETHEREUM_SYMBOL,
+  FEES_INFO,
 } from "../constants";
+import { useBalanceDfcMutation, useBalanceEvmMutation } from "../store";
+import Logging from "../api/logging";
 
 function SwitchButton({
   onClick,
@@ -114,6 +116,10 @@ export default function BridgeForm({
 
   const [getAddressDetail] = useGetAddressDetailMutation();
   const [addressDetail, setAddressDetail] = useState<AddressDetails>();
+
+  const [balanceEvm] = useBalanceEvmMutation();
+  const [balanceDfc] = useBalanceDfcMutation();
+  const [balanceAmount, setBalanceAmount] = useState<string>("0");
 
   const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
 
@@ -211,6 +217,33 @@ export default function BridgeForm({
     }
   }, [networkEnv]);
 
+  useEffect(() => {
+    async function checkBalance() {
+      try {
+        let balanceRes;
+        if (selectedNetworkA.name === Network.Ethereum) {
+          balanceRes = await balanceEvm({
+            tokenSymbol: selectedTokensA.tokenA.name.toUpperCase(),
+          }).unwrap();
+        } else {
+          balanceRes = await balanceDfc({
+            tokenSymbol: selectedTokensA.tokenA.symbol,
+          }).unwrap();
+        }
+
+        setBalanceAmount(balanceRes);
+      } catch (error) {
+        Logging.error(error);
+      }
+    }
+
+    checkBalance();
+  }, [selectedNetworkA, selectedTokensA, networkEnv]);
+
+  const balanceInsufficient = new BigNumber(amount).isGreaterThan(
+    new BigNumber(balanceAmount)
+  );
+
   const fetchAddressDetail = async (): Promise<void> => {
     try {
       const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
@@ -265,6 +298,9 @@ export default function BridgeForm({
     y,
     floating,
   };
+
+  const warningTextStyle =
+    "block text-xs text-warning text-center lg:px-6 lg:text-sm";
 
   return (
     <div className="w-full md:w-[calc(100%+2px)] lg:w-full dark-card-bg-image p-6 md:pt-8 pb-16 lg:p-12 rounded-lg lg:rounded-xl border border-dark-200 backdrop-blur-[18px]">
@@ -398,13 +434,17 @@ export default function BridgeForm({
               testId="transfer-btn"
               label={getActionBtnLabel()}
               isLoading={hasPendingTxn}
-              disabled={(isConnected && !isFormValid) || hasPendingTxn}
+              disabled={
+                (isConnected && !isFormValid) ||
+                hasPendingTxn ||
+                balanceInsufficient
+              }
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
           )}
         </ConnectKitButton.Custom>
         {hasPendingTxn && (
-          <span className="block pt-2 text-xs text-warning text-center lg:px-6 lg:text-sm">
+          <span className={clsx("pt-2", warningTextStyle)}>
             Unable to edit while transaction is pending
           </span>
         )}
@@ -415,6 +455,11 @@ export default function BridgeForm({
               onClick={() => onResetTransferForm()}
               variant="secondary"
             />
+          </div>
+        )}
+        {balanceInsufficient && (
+          <div className={clsx("pt-3", warningTextStyle)}>
+            Unable to process transaction. <div>Please try again later</div>
           </div>
         )}
       </div>
