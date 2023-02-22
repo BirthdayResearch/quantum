@@ -23,6 +23,10 @@ export class WhaleWalletProvider {
     return this.initJellyfishWallet(provider, this.network).get(index);
   }
 
+  getHotWallet(): WhaleWalletAccount {
+    return this.createWallet(0);
+  }
+
   private initProvider(
     data: WalletPersistenceDataI<MnemonicProviderData>,
     network: EnvironmentNetwork,

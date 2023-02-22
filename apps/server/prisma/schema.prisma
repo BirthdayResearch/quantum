@@ -22,9 +22,10 @@ model DeFiChainAddressIndex {
 }
 
 model BridgeEventTransactions {
-  id              BigInt                    @id @default(autoincrement())
-  transactionHash String
-  status          EthereumTransactionStatus
-  createdAt       DateTime                  @default(now())
-  updatedAt       DateTime?                 @updatedAt
+  id                  BigInt                    @id @default(autoincrement())
+  transactionHash     String
+  status              EthereumTransactionStatus
+  sendTransactionHash String?
+  createdAt           DateTime                  @default(now())
+  updatedAt           DateTime?                 @updatedAt
 }

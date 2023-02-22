@@ -16,10 +16,27 @@ export default function EnvironmentNetworkSwitch({
     let nextNetworkEnv: EnvironmentNetwork;
     switch (currentNetworkEnv) {
       case EnvironmentNetwork.TestNet:
+        nextNetworkEnv = EnvironmentNetwork.RemotePlayground;
+        break;
+      case EnvironmentNetwork.RemotePlayground:
+        nextNetworkEnv = EnvironmentNetwork.LocalPlayground;
+        break;
+      case EnvironmentNetwork.LocalPlayground:
+      default:
+        nextNetworkEnv = EnvironmentNetwork.TestNet;
+        break;
+    }
+
+    // TODO: Use this switch-statement once MainNet is ready
+    /* switch (currentNetworkEnv) {
+      case EnvironmentNetwork.TestNet:
         nextNetworkEnv =
           process.env.NODE_ENV === "production"
             ? EnvironmentNetwork.MainNet
-            : EnvironmentNetwork.LocalPlayground;
+            : EnvironmentNetwork.RemotePlayground;
+        break;
+      case EnvironmentNetwork.RemotePlayground:
+        nextNetworkEnv = EnvironmentNetwork.LocalPlayground;
         break;
       case EnvironmentNetwork.LocalPlayground:
         nextNetworkEnv = EnvironmentNetwork.MainNet;
@@ -29,6 +46,7 @@ export default function EnvironmentNetworkSwitch({
         nextNetworkEnv = EnvironmentNetwork.TestNet;
         break;
     }
+    */
     updateNetworkEnv(nextNetworkEnv);
     onChange();
   };

@@ -32,7 +32,7 @@ export class DeFiChainTransactionService {
     address: string,
     getTX: (from: Script, builder: P2WPKHTransactionBuilder, to: Script) => Promise<TransactionSegWit>,
   ): Promise<CTransactionSegWit> {
-    const wallet = this.whaleWalletProvider.createWallet();
+    const wallet = this.whaleWalletProvider.getHotWallet();
     const to = DeFiAddress.from(this.clientProvider.remapNetwork(this.network), address).getScript();
 
     const from = await wallet.getScript();

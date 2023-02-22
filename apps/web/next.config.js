@@ -15,7 +15,7 @@ const securityHeaders = [
       };` +
       `style-src 'self' fonts.googleapis.com 'unsafe-inline';` +
       `font-src fonts.gstatic.com;` +
-      `connect-src 'self' cloudflare-eth.com eth-goerli.g.alchemy.com rpc.ankr.com ocean.defichain.com testnet.ocean.jellyfishsdk.com ${
+      `connect-src 'self' cloudflare-eth.com eth-goerli.g.alchemy.com rpc.ankr.com ocean.defichain.com testnet.ocean.jellyfishsdk.com wallet.defichain.com dihwwizbqe.eu-west-1.awsapprunner.com *.api.quantumbridge.app ${
         process.env.NODE_ENV === "development"
           ? `localhost:* 127.0.0.1:* ws://localhost:3000/_next/webpack-hmr`
           : ""

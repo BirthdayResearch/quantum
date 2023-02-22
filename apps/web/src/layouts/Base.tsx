@@ -8,8 +8,8 @@ import {
   siteTitle,
   website,
 } from "@components/siteInfo";
-import { WagmiConfig, createClient, configureChains } from "wagmi";
-import { localhost, hardhat, mainnet, goerli } from "wagmi/chains";
+import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { goerli, hardhat, localhost, mainnet } from "wagmi/chains";
 import { InjectedConnector } from "wagmi/connectors/injected";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
@@ -26,20 +26,28 @@ import {
 import SecuredStoreAPI from "@api/secure-storage";
 import Logging from "@api/logging";
 import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
-import { bridgeApi } from "@store/website";
+import { TransactionHashProvider } from "@contexts/TransactionHashContext";
+import { bridgeApi } from "@store/defichain";
 import ScreenContainer from "../components/ScreenContainer";
+import { ETHEREUM_MAINNET_ID } from "../constants";
+import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
 
 const metamask = new MetaMaskConnector({
-  chains: [mainnet, goerli, localhost, hardhat],
+  chains: [goerli, localhost, hardhat], // TODO: Add `mainnet` here once MainNet is ready
 });
 
 const { chains } = configureChains(
-  [localhost, hardhat, mainnet, goerli],
+  [localhost, hardhat, goerli], // TODO: Add `mainnet` here once MainNet is ready
   [
     jsonRpcProvider({
-      rpc: (c) => ({
-        http: (process.env.RPC_URL || c.rpcUrls.default) as string,
-      }),
+      rpc: (chain) => {
+        const isMainNet = chain.id === ETHEREUM_MAINNET_ID;
+        const config = isMainNet ? MAINNET_CONFIG : TESTNET_CONFIG;
+
+        return {
+          http: (config.EthereumRpcUrl || chain.rpcUrls.default) as string,
+        };
+      },
     }),
     publicProvider(),
   ]
@@ -128,7 +136,9 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
                     <NetworkEnvironmentProvider>
                       <ContractProvider>
                         <ThemeProvider theme={initialTheme}>
-                          <ScreenContainer>{children}</ScreenContainer>
+                          <TransactionHashProvider>
+                            <ScreenContainer>{children}</ScreenContainer>
+                          </TransactionHashProvider>
                         </ThemeProvider>
                       </ContractProvider>
                     </NetworkEnvironmentProvider>

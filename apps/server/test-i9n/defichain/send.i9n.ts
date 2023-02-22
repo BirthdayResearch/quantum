@@ -37,7 +37,7 @@ describe('DeFiChain Send Transaction Testing', () => {
 
     sendService = app.get<SendService>(SendService);
     whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
-    wallet = whaleWalletProvider.createWallet();
+    wallet = whaleWalletProvider.getHotWallet();
     fromWallet = await wallet.getAddress();
   });
 

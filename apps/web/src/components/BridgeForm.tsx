@@ -19,23 +19,21 @@ import {
 import SwitchIcon from "@components/icons/SwitchIcon";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
-import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
-import { useGetAddressDetailMutation } from "@store/website";
+import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
-import DailyLimit from "./DailyLimit";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
-  ETHEREUM_SYMBOL,
   FEES_INFO,
+  ETHEREUM_SYMBOL,
 } from "../constants";
 
 function SwitchButton({
@@ -69,7 +67,11 @@ function SwitchButton({
   );
 }
 
-export default function BridgeForm() {
+export default function BridgeForm({
+  hasPendingTxn,
+}: {
+  hasPendingTxn: boolean;
+}) {
   const {
     selectedNetworkA,
     selectedTokensA,
@@ -115,6 +117,9 @@ export default function BridgeForm() {
 
   const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
 
+  const isFormValid =
+    amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
+
   const switchNetwork = () => {
     setSelectedNetworkA(selectedNetworkB);
   };
@@ -122,7 +127,7 @@ export default function BridgeForm() {
   const validateAmountInput = (value: string) => {
     const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
     let err = "";
-    if (isSendingToDFC && new BigNumber(value).gt(maxAmount)) {
+    if (isSendingToDFC && new BigNumber(value).gt(maxAmount.toFixed(8))) {
       err = "Insufficient Funds";
     }
     setAmountErr(err);
@@ -170,6 +175,8 @@ export default function BridgeForm() {
 
   const getActionBtnLabel = () => {
     switch (true) {
+      case hasPendingTxn:
+        return "Pending Transaction";
       case hasUnconfirmedTxn:
         return "Retry transfer";
       case isConnected:
@@ -210,7 +217,6 @@ export default function BridgeForm() {
       if (localDfcAddress) {
         const addressDetailRes = await getAddressDetail({
           address: localDfcAddress,
-          network: networkEnv,
         }).unwrap();
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
@@ -260,18 +266,8 @@ export default function BridgeForm() {
     floating,
   };
 
-  const isFormValid =
-    amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
-
   return (
     <div className="w-full md:w-[calc(100%+2px)] lg:w-full dark-card-bg-image p-6 md:pt-8 pb-16 lg:p-12 rounded-lg lg:rounded-xl border border-dark-200 backdrop-blur-[18px]">
-      {hasUnconfirmedTxn && (
-        <AlertInfoMessage
-          message="An unconfirmed transaction is found in your device and has been pre-loaded for your confirmation"
-          containerStyle="px-4 py-3 mb-8 md:px-6 md:py-4 md:mb-12"
-          textStyle="text-xs md:text-base"
-        />
-      )}
       <div className="flex flex-row items-center" ref={reference}>
         <div className="w-1/2">
           <InputSelector
@@ -395,21 +391,24 @@ export default function BridgeForm() {
           trimTrailingZeros
         />
       </div>
-      <div className="block md:hidden px-5 mt-4">
-        <DailyLimit />
-      </div>
       <div className="mt-8 px-6 md:mt-6 md:px-4 lg:mt-16 lg:mb-0 lg:px-0 xl:px-20">
         <ConnectKitButton.Custom>
           {({ show }) => (
             <ActionButton
               testId="transfer-btn"
               label={getActionBtnLabel()}
-              disabled={isConnected && !isFormValid}
+              isLoading={hasPendingTxn}
+              disabled={(isConnected && !isFormValid) || hasPendingTxn}
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
           )}
         </ConnectKitButton.Custom>
-        {hasUnconfirmedTxn && (
+        {hasPendingTxn && (
+          <span className="block pt-2 text-xs text-warning text-center lg:px-6 lg:text-sm">
+            Unable to edit while transaction is pending
+          </span>
+        )}
+        {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton
               label="Reset form"

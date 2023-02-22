@@ -8,7 +8,7 @@ export function getStorageItem<T>(key: string): T | null {
   const currentValue = JSON.parse(
     localStorage.getItem(prefixedKey) || String(null)
   );
-  return currentValue;
+  return currentValue === null ? undefined : currentValue;
 }
 
 export function setStorageItem<T>(key: string, value: T) {

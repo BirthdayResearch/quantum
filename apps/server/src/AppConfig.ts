@@ -14,8 +14,16 @@ export function appConfig() {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
       contracts: {
         bridgeProxy: {
-          //
           address: process.env.BRIDGE_PROXY_ADDRESS,
+        },
+        [SupportedTokenSymbols.USDT]: {
+          address: process.env.USDT_ADDRESS,
+        },
+        [SupportedTokenSymbols.USDC]: {
+          address: process.env.USDC_ADDRESS,
+        },
+        [SupportedTokenSymbols.WBTC]: {
+          address: process.env.WBTC_ADDRESS,
         },
       },
       ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
@@ -36,3 +44,10 @@ export const ENV_VALIDATION_SCHEMA = Joi.object({
   DEFICHAIN_NETWORK: Joi.string(),
   DEFICHAIN_WHALE_URL: Joi.string().uri(),
 });
+
+export enum SupportedTokenSymbols {
+  USDC = 'USDC',
+  USDT = 'USDT',
+  WBTC = 'WBTC',
+  ETH = 'ETH',
+}

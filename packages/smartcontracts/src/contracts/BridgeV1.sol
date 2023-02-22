@@ -52,10 +52,34 @@ error EXPIRED_CLAIM();
 /** @notice @dev 
 /* This error occurs when `_amount` is zero
 */
-error AMOUNT_CAN_NOT_BE_ZERO();
+error REQUESTED_BRIDGE_AMOUNT_IS_ZERO();
+
+/** @notice @dev
+/* This error occurs when transfer of ETH failed
+ */
+error ETH_TRANSFER_FAILED();
+
+/** @notice @dev
+ * This error occurs when _amount input is not zero when bridgeToDeFiChain is requested for ETH
+ */
+error AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
+
+/** @notice @dev
+ * This error occurs when msg.value is not zero when bridgeToDeFiChain is requested for ERC20
+ */
+error MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
 
 contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     using EnumerableSet for EnumerableSet.AddressSet;
+
+    bytes32 constant DATA_TYPE_HASH =
+        keccak256('CLAIM(address to,uint256 amount,uint256 nonce,uint256 deadline,address tokenAddress)');
+
+    bytes32 public constant OPERATIONAL_ROLE = keccak256('OPERATIONAL_ROLE');
+
+    string public constant name = 'QUANTUM_BRIDGE';
+
+    address public constant ETH = address(0);
 
     // Mapping to track the address's nonce
     mapping(address => uint256) public eoaAddressToNonce;
@@ -64,23 +88,15 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     EnumerableSet.AddressSet internal supportedTokens;
 
     address public relayerAddress;
-
-    bytes32 constant DATA_TYPE_HASH =
-        keccak256('CLAIM(address to,uint256 amount,uint256 nonce,uint256 deadline,address tokenAddress)');
-
     // Mapping to track the maximum balance of tokens the contract can hold per token address.
     mapping(address => uint256) public tokenCap;
 
-    bytes32 public constant OPERATIONAL_ROLE = keccak256('OPERATIONAL_ROLE');
-
-    string public constant name = 'QUANTUM_BRIDGE';
-    string public constant version = '1.0';
-
-    // Initial Tx fee 0.3%. Based on dps (e.g 1% == 100dps)
+    // Contract version
+    string public constant version = '1';
+    // Transaction fee when bridging from EVM to DeFiChain. Based on dps (e.g 1% == 100dps)
     uint256 public transactionFee;
     // Community wallet to send tx fees to
     address public communityWallet;
-
     // Address to receive the flush
     address public flushReceiveAddress;
 
@@ -172,6 +188,12 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     event CHANGE_TOKEN_CAP(address indexed supportedToken, uint256 indexed oldTokenCap, uint256 indexed newTokenCap);
 
+    /**
+     * @notice Emitted when ETH is received via receive external payable
+     * @param ethAmount The amount of ETH sent to the smart contract
+     */
+    event ETH_RECEIVED_VIA_RECEIVE_FUNCTION(address indexed sender, uint256 indexed ethAmount);
+
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     /**
@@ -224,7 +246,12 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         bytes32 msg_hash = _hashTypedDataV4(struct_hash);
         if (ECDSAUpgradeable.recover(msg_hash, signature) != relayerAddress) revert FAKE_SIGNATURE();
         eoaAddressToNonce[_to]++;
-        IERC20(_tokenAddress).transfer(_to, _amount);
+        if (_tokenAddress == ETH) {
+            (bool sent, ) = msg.sender.call{value: _amount}('');
+            if (!sent) revert ETH_TRANSFER_FAILED();
+        } else {
+            IERC20(_tokenAddress).transfer(_to, _amount);
+        }
         emit CLAIM_FUND(_tokenAddress, _to, _amount);
     }
 
@@ -239,13 +266,26 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         bytes calldata _defiAddress,
         address _tokenAddress,
         uint256 _amount
-    ) external {
+    ) external payable {
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
-        if (_amount == 0) revert AMOUNT_CAN_NOT_BE_ZERO();
-        uint256 netAmountInWei = amountAfterFees(_amount);
-        uint256 netTxFee = _amount - netAmountInWei;
-        IERC20(_tokenAddress).transferFrom(msg.sender, address(this), netAmountInWei);
-        IERC20(_tokenAddress).transferFrom(msg.sender, communityWallet, netTxFee);
+        uint256 requestedAmount;
+        if (_tokenAddress == ETH) {
+            if (_amount > 0) revert AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
+            requestedAmount = msg.value;
+        } else {
+            if (msg.value > 0) revert MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
+            requestedAmount = _amount;
+        }
+        if (requestedAmount == 0) revert REQUESTED_BRIDGE_AMOUNT_IS_ZERO();
+        uint256 netAmountInWei = amountAfterFees(requestedAmount);
+        uint256 netTxFee = requestedAmount - netAmountInWei;
+        if (_tokenAddress == ETH) {
+            (bool sent, ) = communityWallet.call{value: netTxFee}('');
+            if (!sent) revert ETH_TRANSFER_FAILED();
+        } else {
+            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), netAmountInWei);
+            IERC20(_tokenAddress).transferFrom(msg.sender, communityWallet, netTxFee);
+        }
         emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmountInWei, block.timestamp);
     }
 
@@ -280,7 +320,10 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param amount Requested amount to be withdraw. Amount would be in the denomination of ETH
      */
     function withdraw(address _tokenAddress, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        IERC20(_tokenAddress).transfer(msg.sender, amount);
+        if (_tokenAddress == ETH) {
+            (bool sent, ) = msg.sender.call{value: amount}('');
+            if (!sent) revert ETH_TRANSFER_FAILED();
+        } else IERC20(_tokenAddress).transfer(msg.sender, amount);
         emit WITHDRAWAL_BY_OWNER(msg.sender, _tokenAddress, amount);
     }
 
@@ -291,7 +334,13 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     function flushFund() external {
         for (uint256 i = 0; i < supportedTokens.length(); ++i) {
             address supToken = supportedTokens.at(i);
-            if (IERC20(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
+            if (supToken == ETH) {
+                if (address(this).balance > tokenCap[ETH]) {
+                    uint256 amountToFlush = address(this).balance - tokenCap[ETH];
+                    (bool sent, ) = flushReceiveAddress.call{value: amountToFlush}('');
+                    if (!sent) revert ETH_TRANSFER_FAILED();
+                }
+            } else if (IERC20(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
                 uint256 amountToFlush = IERC20(supToken).balanceOf(address(this)) - tokenCap[supToken];
                 IERC20(supToken).transfer(flushReceiveAddress, amountToFlush);
             }
@@ -370,6 +419,13 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     function isSupported(address _tokenAddress) external view returns (bool) {
         return supportedTokens.contains(_tokenAddress);
+    }
+
+    /**
+     * @notice to receive ether
+     */
+    receive() external payable {
+        emit ETH_RECEIVED_VIA_RECEIVE_FUNCTION(msg.sender, msg.value);
     }
 
     /**

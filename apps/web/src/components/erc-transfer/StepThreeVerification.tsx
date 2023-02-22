@@ -3,17 +3,15 @@ import { useCallback, useEffect, useState } from "react";
 import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import UtilityButton from "@components/commons/UtilityButton";
 import UtilitySecondaryButton from "@components/erc-transfer/VerifiedUtilityButton";
-import { useLazyVerifyQuery } from "@store/website";
+import { useLazyVerifyQuery } from "@store/index";
 import BigNumber from "bignumber.js";
-import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
+import Logging from "@api/logging";
 import { getStorageItem } from "@utils/localStorage";
-import { UnconfirmedTxnI } from "types";
+import { SignedClaim, UnconfirmedTxnI } from "types";
 import { HttpStatusCode } from "axios";
-import {
-  DISCLAIMER_MESSAGE,
-  STORAGE_DFC_ADDR_KEY,
-  STORAGE_TXN_KEY,
-} from "../../constants";
+import { useContractContext } from "@contexts/ContractContext";
+import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
+import { DISCLAIMER_MESSAGE } from "../../constants";
 
 enum ButtonLabel {
   Validating = "Verifying",
@@ -30,31 +28,42 @@ enum TitleLabel {
 type RejectedLabelType = `Something went wrong${string}`;
 
 enum ContentLabel {
-  Validating = "Please wait as your transaction is being verified. This usually takes 10 confirmations from the blockchain. Once verified, you will be redirected to the next step.",
+  Validating = "Please wait as your transaction is being verified. Once verified, you will be redirected to the next step.",
   Validated = "Please wait as we redirect you to the next step.",
-  Rejected = "Please check our Error guide and try again.",
   ThrottleLimit = "Please wait for a minute and try again.",
 }
 
 export default function StepThreeVerification({
   goToNextStep,
+  onSuccess,
 }: {
   goToNextStep: () => void;
+  onSuccess: (claim: SignedClaim) => void;
 }) {
-  const { networkEnv } = useNetworkEnvironmentContext();
+  const { Erc20Tokens } = useContractContext();
   const [trigger] = useLazyVerifyQuery();
   const [title, setTitle] = useState<TitleLabel | RejectedLabelType>(
     TitleLabel.Validating
   );
-  const [content, setContent] = useState<ContentLabel>(ContentLabel.Rejected);
+  const contentLabelRejected = (
+    <span>
+      <span>Please check our {/* TODO insert link once available */}</span>
+      <button type="button" onClick={() => {}} className="underline">
+        Error guide
+      </button>
+      <span> and try again</span>
+    </span>
+  );
+  const [content, setContent] = useState<ContentLabel | JSX.Element>(
+    contentLabelRejected
+  );
   const [buttonLabel, setButtonLabel] = useState<ButtonLabel>(
     ButtonLabel.Validating
   );
 
-  const dfcAddress = getStorageItem<string>(STORAGE_DFC_ADDR_KEY);
-  const txn = getStorageItem<UnconfirmedTxnI>(
-    `${networkEnv}.${STORAGE_TXN_KEY}`
-  );
+  const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
+  const dfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
+  const txn = getStorageItem<UnconfirmedTxnI>(TXN_KEY);
   const [validationSuccess, setValidationSuccess] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
 
@@ -66,18 +75,18 @@ export default function StepThreeVerification({
       txn?.selectedTokensA.tokenA.symbol !== undefined
     ) {
       try {
-        const { data } = await trigger({
-          network: networkEnv,
+        const response = await trigger({
           address: dfcAddress,
+          ethReceiverAddress: txn.toAddress,
+          tokenAddress: Erc20Tokens[txn.selectedTokensB.tokenA.name].address,
           amount: new BigNumber(txn.amount).toFixed(8),
           symbol: txn.selectedTokensA.tokenA.symbol,
-        });
+        }).unwrap();
 
-        console.log("trycatch", data);
-        if (data?.statusCode !== undefined) {
-          console.log({ code: data?.statusCode });
-          setContent(ContentLabel.Rejected);
-          setTitle(`Something went wrong (Error code ${data.statusCode})`);
+        if (response.statusCode !== undefined) {
+          Logging.info(`Returned statusCode: ${response.statusCode}`);
+          setContent(contentLabelRejected);
+          setTitle(`Something went wrong (Error code ${response.statusCode})`);
           setValidationSuccess(false);
           setIsValidating(false);
           setButtonLabel(ButtonLabel.Rejected);
@@ -88,19 +97,21 @@ export default function StepThreeVerification({
         setContent(ContentLabel.Validated);
         setButtonLabel(ButtonLabel.Validated);
         setValidationSuccess(true);
+        onSuccess(response);
         goToNextStep();
-      } catch ({ data }) {
+      } catch (e) {
         setButtonLabel(ButtonLabel.Rejected);
         setIsValidating(false);
         setValidationSuccess(false);
 
-        if (data?.statusCode === HttpStatusCode.TooManyRequests) {
+        if (e.data?.statusCode === HttpStatusCode.TooManyRequests) {
           setTitle(TitleLabel.ThrottleLimit);
           setContent(ContentLabel.ThrottleLimit);
         } else {
           setTitle(TitleLabel.Rejected);
-          setContent(ContentLabel.Rejected);
+          setContent(contentLabelRejected);
         }
+        Logging.error(e);
       }
     }
   }, []);

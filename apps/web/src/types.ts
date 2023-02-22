@@ -28,6 +28,10 @@ export interface AddressDetails {
   createdAt: Date;
 }
 
+export interface BridgeStatus {
+  isUp: boolean;
+}
+
 export enum SelectionType {
   "Network" = "Network",
   "Token" = "Token",
@@ -74,7 +78,7 @@ export interface TransferData {
   to: RowDataI;
 }
 
-export type Erc20Token = "wBTC" | "USDT" | "USDC" | "wETH";
+export type Erc20Token = "wBTC" | "USDT" | "USDC" | "ETH";
 
 interface ContractConfigI {
   address: `0x${string}`;
@@ -82,6 +86,7 @@ interface ContractConfigI {
 }
 
 export interface ContractContextI {
+  EthereumRpcUrl: string;
   ExplorerURL: string;
   BridgeV1: ContractConfigI;
   Erc20Tokens: Record<Erc20Token, ContractConfigI>;
@@ -94,4 +99,10 @@ export enum CustomErrorCodes {
   BalanceNotMatched = 3,
   IsZeroBalance = 4,
   AmountNotValid = 5,
+}
+
+export interface SignedClaim {
+  signature: string;
+  nonce: number;
+  deadline: number;
 }

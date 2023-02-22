@@ -9,15 +9,13 @@ import {
 import { useRouter } from "next/router";
 import { FiCheck } from "react-icons/fi";
 import { useContractContext } from "@contexts/ContractContext";
-import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import ActionButton from "@components/commons/ActionButton";
 import Modal from "@components/commons/Modal";
 import ErrorModal from "@components/commons/ErrorModal";
-import { TransferData } from "types";
+import { SignedClaim, TransferData } from "types";
 import UtilityButton from "@components/commons/UtilityButton";
-import { getEndOfDayTimeStamp } from "@utils/durationHelper";
 import { setStorageItem } from "@utils/localStorage";
-import { STORAGE_TXN_KEY } from "../../constants";
+import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again.  If the error persists get in touch with us.";
@@ -27,15 +25,15 @@ export default function StepLastClaim({
   signedClaim,
 }: {
   data: TransferData;
-  signedClaim: { signature: string; nonce: number };
+  signedClaim: SignedClaim;
 }) {
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
   const [error, setError] = useState<string>();
 
-  const { networkEnv } = useNetworkEnvironmentContext();
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const tokenAddress = Erc20Tokens[data.to.tokenName].address;
+  const { TXN_KEY } = useBridgeFormStorageKeys();
 
   // Prepare write contract for `claimFund` function
   const { config: bridgeConfig } = usePrepareContractWrite({
@@ -46,7 +44,7 @@ export default function StepLastClaim({
       data.to.address,
       utils.parseEther(data.to.amount.toString()),
       signedClaim.nonce,
-      getEndOfDayTimeStamp(),
+      signedClaim.deadline,
       tokenAddress,
       signedClaim.signature,
     ],
@@ -81,7 +79,6 @@ export default function StepLastClaim({
 
   useEffect(() => {
     if (isSuccess) {
-      const TXN_KEY = `${networkEnv}.${STORAGE_TXN_KEY}`;
       setStorageItem(TXN_KEY, null);
     }
   }, [isSuccess]);

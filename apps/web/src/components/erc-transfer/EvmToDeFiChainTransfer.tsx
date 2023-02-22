@@ -1,12 +1,9 @@
 import { ethers, utils } from "ethers";
 import { erc20ABI, useContractReads } from "wagmi";
-import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { FiCheck } from "react-icons/fi";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import { setStorageItem } from "@utils/localStorage";
 import useResponsive from "@hooks/useResponsive";
 import useWriteApproveToken from "@hooks/useWriteApproveToken";
 import useWriteBridgeToDeFiChain from "@hooks/useWriteBridgeToDeFiChain";
@@ -14,28 +11,36 @@ import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import ActionButton from "@components/commons/ActionButton";
 import ErrorModal from "@components/commons/ErrorModal";
 import Modal from "@components/commons/Modal";
-import UtilityButton from "@components/commons/UtilityButton";
 import { Erc20Token, TransferData } from "types";
+import { useTransactionHashContext } from "@contexts/TransactionHashContext";
+import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
+import { setStorageItem } from "@utils/localStorage";
 import {
+  BridgeStatus,
   DISCLAIMER_MESSAGE,
   ETHEREUM_SYMBOL,
-  STORAGE_TXN_KEY,
 } from "../../constants";
 
 export default function EvmToDeFiChainTransfer({
   data,
+  onClose,
 }: {
   data: TransferData;
+  onClose: () => void;
 }) {
   const [errorMessage, setErrorMessage] = useState<string>();
-  const [showLoader, setShowLoader] = useState(false);
+  const [hasPendingTx, setHasPendingTx] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
+  const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>(
+    BridgeStatus.NoTxCreated
+  );
 
-  const router = useRouter();
   const { isMobile } = useResponsive();
   const { networkEnv } = useNetworkEnvironmentContext();
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const sendingFromETH = data.from.tokenName === ETHEREUM_SYMBOL;
+  const { setTxnHash } = useTransactionHashContext();
+  const { TXN_KEY } = useBridgeFormStorageKeys();
 
   // Read details from token contract
   const erc20TokenContract = {
@@ -57,14 +62,16 @@ export default function EvmToDeFiChainTransfer({
     enabled: !sendingFromETH,
     watch: true,
   });
+
   const tokenDecimals = readTokenData?.[1] ?? "gwei";
   const tokenAllowance = utils.formatEther(
     readTokenData?.[0] ?? ethers.BigNumber.from(0)
   );
 
   const {
+    eventError,
     isBridgeTxnLoading,
-    isBridgeTxnSuccess,
+    isBridgeTxnCreated,
     refetchBridge,
     writeBridgeToDeFiChain,
     transactionHash,
@@ -73,9 +80,7 @@ export default function EvmToDeFiChainTransfer({
     transferAmount: data.to.amount,
     tokenName: data.from.tokenName as Erc20Token,
     tokenDecimals,
-    setErrorMessage,
-    onBridgeTxnSettled: () => setShowLoader(false),
-    onInsufficientAllowanceError: () => setRequiresApproval(true),
+    onBridgeTxnSettled: () => setHasPendingTx(false),
   });
 
   const {
@@ -90,10 +95,60 @@ export default function EvmToDeFiChainTransfer({
   });
 
   useEffect(() => {
+    if (transactionHash !== undefined) {
+      setTxnHash("unconfirmed", transactionHash);
+      setTxnHash("confirmed", null);
+      setTxnHash("reverted", null);
+      setStorageItem(TXN_KEY, null);
+      onClose();
+    }
+  }, [transactionHash]);
+
+  // Requires approval for more allowance
+  useEffect(() => {
+    if (eventError?.customErrorDisplay === "InsufficientAllowanceError") {
+      setRequiresApproval(true);
+    }
+  }, [eventError?.customErrorDisplay]);
+
+  // Consolidate all the possible status of the txn before its tx hash is created
+  useEffect(() => {
+    let status = BridgeStatus.NoTxCreated;
+
+    if ((hasPendingTx && requiresApproval) || isApproveTxnLoading) {
+      status = BridgeStatus.IsTokenApprovalInProgress;
+    } else if (
+      eventError !== undefined &&
+      eventError?.customErrorDisplay !== "InsufficientAllowanceError"
+    ) {
+      setErrorMessage(eventError.message);
+    } else if (hasPendingTx) {
+      status = BridgeStatus.IsBridgeToDfcInProgress;
+    } else if (isApproveTxnSuccess && requiresApproval) {
+      status = BridgeStatus.IsTokenApproved;
+    } else if (!isApproveTxnSuccess && requiresApproval) {
+      status = BridgeStatus.IsTokenRejected;
+    }
+
+    setBridgeStatus(status);
+  }, [
+    hasPendingTx,
+    isApproveTxnLoading,
+    isApproveTxnSuccess,
+    isBridgeTxnLoading,
+    isBridgeTxnCreated,
+    requiresApproval,
+    transactionHash,
+    networkEnv,
+    eventError,
+  ]);
+
+  useEffect(() => {
     // Trigger `bridgeToDeFiChain` once allowance is approved
     const hasEnoughAllowance = data.to.amount.lte(tokenAllowance);
     const successfulApproval =
       requiresApproval && isApproveTxnSuccess && refetchedBridgeFn;
+
     if (successfulApproval && hasEnoughAllowance) {
       setRequiresApproval(false);
       writeBridgeToDeFiChain?.();
@@ -102,17 +157,9 @@ export default function EvmToDeFiChainTransfer({
     }
   }, [isApproveTxnSuccess, tokenAllowance, refetchedBridgeFn]);
 
-  useEffect(() => {
-    // On success, clear unconfirmed txn from local storage
-    if (isBridgeTxnSuccess) {
-      const TXN_KEY = `${networkEnv}.${STORAGE_TXN_KEY}`;
-      setStorageItem(TXN_KEY, null);
-    }
-  }, [isBridgeTxnSuccess]);
-
   const handleInitiateTransfer = () => {
     setErrorMessage(undefined);
-    setShowLoader(true);
+    setHasPendingTx(true);
     if (requiresApproval) {
       writeApprove?.();
       return;
@@ -123,47 +170,7 @@ export default function EvmToDeFiChainTransfer({
 
   return (
     <>
-      {(showLoader || isApproveTxnLoading || isBridgeTxnLoading) &&
-        !errorMessage && (
-          <Modal isOpen={showLoader}>
-            <div className="flex flex-col items-center mt-6 mb-14">
-              <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
-              <span className="font-bold text-2xl text-dark-900 mt-12">
-                {requiresApproval && !isApproveTxnSuccess
-                  ? `Waiting for approval`
-                  : `Waiting for confirmation`}
-              </span>
-              <span className="text-dark-900 mt-2">
-                {requiresApproval && !isApproveTxnSuccess
-                  ? `Requesting permission to access your ${data.from.tokenName} funds.`
-                  : `Confirm this transaction in your Wallet.`}
-              </span>
-            </div>
-          </Modal>
-        )}
-      {isBridgeTxnSuccess && (
-        // TODO: Replace success ui/message
-        <Modal isOpen={isBridgeTxnSuccess} onClose={() => router.reload()}>
-          <div className="flex flex-col items-center mt-6 mb-14">
-            <FiCheck className="text-8xl text-valid ml-1" />
-            <span className="font-bold text-2xl text-dark-900 mt-8">
-              Transaction confirmed
-            </span>
-            <span className="text-dark-900 mt-2">
-              Funds will be transferred to your DeFiChain wallet shortly.
-            </span>
-            <div className="mt-14">
-              <UtilityButton
-                label="View on Etherscan"
-                onClick={() =>
-                  window.open(`${ExplorerURL}/tx/${transactionHash}`, "_blank")
-                }
-              />
-            </div>
-          </div>
-        </Modal>
-      )}
-      {errorMessage && (
+      {errorMessage !== undefined && (
         <ErrorModal
           title="Transaction error"
           message={errorMessage}
@@ -177,6 +184,35 @@ export default function EvmToDeFiChainTransfer({
           }
         />
       )}
+
+      {bridgeStatus === BridgeStatus.IsTokenApprovalInProgress && (
+        <Modal isOpen>
+          <div className="flex flex-col items-center mt-6 mb-14">
+            <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
+            <span className="font-bold text-2xl text-dark-900 mt-12">
+              Waiting for approval
+            </span>
+            <span className="text-dark-900 mt-2">
+              {`Requesting permission to access your ${data.from.tokenName} funds.`}
+            </span>
+          </div>
+        </Modal>
+      )}
+
+      {bridgeStatus === BridgeStatus.IsBridgeToDfcInProgress && (
+        <Modal isOpen>
+          <div className="flex flex-col items-center mt-6 mb-14">
+            <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
+            <span className="font-bold text-2xl text-dark-900 mt-12">
+              Waiting for confirmation
+            </span>
+            <span className="text-dark-900 mt-2">
+              Confirm this transaction in your Wallet.
+            </span>
+          </div>
+        </Modal>
+      )}
+
       <AlertInfoMessage
         message={DISCLAIMER_MESSAGE}
         containerStyle="px-5 py-4 mt-8"
@@ -187,15 +223,12 @@ export default function EvmToDeFiChainTransfer({
           testId="confirm-transfer-btn"
           label={isMobile ? "Confirm transfer" : "Confirm transfer on wallet"}
           onClick={() => handleInitiateTransfer()}
-          disabled={isBridgeTxnSuccess}
+          disabled={
+            hasPendingTx ||
+            (writeApprove === undefined && writeBridgeToDeFiChain === undefined)
+          }
         />
       </div>
-      {/* TODO: Update screen shown for successful transfer */}
-      {isBridgeTxnSuccess && (
-        <div className="flex justify-center items-center text-valid">
-          Transfer successful! <FiCheck size={20} className="text-valid ml-1" />
-        </div>
-      )}
     </>
   );
 }

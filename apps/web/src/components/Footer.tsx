@@ -53,9 +53,9 @@ export default function Footer() {
     >
       <section
         data-testid="footer_web"
-        className="text-dark-900 xs:px-[24px] xs:pb-[51px] md:px-[48px] lg:px-[120px] lg:pb-[34px] text-sm"
+        className="text-dark-900 xs:px-[24px] px-5 pb-[51px] md:px-[48px] lg:px-[120px] lg:pb-[34px] text-sm"
       >
-        <div className="border-t-[0.5px] border-dark-300 xs:pb-[17.5px] pt-[15px]">
+        <div className="border-t-[0.5px] border-dark-300 pb-[17.5px] pt-[15px]">
           <div className="relative h-[28px] w-[250px] mt-3">
             <Image
               fill
@@ -70,15 +70,15 @@ export default function Footer() {
             Quantum is a proud development of Birthday Research — the blockchain
             R&D arm of Cake DeFi.
           </div>
-          <div className="flex flex-row justify-between xs:pt-[19px] md:pt-[26px] lg:pt-0">
-            <div className="flex xs:flex-col md:items-end md:flex-row md:flex item-start">
-              <div className="pr-[11px] md:pb-0 xs:pb-[12.5px]">
-                &copy; Birthday Research
+          <div className="flex flex-row justify-between pt-[19px] md:pt-[26px] lg:pt-0">
+            <div className="flex flex-col md:flex-row md:items-end">
+              <div className="pb-2 pr-[11px] md:pb-0  xs:pb-[12.5px]">
+                &copy; {new Date().getFullYear()} Birthday Research
               </div>
               <Socials items={BirthdayResearchSocialItems} />
             </div>
             <div className="md:flex md:flex-row-reverse lg:flex-col lg:items-end lg:pt-0">
-              <div className="pb-0 md:pl-2 md:pb-0 xs:pb-[12.5px] lg:relative lg:bottom-[20px]">
+              <div className="pb-2 xs:pb-[12.5px] md:pl-2 md:pb-0 lg:relative lg:bottom-[20px]">
                 &copy; DeFiChain
               </div>
               <Socials items={DeFiChainSocialItems} />
