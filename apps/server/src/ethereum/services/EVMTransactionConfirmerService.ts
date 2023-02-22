@@ -116,9 +116,23 @@ export class EVMTransactionConfirmerService {
     receiverAddress,
     tokenAddress,
     amount,
+    uniqueDfcAddress,
   }: SignClaim): Promise<{ signature: string; nonce: number; deadline: number }> {
     try {
       this.logger.log(`[Sign] ${amount} ${tokenAddress} ${receiverAddress}`);
+
+      // Check and return same claim details if txn is already signed previously
+      const existingTxn = await this.prisma.deFiChainAddressIndex.findFirst({
+        where: { address: uniqueDfcAddress },
+        orderBy: [{ index: 'desc' }],
+      });
+      if (existingTxn && existingTxn.claimSignature) {
+        return {
+          signature: existingTxn.claimSignature,
+          nonce: Number(existingTxn.claimNonce),
+          deadline: Number(existingTxn.claimDeadline),
+        };
+      }
 
       // Connect signer ETH wallet (admin/operational wallet)
       const wallet = new ethers.Wallet(
@@ -127,7 +141,7 @@ export class EVMTransactionConfirmerService {
       );
 
       const { chainId } = await this.ethersRpcProvider.getNetwork();
-      const nonce = await this.contract.eoaAddressToNonce(receiverAddress);
+      const nonce: EthBigNumber = await this.contract.eoaAddressToNonce(receiverAddress);
       const domainName = await this.contract.name();
       const domainVersion = await this.contract.version();
       const deadline = getNextDayTimestamp();
@@ -158,8 +172,20 @@ export class EVMTransactionConfirmerService {
       // eslint-disable-next-line no-underscore-dangle
       const signature = await wallet._signTypedData(domain, types, data);
 
+      // Store on DB to prevent double-signing
+      await this.prisma.deFiChainAddressIndex.update({
+        where: {
+          address: uniqueDfcAddress,
+        },
+        data: {
+          claimNonce: nonce.toString(),
+          claimDeadline: deadline.toString(),
+          claimSignature: signature,
+        },
+      });
+
       this.logger.log(`[Sign SUCCESS] ${amount} ${tokenAddress} ${receiverAddress}`);
-      return { signature, nonce, deadline };
+      return { signature, nonce: nonce.toNumber(), deadline };
     } catch (e: any) {
       throw new Error('There is a problem in signing this claim', { cause: e });
     }
@@ -315,6 +341,7 @@ interface SignClaim {
   receiverAddress: string;
   tokenAddress: string;
   amount: string;
+  uniqueDfcAddress: string;
 }
 
 export interface HandledEVMTransaction {
