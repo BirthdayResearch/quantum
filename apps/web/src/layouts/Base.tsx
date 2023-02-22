@@ -29,6 +29,7 @@ import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
 import { TransactionHashProvider } from "@contexts/TransactionHashContext";
 import { bridgeApi } from "@store/defichain";
 import GoogleTagManager from "@components/GoogleTagManager";
+import Script from "next/script";
 import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
@@ -73,7 +74,6 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
 
   return (
     <div className="flex min-h-screen flex-col bg-dark-00 antialiased">
-      <GoogleTagManager />
       <Head>
         <base href="/" />
         <meta name="application-name" content={appName} />
@@ -125,6 +125,21 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
           type="image/png"
           sizes="16x16"
           href="/favicon-16x16.png"
+        />
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-CNVHG8WSHW"
+        />
+        <script
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{
+            __html: `
+            window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-CNVHG8WSHW');
+          `,
+          }}
         />
       </Head>
 
