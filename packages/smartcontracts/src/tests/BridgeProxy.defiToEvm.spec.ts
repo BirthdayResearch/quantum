@@ -31,7 +31,7 @@ describe('DeFiChain --> EVM', () => {
       ));
       domainData = {
         name: 'QUANTUM_BRIDGE',
-        version: '1.0',
+        version: '1',
         chainId: 1337,
         verifyingContract: proxyBridge.address,
       };
@@ -232,7 +232,7 @@ describe('DeFiChain --> EVM', () => {
       ));
       domainData = {
         name: 'QUANTUM_BRIDGE',
-        version: '1.0',
+        version: '1',
         chainId: 1337,
         verifyingContract: proxyBridge.address,
       };

@@ -5,7 +5,7 @@ import { EthereumTransactionStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, Contract, ethers } from 'ethers';
-import { BridgeV1__factory, ERC20__factory } from 'smartcontracts';
+import { BridgeV2__factory, ERC20__factory } from 'smartcontracts';
 
 import { SupportedTokenSymbols } from '../../AppConfig';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
@@ -31,7 +31,7 @@ export class EVMTransactionConfirmerService {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
     this.contract = new ethers.Contract(
       this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address'),
-      BridgeV1__factory.abi,
+      BridgeV2__factory.abi,
       this.ethersRpcProvider,
     );
   }
@@ -158,20 +158,6 @@ export class EVMTransactionConfirmerService {
 
   async allocateDFCFund(transactionHash: string): Promise<{ transactionHash: string }> {
     try {
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const isReverted = txReceipt.status === 0;
-
-      if (isReverted === true) {
-        throw new BadRequestException(`Transaction Reverted`);
-      }
-      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-      const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
-
-      // check if tx is confirmed with min required confirmation
-      if (numberOfConfirmations < 65) {
-        throw new Error('Transaction is not yet confirmed with min block threshold');
-      }
-
       const txDetails = await this.prisma.bridgeEventTransactions.findFirst({
         where: {
           transactionHash,
@@ -191,6 +177,23 @@ export class EVMTransactionConfirmerService {
       // check if txn is confirmed or not
       if (txDetails.status !== EthereumTransactionStatus.CONFIRMED) {
         throw new Error('Transaction is not yet confirmed');
+      }
+
+      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+      if (!txReceipt) {
+        throw new Error('Transaction is not yet available');
+      }
+      const isReverted = txReceipt.status === 0;
+
+      if (isReverted === true) {
+        throw new BadRequestException(`Transaction Reverted`);
+      }
+      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+      const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
+
+      // check if tx is confirmed with min required confirmation
+      if (numberOfConfirmations < 65) {
+        throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
@@ -238,19 +241,8 @@ export class EVMTransactionConfirmerService {
   }
 }
 
-interface SignClaim {
-  receiverAddress: string;
-  tokenAddress: string;
-  amount: string;
-}
-
-export interface HandledEVMTransaction {
-  numberOfConfirmations: number;
-  isConfirmed: boolean;
-}
-
 const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
-  const iface = new ethers.utils.Interface(BridgeV1__factory.abi);
+  const iface = new ethers.utils.Interface(BridgeV2__factory.abi);
   const decodedData = iface.parseTransaction({ data: txDetail.data, value: txDetail.value });
   const fragment = iface.getFunction(decodedData.name);
   const params = decodedData.args.reduce((res, param, i) => {
@@ -289,3 +281,14 @@ const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
     name: decodedData.name,
   };
 };
+
+interface SignClaim {
+  receiverAddress: string;
+  tokenAddress: string;
+  amount: string;
+}
+
+export interface HandledEVMTransaction {
+  numberOfConfirmations: number;
+  isConfirmed: boolean;
+}

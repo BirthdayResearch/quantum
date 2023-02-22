@@ -28,7 +28,7 @@ enum TitleLabel {
 type RejectedLabelType = `Something went wrong${string}`;
 
 enum ContentLabel {
-  Validating = "Please wait as your transaction is being verified. This usually takes 10 confirmations from the blockchain. Once verified, you will be redirected to the next step.",
+  Validating = "Please wait as your transaction is being verified. Once verified, you will be redirected to the next step.",
   Validated = "Please wait as we redirect you to the next step.",
   ThrottleLimit = "Please wait for a minute and try again.",
 }
