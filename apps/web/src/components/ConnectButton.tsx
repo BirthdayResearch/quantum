@@ -17,11 +17,11 @@ function PreConnectedButton({
       data-testid="connect-button"
       type="button"
       className={clsx(
-        `relative z-[1] dark-bg-gradient-1 active:fill-bg-gradient-5 flex h-full items-center justify-center
+        `relative z-[1] dark-bg-gradient-1 flex h-full items-center justify-center
             rounded-3xl border-[1.5px] border-transparent px-4 py-2 md:px-6 md:py-2.5 lg:px-6 lg:py-3
             before:absolute before:-z-[1] before:fill-bg-gradient-1 before:rounded-3xl
             before:transition-all before:duration-300 before:opacity-0 before:-inset-[1.5px]
-            hover:before:opacity-100`
+            hover:before:opacity-100 active:before:fill-bg-gradient-5 `
       )}
       onClick={onClick}
     >
