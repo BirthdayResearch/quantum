@@ -81,11 +81,21 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       ],
       'number',
     );
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [fromWallet]: `10@ETH`,
+        },
+      ],
+      'number',
+    );
     await defichain.generateBlock();
     // init postgres database
     prismaService = app.get<PrismaService>(PrismaService);
 
-    // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function (bridge 100 USDC) and mine the block
+    // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function (bridge 1 USDC) and mine the block
     transactionCall = await bridgeContract.bridgeToDeFiChain(
       ethers.utils.toUtf8Bytes(address),
       musdcContract.address,
@@ -180,7 +190,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     });
   });
 
-  it('should allocate DFC fund by txnId to receiving address', async () => {
+  it('should allocate USDC DFC fund by txnId to receiving address', async () => {
     // Step 4: mine 65 blocks to make the transaction confirmed
     await hardhatNetwork.generate(65);
     // Step 5: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
@@ -211,9 +221,10 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
 
     // check token gets transferred to the address
     const listToken = await defichain.whaleClient?.address.listToken(address);
-    expect(listToken?.[0].id).toStrictEqual('5');
-    expect(listToken?.[0].amount).toStrictEqual(new BigNumber(1).toFixed(8));
-    expect(listToken?.[0].symbol).toStrictEqual('USDC');
+    const token = listToken.find((each) => each.id === '5');
+    expect(token?.id).toStrictEqual('5');
+    expect(token?.amount).toStrictEqual(new BigNumber(1).toFixed(8));
+    expect(token?.symbol).toStrictEqual('USDC');
   });
 
   it('should fail when fund already allocated', async () => {
@@ -231,7 +242,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
 
   it('should fail when invalid address is provided as send address', async () => {
     await sleep(60000);
-    // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function (bridge 100 USDC) and mine the block
+    // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function (bridge 1 USDC) and mine the block
     const invalidTransactionCall = await bridgeContract.bridgeToDeFiChain(
       ethers.utils.toUtf8Bytes('df1q4q49nwn7s8l6fsdpkmhvf0als6jawktg8urd3u'),
       musdcContract.address,
@@ -299,5 +310,88 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       where: { transactionHash: invalidTransactionCall.hash },
     });
     expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(null);
+  });
+
+  it('should allocate ETH DFC fund by txnId to receiving address', async () => {
+    await sleep(60000);
+    // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function (bridge 1 ETH) and mine the block
+    const ethTransactionCall = await bridgeContract.bridgeToDeFiChain(
+      ethers.utils.toUtf8Bytes(address),
+      ethers.constants.AddressZero,
+      0,
+      {
+        value: ethers.utils.parseEther('1'),
+      },
+    );
+    await hardhatNetwork.generate(1);
+
+    // Step 2: db should not have record of transaction
+    let transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: ethTransactionCall.hash },
+    });
+    expect(transactionDbRecord).toStrictEqual(null);
+
+    let txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/handleTransaction`,
+      payload: {
+        transactionHash: ethTransactionCall.hash,
+      },
+    });
+    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 0, isConfirmed: false });
+
+    // Step 3: db should create a record of transaction with status='NOT_CONFIRMED', as number of confirmations = 0.
+    transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: ethTransactionCall.hash },
+    });
+    expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.NOT_CONFIRMED);
+
+    // Step 4: mine 65 blocks to make the transaction confirmed
+    await hardhatNetwork.generate(65);
+
+    // Check transaction is not yet confirmed error
+    let sendTransactionDetails = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/allocateDFCFund`,
+      payload: {
+        transactionHash: ethTransactionCall.hash,
+      },
+    });
+    expect(sendTransactionDetails.statusCode).toStrictEqual(500);
+    const response = JSON.parse(sendTransactionDetails.body);
+    expect(response.error).toContain('Transaction is not yet confirmed');
+
+    // Step 5: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
+    txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/handleTransaction`,
+      payload: {
+        transactionHash: ethTransactionCall.hash,
+      },
+    });
+    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 65, isConfirmed: true });
+
+    // Step 6: call allocate DFC fund
+    sendTransactionDetails = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/allocateDFCFund`,
+      payload: {
+        transactionHash: ethTransactionCall.hash,
+      },
+    });
+    const res = JSON.parse(sendTransactionDetails.body);
+    transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: ethTransactionCall.hash },
+    });
+    expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(res.transactionHash);
+    expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
+    await defichain.generateBlock();
+
+    // check token gets transferred to the address
+    const listToken = await defichain.whaleClient?.address.listToken(address);
+    const token = listToken.find((each) => each.id === '2');
+    expect(token?.id).toStrictEqual('2');
+    expect(token?.amount).toStrictEqual(new BigNumber(1).toFixed(8));
+    expect(token?.symbol).toStrictEqual('ETH');
   });
 });

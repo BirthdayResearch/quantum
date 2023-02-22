@@ -59,15 +59,15 @@ export const getDTokenDetailsByWToken = (
           id: '2',
           symbol: 'ETH',
         },
-        wBTC: {
+        MWBTC: {
           id: '1',
           symbol: 'BTC',
         },
-        USDT: {
+        MUSDT: {
           id: '5',
           symbol: 'USDT',
         },
-        USDC: {
+        MUSDC: {
           id: '22',
           symbol: 'USDC',
         },

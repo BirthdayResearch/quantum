@@ -1,4 +1,4 @@
-import { BigNumberish, constants, Signer } from 'ethers';
+import { BigNumberish, constants, ethers, Signer } from 'ethers';
 import {
   BridgeProxy,
   BridgeProxy__factory,
@@ -136,9 +136,10 @@ export class BridgeContractFixture {
     // Create a reference to the implementation contract via proxy
     const bridge = BridgeV1__factory.connect(bridgeProxy.address, this.adminAndOperationalSigner);
 
-    // Adding MUSDT and MUSDC as supported tokens
+    // Adding MUSDT, MUSDC and ETH as supported tokens
     await bridge.addSupportedTokens(musdt.address, constants.MaxInt256);
     await bridge.addSupportedTokens(musdc.address, constants.MaxInt256);
+    await bridge.addSupportedTokens(ethers.constants.AddressZero, constants.MaxInt256);
 
     await this.hardhatNetwork.generate(1);
 
