@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { FiAlertCircle, FiLoader } from "react-icons/fi";
 import QRCode from "react-qr-code";
@@ -6,7 +7,6 @@ import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import { getStorageItem, setStorageItem } from "@utils/localStorage";
 import Tooltip from "@components/commons/Tooltip";
 import UtilityButton from "@components/commons/UtilityButton";
-import { useRouter } from "next/router";
 import { useGenerateAddressMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
@@ -77,19 +77,19 @@ function SuccessCopy({
 }
 
 function FaqSection() {
-  const router = useRouter();
   return (
     <div className="mt-6 md:mt-2">
       <span className={clsx("text-sm text-warning", "md:mt-2")}>
         Transactions in this Bridge, as with all other on-chain transactions,
         are irreversible. For more details, read&nbsp;
-        <button
-          type="button"
+        <Link
+          href="https://birthdayresearch.notion.site/Troubleshooting-477ed1d364c0406abc33f162e985d5b3"
+          target="_blank"
+          rel="noopener noreferrer"
           className="underline underline-offset-1 text-warning"
-          onClick={() => router.push("/faq")}
         >
           FAQs and terms of use.
-        </button>
+        </Link>
       </span>
     </div>
   );
