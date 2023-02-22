@@ -14,7 +14,7 @@ export default function MobileBottomMenu() {
     {
       id: "faqs",
       title: "FAQs",
-      href: "/",
+      href: "https://birthdayresearch.notion.site/FAQs-58af5cc140de432e8c9d1510ead3e3c0",
       icon: FiHelpCircle,
     },
     {
@@ -32,6 +32,8 @@ export default function MobileBottomMenu() {
           <li key={item.title}>
             <Link
               href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
               className="w-full flex flex-col items-center gap-2 cursor-pointer focus-visible:outline-none hover:opacity-70"
             >
               <Icon size={28} className="text-dark-900" />

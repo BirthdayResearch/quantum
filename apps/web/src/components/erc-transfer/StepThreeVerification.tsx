@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import UtilityButton from "@components/commons/UtilityButton";
@@ -48,9 +49,14 @@ export default function StepThreeVerification({
   const contentLabelRejected = (
     <span>
       <span>Please check our {/* TODO insert link once available */}</span>
-      <button type="button" onClick={() => {}} className="underline">
+      <Link
+        href="https://birthdayresearch.notion.site/Error-Codes-d5c0bfd68359466e88223791e69adb4f"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline"
+      >
         Error guide
-      </button>
+      </Link>
       <span> and try again</span>
     </span>
   );

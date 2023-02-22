@@ -28,7 +28,7 @@ export default function WelcomeHeader() {
             <span className={clsx(underText)}>Documentation</span>
           </Link>
           <Link
-            href="/"
+            href="https://birthdayresearch.notion.site/FAQs-58af5cc140de432e8c9d1510ead3e3c0"
             target="_blank"
             rel="noopener noreferrer"
             className="ml-6 flex flex-row items-center"
