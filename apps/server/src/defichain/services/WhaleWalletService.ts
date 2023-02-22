@@ -25,7 +25,7 @@ export class WhaleWalletService {
   }
 
   async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
-    this.logger.log(`verify - amount: '${verify.amount} ${verify.symbol}', dfc wallet address: '${verify.address}'`);
+    this.logger.log(`[Verify] ${verify.amount} ${verify.symbol} ${verify.address}`);
 
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
@@ -80,7 +80,7 @@ export class WhaleWalletService {
       });
 
       this.logger.log(
-        `verify SUCCESS - amount: '${verify.amount} ${verify.symbol}', dfcAddress: '${verify.address}', ethAddress(receiver) '${verify.ethReceiverAddress}'`,
+        `[Verify SUCCESS] ${verify.amount} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`,
       );
 
       return { isValid: true, signature: claim.signature, nonce: claim.nonce, deadline: claim.deadline };
@@ -103,7 +103,7 @@ export class WhaleWalletService {
     network: EnvironmentNetwork,
   ): Promise<Omit<DeFiChainAddressIndex, 'id' | 'index'>> {
     try {
-      this.logger.log(`generateAddress - refundAddress: '${refundAddress}', network: '${network}'`);
+      this.logger.log(`[GA] ${refundAddress}`);
 
       const decodedAddress = fromAddress(refundAddress, this.clientProvider.remapNetwork(network));
       if (decodedAddress === undefined) {
@@ -124,10 +124,7 @@ export class WhaleWalletService {
         },
       });
 
-      this.logger.log(
-        `generateAddress SUCCESS - refundAddress: '${refundAddress}', network: '${network}', generatedAddress: '${data.address}', index:' ${nextIndex}'`,
-      );
-
+      this.logger.log(`[GA SUCCESS] ${refundAddress} ${data.address} ${nextIndex}`);
       return {
         address: data.address,
         createdAt: data.createdAt,

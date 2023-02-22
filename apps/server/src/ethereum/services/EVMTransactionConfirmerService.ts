@@ -116,7 +116,7 @@ export class EVMTransactionConfirmerService {
     amount,
   }: SignClaim): Promise<{ signature: string; nonce: number; deadline: number }> {
     try {
-      this.logger.log(`signClaim - address: '${receiverAddress}', token: '${receiverAddress}', amount: '${amount}'`);
+      this.logger.log(`[Sign] ${amount} ${tokenAddress} ${receiverAddress}`);
 
       // Connect signer ETH wallet (admin/operational wallet)
       const wallet = new ethers.Wallet(
@@ -156,10 +156,7 @@ export class EVMTransactionConfirmerService {
       // eslint-disable-next-line no-underscore-dangle
       const signature = await wallet._signTypedData(domain, types, data);
 
-      this.logger.log(
-        `signClaim SUCCESS - address: '${receiverAddress}', token: '${receiverAddress}', amount: '${amount}'`,
-      );
-
+      this.logger.log(`[Sign SUCCESS] ${amount} ${tokenAddress} ${receiverAddress}`);
       return { signature, nonce, deadline };
     } catch (e: any) {
       throw new Error('There is a problem in signing this claim', { cause: e });
@@ -168,7 +165,7 @@ export class EVMTransactionConfirmerService {
 
   async allocateDFCFund(transactionHash: string): Promise<{ transactionHash: string }> {
     try {
-      this.logger.log(`allocateDFCFund - ethTxnHash: '${transactionHash}'`);
+      this.logger.log(`[AllocateDFCFund] ${transactionHash}`);
 
       const txDetails = await this.prisma.bridgeEventTransactions.findFirst({
         where: {
@@ -238,10 +235,7 @@ export class EVMTransactionConfirmerService {
         },
       });
 
-      this.logger.log(
-        `allocateDFCFund SUCCESS - ethTxnHash: '${transactionHash}', dfcTxnHash: '${sendTransactionHash}'`,
-      );
-
+      this.logger.log(`[AllocateDFCFund SUCCESS] ${transactionHash} ${sendTransactionHash}`);
       return { transactionHash: sendTransactionHash };
     } catch (e: any) {
       throw new HttpException(
