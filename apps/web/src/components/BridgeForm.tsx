@@ -24,7 +24,11 @@ import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
-import { useGetAddressDetailMutation } from "@store/index";
+import {
+  useBalanceDfcMutation,
+  useBalanceEvmMutation,
+  useGetAddressDetailMutation,
+} from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import InputSelector from "./InputSelector";
@@ -35,7 +39,6 @@ import {
   ETHEREUM_SYMBOL,
   FEES_INFO,
 } from "../constants";
-import { useBalanceDfcMutation, useBalanceEvmMutation } from "../store";
 import Logging from "../api/logging";
 
 function SwitchButton({
