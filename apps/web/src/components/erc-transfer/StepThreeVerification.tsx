@@ -28,7 +28,7 @@ enum TitleLabel {
 type RejectedLabelType = `Something went wrong${string}`;
 
 enum ContentLabel {
-  Validating = "Please wait as your transaction is being verified. This usually takes 10 confirmations from the blockchain. Once verified, you will be redirected to the next step.",
+  Validating = "Please wait as your transaction is being verified. Once verified, you will be redirected to the next step.",
   Validated = "Please wait as we redirect you to the next step.",
   ThrottleLimit = "Please wait for a minute and try again.",
 }
@@ -75,18 +75,18 @@ export default function StepThreeVerification({
       txn?.selectedTokensA.tokenA.symbol !== undefined
     ) {
       try {
-        const { data } = await trigger({
+        const response = await trigger({
           address: dfcAddress,
           ethReceiverAddress: txn.toAddress,
           tokenAddress: Erc20Tokens[txn.selectedTokensB.tokenA.name].address,
           amount: new BigNumber(txn.amount).toFixed(8),
           symbol: txn.selectedTokensA.tokenA.symbol,
-        });
+        }).unwrap();
 
-        if (data?.statusCode !== undefined) {
-          Logging.info(`Returned statusCode: ${data?.statusCode}`);
+        if (response.statusCode !== undefined) {
+          Logging.info(`Returned statusCode: ${response.statusCode}`);
           setContent(contentLabelRejected);
-          setTitle(`Something went wrong (Error code ${data.statusCode})`);
+          setTitle(`Something went wrong (Error code ${response.statusCode})`);
           setValidationSuccess(false);
           setIsValidating(false);
           setButtonLabel(ButtonLabel.Rejected);
@@ -97,7 +97,7 @@ export default function StepThreeVerification({
         setContent(ContentLabel.Validated);
         setButtonLabel(ButtonLabel.Validated);
         setValidationSuccess(true);
-        onSuccess(data);
+        onSuccess(response);
         goToNextStep();
       } catch (e) {
         setButtonLabel(ButtonLabel.Rejected);

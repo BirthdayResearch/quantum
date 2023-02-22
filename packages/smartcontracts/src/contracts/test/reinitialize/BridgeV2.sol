@@ -7,6 +7,7 @@ import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
+import '@openzeppelin/contracts/utils/Strings.sol';
 import 'hardhat/console.sol';
 
 /** @notice @dev  
@@ -69,7 +70,7 @@ error AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
  */
 error MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
 
-contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
+contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     using EnumerableSet for EnumerableSet.AddressSet;
 
     bytes32 constant DATA_TYPE_HASH =
@@ -92,11 +93,12 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     mapping(address => uint256) public tokenCap;
 
     // Contract version
-    string public constant version = '1';
+    string public version;
     // Transaction fee when bridging from EVM to DeFiChain. Based on dps (e.g 1% == 100dps)
     uint256 public transactionFee;
     // Community wallet to send tx fees to
     address public communityWallet;
+
     // Address to receive the flush
     address public flushReceiveAddress;
 
@@ -210,12 +212,14 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address _relayerAddress,
         address _communityWallet,
         uint256 _fee,
-        address _flushReceiveAddress
-    ) external initializer {
+        address _flushReceiveAddress,
+        uint8 _version
+    ) external reinitializer(_version) {
         __UUPSUpgradeable_init();
-        __EIP712_init(name, version);
+        __EIP712_init(name, Strings.toString(_version));
         _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
         _grantRole(OPERATIONAL_ROLE, _initialOperational);
+        version = Strings.toString(_version);
         communityWallet = _communityWallet;
         relayerAddress = _relayerAddress;
         transactionFee = _fee;

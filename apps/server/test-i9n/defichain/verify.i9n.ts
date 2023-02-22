@@ -269,5 +269,10 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response.signature).toBeDefined();
     expect(response.nonce).toBeDefined();
     expect(response.deadline).toBeDefined();
+
+    // Check that deadline should be within 24 hrs
+    const timeAfter24hrs = Date.now() + 1000 * 60 * 60 * 24;
+    const deadlineAfter24hrs = timeAfter24hrs + 30000; // add 30sec allowance
+    expect(response.deadline).toBeLessThanOrEqual(deadlineAfter24hrs);
   });
 });

@@ -127,7 +127,7 @@ export default function BridgeForm({
   const validateAmountInput = (value: string) => {
     const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
     let err = "";
-    if (isSendingToDFC && new BigNumber(value).gt(maxAmount)) {
+    if (isSendingToDFC && new BigNumber(value).gt(maxAmount.toFixed(8))) {
       err = "Insufficient Funds";
     }
     setAmountErr(err);
