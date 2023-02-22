@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { ThrottlerGuard } from '@nestjs/throttler';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { EthereumTransactionValidationPipe } from '../../pipes/EthereumTransactionValidation.pipe';
@@ -15,7 +15,7 @@ export class EthereumController {
   }
 
   @Post('handleTransaction')
-  @UseGuards(ThrottlerGuard)
+  @Throttle(35, 60)
   async handleTransaction(
     @Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
   ): Promise<HandledEVMTransaction> {
