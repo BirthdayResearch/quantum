@@ -25,6 +25,8 @@ export function buildTestConfig({
   defichain,
   startedPostgresContainer,
   usdcAddress,
+  evmToDfcFee,
+  dfcToEvmFee,
 }: BuildTestConfigParams) {
   if (startedPostgresContainer === undefined) {
     throw Error('Must pass in StartedPostgresContainer');
@@ -50,6 +52,8 @@ export function buildTestConfig({
       },
       ethWalletPrivKey: testnet?.ethWalletPrivKey,
     },
+    evmToDfcFee: evmToDfcFee ?? '',
+    dfcToEvmFee: dfcToEvmFee ?? '',
   };
 }
 
@@ -70,4 +74,6 @@ type OptionalBuildTestConfigParams = {
     ethWalletPrivKey: string;
   };
   usdcAddress: string;
+  evmToDfcFee: string;
+  dfcToEvmFee: string;
 };
