@@ -268,7 +268,12 @@ export default function StepTwoSendConfirmation({
         <div className={clsx("hidden", "md:block")}>
           <div className="float-right mt-8">
             {/* Web confirm button */}
-            <VerifyButton onVerify={handleConfirmClick} />
+            <VerifyButton
+              onVerify={handleConfirmClick}
+              disabled={
+                addressGenerationError !== "" || dfcUniqueAddress === ""
+              }
+            />
           </div>
         </div>
       </div>
@@ -281,7 +286,10 @@ export default function StepTwoSendConfirmation({
       {/* Mobile confirm button */}
       <div className={clsx("order-last", "md:hidden")}>
         <div className={clsx("px-6 mt-12", "md:px-0")}>
-          <VerifyButton onVerify={handleConfirmClick} />
+          <VerifyButton
+            onVerify={handleConfirmClick}
+            disabled={addressGenerationError !== "" || dfcUniqueAddress === ""}
+          />
         </div>
       </div>
     </div>
