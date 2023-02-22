@@ -221,6 +221,7 @@ export class EVMTransactionConfirmerService {
       const wTokenDecimals = await evmTokenContract.decimals();
       const transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
       const dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
+      this.logger.log(`[Send] ${transferAmount} ${wTokenSymbol} ${dTokenDetails.id} ${dTokenDetails.symbol}`);
       const sendTransactionHash = await this.sendService.send(address, {
         ...dTokenDetails,
         amount: transferAmount,
