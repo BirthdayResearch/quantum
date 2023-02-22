@@ -12,13 +12,15 @@ import { getStorageItem } from "../utils/localStorage";
 function Home() {
   const { ethTxnStatus, isApiSuccess } = useWatchEthTxn();
   const { txnHash, setTxnHash } = useTransactionHashContext();
-  const { UNCONFIRMED_TXN_HASH_KEY } = useBridgeFormStorageKeys();
+  const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
+    useBridgeFormStorageKeys();
 
   useEffect(() => {
     const unloadCallback = (e) => {
       const event = e;
       const unconfirmedHash = getStorageItem<string>(UNCONFIRMED_TXN_HASH_KEY);
-      if (unconfirmedHash !== undefined) {
+      const unsentFundHash = getStorageItem<string>(UNSENT_FUND_TXN_HASH_KEY);
+      if (unconfirmedHash !== undefined || unsentFundHash !== undefined) {
         // display native reload warning modal if there is unconfirmed txn ongoing
         event.preventDefault();
         event.returnValue = "";
@@ -28,7 +30,7 @@ function Home() {
     };
     window.addEventListener("beforeunload", unloadCallback);
     return () => window.removeEventListener("beforeunload", unloadCallback);
-  }, [UNCONFIRMED_TXN_HASH_KEY]);
+  }, [UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY]);
 
   const getNumberOfConfirmations = () => {
     let numOfConfirmations = ethTxnStatus?.numberOfConfirmations;
