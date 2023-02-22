@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useMemo } from "react";
 
 type CallbackFunction = (...args: any[]) => void;
 
-export default function useTimeout(
+function useTimeout(
   callback: CallbackFunction,
   delay: number
 ): [CallbackFunction] {
@@ -37,3 +37,5 @@ export default function useTimeout(
 
   return useMemo(() => [memoizedCallback], [memoizedCallback]);
 }
+
+export default useTimeout;
