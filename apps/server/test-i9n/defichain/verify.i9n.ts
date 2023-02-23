@@ -218,7 +218,9 @@ describe('DeFiChain Verify fund Testing', () => {
     const data = {
       address: randomAddress,
     };
-    await prismaService.deFiChainAddressIndex.update({ where: { index: 3 }, data });
+    const newWallet = whaleWalletProvider.createWallet(3);
+    const newLocalAddress = await newWallet.getAddress();
+    await prismaService.deFiChainAddressIndex.update({ where: { address: newLocalAddress }, data });
 
     const response = await verify({
       amount: '3',

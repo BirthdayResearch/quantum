@@ -88,7 +88,6 @@ describe('Sign Claims Tests', () => {
     // Check that claim details exists in the database
     const dbRecord = await prismaService.deFiChainAddressIndex.findFirst({
       where: { address },
-      orderBy: [{ index: 'desc' }],
     });
     expect(dbRecord?.address).toStrictEqual(address);
     expect(dbRecord?.claimSignature).toStrictEqual(claim.signature);

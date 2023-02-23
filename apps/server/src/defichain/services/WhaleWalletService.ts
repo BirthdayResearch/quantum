@@ -106,12 +106,16 @@ export class WhaleWalletService {
   ): Promise<Pick<DeFiChainAddressIndex, 'address' | 'createdAt' | 'refundAddress'>> {
     try {
       this.logger.log(`[GA] ${refundAddress}`);
-
+      const hotWallet = this.whaleWalletProvider.getHotWallet();
+      const hotWalletAddress = await hotWallet.getAddress();
       const decodedAddress = fromAddress(refundAddress, this.clientProvider.remapNetwork(network));
       if (decodedAddress === undefined) {
         throw new BadRequestException(`Invalid refund address for DeFiChain ${network}`);
       }
       const lastIndex = await this.prisma.deFiChainAddressIndex.findFirst({
+        where: {
+          hotWalletAddress,
+        },
         orderBy: [{ index: 'desc' }],
       });
       const index = lastIndex?.index;
@@ -123,6 +127,7 @@ export class WhaleWalletService {
           index: nextIndex,
           address,
           refundAddress,
+          hotWalletAddress,
         },
       });
 
