@@ -7,7 +7,6 @@ import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, Contract, ethers } from 'ethers';
 import { BridgeV2TestNet__factory, ERC20__factory } from 'smartcontracts';
 
-
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
 import { SendService } from '../../defichain/services/SendService';
