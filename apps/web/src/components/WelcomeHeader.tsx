@@ -17,7 +17,7 @@ export default function WelcomeHeader() {
       <div className="mt-2">
         <h2 className={clsx(bylineStyle)}>connecting one</h2>
         <h2 className={clsx(bylineStyle)}>blockchain at a time</h2>
-        <div className="flex flex-row items-center xs:mt-[36px] md:mt-7">
+        <div className="flex flex-row items-center xs:mt-[36px] md:mt-7 hidden md:inline-flex">
           <Link
             href="https://birthdayresearch.notion.site/birthdayresearch/Quantum-Documentation-dc1d9174dd294b06833e7859d437e25e"
             target="_blank"
