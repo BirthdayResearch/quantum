@@ -62,7 +62,7 @@ describe('DeFiChain Verify fund Testing', () => {
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
-          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC, transferFee: '0.003' },
           startedHardhatContainer,
           testnet: {
             bridgeContractAddress: bridgeContract.address,
@@ -218,7 +218,9 @@ describe('DeFiChain Verify fund Testing', () => {
     const data = {
       address: randomAddress,
     };
-    await prismaService.deFiChainAddressIndex.update({ where: { index: 3 }, data });
+    const newWallet = whaleWalletProvider.createWallet(3);
+    const newLocalAddress = await newWallet.getAddress();
+    await prismaService.deFiChainAddressIndex.update({ where: { address: newLocalAddress }, data });
 
     const response = await verify({
       amount: '3',

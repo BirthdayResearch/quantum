@@ -124,7 +124,6 @@ export class EVMTransactionConfirmerService {
       // Check and return same claim details if txn is already signed previously
       const existingTxn = await this.prisma.deFiChainAddressIndex.findFirst({
         where: { address: uniqueDfcAddress },
-        orderBy: [{ index: 'desc' }],
       });
       if (existingTxn && existingTxn.claimSignature) {
         return {

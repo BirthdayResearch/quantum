@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { utils } from "ethers";
@@ -16,6 +17,7 @@ import { SignedClaim, TransferData } from "types";
 import UtilityButton from "@components/commons/UtilityButton";
 import { setStorageItem } from "@utils/localStorage";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
+import useTransferFee from "@hooks/useTransferFee";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again.  If the error persists get in touch with us.";
@@ -36,13 +38,15 @@ export default function StepLastClaim({
   const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
 
   // Prepare write contract for `claimFund` function
+  const [fee] = useTransferFee(data.to.amount.toString());
+  const amountLessFee = BigNumber.max(data.to.amount.minus(fee), 0);
   const { config: bridgeConfig } = usePrepareContractWrite({
     address: BridgeV1.address,
     abi: BridgeV1.abi,
     functionName: "claimFund",
     args: [
       data.to.address,
-      utils.parseEther(data.to.amount.toString()),
+      utils.parseEther(amountLessFee.toString()),
       signedClaim.nonce,
       signedClaim.deadline,
       tokenAddress,

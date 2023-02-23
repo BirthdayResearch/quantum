@@ -15,15 +15,18 @@ enum EthereumTransactionStatus {
 
 model DeFiChainAddressIndex {
   id                   BigInt    @id @default(autoincrement())
-  index                Int       @unique
+  index                Int
   address              String    @unique
-  refundAddress        String            
-  claimNonce           String?    
+  refundAddress        String
+  claimNonce           String?
   claimDeadline        String?
   claimSignature       String?
-  claimTransactionHash String?   
+  claimTransactionHash String?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime? @updatedAt
+  hotWalletAddress     String
+
+  @@unique([hotWalletAddress, index])
 }
 
 model BridgeEventTransactions {

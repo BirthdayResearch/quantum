@@ -9,6 +9,7 @@ export function appConfig() {
       key: process.env.DEFICHAIN_PRIVATE_KEY,
       whaleURL: process.env.DEFICHAIN_WHALE_URL,
       network: process.env.DEFICHAIN_NETWORK,
+      transferFee: process.env.DFC_FEE_PERCENTAGE,
     },
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL,

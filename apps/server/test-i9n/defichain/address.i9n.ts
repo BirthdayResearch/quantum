@@ -1,6 +1,8 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { fromAddress } from '@defichain/jellyfish-address';
+import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
 
+import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
 import { PrismaService } from '../../src/PrismaService';
 import { sleep } from '../helper/sleep';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
@@ -12,15 +14,18 @@ describe('DeFiChain Address Integration Testing', () => {
   jest.setTimeout(3600000);
   let testing: BridgeServerTestingApp;
   let defichain: StartedDeFiChainStubContainer;
+  let whaleURL: string;
   let startedPostgresContainer: StartedPostgreSqlContainer;
   let prismaService: PrismaService;
+  let hotWalletAddress: string;
+  let hotWallet: WhaleWalletAccount;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
 
   beforeAll(async () => {
     startedPostgresContainer = await new PostgreSqlContainer().start();
 
     defichain = await new DeFiChainStubContainer().start();
-    const whaleURL = await defichain.getWhaleURL();
+    whaleURL = await defichain.getWhaleURL();
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
@@ -33,6 +38,9 @@ describe('DeFiChain Address Integration Testing', () => {
     const app = await testing.start();
     // init postgres database
     prismaService = app.get<PrismaService>(PrismaService);
+    const whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
+    hotWallet = await whaleWalletProvider.getHotWallet();
+    hotWalletAddress = await hotWallet.getAddress();
   });
 
   afterAll(async () => {
@@ -50,13 +58,14 @@ describe('DeFiChain Address Integration Testing', () => {
     });
     expect(initialResponse.statusCode).toStrictEqual(200);
     const response = JSON.parse(initialResponse.body);
-    // db should not have record of transaction
+    // db should have record of transaction
     const dbAddressDetail = await prismaService.deFiChainAddressIndex.findFirst({
       where: { address: response.address },
     });
     expect(dbAddressDetail?.address).toStrictEqual(response.address);
     expect(dbAddressDetail?.createdAt.toISOString()).toStrictEqual(response.createdAt);
     expect(dbAddressDetail?.refundAddress).toStrictEqual(response.refundAddress);
+    expect(dbAddressDetail?.hotWalletAddress).toStrictEqual(hotWalletAddress);
 
     const decodedAddress = fromAddress(response.address, 'regtest');
     expect(decodedAddress).not.toBeUndefined();
@@ -128,6 +137,45 @@ describe('DeFiChain Address Integration Testing', () => {
       url: `${WALLET_ENDPOINT}address/random-address`,
     });
     expect(initialResponse.statusCode).toStrictEqual(500);
+  });
+
+  it('should be able to generate a wallet address from 2nd index with diff mnemonic ', async () => {
+    const testing2 = new BridgeServerTestingApp(
+      TestingModule.register(
+        buildTestConfig({
+          defichain: {
+            whaleURL,
+            key: 'quiz toddler try base thrive veteran scout pumpkin turkey stick example uphold poverty connect clinic inner sunny autumn fish gift suspect possible source dish',
+          },
+          startedPostgresContainer,
+        }),
+      ),
+    );
+    const app = await testing2.start();
+
+    const whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
+    const newHotWallet = await whaleWalletProvider.getHotWallet();
+    const newHotWalletAddress = await newHotWallet.getAddress();
+    await whaleWalletProvider.getHotWallet();
+    const initialResponse = await testing2.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate?refundAddress=bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g`,
+    });
+    expect(initialResponse.statusCode).toStrictEqual(200);
+    const response = JSON.parse(initialResponse.body);
+    // db should have record of transaction
+    const dbAddressDetail = await prismaService.deFiChainAddressIndex.findFirst({
+      where: { address: response.address },
+    });
+    expect(dbAddressDetail?.index).toStrictEqual(2);
+    expect(dbAddressDetail?.address).toStrictEqual(response.address);
+    expect(dbAddressDetail?.createdAt.toISOString()).toStrictEqual(response.createdAt);
+    expect(dbAddressDetail?.refundAddress).toStrictEqual(response.refundAddress);
+    expect(dbAddressDetail?.hotWalletAddress).toStrictEqual(newHotWalletAddress);
+
+    const decodedAddress = fromAddress(response.address, 'regtest');
+    expect(decodedAddress).not.toBeUndefined();
+    await testing2.stop();
   });
 
   it.skip('should be able to handel concurrent request on', async () => {
