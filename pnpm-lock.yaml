@@ -17,7 +17,7 @@ importers:
 
   apps/server:
     specifiers:
-      '@birthdayresearch/eslint-config': ^0.5.0
+      '@birthdayresearch/eslint-config': ^0.5.1
       '@birthdayresearch/sticky-prettier': ^0.5.0
       '@birthdayresearch/sticky-testcontainers': ^0.5.0
       '@birthdayresearch/sticky-turbo-jest': ^0.5.0
@@ -69,7 +69,7 @@ importers:
       '@nestjs/throttler': 4.0.0_shbtxdxgogsm4p64bg2toeylku
       '@prisma/client': 4.10.1_prisma@4.10.1
       '@waveshq/walletkit-core': 0.38.1
-      '@waveshq/walletkit-ui': 0.38.1_xam2zbpgy4rmsw26w4nzn54f6u
+      '@waveshq/walletkit-ui': 0.38.1_b6siamfbo7eka2jvurz4cqvo54
       async-mutex: 0.4.0
       bignumber.js: 9.1.1
       cache-manager: 5.1.6
@@ -81,7 +81,7 @@ importers:
       pg: 8.9.0
       typeorm: 0.3.12_pg@8.9.0+ts-node@10.9.1
     devDependencies:
-      '@birthdayresearch/eslint-config': 0.5.0_typescript@4.9.5
+      '@birthdayresearch/eslint-config': 0.5.1_typescript@4.9.5
       '@birthdayresearch/sticky-prettier': 0.5.0
       '@birthdayresearch/sticky-testcontainers': 0.5.0
       '@birthdayresearch/sticky-turbo-jest': 0.5.0_ktwaios2c7v32t7koainjith74
@@ -173,7 +173,7 @@ importers:
 
   packages/smartcontracts:
     specifiers:
-      '@birthdayresearch/eslint-config': ^0.5.0
+      '@birthdayresearch/eslint-config': ^0.5.1
       '@birthdayresearch/sticky-testcontainers': ^0.4.1
       '@birthdayresearch/sticky-turbo-jest': ^0.4.1
       '@birthdayresearch/sticky-typescript': ^0.4.1
@@ -196,7 +196,7 @@ importers:
       mocha: 10.2.0
       ts-node: 10.9.1
     devDependencies:
-      '@birthdayresearch/eslint-config': 0.5.0_typescript@4.9.5
+      '@birthdayresearch/eslint-config': 0.5.1_typescript@4.9.5
       '@birthdayresearch/sticky-testcontainers': 0.4.1
       '@birthdayresearch/sticky-turbo-jest': 0.4.1_ktwaios2c7v32t7koainjith74
       '@birthdayresearch/sticky-typescript': 0.4.1
@@ -1591,8 +1591,8 @@ packages:
   /@bcoe/v8-coverage/0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  /@birthdayresearch/eslint-config/0.5.0_typescript@4.9.5:
-    resolution: {integrity: sha512-F0t367jRebYlsfmG4F0cK6UQUiK4SY+EPya3KJ/b+zrFbv8fJIPVvWgFtOQ+jrMfGz1CNIh+6LB2s49PUac0Ng==}
+  /@birthdayresearch/eslint-config/0.5.1_typescript@4.9.5:
+    resolution: {integrity: sha512-jnLABpvNz2jJUvPaBJkmes9gQtITP3qW0J9l8fmPTJShFaTMC5IrHrtfL4Q2vVMEIC8uruN8NdbZabChCv89Cg==}
     dependencies:
       '@typescript-eslint/eslint-plugin': 5.52.0_6cfvjsbua5ptj65675bqcn6oza
       '@typescript-eslint/parser': 5.52.0_7kw3g6rralp5ps6mg3uyzz6azm
@@ -6218,6 +6218,39 @@ packages:
       - supports-color
     dev: true
 
+  /@waveshq/standard-web/0.43.0_l7fgptqldgy4skvpr6jujnff7m:
+    resolution: {integrity: sha512-lH6ghFBynB2/8JjV1/pn86nIIlFj89z77rK4zZa/UtKj7RuciEL5RMan/rpJP4j5IntPpahDupRk0FpkRtQixw==}
+    dependencies:
+      '@netlify/ipx': 1.3.3
+      '@reduxjs/toolkit': 1.9.3_k4ae6lp43ej6mezo3ztvx6pykq
+      '@types/react': 18.0.28
+      '@types/react-dom': 18.0.11
+      follow-redirects: 1.15.2
+      next: 13.1.6_672uxklweod7ene3nqtsh262ca
+      next-sitemap: 3.1.52_dlcnecpznf2wc36zwuq5m2ie5q
+      nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      react-icons: 4.7.1_react@18.2.0
+      react-redux: 8.0.5_3xleytyzprlgycb2ded54tx72i
+      react-responsive: 9.0.2_react@18.2.0
+      typescript: 4.9.5
+    transitivePeerDependencies:
+      - '@babel/core'
+      - '@next/env'
+      - babel-plugin-macros
+      - bufferutil
+      - debug
+      - encoding
+      - fibers
+      - node-sass
+      - react-native
+      - redux
+      - sass
+      - supports-color
+      - utf-8-validate
+    dev: false
+
   /@waveshq/standard-web/0.43.0_wptn77tesrhurkels5nlmntmae:
     resolution: {integrity: sha512-lH6ghFBynB2/8JjV1/pn86nIIlFj89z77rK4zZa/UtKj7RuciEL5RMan/rpJP4j5IntPpahDupRk0FpkRtQixw==}
     dependencies:
@@ -6251,51 +6284,18 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@waveshq/standard-web/0.43.0_y7mckoxejuvxhjulzmjggad7eu:
-    resolution: {integrity: sha512-lH6ghFBynB2/8JjV1/pn86nIIlFj89z77rK4zZa/UtKj7RuciEL5RMan/rpJP4j5IntPpahDupRk0FpkRtQixw==}
-    dependencies:
-      '@netlify/ipx': 1.3.3
-      '@reduxjs/toolkit': 1.9.3_k4ae6lp43ej6mezo3ztvx6pykq
-      '@types/react': 18.0.28
-      '@types/react-dom': 18.0.11
-      follow-redirects: 1.15.2
-      next: 13.1.6_672uxklweod7ene3nqtsh262ca
-      next-sitemap: 3.1.52_dlcnecpznf2wc36zwuq5m2ie5q
-      nextjs-progressbar: 0.0.16_next@13.1.6+react@18.2.0
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-icons: 4.7.1_react@18.2.0
-      react-redux: 8.0.5_epqzsux5te4oifde32lbaj3ih4
-      react-responsive: 9.0.2_react@18.2.0
-      typescript: 4.9.5
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@next/env'
-      - babel-plugin-macros
-      - bufferutil
-      - debug
-      - encoding
-      - fibers
-      - node-sass
-      - react-native
-      - redux
-      - sass
-      - supports-color
-      - utf-8-validate
-    dev: false
-
   /@waveshq/walletkit-core/0.38.1:
     resolution: {integrity: sha512-ID+Bvfhg62UGU+D9lajqdIhhIXrKFZa+dHgvyAD6C1g41iiOuIozfzw7olwnIO9ooWDvUXrdhvw5YHA5zc6t1Q==}
     dependencies:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui/0.38.1_xam2zbpgy4rmsw26w4nzn54f6u:
+  /@waveshq/walletkit-ui/0.38.1_b6siamfbo7eka2jvurz4cqvo54:
     resolution: {integrity: sha512-39EHkbdPy8/7MQZoVNrdj7J42/KiWQw8Ogbu7MyrogPjBDgd8Krv4rDVI2YIzcVmulbOupAQzPARfbETcTyY+A==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.0_ktwaios2c7v32t7koainjith74
       '@waveshq/standard-defichain-jellyfishsdk': 0.43.0_@types+tar-fs@2.0.1
-      '@waveshq/standard-web': 0.43.0_y7mckoxejuvxhjulzmjggad7eu
+      '@waveshq/standard-web': 0.43.0_l7fgptqldgy4skvpr6jujnff7m
       '@waveshq/standard-web-linter': 0.43.0_e6p36zlotpqtdteaznzfs6stxu
       '@waveshq/walletkit-core': 0.38.1
       bignumber.js: 9.1.1
@@ -16040,7 +16040,7 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-redux/8.0.5_epqzsux5te4oifde32lbaj3ih4:
+  /react-redux/8.0.5_3xleytyzprlgycb2ded54tx72i:
     resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
     peerDependencies:
       '@types/react': ^16.8 || ^17.0 || ^18.0
@@ -16070,7 +16070,6 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-is: 18.2.0
-      redux: 4.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
