@@ -251,35 +251,7 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AmountNotValid });
   });
 
-  it('should verify fund in the wallet address', async () => {
-    // Sends token to the address
-    await defichain.playgroundClient?.rpc.call(
-      'sendtokenstoaddress',
-      [
-        {},
-        {
-          [localAddress]: `10@BTC`,
-        },
-      ],
-      'number',
-    );
-    await defichain.generateBlock();
-
-    const response = await verify({
-      amount: '10',
-      symbol: 'BTC',
-      address: localAddress,
-      ethReceiverAddress: ethWalletAddress,
-      tokenAddress: mwbtcContract.address,
-    });
-
-    expect(response.isValid).toBeTruthy();
-    expect(response.signature).toBeDefined();
-    expect(response.nonce).toBeDefined();
-    expect(response.deadline).toBeDefined();
-  });
-
-  it('should top up UTXO when verified', async () => {
+  it('should verify fund in the wallet address and top up UTXO', async () => {
     const hotWallet = whaleWalletProvider.getHotWallet();
     const hotWalletAddress = await hotWallet.getAddress();
 
@@ -309,6 +281,9 @@ describe('DeFiChain Verify fund Testing', () => {
     });
 
     expect(response.isValid).toBeTruthy();
+    expect(response.signature).toBeDefined();
+    expect(response.nonce).toBeDefined();
+    expect(response.deadline).toBeDefined();
     expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
       new BigNumber('0.0001').toFixed(8),
     );
