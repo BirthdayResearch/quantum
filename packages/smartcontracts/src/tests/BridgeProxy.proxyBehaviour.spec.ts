@@ -2,7 +2,7 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { BridgeV2__factory, InitilaizeV1__factory } from '../generated';
+import { BridgeV2TestNet__factory, InitilaizeV1__factory } from '../generated';
 import { deployContracts } from './testUtils/deployment';
 import { toWei } from './testUtils/mathUtils';
 
@@ -56,23 +56,11 @@ describe('Proxy behaviour', () => {
     // Checking Balance after claiming fund, should be 10
     expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(toWei('10'));
     // ---------------------------END-----Claiming fund on bridge V1-------------------------
-    // Encoded BridgeV2 data
-    const BridgeUpgradeable = await ethers.getContractFactory('BridgeV2');
+    // Encoded BridgeV2TestNet data
+    const BridgeUpgradeable = await ethers.getContractFactory('BridgeV2TestNet');
     const bridgeUpgradeable = await BridgeUpgradeable.deploy();
     await bridgeUpgradeable.deployed();
-    const encodedData = BridgeV2__factory.createInterface().encodeFunctionData('initialize', [
-      // admin address
-      defaultAdminSigner.address,
-      // operational address
-      operationalAdminSigner.address,
-      // relayer address
-      defaultAdminSigner.address,
-      // community wallet address
-      communityAddress,
-      // 0.1%
-      10,
-      // flushReceiveAddress
-      defaultAdminSigner.address,
+    const encodedData = BridgeV2TestNet__factory.createInterface().encodeFunctionData('initialize', [
       // Contract version
       2,
     ]);

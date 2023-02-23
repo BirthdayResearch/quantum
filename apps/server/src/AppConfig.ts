@@ -12,6 +12,7 @@ export function appConfig() {
     },
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
+      transferFee: process.env.ETH_FEE_PERCENTAGE,
       contracts: {
         bridgeProxy: {
           address: process.env.BRIDGE_PROXY_ADDRESS,

@@ -45,41 +45,52 @@ Once approved, user will call the `bridgeToDeFiChain()` function with following 
 
 ### Add supported token
 
-Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_dailyAllowance` for an ERC20 token identified by its `_tokenAddress`. The `_startAllowanceTimeFrom` also represents when this token 'goes live'
-User are not allowed to bridge more than the dailyAllowance per day.
+Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token and ETH identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
 
-For `Instant support`, administrators can set `_startAllowanceTimeFrom` to the current timestamp plus 60 seconds or more if the network is congested when adding a supported token. This will result in immediate support for the token. The additional 60 seconds account for the time required by the network to execute this transaction.
+In case of ETH, address(0) will be used as an address.
+
+`_tokenCap` represent the maximum balance of tokens the contract can hold per `_tokenAddress`
 
 ### Remove supported token
 
-Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function.
-
-### Withdraw ERC20
-
-Only the Admin can call the `withdraw()` function with the token's address and amount.
-
-### Change Daily Allowance
-
-Both the Admin and Operational addresses can change the `_dailyAllowance` (the new daily allowance) and `_newResetTimeStamp` (the timestamp when the token will start being supported) via the `changeDailyAllowance()` function. The changes will only come into effect when the current timestamp has reached the `_newResetTimeStamp`. This new timestamp will have to be at least 24 hours in the future, if not the function will revert with `INVALID_RESET_EPOCH_TIME`
-
-During this 'change in allowance' period, no bridging to DeFiChain will be allowed. However, it is still possible to make additional changes by calling `changeDailyAllowance()` in case mistakes were made.
+Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function. This also sets the `_tokenCap` to `0`.
 
 ### Withdraw
 
-`withdraw()` function when called will withdraw an ERC20 token. Only the address with the Admin role can call this function.
+`withdraw()` function when called will withdraw an ERC20 token and ETH (address == 0x0). Only the address with the Admin role can call this function.
+
+### FlushFund
+
+`flushFund` function to flush the excess funds `(token.balanceOf(Bridge) - tokenCap)` across supported tokens to a hardcoded address (`flushReceiveAddress`) anyone can call this function. This applies to all tokens and ETH.
+
+### Change Flush Receive Address
+
+Both the Admin and Operational addresses can change `flushReceiveAddress`.
+`changeFlushReceiveAddress` function will reset the `flushReceiveAddress` to new address.
 
 ### Change relayer address
 
 Both the Admin and Operational addresses can change `relayerAddress`.
+
 The relayer address will primarily be used for verifying the signature that is signed by the server. The server will need to sign with the corresponding private key of the relayer address.
 
 ### Transaction fee change
 
-Only address with admin role can change `transactionFee`. Initial fee will be set to 0.3%. This means that if the user bridges `X` tokens, he will only bridge 99.7% of X. The other 0.3% will be taken as fees.
+Only addresses with Admin and Operational roles can change `transactionFee`.
+
+Initial fee will be set to 0.1%. This means that if the user bridges `X` tokens, 99.9% of X will be bridged. The other 0.1% will be taken as fees and sent to `communityWallet`.
+
+### Change Tx Fee Address
+
+Only addresses with admin and Operational roles can change `communityWallet`. This is where the tx fees upon bridging will go.
+
+### Change Token Cap
+
+Only addresses with admin and Operational roles can change `tokenCap`.
 
 ### Modify admin and operational address
 
-`grantRole` and `revokeRole` will be used to a grant role to new addresses and revoke the existing addresses role respectively.
+`grantRole` and `revokeRole` will be used to a grant role to new addresses and revoke the existing addresses role respectively. Only Admin address can make these changes.
 
 ## Deployed Smart Contracts on Goerli testnet
 
@@ -110,12 +121,6 @@ To Mint the test tokens and Approve the Bridge Contract devs will have to run a 
 
 MWBTC Contract address: [0xD723D679d1A3b23d0Aafe4C0812f61DDA84fc043](https://goerli.etherscan.io/address/0xd723d679d1a3b23d0aafe4c0812f61dda84fc043)
 
-### WETH
-
-WETH Contract address: [0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6](https://goerli.etherscan.io/address/0xb4fbf271143f4fbf7b91a5ded31805e42b2208d6)
-
-Devs need to call the deposit() and input desired ETH need to wrapped.
-
 ### MUSDT
 
 MUSDT Contract address: [0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF](https://goerli.etherscan.io/address/0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF)
@@ -126,11 +131,11 @@ MUSDC Contract address: [0xB200af2b733B831Fbb3d98b13076BC33F605aD58](https://goe
 
 ### BridgeV1
 
-BridgeV1 Contract address: [0xE029B5156c2e597c72f7c8D279411e1fD9a30126](https://goerli.etherscan.io/address/0xE029B5156c2e597c72f7c8D279411e1fD9a30126)
+BridgeV1 Contract address: [0xB5AA3ba3F4bF825AAF96F1ee9Fa0D6b3702Dc8B6](https://goerli.etherscan.io/address/0xB5AA3ba3F4bF825AAF96F1ee9Fa0D6b3702Dc8B6)
 
 ### BridgeProxy
 
-BridgeProxy Contract address: [0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C](https://goerli.etherscan.io/address/0x93fE70235854e7c97A5db5ddfC6eAAb078e99d3C)
+BridgeProxy Contract address: [0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef](https://goerli.etherscan.io/address/0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef)
 
 ## Fund Bridge ERC20 tokens
 

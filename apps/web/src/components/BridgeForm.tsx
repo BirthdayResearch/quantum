@@ -39,6 +39,7 @@ import {
   ETHEREUM_SYMBOL,
   FEES_INFO,
 } from "../constants";
+import Tooltip from "./commons/Tooltip";
 import Logging from "../api/logging";
 
 function SwitchButton({
@@ -49,7 +50,10 @@ function SwitchButton({
   disabled?: boolean;
 }) {
   return (
-    <div className="my-8 flex flex-row">
+    <Tooltip
+      content="Switch source"
+      containerClass="my-8 flex flex-row rounded"
+    >
       <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
       <button
         type="button"
@@ -68,7 +72,7 @@ function SwitchButton({
         </div>
       </button>
       <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-    </div>
+    </Tooltip>
   );
 }
 

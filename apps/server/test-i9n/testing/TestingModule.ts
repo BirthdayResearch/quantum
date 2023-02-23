@@ -23,6 +23,7 @@ export function buildTestConfig({
   startedHardhatContainer,
   testnet,
   defichain,
+  ethereum,
   startedPostgresContainer,
   usdcAddress,
 }: BuildTestConfigParams) {
@@ -40,6 +41,7 @@ export function buildTestConfig({
     },
     ethereum: {
       rpcUrl: startedHardhatContainer?.rpcUrl ?? '',
+      transferFee: ethereum?.transferFee,
       contracts: {
         bridgeProxy: {
           address: testnet?.bridgeContractAddress ?? '',
@@ -63,6 +65,9 @@ type OptionalBuildTestConfigParams = {
     whaleURL: string;
     key: string;
     network: string;
+  };
+  ethereum: {
+    transferFee: string;
   };
   startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {

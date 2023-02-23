@@ -33,7 +33,7 @@ export default function StepLastClaim({
 
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const tokenAddress = Erc20Tokens[data.to.tokenName].address;
-  const { TXN_KEY } = useBridgeFormStorageKeys();
+  const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
 
   // Prepare write contract for `claimFund` function
   const { config: bridgeConfig } = usePrepareContractWrite({
@@ -80,6 +80,7 @@ export default function StepLastClaim({
   useEffect(() => {
     if (isSuccess) {
       setStorageItem(TXN_KEY, null);
+      setStorageItem(DFC_ADDR_KEY, null);
     }
   }, [isSuccess]);
 

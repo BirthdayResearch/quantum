@@ -3,9 +3,9 @@ import Image from "next/image";
 import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { MdCheckCircle } from "react-icons/md";
-import { FiChevronDown, FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiChevronDown } from "react-icons/fi";
 import { Strategy } from "@floating-ui/react-dom";
-import { SelectionType, NetworkOptionsI, TokensI } from "types";
+import { NetworkOptionsI, SelectionType, TokensI } from "types";
 
 interface SelectorI {
   disabled?: boolean;
@@ -170,7 +170,8 @@ export default function InputSelector({
                 disabled && "cursor-default",
                 type === SelectionType.Network ? "p-px pr-0" : "p-px",
                 open ? "bg-gradient-2 pr-px" : "bg-dark-200",
-                roundedBorderStyle
+                roundedBorderStyle,
+                !disabled && "hover:bg-dark-500 hover:pr-px"
               )}
             >
               <div

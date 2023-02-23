@@ -11,9 +11,16 @@ const ADMIN_ADDRESS = '';
 const OPERATIONAL_ADDRESS = '';
 // When deploying to MAINNET to `RELAYER_ADDRESS` needed
 const RELAYER_ADDRESS = '';
+// When deploying to MAINNET to `TX_FEE_ADDRESS` needed
+const TX_FEE_ADDRESS = '';
+// When deploying to MAINNET to `FLUSH_ADDRESS` needed
+const FLUSH_ADDRESS = '';
 
 // Run this script to deploy all contracts on mainnet.
-// npx hardhat run --network hardhat ./scripts/mainnetContractsDeployment.ts
+// npx hardhat run --network mainnet ./scripts/mainnetContractsDeployment.ts
+
+// Run this script to deploy all contracts on Goerli testnet.
+// npx hardhat run --network goerli ./scripts/mainnetContractsDeployment.ts
 
 async function main() {
   const bridgeV1 = await bridgeImplementation();
@@ -22,8 +29,8 @@ async function main() {
     operationalAddress: OPERATIONAL_ADDRESS,
     relayerAddress: RELAYER_ADDRESS,
     bridgeV1Address: bridgeV1.address,
-    txFeeAddress: ADMIN_ADDRESS,
-    flushReceiveAddress: ADMIN_ADDRESS,
+    txFeeAddress: TX_FEE_ADDRESS,
+    flushReceiveAddress: FLUSH_ADDRESS,
   });
 }
 
