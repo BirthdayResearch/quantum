@@ -15,7 +15,7 @@ import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 
-describe.only('Sign Claims Tests', () => {
+describe('Sign Claims Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
   let testing: BridgeServerTestingApp;
