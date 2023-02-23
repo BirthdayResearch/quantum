@@ -54,7 +54,7 @@
     "cache-manager": "^5.1.7",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
-    "ethers": "^5.7.2",
+    "ethers": "^6.0.7",
     "joi": "^17.8.1",
     "nestjs-pino": "^3.1.2",
     "pg": "^8.9.0",
