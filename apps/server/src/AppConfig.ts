@@ -23,7 +23,7 @@ export function appConfig() {
         [SupportedEVMTokenSymbols.USDC]: {
           address: process.env.USDC_ADDRESS,
         },
-        [SupportedEVMTokenSymbols.WBTC]: {
+        [SupportedEVMTokenSymbols.BTC]: {
           address: process.env.WBTC_ADDRESS,
         },
       },
@@ -49,9 +49,10 @@ export const ENV_VALIDATION_SCHEMA = Joi.object({
 export enum SupportedEVMTokenSymbols {
   USDC = 'USDC',
   USDT = 'USDT',
-  WBTC = 'WBTC',
+  BTC = 'BTC',
   ETH = 'ETH',
 }
+
 export enum SupportedDFCTokenSymbols {
   USDC = 'USDC',
   USDT = 'USDT',
