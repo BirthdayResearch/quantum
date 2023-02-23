@@ -3,18 +3,18 @@ import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
-import { shift, autoUpdate, size, useFloating } from "@floating-ui/react-dom";
+import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
 import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { getStorageItem, setStorageItem } from "@utils/localStorage";
 import {
+  AddressDetails,
   Network,
+  NetworkName,
+  NetworkOptionsI,
   SelectionType,
   TokensI,
-  NetworkOptionsI,
-  NetworkName,
   UnconfirmedTxnI,
-  AddressDetails,
 } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
@@ -32,9 +32,10 @@ import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
-  FEES_INFO,
   ETHEREUM_SYMBOL,
+  FEES_INFO,
 } from "../constants";
+import Tooltip from "./commons/Tooltip";
 
 function SwitchButton({
   onClick,
@@ -44,7 +45,10 @@ function SwitchButton({
   disabled?: boolean;
 }) {
   return (
-    <div className="my-8 flex flex-row">
+    <Tooltip
+      content="Switch source"
+      containerClass="my-8 flex flex-row rounded"
+    >
       <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
       <button
         type="button"
@@ -63,7 +67,7 @@ function SwitchButton({
         </div>
       </button>
       <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-    </div>
+    </Tooltip>
   );
 }
 
