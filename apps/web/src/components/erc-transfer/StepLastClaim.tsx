@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { utils } from "ethers";
@@ -38,7 +39,7 @@ export default function StepLastClaim({
 
   // Prepare write contract for `claimFund` function
   const [fee] = useTransferFee(data.to.amount.toString());
-  const amountLessFee = data.to.amount.minus(fee);
+  const amountLessFee = BigNumber.max(data.to.amount.minus(fee), 0);
   const { config: bridgeConfig } = usePrepareContractWrite({
     address: BridgeV1.address,
     abi: BridgeV1.abi,

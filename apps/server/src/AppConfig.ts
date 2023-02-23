@@ -9,6 +9,7 @@ export function appConfig() {
       key: process.env.DEFICHAIN_PRIVATE_KEY,
       whaleURL: process.env.DEFICHAIN_WHALE_URL,
       network: process.env.DEFICHAIN_NETWORK,
+      fee: process.env.DFC_FEE_PERCENTAGE,
     },
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
@@ -27,9 +28,8 @@ export function appConfig() {
         },
       },
       ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
+      fee: process.env.ETH_FEE_PERCENTAGE,
     },
-    evmToDfcFee: process.env.EVM_TO_DFC_FEE_PERCENTAGE,
-    dfcToEvmFee: process.env.DFC_TO_EVM_FEE_PERCENTAGE,
   };
 }
 

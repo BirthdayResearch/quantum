@@ -76,8 +76,8 @@ export class WhaleWalletService {
       }
 
       // Successful verification, proceed to sign the claim
-      const fee = new BigNumber(verify.amount).multipliedBy(this.configService.getOrThrow('dfcToEvmFee'));
-      const amountLessFee = verify.amount.minus(fee).toString();
+      const fee = new BigNumber(verify.amount).multipliedBy(this.configService.getOrThrow('defichain.fee'));
+      const amountLessFee = BigNumber.max(verify.amount.minus(fee), 0).toString();
       const claim = await this.evmTransactionService.signClaim({
         receiverAddress: verify.ethReceiverAddress,
         tokenAddress: verify.tokenAddress,
