@@ -6,7 +6,7 @@ import { BridgeV2TestNet__factory, InitilaizeV1__factory } from '../generated';
 import { deployContracts } from './testUtils/deployment';
 import { toWei } from './testUtils/mathUtils';
 
-describe.only('Proxy behaviour', () => {
+describe('Proxy behaviour', () => {
   const eip712Types = {
     CLAIM: [
       { name: 'to', type: 'address' },
