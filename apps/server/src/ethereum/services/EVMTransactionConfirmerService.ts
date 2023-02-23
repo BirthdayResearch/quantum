@@ -5,7 +5,7 @@ import { EthereumTransactionStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, Contract, ethers } from 'ethers';
-import { BridgeV2__factory, ERC20__factory } from 'smartcontracts';
+import { BridgeV2TestNet__factory, ERC20__factory } from 'smartcontracts';
 
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
@@ -33,7 +33,7 @@ export class EVMTransactionConfirmerService {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
     this.contract = new ethers.Contract(
       this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address'),
-      BridgeV2__factory.abi,
+      BridgeV2TestNet__factory.abi,
       this.ethersRpcProvider,
     );
     this.logger = new Logger(EVMTransactionConfirmerService.name);
@@ -311,7 +311,7 @@ export class EVMTransactionConfirmerService {
 }
 
 const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
-  const iface = new ethers.utils.Interface(BridgeV2__factory.abi);
+  const iface = new ethers.utils.Interface(BridgeV2TestNet__factory.abi);
   const decodedData = iface.parseTransaction({ data: txDetail.data, value: txDetail.value });
   const fragment = iface.getFunction(decodedData.name);
   const params = decodedData.args.reduce((res, param, i) => {
