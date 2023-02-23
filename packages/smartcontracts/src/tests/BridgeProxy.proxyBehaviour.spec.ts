@@ -2,11 +2,11 @@ import { loadFixture } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { BridgeV2TestNet__factory, InitilaizeV1__factory } from '../generated';
+import { BridgeV2__factory, InitilaizeV1__factory } from '../generated';
 import { deployContracts } from './testUtils/deployment';
 import { toWei } from './testUtils/mathUtils';
 
-describe('Proxy behaviour', () => {
+describe.only('Proxy behaviour', () => {
   const eip712Types = {
     CLAIM: [
       { name: 'to', type: 'address' },
@@ -60,7 +60,7 @@ describe('Proxy behaviour', () => {
     const BridgeUpgradeable = await ethers.getContractFactory('BridgeV2TestNet');
     const bridgeUpgradeable = await BridgeUpgradeable.deploy();
     await bridgeUpgradeable.deployed();
-    const encodedData = BridgeV2TestNet__factory.createInterface().encodeFunctionData('initialize', [
+    const encodedData = BridgeV2__factory.createInterface().encodeFunctionData('initialize', [
       // Contract version
       2,
     ]);
