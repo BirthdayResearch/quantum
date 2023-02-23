@@ -62,7 +62,7 @@ describe('DeFiChain Verify fund Testing', () => {
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
-          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC, transferFee: '0.003' },
           startedHardhatContainer,
           testnet: {
             bridgeContractAddress: bridgeContract.address,

@@ -37,6 +37,7 @@ export function buildTestConfig({
       key: defichain?.key ?? '',
       whaleURL: defichain?.whaleURL ?? '',
       network: defichain?.network ?? EnvironmentNetwork.LocalPlayground,
+      transferFee: defichain?.transferFee,
     },
     ethereum: {
       rpcUrl: startedHardhatContainer?.rpcUrl ?? '',
@@ -63,6 +64,7 @@ type OptionalBuildTestConfigParams = {
     whaleURL: string;
     key: string;
     network: string;
+    transferFee: string;
   };
   startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {
