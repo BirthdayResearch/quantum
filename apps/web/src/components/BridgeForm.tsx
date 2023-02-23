@@ -130,6 +130,14 @@ export default function BridgeForm({
     if (isSendingToDFC && new BigNumber(value).gt(maxAmount.toFixed(8))) {
       err = "Insufficient Funds";
     }
+    if (
+      isSendingToDFC &&
+      new BigNumber(value).lt(
+        new BigNumber(1).dividedBy(new BigNumber(10).pow(8))
+      )
+    ) {
+      err = "Invalid Amount";
+    }
     setAmountErr(err);
   };
 
