@@ -74,7 +74,7 @@ export class EVMTransactionConfirmerService {
     }
 
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-    const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
+    const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
     const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
       where: {
         transactionHash,
