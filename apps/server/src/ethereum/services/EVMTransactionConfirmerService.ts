@@ -180,6 +180,7 @@ export class EVMTransactionConfirmerService {
           claimNonce: nonce.toString(),
           claimDeadline: deadline.toString(),
           claimSignature: signature,
+          ethReceiverAddress: receiverAddress,
         },
       });
 

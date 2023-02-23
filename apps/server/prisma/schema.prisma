@@ -21,10 +21,11 @@ model DeFiChainAddressIndex {
   claimNonce           String?
   claimDeadline        String?
   claimSignature       String?
-  claimTransactionHash String?
   createdAt            DateTime  @default(now())
   updatedAt            DateTime? @updatedAt
   hotWalletAddress     String
+  ethReceiverAddress   String?
+
 
   @@unique([hotWalletAddress, index])
 }
