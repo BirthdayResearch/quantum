@@ -75,6 +75,7 @@ type OptionalBuildTestConfigParams = {
     key: string;
     network: string;
     transferFee: string;
+    dustUTXO: string;
   };
   ethereum: {
     transferFee: string;

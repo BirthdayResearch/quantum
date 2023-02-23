@@ -12,6 +12,7 @@ import { PrismaService } from '../../PrismaService';
 import { VerifyObject } from '../model/VerifyDto';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
+import { SendService } from './SendService';
 
 @Injectable()
 export class WhaleWalletService {
@@ -23,6 +24,7 @@ export class WhaleWalletService {
     private readonly evmTransactionService: EVMTransactionConfirmerService,
     private configService: ConfigService,
     private prisma: PrismaService,
+    private readonly sendService: SendService,
   ) {
     this.logger = new Logger(WhaleWalletService.name);
   }
@@ -62,6 +64,7 @@ export class WhaleWalletService {
         return { isValid: false, statusCode: CustomErrorCodes.AddressNotOwned };
       }
 
+      // TODO: Add support for DFI (UTXO)
       const tokens = await wallet.client.address.listToken(address);
       const token = tokens.find((t) => t.symbol === verify.symbol.toString());
 
@@ -78,12 +81,15 @@ export class WhaleWalletService {
       // Successful verification, proceed to sign the claim
       const fee = new BigNumber(verify.amount).multipliedBy(this.configService.getOrThrow('defichain.transferFee'));
       const amountLessFee = BigNumber.max(verify.amount.minus(fee), 0).toString();
+
       const claim = await this.evmTransactionService.signClaim({
         receiverAddress: verify.ethReceiverAddress,
         tokenAddress: verify.tokenAddress,
         amount: amountLessFee,
         uniqueDfcAddress: verify.address,
       });
+
+      await this.fundUTXO(verify.address);
 
       this.logger.log(
         `[Verify SUCCESS] ${verify.amount} ${fee.toString()} ${amountLessFee} ${verify.symbol} ${verify.address} ${
@@ -217,6 +223,22 @@ export class WhaleWalletService {
   private verifyValidAddress(address: string, network: EnvironmentNetwork): { isAddressValid: boolean } {
     const decodedAddress = fromAddress(address, getJellyfishNetwork(network).name);
     return { isAddressValid: decodedAddress !== undefined };
+  }
+
+  // This function will top up UTXO on a successful signing of DFC -> EVM claim
+  private async fundUTXO(toAddress: string): Promise<void> {
+    try {
+      const dustUTXO = this.configService.get('defichain.dustUTXO', 0.0001);
+      this.logger.log(`[Sending UTXO] to ${toAddress}...`);
+      const sendTransactionHash = await this.sendService.send(toAddress, {
+        symbol: 'DFI',
+        id: '0',
+        amount: new BigNumber(dustUTXO),
+      });
+      this.logger.log(`[Sent UTXO] to ${toAddress} ${sendTransactionHash}`);
+    } catch (e) {
+      this.logger.log(`[Sent UTXO] Failed to send ${toAddress}. Check UTXO balance.`);
+    }
   }
 }
 

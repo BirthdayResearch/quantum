@@ -1,5 +1,6 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
+import BigNumber from 'bignumber.js';
 import {
   BridgeV1,
   HardhatNetwork,
@@ -62,7 +63,12 @@ describe('DeFiChain Verify fund Testing', () => {
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
-          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC, transferFee: '0.003' },
+          defichain: {
+            whaleURL,
+            key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC,
+            transferFee: '0.003',
+            dustUTXO: '0.0001',
+          },
           startedHardhatContainer,
           testnet: {
             bridgeContractAddress: bridgeContract.address,
@@ -271,5 +277,40 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response.signature).toBeDefined();
     expect(response.nonce).toBeDefined();
     expect(response.deadline).toBeDefined();
+  });
+
+  it('should top up UTXO when verified', async () => {
+    const hotWallet = whaleWalletProvider.getHotWallet();
+    const hotWalletAddress = await hotWallet.getAddress();
+
+    // Send UTXO to Hot Wallet
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
+    await defichain.generateBlock();
+
+    // Sends token to the address
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [localAddress]: `10@BTC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock();
+
+    const response = await verify({
+      amount: '10',
+      symbol: 'BTC',
+      address: localAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+
+    expect(response.isValid).toBeTruthy();
+    expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
+      new BigNumber('0.0001').toFixed(8),
+    );
   });
 });
