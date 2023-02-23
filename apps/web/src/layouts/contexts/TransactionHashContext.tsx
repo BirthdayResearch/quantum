@@ -69,7 +69,13 @@ export function TransactionHashProvider({
     setConfirmedTxnHashKey(confirmedTxnHashKeyStorage);
     setRevertedTxnHashKey(revertedTxnHashKeyStorage);
     setUnsentFundTxnHashKey(unsentFundTxnHashKeyStorage);
-  }, [networkEnv]);
+  }, [
+    networkEnv,
+    CONFIRMED_TXN_HASH_KEY,
+    UNCONFIRMED_TXN_HASH_KEY,
+    REVERTED_TXN_HASH_KEY,
+    UNSENT_FUND_TXN_HASH_KEY,
+  ]);
 
   const context: TransactionHashI = useMemo(() => {
     const setTxnHash = (key: TransactionHashType, newTxnHash: string) => {

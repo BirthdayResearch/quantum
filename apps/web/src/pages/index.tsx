@@ -76,7 +76,12 @@ function Home() {
               isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
             />
           )}
-          <BridgeForm hasPendingTxn={txnHash.unconfirmed !== undefined} />
+          <BridgeForm
+            hasPendingTxn={
+              txnHash.unconfirmed !== undefined ||
+              txnHash.unsentFund !== undefined
+            }
+          />
         </div>
       </div>
       <div className="md:hidden mt-6 mb-12 mx-6">
