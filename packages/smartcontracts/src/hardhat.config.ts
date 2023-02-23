@@ -16,7 +16,7 @@ interface DeployContractArgs {
 }
 
 require('dotenv').config({
-  path: './.env',
+  path: '.env',
 });
 
 task('deployContract', 'Deploys a contract based on the name of the contract')

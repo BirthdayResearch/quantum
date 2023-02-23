@@ -82,6 +82,7 @@ export class WhaleWalletService {
         receiverAddress: verify.ethReceiverAddress,
         tokenAddress: verify.tokenAddress,
         amount: amountLessFee,
+        uniqueDfcAddress: verify.address,
       });
 
       this.logger.log(
@@ -108,7 +109,7 @@ export class WhaleWalletService {
   async generateAddress(
     refundAddress: string,
     network: EnvironmentNetwork,
-  ): Promise<Omit<DeFiChainAddressIndex, 'id' | 'index'>> {
+  ): Promise<Pick<DeFiChainAddressIndex, 'address' | 'createdAt' | 'refundAddress'>> {
     try {
       this.logger.log(`[GA] ${refundAddress}`);
 
@@ -155,7 +156,9 @@ export class WhaleWalletService {
     }
   }
 
-  async getAddressDetails(address: string): Promise<Omit<DeFiChainAddressIndex, 'id' | 'index'>> {
+  async getAddressDetails(
+    address: string,
+  ): Promise<Pick<DeFiChainAddressIndex, 'address' | 'createdAt' | 'refundAddress'>> {
     try {
       const data = await this.prisma.deFiChainAddressIndex.findFirst({
         where: {
