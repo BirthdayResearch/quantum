@@ -8,7 +8,6 @@ export async function bridgeImplementation(): Promise<BridgeV1> {
   const BridgeV1Contract = await ethers.getContractFactory('BridgeV1');
   const bridgeV1 = await BridgeV1Contract.deploy();
   await bridgeV1.deployed();
-  console.log('test');
   console.log('Bridge V1 address is ', bridgeV1.address);
   if (chainId !== 1337) {
     console.log(
