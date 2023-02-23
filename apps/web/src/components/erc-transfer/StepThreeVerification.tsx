@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import UtilityButton from "@components/commons/UtilityButton";
@@ -11,12 +12,13 @@ import { SignedClaim, UnconfirmedTxnI } from "types";
 import { HttpStatusCode } from "axios";
 import { useContractContext } from "@contexts/ContractContext";
 import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
+import useTimeout from "@hooks/useSetTimeout";
 import { DISCLAIMER_MESSAGE } from "../../constants";
 
 enum ButtonLabel {
   Validating = "Verifying",
   Validated = "Verified",
-  Rejected = "Rejected",
+  Rejected = "Try again",
 }
 
 enum TitleLabel {
@@ -45,12 +47,18 @@ export default function StepThreeVerification({
   const [title, setTitle] = useState<TitleLabel | RejectedLabelType>(
     TitleLabel.Validating
   );
+
   const contentLabelRejected = (
     <span>
-      <span>Please check our {/* TODO insert link once available */}</span>
-      <button type="button" onClick={() => {}} className="underline">
+      <span>Please check our </span>
+      <Link
+        href="https://birthdayresearch.notion.site/Error-Codes-d5c0bfd68359466e88223791e69adb4f"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="underline"
+      >
         Error guide
-      </button>
+      </Link>
       <span> and try again</span>
     </span>
   );
@@ -66,6 +74,11 @@ export default function StepThreeVerification({
   const txn = getStorageItem<UnconfirmedTxnI>(TXN_KEY);
   const [validationSuccess, setValidationSuccess] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
+  const [isThrottled, setIsThrottled] = useState(false);
+
+  const [throttledTimeOut] = useTimeout(() => {
+    setIsThrottled(false);
+  }, 60000);
 
   const triggerVerify = useCallback(async () => {
     if (
@@ -107,6 +120,8 @@ export default function StepThreeVerification({
         if (e.data?.statusCode === HttpStatusCode.TooManyRequests) {
           setTitle(TitleLabel.ThrottleLimit);
           setContent(ContentLabel.ThrottleLimit);
+          setIsThrottled(true);
+          throttledTimeOut();
         } else {
           setTitle(TitleLabel.Rejected);
           setContent(contentLabelRejected);
@@ -145,7 +160,7 @@ export default function StepThreeVerification({
           <UtilityButton
             label={buttonLabel}
             isLoading={isValidating}
-            disabled={isValidating || validationSuccess}
+            disabled={isValidating || validationSuccess || isThrottled}
             withRefreshIcon={!validationSuccess && !isValidating}
             onClick={() => {
               setTitle(TitleLabel.Validating);

@@ -81,12 +81,12 @@ export default function useWriteBridgeToDeFiChain({
         Erc20Tokens[tokenName].address,
         sendingFromETH
           ? 0 // ETH amount is set inside overrides' `value` field
-          : utils.parseUnits(transferAmount.toString(), tokenDecimals),
+          : utils.parseUnits(transferAmount.toFixed(), tokenDecimals),
       ],
       ...(sendingFromETH
         ? {
             overrides: {
-              value: ethers.utils.parseEther(transferAmount.toString()),
+              value: ethers.utils.parseEther(transferAmount.toFixed()),
             },
           }
         : {}),

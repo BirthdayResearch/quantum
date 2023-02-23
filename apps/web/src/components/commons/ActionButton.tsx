@@ -57,10 +57,7 @@ export default function ActionButton({
         />
       )}
       {isRefresh && (
-        <FiRefreshCw
-          size={16}
-          className="text-dark-100 ml-2 hidden lg:inline-block"
-        />
+        <FiRefreshCw size={16} className="text-dark-100 ml-2 inline-block" />
       )}
     </button>
   );

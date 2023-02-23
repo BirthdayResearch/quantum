@@ -2,16 +2,10 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresear
 import { fromAddress } from '@defichain/jellyfish-address';
 
 import { PrismaService } from '../../src/PrismaService';
+import { sleep } from '../helper/sleep';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
-
-const sleep = (time: number) =>
-  new Promise((resolve) => {
-    setTimeout(() => {
-      resolve('');
-    }, time);
-  });
 
 describe('DeFiChain Address Integration Testing', () => {
   // Tests are slower because it's running 3 containers at the same time

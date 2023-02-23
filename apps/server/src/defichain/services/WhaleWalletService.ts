@@ -1,9 +1,10 @@
 import { fromAddress } from '@defichain/jellyfish-address';
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { DeFiChainAddressIndex } from '@prisma/client';
 import { EnvironmentNetwork, getJellyfishNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 
+import { SupportedDFCTokenSymbols } from '../../AppConfig';
 import { CustomErrorCodes } from '../../CustomErrorCodes';
 import { EVMTransactionConfirmerService } from '../../ethereum/services/EVMTransactionConfirmerService';
 import { PrismaService } from '../../PrismaService';
@@ -13,14 +14,20 @@ import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 
 @Injectable()
 export class WhaleWalletService {
+  private readonly logger: Logger;
+
   constructor(
     private readonly whaleWalletProvider: WhaleWalletProvider,
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly evmTransactionService: EVMTransactionConfirmerService,
     private prisma: PrismaService,
-  ) {}
+  ) {
+    this.logger = new Logger(WhaleWalletService.name);
+  }
 
   async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
+    this.logger.log(`[Verify] ${verify.amount} ${verify.symbol} ${verify.address}`);
+
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
     if (!isAddressValid) {
@@ -73,6 +80,10 @@ export class WhaleWalletService {
         amount: verify.amount.toString(),
       });
 
+      this.logger.log(
+        `[Verify SUCCESS] ${verify.amount} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`,
+      );
+
       return { isValid: true, signature: claim.signature, nonce: claim.nonce, deadline: claim.deadline };
     } catch (error) {
       throw new HttpException(
@@ -93,6 +104,8 @@ export class WhaleWalletService {
     network: EnvironmentNetwork,
   ): Promise<Omit<DeFiChainAddressIndex, 'id' | 'index'>> {
     try {
+      this.logger.log(`[GA] ${refundAddress}`);
+
       const decodedAddress = fromAddress(refundAddress, this.clientProvider.remapNetwork(network));
       if (decodedAddress === undefined) {
         throw new BadRequestException(`Invalid refund address for DeFiChain ${network}`);
@@ -111,6 +124,8 @@ export class WhaleWalletService {
           refundAddress,
         },
       });
+
+      this.logger.log(`[GA SUCCESS] ${refundAddress} ${data.address} ${nextIndex}`);
       return {
         address: data.address,
         createdAt: data.createdAt,
@@ -163,6 +178,26 @@ export class WhaleWalletService {
         },
       );
     }
+  }
+
+  async getBalance(tokenSymbol: SupportedDFCTokenSymbols): Promise<string> {
+    if (!SupportedDFCTokenSymbols[tokenSymbol]) {
+      throw new BadRequestException(`Token: "${tokenSymbol}" is not supported`);
+    }
+    const hotWallet = await this.whaleWalletProvider.getHotWallet();
+    const hotWalletAddress = await hotWallet.getAddress();
+
+    if (tokenSymbol === SupportedDFCTokenSymbols.DFI) {
+      return hotWallet.client.address.getBalance(hotWalletAddress);
+    }
+
+    const tokens = await hotWallet.client.address.listToken(hotWalletAddress);
+    const token = tokens.find((t) => t.symbol === SupportedDFCTokenSymbols[tokenSymbol]);
+
+    if (token === undefined) {
+      return '0';
+    }
+    return token.amount;
   }
 
   private verifyValidAddress(address: string, network: EnvironmentNetwork): { isAddressValid: boolean } {
