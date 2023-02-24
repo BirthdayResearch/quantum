@@ -23,8 +23,11 @@ export function buildTestConfig({
   startedHardhatContainer,
   testnet,
   defichain,
+  ethereum,
   startedPostgresContainer,
   usdcAddress,
+  usdtAddress,
+  wbtcAddress,
 }: BuildTestConfigParams) {
   if (startedPostgresContainer === undefined) {
     throw Error('Must pass in StartedPostgresContainer');
@@ -37,15 +40,23 @@ export function buildTestConfig({
       key: defichain?.key ?? '',
       whaleURL: defichain?.whaleURL ?? '',
       network: defichain?.network ?? EnvironmentNetwork.LocalPlayground,
+      transferFee: defichain?.transferFee,
     },
     ethereum: {
       rpcUrl: startedHardhatContainer?.rpcUrl ?? '',
+      transferFee: ethereum?.transferFee,
       contracts: {
         bridgeProxy: {
           address: testnet?.bridgeContractAddress ?? '',
         },
         USDC: {
           address: usdcAddress,
+        },
+        USDT: {
+          address: usdtAddress,
+        },
+        WBTC: {
+          address: wbtcAddress,
         },
       },
       ethWalletPrivKey: testnet?.ethWalletPrivKey,
@@ -63,6 +74,11 @@ type OptionalBuildTestConfigParams = {
     whaleURL: string;
     key: string;
     network: string;
+    transferFee: string;
+    dustUTXO: string;
+  };
+  ethereum: {
+    transferFee: string;
   };
   startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {
@@ -70,4 +86,6 @@ type OptionalBuildTestConfigParams = {
     ethWalletPrivKey: string;
   };
   usdcAddress: string;
+  usdtAddress: string;
+  wbtcAddress: string;
 };

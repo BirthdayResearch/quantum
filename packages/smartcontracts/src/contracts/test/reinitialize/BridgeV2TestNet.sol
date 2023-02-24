@@ -1,15 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.13;
-import '@openzeppelin/contracts/token/ERC20/IERC20.sol';
-import '@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol';
 import '@openzeppelin/contracts-upgradeable/utils/cryptography/EIP712Upgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/cryptography/ECDSAUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
-import '@openzeppelin/contracts/utils/structs/EnumerableSet.sol';
-import '@openzeppelin/contracts/utils/Strings.sol';
-import 'hardhat/console.sol';
-
+import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 /** @notice @dev  
 /* This error occurs when incoorect nonce provided
 */
@@ -70,15 +66,16 @@ error AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
  */
 error MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
 
-contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
-    using EnumerableSet for EnumerableSet.AddressSet;
+contract BridgeV2TestNet is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
+    using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
 
     bytes32 constant DATA_TYPE_HASH =
         keccak256('CLAIM(address to,uint256 amount,uint256 nonce,uint256 deadline,address tokenAddress)');
 
     bytes32 public constant OPERATIONAL_ROLE = keccak256('OPERATIONAL_ROLE');
 
-    string public constant name = 'QUANTUM_BRIDGE';
+    string public constant NAME = 'QUANTUM_BRIDGE';
 
     address public constant ETH = address(0);
 
@@ -86,19 +83,16 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     mapping(address => uint256) public eoaAddressToNonce;
 
     // Enumerable set of supportedTokens
-    EnumerableSet.AddressSet internal supportedTokens;
+    EnumerableSetUpgradeable.AddressSet internal supportedTokens;
 
     address public relayerAddress;
     // Mapping to track the maximum balance of tokens the contract can hold per token address.
     mapping(address => uint256) public tokenCap;
 
-    // Contract version
-    string public version;
     // Transaction fee when bridging from EVM to DeFiChain. Based on dps (e.g 1% == 100dps)
     uint256 public transactionFee;
     // Community wallet to send tx fees to
     address public communityWallet;
-
     // Address to receive the flush
     address public flushReceiveAddress;
 
@@ -192,38 +186,26 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
 
     /**
      * @notice Emitted when ETH is received via receive external payable
+     * @param sender The sender of ETH
      * @param ethAmount The amount of ETH sent to the smart contract
      */
     event ETH_RECEIVED_VIA_RECEIVE_FUNCTION(address indexed sender, uint256 indexed ethAmount);
+
+    /**
+     * constructor to disable initalization of implementation contract
+     */
+    constructor() {
+        _disableInitializers();
+    }
 
     function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     /**
      * @notice To initialize this contract (No constructor as part of the proxy pattery )
-     * @param _initialAdmin Initial admin address of this contract
-     * @param _initialOperational Initial operational address of this contract
-     * @param _relayerAddress Relayer address for signature
-     * @param _communityWallet Community address for tx fees
-     * @param _fee Fee charged on each transcation (initial fee: 0.3%)
+     * @param _version Contract's version
      */
-    function initialize(
-        address _initialAdmin,
-        address _initialOperational,
-        address _relayerAddress,
-        address _communityWallet,
-        uint256 _fee,
-        address _flushReceiveAddress,
-        uint8 _version
-    ) external reinitializer(_version) {
-        __UUPSUpgradeable_init();
-        __EIP712_init(name, Strings.toString(_version));
-        _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
-        _grantRole(OPERATIONAL_ROLE, _initialOperational);
-        version = Strings.toString(_version);
-        communityWallet = _communityWallet;
-        relayerAddress = _relayerAddress;
-        transactionFee = _fee;
-        flushReceiveAddress = _flushReceiveAddress;
+    function initialize(uint8 _version) external reinitializer(_version) {
+        __EIP712_init(NAME, StringsUpgradeable.toString(_version));
     }
 
     /**
@@ -251,10 +233,10 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (ECDSAUpgradeable.recover(msg_hash, signature) != relayerAddress) revert FAKE_SIGNATURE();
         eoaAddressToNonce[_to]++;
         if (_tokenAddress == ETH) {
-            (bool sent, ) = msg.sender.call{value: _amount}('');
+            (bool sent, ) = _to.call{value: _amount}('');
             if (!sent) revert ETH_TRANSFER_FAILED();
         } else {
-            IERC20(_tokenAddress).transfer(_to, _amount);
+            IERC20Upgradeable(_tokenAddress).safeTransfer(_to, _amount);
         }
         emit CLAIM_FUND(_tokenAddress, _to, _amount);
     }
@@ -287,8 +269,8 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
             (bool sent, ) = communityWallet.call{value: netTxFee}('');
             if (!sent) revert ETH_TRANSFER_FAILED();
         } else {
-            IERC20(_tokenAddress).transferFrom(msg.sender, address(this), netAmountInWei);
-            IERC20(_tokenAddress).transferFrom(msg.sender, communityWallet, netTxFee);
+            IERC20Upgradeable(_tokenAddress).safeTransferFrom(msg.sender, address(this), netAmountInWei);
+            IERC20Upgradeable(_tokenAddress).safeTransferFrom(msg.sender, communityWallet, netTxFee);
         }
         emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmountInWei, block.timestamp);
     }
@@ -327,7 +309,7 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (_tokenAddress == ETH) {
             (bool sent, ) = msg.sender.call{value: amount}('');
             if (!sent) revert ETH_TRANSFER_FAILED();
-        } else IERC20(_tokenAddress).transfer(msg.sender, amount);
+        } else IERC20Upgradeable(_tokenAddress).safeTransfer(msg.sender, amount);
         emit WITHDRAWAL_BY_OWNER(msg.sender, _tokenAddress, amount);
     }
 
@@ -344,9 +326,9 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
                     (bool sent, ) = flushReceiveAddress.call{value: amountToFlush}('');
                     if (!sent) revert ETH_TRANSFER_FAILED();
                 }
-            } else if (IERC20(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
-                uint256 amountToFlush = IERC20(supToken).balanceOf(address(this)) - tokenCap[supToken];
-                IERC20(supToken).transfer(flushReceiveAddress, amountToFlush);
+            } else if (IERC20Upgradeable(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
+                uint256 amountToFlush = IERC20Upgradeable(supToken).balanceOf(address(this)) - tokenCap[supToken];
+                IERC20Upgradeable(supToken).safeTransfer(flushReceiveAddress, amountToFlush);
             }
         }
         emit FLUSH_FUND();
@@ -421,8 +403,15 @@ contract BridgeV2 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice to check whether a token is supported
      */
-    function isSupported(address _tokenAddress) public view returns (bool) {
+    function isSupported(address _tokenAddress) external view returns (bool) {
         return supportedTokens.contains(_tokenAddress);
+    }
+
+    /**
+     * @notice To get the current version of the contract
+     */
+    function version() external view returns (string memory) {
+        return StringsUpgradeable.toString(_getInitializedVersion());
     }
 
     /**

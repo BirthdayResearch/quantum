@@ -14,7 +14,7 @@ export const getDTokenDetailsByWToken = (
   switch (network) {
     case EnvironmentNetwork.RemotePlayground:
       wTokenToDTokenMap = {
-        MWETH: {
+        ETH: {
           id: '2',
           symbol: 'ETH',
         },
@@ -34,7 +34,7 @@ export const getDTokenDetailsByWToken = (
       break;
     case EnvironmentNetwork.LocalPlayground:
       wTokenToDTokenMap = {
-        MWETH: {
+        ETH: {
           id: '2',
           symbol: 'ETH',
         },
@@ -55,19 +55,19 @@ export const getDTokenDetailsByWToken = (
     case EnvironmentNetwork.DevNet:
     case EnvironmentNetwork.TestNet:
       wTokenToDTokenMap = {
-        wETH: {
+        ETH: {
           id: '2',
           symbol: 'ETH',
         },
-        wBTC: {
+        MWBTC: {
           id: '1',
           symbol: 'BTC',
         },
-        USDT: {
+        MUSDT: {
           id: '5',
           symbol: 'USDT',
         },
-        USDC: {
+        MUSDC: {
           id: '22',
           symbol: 'USDC',
         },
@@ -76,7 +76,7 @@ export const getDTokenDetailsByWToken = (
     case EnvironmentNetwork.MainNet:
     default:
       wTokenToDTokenMap = {
-        wETH: {
+        ETH: {
           id: '1',
           symbol: 'ETH',
         },

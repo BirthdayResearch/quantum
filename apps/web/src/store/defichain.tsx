@@ -18,6 +18,9 @@ const staggeredBaseQueryWithBailOut = retry(
   }
 );
 
+export const PATH_DFC_WALLET = "defichain/wallet";
+export const PATH_ETHEREUM = "ethereum";
+
 // eslint-disable-next-line import/prefer-default-export
 export const bridgeApi = createApi({
   reducerPath: "defichain",
@@ -25,7 +28,7 @@ export const bridgeApi = createApi({
   endpoints: (builder) => ({
     generateAddress: builder.mutation<AddressDetails, any>({
       query: ({ baseUrl, refundAddress }) => ({
-        url: `${baseUrl}/defichain/wallet/address/generate`,
+        url: `${baseUrl}/${PATH_DFC_WALLET}/address/generate`,
         params: { refundAddress },
         method: "GET",
         headers: {
@@ -54,7 +57,7 @@ export const bridgeApi = createApi({
         amount,
         symbol,
       }) => ({
-        url: `${baseUrl}/defichain/wallet/verify`,
+        url: `${baseUrl}/${PATH_DFC_WALLET}/verify`,
         method: "POST",
         body: {
           address,
@@ -68,7 +71,7 @@ export const bridgeApi = createApi({
     }),
     getAddressDetail: builder.mutation<AddressDetails, any>({
       query: ({ baseUrl, address }) => ({
-        url: `${baseUrl}/defichain/wallet/address/${address}`,
+        url: `${baseUrl}/${PATH_DFC_WALLET}/address/${address}`,
         method: "GET",
       }),
       extraOptions: { maxRetries: 1 },
@@ -78,7 +81,7 @@ export const bridgeApi = createApi({
       any
     >({
       query: ({ baseUrl, txnHash }) => ({
-        url: `${baseUrl}/ethereum/handleTransaction`,
+        url: `${baseUrl}/${PATH_ETHEREUM}/handleTransaction`,
         body: {
           transactionHash: txnHash,
         },
@@ -102,7 +105,7 @@ export const bridgeApi = createApi({
     }),
     allocateDfcFund: builder.mutation<{ transactionHash: string }, any>({
       query: ({ baseUrl, txnHash }) => ({
-        url: `${baseUrl}/ethereum/allocateDFCFund`,
+        url: `${baseUrl}/${PATH_ETHEREUM}/allocateDFCFund`,
         body: {
           transactionHash: txnHash,
         },
@@ -113,6 +116,20 @@ export const bridgeApi = createApi({
         },
       }),
       extraOptions: { maxRetries: 0 },
+    }),
+    balanceEvm: builder.mutation<string, any>({
+      query: ({ baseUrl, tokenSymbol }) => ({
+        url: `${baseUrl}/${PATH_ETHEREUM}/balance/${tokenSymbol}`,
+        method: "GET",
+      }),
+      extraOptions: { maxRetries: 1 },
+    }),
+    balanceDfc: builder.mutation<string, any>({
+      query: ({ baseUrl, tokenSymbol }) => ({
+        url: `${baseUrl}/${PATH_DFC_WALLET}/balance/${tokenSymbol}`,
+        method: "GET",
+      }),
+      extraOptions: { maxRetries: 1 },
     }),
   }),
 });

@@ -578,7 +578,8 @@
         "internalType": "address",
         "name": "_flushReceiveAddress",
         "type": "address"
-      }
+      },
+      { "internalType": "uint8", "name": "_version", "type": "uint8" }
     ],
     "name": "initialize",
     "outputs": [],

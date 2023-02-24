@@ -11,7 +11,7 @@
     "postinstall": "pnpm run generate:contract-types",
     "build": "pnpm run generate:contract-types && tsc -b ./tsconfig.build.json",
     "build:docker": "docker build -t bridge-packages/hardhatnetwork:0.0.0 .",
-    "test": "jest",
+    "test": "jest --coverage",
     "test:hardhat": "pnpm run generate:contract-types && hardhat test --config ./src/hardhat.config.ts",
     "clean": "rm -rf dist && rm -f tsconfig.build.tsbuildinfo && hardhat clean --config ./src/hardhat.config.ts",
     "generate:contract-types": "hardhat compile --config ./src/hardhat.config.ts",
@@ -51,10 +51,10 @@
     ]
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.5.0",
-    "@birthdayresearch/sticky-testcontainers": "^0.4.1",
-    "@birthdayresearch/sticky-turbo-jest": "^0.4.1",
-    "@birthdayresearch/sticky-typescript": "^0.4.1",
+    "@birthdayresearch/eslint-config": "^0.5.1",
+    "@birthdayresearch/sticky-testcontainers": "^0.5.1",
+    "@birthdayresearch/sticky-turbo-jest": "^0.5.1",
+    "@birthdayresearch/sticky-typescript": "^0.5.1",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "1.0.6",

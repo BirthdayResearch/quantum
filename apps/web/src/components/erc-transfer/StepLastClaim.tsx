@@ -1,3 +1,4 @@
+import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { utils } from "ethers";
@@ -14,8 +15,8 @@ import Modal from "@components/commons/Modal";
 import ErrorModal from "@components/commons/ErrorModal";
 import { SignedClaim, TransferData } from "types";
 import UtilityButton from "@components/commons/UtilityButton";
-import { setStorageItem } from "@utils/localStorage";
-import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
+import useTransferFee from "@hooks/useTransferFee";
+import { useStorageContext } from "@contexts/StorageContext";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again.  If the error persists get in touch with us.";
@@ -33,16 +34,18 @@ export default function StepLastClaim({
 
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const tokenAddress = Erc20Tokens[data.to.tokenName].address;
-  const { TXN_KEY } = useBridgeFormStorageKeys();
+  const { setStorage } = useStorageContext();
 
   // Prepare write contract for `claimFund` function
+  const [fee] = useTransferFee(data.to.amount.toString());
+  const amountLessFee = BigNumber.max(data.to.amount.minus(fee), 0);
   const { config: bridgeConfig } = usePrepareContractWrite({
     address: BridgeV1.address,
     abi: BridgeV1.abi,
     functionName: "claimFund",
     args: [
       data.to.address,
-      utils.parseEther(data.to.amount.toString()),
+      utils.parseEther(amountLessFee.toString()),
       signedClaim.nonce,
       signedClaim.deadline,
       tokenAddress,
@@ -79,7 +82,9 @@ export default function StepLastClaim({
 
   useEffect(() => {
     if (isSuccess) {
-      setStorageItem(TXN_KEY, null);
+      setStorage("txn-form", null);
+      setStorage("dfc-address", null);
+      setStorage("dfc-address-details", null);
     }
   }, [isSuccess]);
 

@@ -1,17 +1,17 @@
 import { useEffect } from "react";
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
-// import MobileBottomMenu from "@components/MobileBottomMenu";
+import MobileBottomMenu from "@components/MobileBottomMenu";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
-import { useTransactionHashContext } from "@contexts/TransactionHashContext";
+import { useStorageContext } from "@contexts/StorageContext";
 import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 import { getStorageItem } from "../utils/localStorage";
 
 function Home() {
   const { ethTxnStatus, isApiSuccess } = useWatchEthTxn();
-  const { txnHash, setTxnHash } = useTransactionHashContext();
+  const { txnHash, setStorage } = useStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
     useBridgeFormStorageKeys();
 
@@ -53,15 +53,15 @@ function Home() {
         <div className="flex flex-col justify-between px-6 pb-7 md:px-0 md:pb-0 md:w-5/12 md:mr-8 lg:mr-[72px]">
           <WelcomeHeader />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 md:max-w-[50%]">
           {(txnHash.unconfirmed ||
             txnHash.confirmed ||
             txnHash.reverted ||
             txnHash.unsentFund) && (
             <TransactionStatus
               onClose={() => {
-                setTxnHash("confirmed", null);
-                setTxnHash("reverted", null);
+                setStorage("confirmed", null);
+                setStorage("reverted", null);
               }}
               txnHash={
                 txnHash.unsentFund ??
@@ -76,12 +76,17 @@ function Home() {
               isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
             />
           )}
-          <BridgeForm hasPendingTxn={txnHash.unconfirmed !== undefined} />
+          <BridgeForm
+            hasPendingTxn={
+              txnHash.unconfirmed !== undefined ||
+              txnHash.unsentFund !== undefined
+            }
+          />
         </div>
       </div>
-      {/* <div className="md:hidden mt-6 mb-12 mx-6"> TODO:: Hide Temporary
+      <div className="md:hidden mt-6 mb-12 mx-6">
         <MobileBottomMenu />
-      </div> */}
+      </div>
     </section>
   );
 }

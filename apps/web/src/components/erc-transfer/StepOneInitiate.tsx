@@ -12,10 +12,12 @@ export default function StepOneInitiate({
   goToNextStep,
   refundAddress,
   setRefundAddress,
+  isReadOnly,
 }: {
   refundAddress: string;
   setRefundAddress: (value: string) => void;
   goToNextStep: () => void;
+  isReadOnly: boolean;
 }) {
   const { selectedNetworkA } = useNetworkContext();
   const { isConnected } = useAccount();
@@ -53,21 +55,28 @@ export default function StepOneInitiate({
           onAddressInputChange={(addrInput) => setRefundAddress(addrInput)}
           onAddressInputError={(hasError) => setHasAddressInputErr(hasError)}
           disabled={!isConnected}
+          readOnly={isReadOnly}
           isPrimary={false}
+          customMessage={
+            isReadOnly
+              ? "Refund address is disabled for your transaction's security. If you need to edit it, cancel this transaction and create a new one."
+              : undefined
+          }
         />
         <div className="pt-5">
           <ActionButton
             label="Continue"
             variant="primary"
             disabled={hasAddressInputErr}
-            // TODO to save return address to the localstorage - have to move the entire saving of unconfirmed txn
             onClick={goToNextStep}
           />
-          {hasAddressInputErr && (
-            <div className="text-dark-500 text-center text-xs pt-3">
-              You must enter an address for refund to continue.
-            </div>
-          )}
+          <div className="text-dark-500 text-center text-xs pt-3">
+            {hasAddressInputErr ? (
+              <span>You must enter an address for refund to continue.</span>
+            ) : (
+              <span>&nbsp;</span>
+            )}
+          </div>
         </div>
       </div>
     </div>

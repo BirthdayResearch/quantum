@@ -38,6 +38,7 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
 
   return {
     proxyBridge,
+    bridgeImplementation: bridgeUpgradeable,
     testToken,
     testToken2,
     defaultAdminSigner,
@@ -50,6 +51,7 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
 
 interface BridgeDeploymentResult {
   proxyBridge: BridgeV1;
+  bridgeImplementation: BridgeV1;
   testToken: TestToken;
   testToken2: TestToken;
   defaultAdminSigner: SignerWithAddress;

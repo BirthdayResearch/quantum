@@ -1,5 +1,5 @@
 {
-  "name": "bridge.defichain.com",
+  "name": "quantumbridge.app",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -17,15 +17,16 @@
     "migration:deploy": "turbo run migration:deploy"
   },
   "dependencies": {
-    "@waveshq/standard-defichain-jellyfishsdk": "^0.43.0"
+    "@waveshq/standard-defichain-jellyfishsdk": "^0.43.1"
   },
   "devDependencies": {
-    "@birthdayresearch/sticky-turbo": "^0.4.1",
+    "@birthdayresearch/sticky-turbo": "^0.5.1",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.2"
   },
   "engines": {
     "node": "^18.0.0 || ^16.16.0",
-    "pnpm": ">=7.11.0"
-  }
+    "pnpm": ">=7.27.0"
+  },
+  "packageManager": "pnpm@7.27.1"
 }

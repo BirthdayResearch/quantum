@@ -6,6 +6,7 @@ import {
   STORAGE_CONFIRMED_TXN_HASH_KEY,
   STORAGE_REVERTED_TXN_HASH_KEY,
   STORAGE_UNSENT_FUND_TXN_HASH_KEY,
+  STORAGE_DFC_ADDR_DETAILS,
 } from "../constants";
 
 export default function useBridgeFormStorageKeys() {
@@ -19,6 +20,8 @@ export default function useBridgeFormStorageKeys() {
 
   const TXN_KEY = `${networkEnv}.${STORAGE_TXN_KEY}`;
   const DFC_ADDR_KEY = `${networkEnv}.${STORAGE_DFC_ADDR_KEY}`;
+  const DFC_ADDR_DETAILS_KEY = `${networkEnv}.${STORAGE_DFC_ADDR_DETAILS}`;
+
   return {
     UNCONFIRMED_TXN_HASH_KEY,
     CONFIRMED_TXN_HASH_KEY,
@@ -26,5 +29,6 @@ export default function useBridgeFormStorageKeys() {
     UNSENT_FUND_TXN_HASH_KEY,
     TXN_KEY,
     DFC_ADDR_KEY,
+    DFC_ADDR_DETAILS_KEY,
   };
 }

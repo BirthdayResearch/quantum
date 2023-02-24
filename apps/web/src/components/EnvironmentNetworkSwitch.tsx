@@ -15,13 +15,14 @@ export default function EnvironmentNetworkSwitch({
   const handleOnClick = () => {
     let nextNetworkEnv: EnvironmentNetwork;
     switch (currentNetworkEnv) {
-      case EnvironmentNetwork.TestNet:
-        nextNetworkEnv = EnvironmentNetwork.RemotePlayground;
-        break;
-      case EnvironmentNetwork.RemotePlayground:
-        nextNetworkEnv = EnvironmentNetwork.LocalPlayground;
-        break;
-      case EnvironmentNetwork.LocalPlayground:
+      // Temp remove for Testnet environment
+      // case EnvironmentNetwork.TestNet:
+      //   nextNetworkEnv = EnvironmentNetwork.RemotePlayground;
+      //   break;
+      // case EnvironmentNetwork.RemotePlayground:
+      //   nextNetworkEnv = EnvironmentNetwork.LocalPlayground;
+      //   break;
+      // case EnvironmentNetwork.LocalPlayground:
       default:
         nextNetworkEnv = EnvironmentNetwork.TestNet;
         break;

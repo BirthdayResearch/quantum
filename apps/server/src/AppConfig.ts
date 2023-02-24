@@ -9,9 +9,12 @@ export function appConfig() {
       key: process.env.DEFICHAIN_PRIVATE_KEY,
       whaleURL: process.env.DEFICHAIN_WHALE_URL,
       network: process.env.DEFICHAIN_NETWORK,
+      transferFee: process.env.DFC_FEE_PERCENTAGE,
+      dustUTXO: process.env.DEFICHAIN_DUST_UTXO,
     },
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
+      transferFee: process.env.ETH_FEE_PERCENTAGE,
       contracts: {
         bridgeProxy: {
           address: process.env.BRIDGE_PROXY_ADDRESS,
@@ -43,6 +46,12 @@ export const ENV_VALIDATION_SCHEMA = Joi.object({
   DATABASE_URL: Joi.string(),
   DEFICHAIN_NETWORK: Joi.string(),
   DEFICHAIN_WHALE_URL: Joi.string().uri(),
+  DEFICHAIN_DUST_UTXO: Joi.string(),
+  DEFICHAIN_PRIVATE_KEY: Joi.string(),
+  ETHEREUM_WALLET_PRIVATE_KEY: Joi.string(),
+  DFC_FEE_PERCENTAGE: Joi.string(),
+  ETH_FEE_PERCENTAGE: Joi.string(),
+  BRIDGE_PROXY_ADDRESS: Joi.string(),
 });
 
 export enum SupportedEVMTokenSymbols {

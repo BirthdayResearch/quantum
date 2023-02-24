@@ -4,6 +4,7 @@ import { APP_GUARD, RouterModule } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
+import { BalancesModule } from './balances/BalancesModule';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';
@@ -36,6 +37,7 @@ import { VersionModule } from './version/VersionModule';
     ]),
     HealthModule,
     VersionModule,
+    BalancesModule,
   ],
   controllers: [],
   providers: [

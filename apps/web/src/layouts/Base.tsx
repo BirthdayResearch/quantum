@@ -27,8 +27,8 @@ import {
 import SecuredStoreAPI from "@api/secure-storage";
 import Logging from "@api/logging";
 import { ApiProvider } from "@reduxjs/toolkit/dist/query/react";
-import { TransactionHashProvider } from "@contexts/TransactionHashContext";
 import { bridgeApi } from "@store/defichain";
+import { StorageProvider } from "@contexts/StorageContext";
 import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
@@ -150,9 +150,9 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
                     <NetworkEnvironmentProvider>
                       <ContractProvider>
                         <ThemeProvider theme={initialTheme}>
-                          <TransactionHashProvider>
+                          <StorageProvider>
                             <ScreenContainer>{children}</ScreenContainer>
-                          </TransactionHashProvider>
+                          </StorageProvider>
                         </ThemeProvider>
                       </ContractProvider>
                     </NetworkEnvironmentProvider>

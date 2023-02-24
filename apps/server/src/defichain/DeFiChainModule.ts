@@ -25,6 +25,6 @@ import { WhaleWalletService } from './services/WhaleWalletService';
     SendService,
   ],
   controllers: [StatsController, WhaleWalletController],
-  exports: [],
+  exports: [WhaleWalletService],
 })
 export class DeFiChainModule {}

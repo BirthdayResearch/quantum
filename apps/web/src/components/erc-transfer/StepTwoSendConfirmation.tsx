@@ -1,18 +1,17 @@
 import clsx from "clsx";
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { FiAlertCircle, FiLoader } from "react-icons/fi";
 import QRCode from "react-qr-code";
 import useCopyToClipboard from "@hooks/useCopyToClipboard";
-import { getStorageItem, setStorageItem } from "@utils/localStorage";
 import Tooltip from "@components/commons/Tooltip";
 import UtilityButton from "@components/commons/UtilityButton";
-import { useRouter } from "next/router";
 import { useGenerateAddressMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
-import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
 import { AddressDetails } from "types";
 import dayjs from "dayjs";
 import AddressError from "@components/commons/AddressError";
+import { useStorageContext } from "@contexts/StorageContext";
 import { DFC_TO_ERC_RESET_FORM_TIME_LIMIT } from "../../constants";
 import TimeLimitCounter from "./TimeLimitCounter";
 
@@ -77,19 +76,19 @@ function SuccessCopy({
 }
 
 function FaqSection() {
-  const router = useRouter();
   return (
     <div className="mt-6 md:mt-2">
       <span className={clsx("text-sm text-warning", "md:mt-2")}>
         Transactions in this Bridge, as with all other on-chain transactions,
         are irreversible. For more details, read&nbsp;
-        <button
-          type="button"
+        <Link
+          href="https://birthdayresearch.notion.site/Troubleshooting-477ed1d364c0406abc33f162e985d5b3"
+          target="_blank"
+          rel="noopener noreferrer"
           className="underline underline-offset-1 text-warning"
-          onClick={() => router.push("/faq")}
         >
           FAQs and terms of use.
-        </button>
+        </Link>
       </span>
     </div>
   );
@@ -108,13 +107,13 @@ export default function StepTwoSendConfirmation({
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddressExpired, setIsAddressExpired] = useState(false);
-  const { DFC_ADDR_KEY } = useBridgeFormStorageKeys();
   const [createdBeforeInMSec, setCreatedBeforeInMSec] = useState(
     getTimeDifference(addressDetail?.createdAt)
   );
   const [addressGenerationError, setAddressGenerationError] = useState("");
   const [generateAddress] = useGenerateAddressMutation();
   const { copy } = useCopyToClipboard();
+  const { setStorage, dfcAddress } = useStorageContext();
 
   const handleConfirmClick = () => {
     goToNextStep();
@@ -128,9 +127,9 @@ export default function StepTwoSendConfirmation({
   const generateDfcUniqueAddress = useCallback(
     debounce(async () => {
       setIsLoading(true);
-      const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
-      if (localDfcAddress) {
-        setDfcUniqueAddress(localDfcAddress);
+
+      if (dfcAddress) {
+        setDfcUniqueAddress(dfcAddress);
         setIsLoading(false);
       } else {
         try {
@@ -138,7 +137,11 @@ export default function StepTwoSendConfirmation({
             refundAddress,
           }).unwrap();
           setCreatedBeforeInMSec(getTimeDifference(createdAt));
-          setStorageItem<string>(DFC_ADDR_KEY, address);
+          setStorage("dfc-address", address);
+          setStorage(
+            "dfc-address-details",
+            JSON.stringify({ address, createdAt, refundAddress })
+          );
           setAddressGenerationError("");
           setDfcUniqueAddress(address);
         } catch ({ data }) {
@@ -147,7 +150,7 @@ export default function StepTwoSendConfirmation({
               "Address generation limit reached, please wait for a minute and try again"
             );
           } else {
-            setAddressGenerationError(data.error);
+            setAddressGenerationError(data?.error);
           }
           setDfcUniqueAddress("");
         } finally {
@@ -155,7 +158,7 @@ export default function StepTwoSendConfirmation({
         }
       }
     }, 200),
-    []
+    [dfcAddress]
   );
 
   useEffect(() => {
@@ -235,7 +238,7 @@ export default function StepTwoSendConfirmation({
                               <TimeLimitCounter
                                 time={createdBeforeInMSec}
                                 onTimeElapsed={() => {
-                                  setStorageItem(DFC_ADDR_KEY, null);
+                                  setStorage("dfc-address", null);
                                   setDfcUniqueAddress("");
                                   setIsAddressExpired(true);
                                 }}
@@ -268,7 +271,12 @@ export default function StepTwoSendConfirmation({
         <div className={clsx("hidden", "md:block")}>
           <div className="float-right mt-8">
             {/* Web confirm button */}
-            <VerifyButton onVerify={handleConfirmClick} />
+            <VerifyButton
+              onVerify={handleConfirmClick}
+              disabled={
+                addressGenerationError !== "" || dfcUniqueAddress === ""
+              }
+            />
           </div>
         </div>
       </div>
@@ -281,7 +289,10 @@ export default function StepTwoSendConfirmation({
       {/* Mobile confirm button */}
       <div className={clsx("order-last", "md:hidden")}>
         <div className={clsx("px-6 mt-12", "md:px-0")}>
-          <VerifyButton onVerify={handleConfirmClick} />
+          <VerifyButton
+            onVerify={handleConfirmClick}
+            disabled={addressGenerationError !== "" || dfcUniqueAddress === ""}
+          />
         </div>
       </div>
     </div>

@@ -31,11 +31,16 @@ export default function ConfirmationProgress({
   confirmationBlocksTotal,
   confirmationBlocksCurrent,
   isConfirmed,
+  isReverted,
+  isUnsentFund,
   isApiSuccess,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
   isConfirmed: boolean;
+  isReverted: boolean;
+
+  isUnsentFund: boolean;
   isApiSuccess: boolean;
 }) {
   const { isLg } = useResponsive();
@@ -96,10 +101,11 @@ export default function ConfirmationProgress({
           <div className="flex text-sm text-dark-700">
             {isApiSuccess || isConfirmed ? (
               <span
-                className={clsx(
-                  "font-semibold",
-                  isConfirmed ? "text-valid" : "text-brand-100"
-                )}
+                className={clsx("font-semibold text-brand-100", {
+                  "text-valid": isConfirmed,
+                  "text-warning": isReverted,
+                  "text-error": isUnsentFund,
+                })}
               >
                 {`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}\u00A0`}
               </span>

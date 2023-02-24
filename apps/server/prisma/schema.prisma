@@ -13,12 +13,26 @@ enum EthereumTransactionStatus {
   CONFIRMED
 }
 
+enum BotStatus {
+  SENT
+  ERROR
+}
+
 model DeFiChainAddressIndex {
-  id            BigInt   @id @default(autoincrement())
-  index         Int      @unique
-  address       String   @unique
-  refundAddress String
-  createdAt     DateTime @default(now())
+  id                   BigInt    @id @default(autoincrement())
+  index                Int
+  address              String    @unique
+  refundAddress        String
+  claimNonce           String?
+  claimDeadline        String?
+  claimSignature       String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime? @updatedAt
+  hotWalletAddress     String
+  ethReceiverAddress   String?
+  botStatus            BotStatus?
+
+  @@unique([hotWalletAddress, index])
 }
 
 model BridgeEventTransactions {

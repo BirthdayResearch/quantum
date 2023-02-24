@@ -1,5 +1,5 @@
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import { useTransactionHashContext } from "@contexts/TransactionHashContext";
+import { useStorageContext } from "@contexts/StorageContext";
 import {
   useAllocateDfcFundMutation,
   useConfirmEthTxnMutation,
@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
  */
 export default function useWatchEthTxn() {
   const { networkEnv } = useNetworkEnvironmentContext();
-  const { txnHash, setTxnHash } = useTransactionHashContext();
+  const { txnHash, setStorage } = useStorageContext();
 
   const [confirmEthTxn] = useConfirmEthTxnMutation();
   const [allocateDfcFund] = useAllocateDfcFundMutation();
@@ -44,8 +44,8 @@ export default function useWatchEthTxn() {
             }).unwrap();
 
             if (fundData?.transactionHash !== undefined) {
-              setTxnHash("confirmed", unconfirmed ?? null);
-              setTxnHash("unconfirmed", null);
+              setStorage("confirmed", unconfirmed ?? null);
+              setStorage("unconfirmed", null);
             }
           }
 
@@ -57,19 +57,19 @@ export default function useWatchEthTxn() {
         }
       } catch ({ data }) {
         if (data?.error?.includes("Fund already allocated")) {
-          setTxnHash("unsent-fund", unconfirmed ?? null);
-          setTxnHash("unconfirmed", null);
+          setStorage("unsent-fund", unconfirmed ?? null);
+          setStorage("unconfirmed", null);
         } else if (
           data?.error?.includes("There is a problem in allocating fund")
         ) {
-          setTxnHash("unsent-fund", unconfirmed ?? null);
-          setTxnHash("unconfirmed", null);
+          setStorage("unsent-fund", unconfirmed ?? null);
+          setStorage("unconfirmed", null);
         } else if (
           data?.statusCode === HttpStatusCode.BadRequest &&
           data?.message === "Transaction Reverted"
         ) {
-          setTxnHash("reverted", unconfirmed ?? null);
-          setTxnHash("unconfirmed", null);
+          setStorage("reverted", unconfirmed ?? null);
+          setStorage("unconfirmed", null);
         } else if (data?.statusCode === HttpStatusCode.TooManyRequests) {
           //   handle throttle error;
         }

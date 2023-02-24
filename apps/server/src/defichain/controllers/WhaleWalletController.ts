@@ -29,7 +29,9 @@ export class WhaleWalletController {
 
   @Throttle(5, 60)
   @Get('address/generate')
-  async get(@Query() query: { refundAddress: string }): Promise<Omit<DeFiChainAddressIndex, 'id' | 'index'>> {
+  async get(
+    @Query() query: { refundAddress: string },
+  ): Promise<Pick<DeFiChainAddressIndex, 'address' | 'createdAt' | 'refundAddress'>> {
     return this.whaleWalletService.generateAddress(query.refundAddress, this.network);
   }
 

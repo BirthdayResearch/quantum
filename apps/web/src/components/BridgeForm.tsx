@@ -3,19 +3,10 @@ import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
-import { shift, autoUpdate, size, useFloating } from "@floating-ui/react-dom";
+import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
 import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import { getStorageItem, setStorageItem } from "@utils/localStorage";
-import {
-  Network,
-  SelectionType,
-  TokensI,
-  NetworkOptionsI,
-  NetworkName,
-  UnconfirmedTxnI,
-  AddressDetails,
-} from "types";
+import { Network, NetworkOptionsI, SelectionType, TokensI } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
@@ -23,18 +14,24 @@ import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
-import useBridgeFormStorageKeys from "@hooks/useBridgeFormStorageKeys";
-import { useGetAddressDetailMutation } from "@store/index";
+import {
+  useBalanceDfcMutation,
+  useBalanceEvmMutation,
+  useGetAddressDetailMutation,
+} from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
+import { useStorageContext } from "@contexts/StorageContext";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
-  FEES_INFO,
   ETHEREUM_SYMBOL,
+  FEES_INFO,
 } from "../constants";
+import Tooltip from "./commons/Tooltip";
+import Logging from "../api/logging";
 
 function SwitchButton({
   onClick,
@@ -44,24 +41,26 @@ function SwitchButton({
   disabled?: boolean;
 }) {
   return (
-    <div className="my-8 flex flex-row">
+    <div className="my-8 flex flex-row rounded">
       <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
-        className={clsx(
-          "dark-card-bg dark-bg-card-section group flex h-12 w-12 items-center justify-center rounded-full",
-          { "pointer-events-none": disabled }
-        )}
-      >
-        <div className="hidden group-hover:hidden lg:block">
-          <ArrowDownIcon size={24} className="fill-dark-700" />
-        </div>
-        <div className="group-hover:block lg:hidden">
-          <SwitchIcon size={24} className="fill-dark-700" />
-        </div>
-      </button>
+      <Tooltip content="Switch source">
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={disabled}
+          className={clsx(
+            "dark-card-bg dark-bg-card-section group flex h-12 w-12 items-center justify-center rounded-full",
+            { "pointer-events-none": disabled }
+          )}
+        >
+          <div className="hidden group-hover:hidden lg:block">
+            <ArrowDownIcon size={24} className="fill-dark-700" />
+          </div>
+          <div className="group-hover:block lg:hidden">
+            <SwitchIcon size={24} className="fill-dark-700" />
+          </div>
+        </button>
+      </Tooltip>
       <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
     </div>
   );
@@ -87,6 +86,8 @@ export default function BridgeForm({
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
+  const { dfcAddress, dfcAddressDetails, txnForm, setStorage } =
+    useStorageContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -113,9 +114,10 @@ export default function BridgeForm({
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
 
   const [getAddressDetail] = useGetAddressDetailMutation();
-  const [addressDetail, setAddressDetail] = useState<AddressDetails>();
 
-  const { TXN_KEY, DFC_ADDR_KEY } = useBridgeFormStorageKeys();
+  const [balanceEvm] = useBalanceEvmMutation();
+  const [balanceDfc] = useBalanceDfcMutation();
+  const [balanceAmount, setBalanceAmount] = useState<string>("0");
 
   const isFormValid =
     amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
@@ -125,10 +127,18 @@ export default function BridgeForm({
   };
 
   const validateAmountInput = (value: string) => {
-    const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
+    const isSendingToDFC = selectedNetworkB.name === Network.DeFiChain;
     let err = "";
     if (isSendingToDFC && new BigNumber(value).gt(maxAmount.toFixed(8))) {
       err = "Insufficient Funds";
+    }
+    if (
+      isSendingToDFC &&
+      new BigNumber(value).lt(
+        new BigNumber(1).dividedBy(new BigNumber(10).pow(8))
+      )
+    ) {
+      err = "Invalid Amount";
     }
     setAmountErr(err);
   };
@@ -154,16 +164,16 @@ export default function BridgeForm({
         fromAddress,
         toAddress: addressInput,
       };
-      setStorageItem<UnconfirmedTxnI>(TXN_KEY, newTxn);
+      setStorage("txn-form", JSON.stringify(newTxn));
     }
     /* TODO: Handle token transfer here */
     setShowConfirmModal(true);
   };
 
   const onResetTransferForm = () => {
-    setStorageItem(TXN_KEY, null);
-    setStorageItem(DFC_ADDR_KEY, null);
-    setAddressDetail(undefined);
+    setStorage("txn-form", null);
+    setStorage("dfc-address", null);
+    setStorage("dfc-address-details", null);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
@@ -180,7 +190,7 @@ export default function BridgeForm({
       case hasUnconfirmedTxn:
         return "Retry transfer";
       case isConnected:
-        return `Transfer to ${NetworkName[selectedNetworkB.name]}`;
+        return "Review transaction";
       default:
         return "Connect wallet";
     }
@@ -194,7 +204,7 @@ export default function BridgeForm({
   }, [maxAmount]);
 
   useEffect(() => {
-    const localData = getStorageItem<UnconfirmedTxnI>(TXN_KEY);
+    const localData = txnForm;
     if (localData && networkEnv === localData.networkEnv) {
       // Load data from storage
       setHasUnconfirmedTxn(true);
@@ -209,34 +219,62 @@ export default function BridgeForm({
     } else {
       setHasUnconfirmedTxn(false);
     }
-  }, [networkEnv]);
+  }, [networkEnv, txnForm]);
 
-  const fetchAddressDetail = async (): Promise<void> => {
+  useEffect(() => {
+    async function checkBalance() {
+      try {
+        let balanceRes;
+        if (selectedNetworkA.name === Network.Ethereum) {
+          balanceRes = await balanceEvm({
+            tokenSymbol: selectedTokensA.tokenA.name.toUpperCase(),
+          }).unwrap();
+        } else {
+          balanceRes = await balanceDfc({
+            tokenSymbol: selectedTokensA.tokenA.symbol,
+          }).unwrap();
+        }
+
+        setBalanceAmount(balanceRes);
+      } catch (error) {
+        Logging.error(error);
+      }
+    }
+
+    checkBalance();
+  }, [selectedNetworkA, selectedTokensA, networkEnv]);
+
+  const balanceInsufficient = new BigNumber(amount).isGreaterThan(
+    new BigNumber(balanceAmount)
+  );
+
+  const fetchAddressDetail = async (
+    localDfcAddress: string | undefined
+  ): Promise<void> => {
     try {
-      const localDfcAddress = getStorageItem<string>(DFC_ADDR_KEY);
       if (localDfcAddress) {
         const addressDetailRes = await getAddressDetail({
           address: localDfcAddress,
         }).unwrap();
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
-          setStorageItem(TXN_KEY, null);
-          setStorageItem(DFC_ADDR_KEY, null);
+          setStorage("txn-form", null);
+          setStorage("dfc-address", null);
         } else {
-          setAddressDetail(addressDetailRes);
+          // TODO: Improve setStorage by not forcing stringified JSON
+          setStorage("dfc-address-details", JSON.stringify(addressDetailRes));
         }
       } else {
-        setAddressDetail(undefined);
+        setStorage("dfc-address-details", null);
       }
     } catch {
-      setAddressDetail(undefined);
+      setStorage("dfc-address-details", null);
     }
   };
 
   useEffect(() => {
-    // fetch address details
-    fetchAddressDetail();
-  }, [networkEnv]);
+    fetchAddressDetail(dfcAddress);
+  }, [networkEnv, dfcAddress]);
 
   const { y, reference, floating, strategy, refs } = useFloating({
     placement: "bottom-end",
@@ -265,6 +303,9 @@ export default function BridgeForm({
     y,
     floating,
   };
+
+  const warningTextStyle =
+    "block text-xs text-warning text-center lg:px-6 lg:text-sm";
 
   return (
     <div className="w-full md:w-[calc(100%+2px)] lg:w-full dark-card-bg-image p-6 md:pt-8 pb-16 lg:p-12 rounded-lg lg:rounded-xl border border-dark-200 backdrop-blur-[18px]">
@@ -367,7 +408,7 @@ export default function BridgeForm({
           To receive
         </span>
         <NumericFormat
-          className="text-left text-xs text-dark-1000 lg:text-base"
+          className="max-w-[70%] block break-words text-right text-xs text-dark-1000 lg:text-base"
           value={amount || 0}
           thousandSeparator
           suffix={` ${selectedTokensB.tokenA.name}`}
@@ -384,7 +425,7 @@ export default function BridgeForm({
           </div>
         </div>
         <NumericFormat
-          className="text-left text-xs text-dark-1000 lg:text-base"
+          className="max-w-[70%] block break-words text-right text-xs text-dark-1000 lg:text-base"
           value={fee}
           thousandSeparator
           suffix={` ${feeSymbol}`}
@@ -398,13 +439,17 @@ export default function BridgeForm({
               testId="transfer-btn"
               label={getActionBtnLabel()}
               isLoading={hasPendingTxn}
-              disabled={(isConnected && !isFormValid) || hasPendingTxn}
+              disabled={
+                (isConnected && !isFormValid) ||
+                hasPendingTxn ||
+                balanceInsufficient
+              }
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
           )}
         </ConnectKitButton.Custom>
         {hasPendingTxn && (
-          <span className="block pt-2 text-xs text-warning text-center lg:px-6 lg:text-sm">
+          <span className={clsx("pt-2", warningTextStyle)}>
             Unable to edit while transaction is pending
           </span>
         )}
@@ -417,10 +462,15 @@ export default function BridgeForm({
             />
           </div>
         )}
+        {balanceInsufficient && (
+          <div className={clsx("pt-3", warningTextStyle)}>
+            Unable to process transaction. <div>Please try again later</div>
+          </div>
+        )}
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
-        addressDetail={addressDetail}
+        addressDetail={dfcAddressDetails}
         onClose={() => setShowConfirmModal(false)}
         amount={amount}
         fromAddress={fromAddress}
