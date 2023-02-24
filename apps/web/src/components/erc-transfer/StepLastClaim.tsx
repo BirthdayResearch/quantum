@@ -106,8 +106,8 @@ export default function StepLastClaim({
           new BigNumber(contractBalance)
         );
         setIsBalanceInsufficient(isInsufficient);
-      } catch (error) {
-        Logging.error(error);
+      } catch (e) {
+        Logging.error(e);
       }
     }
     checkBalance();
