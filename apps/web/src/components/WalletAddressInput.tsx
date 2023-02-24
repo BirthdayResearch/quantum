@@ -46,7 +46,7 @@ function AddressWithVerifiedBadge({
     <div
       role="button"
       className={clsx(
-        "relative mr-10 w-full break-all bg-transparent  text-dark-1000 after:absolute focus:outline-none",
+        "relative mr-10 w-full break-all bg-transparent text-dark-1000 after:absolute focus:outline-none",
         isLg
           ? "after:-bottom-1 after:ml-2 after:content-[url('/verified-24x24.svg')]"
           : "after:ml-1 after:content-[url('/verified-20x20.svg')]",
@@ -276,7 +276,7 @@ export default function WalletAddressInput({
         {((isFocused && addressInput) || (addressInput && !isValidAddress)) && (
           <IoCloseCircle
             size={20}
-            className="ml-4 mr-1 shrink-0 cursor-pointer fill-dark-500"
+            className="ml-2 mr-1 shrink-0 cursor-pointer fill-dark-500"
             onMouseDown={() => {
               onAddressInputChange("");
               handleFocusWithCursor();
