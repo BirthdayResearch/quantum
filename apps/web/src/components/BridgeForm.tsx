@@ -98,7 +98,10 @@ export default function BridgeForm({
   const [addressInput, setAddressInput] = useState<string>("");
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const [showUtilityModal, setShowUtilityModal] = useState<boolean>(false);
+
+  type UtilityModalMessageType = Record<UtilityModalEnum, ModalConfigType>;
+  const [utilityModalData, setUtilityModalData] =
+    useState<ModalConfigType | null>(null);
 
   const [fee, feeSymbol] = useTransferFee(amount);
 
@@ -176,7 +179,7 @@ export default function BridgeForm({
   };
 
   const onResetTransferForm = () => {
-    setShowUtilityModal(false);
+    setUtilityModalData(null);
     setStorage("txn-form", null);
     setStorage("dfc-address", null);
     setStorage("dfc-address-details", null);
@@ -202,11 +205,6 @@ export default function BridgeForm({
     }
   };
 
-  type UtilityModalMessageType = Record<
-    UtilityModalEnum,
-    Omit<ModalConfigType, "show">
-  >;
-
   const UtilityModalMessage: UtilityModalMessageType = {
     resetForm: {
       title: "Are you sure you want to reset form?",
@@ -215,7 +213,7 @@ export default function BridgeForm({
       primaryButtonLabel: "Reset form",
       onPrimaryButtonClick: () => onResetTransferForm(),
       secondaryButtonLabel: "Go back",
-      onSecondaryButtonClick: () => setShowUtilityModal(false),
+      onSecondaryButtonClick: () => setUtilityModalData(null),
     },
     leaveTransaction: {
       title: "Are you sure you want to leave your transaction?",
@@ -224,15 +222,12 @@ export default function BridgeForm({
       primaryButtonLabel: "Leave transaction",
       onPrimaryButtonClick: () => {
         setShowConfirmModal(false);
-        setShowUtilityModal(false);
+        setUtilityModalData(null);
       },
       secondaryButtonLabel: "Go back",
-      onSecondaryButtonClick: () => setShowUtilityModal(false),
+      onSecondaryButtonClick: () => setUtilityModalData(null),
     },
   };
-
-  const [utilityModalData, setUtilityModalData] =
-    useState<Omit<ModalConfigType, "show">>();
 
   function onUtilityModalClick(type: UtilityModalEnum) {
     switch (type) {
@@ -507,7 +502,6 @@ export default function BridgeForm({
             <ActionButton
               label="Reset form"
               onClick={() => {
-                setShowUtilityModal(true);
                 onUtilityModalClick(UtilityModalEnum.ResetForm);
               }}
               variant="secondary"
@@ -524,7 +518,6 @@ export default function BridgeForm({
         show={showConfirmModal}
         addressDetail={dfcAddressDetails}
         onClose={() => {
-          setShowUtilityModal(true);
           onUtilityModalClick(UtilityModalEnum.LeaveTransaction);
         }}
         amount={amount}
@@ -533,7 +526,6 @@ export default function BridgeForm({
       />
       {utilityModalData && (
         <UtilityModal
-          show={showUtilityModal}
           title={utilityModalData.title}
           message={utilityModalData.message}
           primaryButtonLabel={utilityModalData.primaryButtonLabel}

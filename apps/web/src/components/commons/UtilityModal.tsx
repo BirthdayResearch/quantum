@@ -2,7 +2,6 @@ import ActionButton from "./ActionButton";
 import Modal from "./Modal";
 
 export interface ModalConfigType {
-  show: boolean;
   title: string;
   message: string;
   primaryButtonLabel: string;
@@ -12,7 +11,6 @@ export interface ModalConfigType {
 }
 
 export default function UtilityModal({
-  show,
   title,
   message,
   primaryButtonLabel,
@@ -21,7 +19,7 @@ export default function UtilityModal({
   onSecondaryButtonClick,
 }: ModalConfigType) {
   return (
-    <Modal isOpen={show}>
+    <Modal isOpen>
       <div className="flex flex-col items-center mt-6 mb-14">
         <span className="font-bold text-lg lg:text-2xl text-dark-900 text-center">
           {title}
