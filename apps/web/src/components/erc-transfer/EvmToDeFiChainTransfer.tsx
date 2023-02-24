@@ -95,6 +95,7 @@ export default function EvmToDeFiChainTransfer({
     if (transactionHash !== undefined) {
       setStorage("unconfirmed", transactionHash);
       setStorage("confirmed", null);
+      setStorage("allocationTxnHash", null);
       setStorage("reverted", null);
       setStorage("txn-form", null);
       onClose();

@@ -44,6 +44,7 @@ export default function useWatchEthTxn() {
             }).unwrap();
 
             if (fundData?.transactionHash !== undefined) {
+              setStorage("allocationTxnHash", fundData?.transactionHash);
               setStorage("confirmed", unconfirmed ?? null);
               setStorage("unconfirmed", null);
             }

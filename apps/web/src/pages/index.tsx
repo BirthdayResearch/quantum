@@ -61,6 +61,7 @@ function Home() {
             <TransactionStatus
               onClose={() => {
                 setStorage("confirmed", null);
+                setStorage("allocationTxnHash", null);
                 setStorage("reverted", null);
               }}
               txnHash={
@@ -69,6 +70,7 @@ function Home() {
                 txnHash.confirmed ??
                 txnHash.unconfirmed
               }
+              allocationTxnHash={txnHash.allocationTxn}
               isReverted={txnHash.reverted !== undefined}
               isConfirmed={txnHash.confirmed !== undefined}
               isUnsentFund={txnHash.unsentFund !== undefined}

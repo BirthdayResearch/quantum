@@ -3,11 +3,13 @@ import { FiArrowUpRight } from "react-icons/fi";
 import { IoCloseOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
+import truncateTextFromMiddle from "@utils/textHelper";
 
 import { useAllocateDfcFundMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
 import useTimeout from "@hooks/useSetTimeout";
 import { useStorageContext } from "@contexts/StorageContext";
+import { useDeFiScanContext } from "@contexts/DeFiScanContext";
 import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
@@ -20,6 +22,7 @@ export default function TransactionStatus({
   isReverted,
   isUnsentFund,
   numberOfConfirmations,
+  allocationTxnHash,
   txnHash,
   onClose,
 }: {
@@ -28,6 +31,7 @@ export default function TransactionStatus({
   isReverted: boolean;
   isUnsentFund: boolean;
   numberOfConfirmations: string;
+  allocationTxnHash?: string;
   txnHash: string | undefined;
   onClose: () => void;
 }) {
@@ -36,6 +40,7 @@ export default function TransactionStatus({
 
   const [allocateDfcFund] = useAllocateDfcFundMutation();
   const { setStorage } = useStorageContext();
+  const { getTransactionUrl } = useDeFiScanContext();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -81,6 +86,7 @@ export default function TransactionStatus({
         }).unwrap();
 
         if (fundData?.transactionHash !== undefined) {
+          setStorage("allocationTxnHash", fundData?.transactionHash);
           setStorage("confirmed", txnHash);
           setStorage("unsent-fund", null);
         }
@@ -138,6 +144,20 @@ export default function TransactionStatus({
         <div className="flex-1 flex-col">
           <div className="leading-5 lg:text-xl font-semibold">{title}</div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
+          {allocationTxnHash && (
+            <div className="flex flex-row items-center mt-2.5 text-dark-900 lg:text-lg font-bold ">
+              <a
+                className="flex flex-row items-center hover:opacity-70"
+                href={getTransactionUrl(allocationTxnHash)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FiArrowUpRight size={16} className="mr-2" />
+                View on DeFiScan:{" "}
+                {truncateTextFromMiddle(allocationTxnHash, isLg ? 5 : 4)}
+              </a>
+            </div>
+          )}
           <div className="flex flex-row items-center mt-2.5 text-dark-900 lg:text-xl font-bold ">
             <a
               className="flex flex-row items-center hover:opacity-70"

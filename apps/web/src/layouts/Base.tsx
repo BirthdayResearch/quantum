@@ -18,6 +18,7 @@ import { ConnectKitProvider, getDefaultClient } from "connectkit";
 import { getInitialTheme, ThemeProvider } from "@contexts/ThemeProvider";
 import { NetworkEnvironmentProvider } from "@contexts/NetworkEnvironmentContext";
 import { NetworkProvider } from "@contexts/NetworkContext";
+import { DeFiScanProvider } from "@contexts/DeFiScanContext";
 import { ContractProvider } from "@contexts/ContractContext";
 import {
   NetworkProvider as WhaleNetworkProvider,
@@ -134,13 +135,15 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
                 <WhaleNetworkProvider api={SecuredStoreAPI} logger={Logging}>
                   <WhaleProvider>
                     <NetworkEnvironmentProvider>
-                      <ContractProvider>
-                        <ThemeProvider theme={initialTheme}>
-                          <StorageProvider>
-                            <ScreenContainer>{children}</ScreenContainer>
-                          </StorageProvider>
-                        </ThemeProvider>
-                      </ContractProvider>
+                      <DeFiScanProvider>
+                        <ContractProvider>
+                          <ThemeProvider theme={initialTheme}>
+                            <StorageProvider>
+                              <ScreenContainer>{children}</ScreenContainer>
+                            </StorageProvider>
+                          </ThemeProvider>
+                        </ContractProvider>
+                      </DeFiScanProvider>
                     </NetworkEnvironmentProvider>
                   </WhaleProvider>
                 </WhaleNetworkProvider>

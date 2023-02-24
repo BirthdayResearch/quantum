@@ -13,6 +13,7 @@ import { useNetworkEnvironmentContext } from "./NetworkEnvironmentContext";
 
 type StorageKey =
   | "confirmed"
+  | "allocationTxnHash"
   | "unconfirmed"
   | "reverted"
   | "unsent-fund"
@@ -26,6 +27,7 @@ interface StorageContextI {
     unconfirmed?: string;
     reverted?: string;
     unsentFund?: string;
+    allocationTxn?: string;
   };
   dfcAddress?: string;
   dfcAddressDetails?: AddressDetails;
@@ -48,6 +50,7 @@ export function StorageProvider({
 }: PropsWithChildren<any>): JSX.Element | null {
   const [unconfirmedTxnHashKey, setUnconfirmedTxnHashKey] = useState<string>();
   const [confirmedTxnHashKey, setConfirmedTxnHashKey] = useState<string>();
+  const [allocationTxnHashKey, setAllocationTxnHashKey] = useState<string>();
   const [revertedTxnHashKey, setRevertedTxnHashKey] = useState<string>();
   const [unsentFundTxnHashKey, setUnsentFundTxnHashKey] = useState<string>();
   const [dfcAddress, setDfcAddress] = useState<string>();
@@ -60,6 +63,7 @@ export function StorageProvider({
     UNCONFIRMED_TXN_HASH_KEY,
     CONFIRMED_TXN_HASH_KEY,
     REVERTED_TXN_HASH_KEY,
+    ALLOCATION_TXN_HASH_KEY,
     UNSENT_FUND_TXN_HASH_KEY,
     DFC_ADDR_KEY,
     DFC_ADDR_DETAILS_KEY,
@@ -85,6 +89,8 @@ export function StorageProvider({
       getStorageItem<string>(UNCONFIRMED_TXN_HASH_KEY) ?? undefined;
     const confirmedTxnHashKeyStorage =
       getStorageItem<string>(CONFIRMED_TXN_HASH_KEY) ?? undefined;
+    const allocationTxnHashKeyStorage =
+      getStorageItem<string>(ALLOCATION_TXN_HASH_KEY) ?? undefined;
     const revertedTxnHashKeyStorage =
       getStorageItem<string>(REVERTED_TXN_HASH_KEY) ?? undefined;
     const unsentFundTxnHashKeyStorage =
@@ -92,11 +98,13 @@ export function StorageProvider({
 
     setUnconfirmedTxnHashKey(unconfirmedTxnHashKeyStorage);
     setConfirmedTxnHashKey(confirmedTxnHashKeyStorage);
+    setAllocationTxnHashKey(allocationTxnHashKeyStorage);
     setRevertedTxnHashKey(revertedTxnHashKeyStorage);
     setUnsentFundTxnHashKey(unsentFundTxnHashKeyStorage);
   }, [
     networkEnv,
     CONFIRMED_TXN_HASH_KEY,
+    ALLOCATION_TXN_HASH_KEY,
     UNCONFIRMED_TXN_HASH_KEY,
     REVERTED_TXN_HASH_KEY,
     UNSENT_FUND_TXN_HASH_KEY,
@@ -116,6 +124,9 @@ export function StorageProvider({
       } else if (key === "unsent-fund") {
         setUnsentFundTxnHashKey(value);
         setStorageItem(UNSENT_FUND_TXN_HASH_KEY, value);
+      } else if (key === "allocationTxnHash") {
+        setUnsentFundTxnHashKey(value);
+        setStorageItem(ALLOCATION_TXN_HASH_KEY, value);
       } else if (key === "dfc-address") {
         setDfcAddress(value);
         setStorageItem(DFC_ADDR_KEY, value);
@@ -138,6 +149,8 @@ export function StorageProvider({
         value = confirmedTxnHashKey;
       } else if (key === "unconfirmed") {
         value = unconfirmedTxnHashKey;
+      } else if (key === "allocationTxnHash") {
+        value = allocationTxnHashKey;
       } else if (key === "unsent-fund") {
         value = unsentFundTxnHashKey;
       } else if (key === "reverted") {
@@ -162,6 +175,8 @@ export function StorageProvider({
         reverted: revertedTxnHashKey === null ? undefined : revertedTxnHashKey,
         unsentFund:
           unsentFundTxnHashKey === null ? undefined : unsentFundTxnHashKey,
+        allocationTxn:
+          allocationTxnHashKey === null ? undefined : allocationTxnHashKey,
       },
       dfcAddress: dfcAddress === null ? undefined : dfcAddress,
       dfcAddressDetails:
@@ -173,6 +188,7 @@ export function StorageProvider({
   }, [
     unconfirmedTxnHashKey,
     confirmedTxnHashKey,
+    allocationTxnHashKey,
     revertedTxnHashKey,
     unsentFundTxnHashKey,
     dfcAddress,
@@ -180,6 +196,7 @@ export function StorageProvider({
     txnForm,
     REVERTED_TXN_HASH_KEY,
     CONFIRMED_TXN_HASH_KEY,
+    ALLOCATION_TXN_HASH_KEY,
     UNCONFIRMED_TXN_HASH_KEY,
     UNSENT_FUND_TXN_HASH_KEY,
     DFC_ADDR_KEY,
