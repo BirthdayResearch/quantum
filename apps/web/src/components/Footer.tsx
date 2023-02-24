@@ -47,7 +47,7 @@ const BirthdayResearchSocialItems = [
 ];
 
 export default function Footer() {
-  const [version, setVersion] = React.useState("");
+  const [version, setVersion] = React.useState("0.0.0");
 
   const [trigger] = useLazyBridgeVersionQuery();
 
