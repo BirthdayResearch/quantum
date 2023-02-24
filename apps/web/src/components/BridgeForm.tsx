@@ -229,17 +229,6 @@ export default function BridgeForm({
     },
   };
 
-  function onUtilityModalClick(type: UtilityModalEnum) {
-    switch (type) {
-      case UtilityModalEnum.ResetForm:
-        return setUtilityModalData(UtilityModalMessage.resetForm);
-      case UtilityModalEnum.LeaveTransaction:
-        return setUtilityModalData(UtilityModalMessage.leaveTransaction);
-      default:
-        return null;
-    }
-  }
-
   useEffect(() => {
     if (amount) {
       // Revalidate entered amount when selected token is changed
@@ -502,7 +491,7 @@ export default function BridgeForm({
             <ActionButton
               label="Reset form"
               onClick={() => {
-                onUtilityModalClick(UtilityModalEnum.ResetForm);
+                setUtilityModalData(UtilityModalMessage.resetForm);
               }}
               variant="secondary"
             />
@@ -518,7 +507,7 @@ export default function BridgeForm({
         show={showConfirmModal}
         addressDetail={dfcAddressDetails}
         onClose={() => {
-          onUtilityModalClick(UtilityModalEnum.LeaveTransaction);
+          setUtilityModalData(UtilityModalMessage.leaveTransaction);
         }}
         amount={amount}
         fromAddress={fromAddress}
