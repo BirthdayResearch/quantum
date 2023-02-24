@@ -27,6 +27,10 @@ export interface BridgeStatus {
   isUp: boolean;
 }
 
+export interface BridgeVersion {
+  v: string;
+}
+
 export enum SelectionType {
   "Network" = "Network",
   "Token" = "Token",

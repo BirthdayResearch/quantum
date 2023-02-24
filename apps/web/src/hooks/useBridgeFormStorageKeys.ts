@@ -4,6 +4,7 @@ import {
   STORAGE_DFC_ADDR_KEY,
   STORAGE_UNCONFIRMED_TXN_HASH_KEY,
   STORAGE_CONFIRMED_TXN_HASH_KEY,
+  STORAGE_ALLOCATION_TXN_HASH_KEY,
   STORAGE_REVERTED_TXN_HASH_KEY,
   STORAGE_UNSENT_FUND_TXN_HASH_KEY,
   STORAGE_DFC_ADDR_DETAILS,
@@ -15,6 +16,7 @@ export default function useBridgeFormStorageKeys() {
   // Local storage txn key grouped by network
   const UNCONFIRMED_TXN_HASH_KEY = `${networkEnv}.${STORAGE_UNCONFIRMED_TXN_HASH_KEY}`;
   const CONFIRMED_TXN_HASH_KEY = `${networkEnv}.${STORAGE_CONFIRMED_TXN_HASH_KEY}`;
+  const ALLOCATION_TXN_HASH_KEY = `${networkEnv}.${STORAGE_ALLOCATION_TXN_HASH_KEY}`;
   const REVERTED_TXN_HASH_KEY = `${networkEnv}.${STORAGE_REVERTED_TXN_HASH_KEY}`;
   const UNSENT_FUND_TXN_HASH_KEY = `${networkEnv}.${STORAGE_UNSENT_FUND_TXN_HASH_KEY}`;
 
@@ -30,5 +32,6 @@ export default function useBridgeFormStorageKeys() {
     TXN_KEY,
     DFC_ADDR_KEY,
     DFC_ADDR_DETAILS_KEY,
+    ALLOCATION_TXN_HASH_KEY,
   };
 }
