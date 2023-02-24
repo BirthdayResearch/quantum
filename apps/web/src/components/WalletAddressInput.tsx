@@ -12,7 +12,7 @@ import {
   EnvironmentNetwork,
   getJellyfishNetwork,
 } from "@waveshq/walletkit-core";
-import { Network, NetworkName } from "types";
+import { Network } from "types";
 import Tooltip from "./commons/Tooltip";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 
@@ -25,6 +25,7 @@ interface Props {
   onAddressInputChange: (address: string) => void;
   onAddressInputError: (hasError: boolean) => void;
   isPrimary?: boolean;
+  customMessage?: string;
 }
 
 /**
@@ -46,7 +47,7 @@ function AddressWithVerifiedBadge({
     <div
       role="button"
       className={clsx(
-        "relative mr-10 w-full break-all bg-transparent  text-dark-1000 after:absolute focus:outline-none",
+        "relative mr-10 w-full break-all bg-transparent text-dark-1000 after:absolute focus:outline-none",
         isLg
           ? "after:-bottom-1 after:ml-2 after:content-[url('/verified-24x24.svg')]"
           : "after:ml-1 after:content-[url('/verified-20x20.svg')]",
@@ -70,6 +71,7 @@ export default function WalletAddressInput({
   onAddressInputChange,
   onAddressInputError,
   isPrimary = true,
+  customMessage,
 }: Props): JSX.Element {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -124,7 +126,7 @@ export default function WalletAddressInput({
   };
 
   useEffect(() => {
-    const displayedName = NetworkName[blockchain];
+    const displayedName = Network[blockchain];
     if (
       networkEnv === EnvironmentNetwork.TestNet &&
       blockchain === Network.DeFiChain
@@ -147,9 +149,11 @@ export default function WalletAddressInput({
     let message: string;
     const isDeFiChain = blockchain === "DeFiChain";
     const hasInvalidInput = !!(addressInput && !isValidAddress);
-    if (hasInvalidInput) {
+    if (customMessage !== undefined) {
+      message = customMessage;
+    } else if (hasInvalidInput) {
       const dfiNetwork = isDeFiChain ? ` ${networkEnv}` : "";
-      message = `Use correct address for ${NetworkName[blockchain]}${dfiNetwork}`;
+      message = `Use correct address for ${Network[blockchain]}${dfiNetwork}`;
     } else {
       const isTestnet =
         isDeFiChain &&
@@ -164,7 +168,7 @@ export default function WalletAddressInput({
     }
     setError({ message, isError: hasInvalidInput });
     onAddressInputError(!addressInput || !isValidAddress);
-  }, [addressInput, isValidAddress, blockchain, networkEnv]);
+  }, [addressInput, isValidAddress, blockchain, networkEnv, customMessage]);
 
   useEffect(() => {
     if (copiedFromClipboard) {
@@ -276,7 +280,7 @@ export default function WalletAddressInput({
         {((isFocused && addressInput) || (addressInput && !isValidAddress)) && (
           <IoCloseCircle
             size={20}
-            className="ml-4 mr-1 shrink-0 cursor-pointer fill-dark-500"
+            className="ml-2 mr-1 shrink-0 cursor-pointer fill-dark-500"
             onMouseDown={() => {
               onAddressInputChange("");
               handleFocusWithCursor();

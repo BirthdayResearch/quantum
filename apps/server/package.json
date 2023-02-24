@@ -14,7 +14,7 @@
     "migration:deploy": "npx prisma migrate deploy",
     "migration:create": "npx prisma migrate dev --create-only",
     "migration:dev": "npx prisma migrate dev",
-    "test": "jest --maxWorkers=4 --coverage --forceExit",
+    "test": "jest --maxWorkers=4 --coverage --forceExit --passWithNoTests",
     "test:unit": "jest --selectProjects test:unit",
     "test:i9n": "jest --selectProjects test:i9n",
     "test:e2e": "jest --selectProjects test:e2e",

@@ -6,13 +6,7 @@ import { ConnectKitButton } from "connectkit";
 import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
 import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import {
-  Network,
-  NetworkName,
-  NetworkOptionsI,
-  SelectionType,
-  TokensI,
-} from "types";
+import { Network, NetworkOptionsI, SelectionType, TokensI } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
@@ -133,7 +127,7 @@ export default function BridgeForm({
   };
 
   const validateAmountInput = (value: string) => {
-    const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
+    const isSendingToDFC = selectedNetworkB.name === Network.DeFiChain;
     let err = "";
     if (isSendingToDFC && new BigNumber(value).gt(maxAmount.toFixed(8))) {
       err = "Insufficient Funds";

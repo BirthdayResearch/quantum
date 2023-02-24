@@ -12,12 +12,12 @@ export default function StepOneInitiate({
   goToNextStep,
   refundAddress,
   setRefundAddress,
-  isDisabled,
+  isReadOnly,
 }: {
   refundAddress: string;
   setRefundAddress: (value: string) => void;
   goToNextStep: () => void;
-  isDisabled: boolean;
+  isReadOnly: boolean;
 }) {
   const { selectedNetworkA } = useNetworkContext();
   const { isConnected } = useAccount();
@@ -54,8 +54,14 @@ export default function StepOneInitiate({
           addressInput={refundAddress}
           onAddressInputChange={(addrInput) => setRefundAddress(addrInput)}
           onAddressInputError={(hasError) => setHasAddressInputErr(hasError)}
-          disabled={!isConnected || isDisabled}
+          disabled={!isConnected}
+          readOnly={isReadOnly}
           isPrimary={false}
+          customMessage={
+            isReadOnly
+              ? "Refund address is disabled for your transaction's security. If you need to edit it, cancel this transaction and create a new one."
+              : undefined
+          }
         />
         <div className="pt-5">
           <ActionButton
@@ -64,11 +70,13 @@ export default function StepOneInitiate({
             disabled={hasAddressInputErr}
             onClick={goToNextStep}
           />
-          {hasAddressInputErr && (
-            <div className="text-dark-500 text-center text-xs pt-3">
-              You must enter an address for refund to continue.
-            </div>
-          )}
+          <div className="text-dark-500 text-center text-xs pt-3">
+            {hasAddressInputErr ? (
+              <span>You must enter an address for refund to continue.</span>
+            ) : (
+              <span>&nbsp;</span>
+            )}
+          </div>
         </div>
       </div>
     </div>
