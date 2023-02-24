@@ -95,6 +95,7 @@ export default function EvmToDeFiChainTransfer({
     if (transactionHash !== undefined) {
       setStorage("unconfirmed", transactionHash);
       setStorage("confirmed", null);
+      setStorage("allocationTxnHash", null);
       setStorage("reverted", null);
       setStorage("txn-form", null);
       onClose();
@@ -165,6 +166,17 @@ export default function EvmToDeFiChainTransfer({
     writeBridgeToDeFiChain?.();
   };
 
+  const statusMessage = {
+    [BridgeStatus.IsTokenApprovalInProgress]: {
+      title: "Waiting for approval",
+      message: `Requesting permission to access your ${data.from.tokenName} funds.`,
+    },
+    [BridgeStatus.IsBridgeToDfcInProgress]: {
+      title: "Waiting for confirmation",
+      message: "Confirm this transaction in your Wallet.",
+    },
+  };
+
   return (
     <>
       {errorMessage !== undefined && (
@@ -182,29 +194,18 @@ export default function EvmToDeFiChainTransfer({
         />
       )}
 
-      {bridgeStatus === BridgeStatus.IsTokenApprovalInProgress && (
+      {[
+        BridgeStatus.IsTokenApprovalInProgress,
+        BridgeStatus.IsBridgeToDfcInProgress,
+      ].includes(bridgeStatus) && (
         <Modal isOpen>
           <div className="flex flex-col items-center mt-6 mb-14">
             <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
             <span className="font-bold text-2xl text-dark-900 mt-12">
-              Waiting for approval
+              {statusMessage[bridgeStatus].title}
             </span>
             <span className="text-dark-900 mt-2">
-              {`Requesting permission to access your ${data.from.tokenName} funds.`}
-            </span>
-          </div>
-        </Modal>
-      )}
-
-      {bridgeStatus === BridgeStatus.IsBridgeToDfcInProgress && (
-        <Modal isOpen>
-          <div className="flex flex-col items-center mt-6 mb-14">
-            <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
-            <span className="font-bold text-2xl text-dark-900 mt-12">
-              Waiting for confirmation
-            </span>
-            <span className="text-dark-900 mt-2">
-              Confirm this transaction in your Wallet.
+              {statusMessage[bridgeStatus].message}
             </span>
           </div>
         </Modal>
