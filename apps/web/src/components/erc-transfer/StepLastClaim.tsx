@@ -17,6 +17,8 @@ import { SignedClaim, TransferData } from "types";
 import UtilityButton from "@components/commons/UtilityButton";
 import useTransferFee from "@hooks/useTransferFee";
 import { useStorageContext } from "@contexts/StorageContext";
+import { useBalanceEvmMutation } from "@store/index";
+import Logging from "@api/logging";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again.  If the error persists get in touch with us.";
@@ -31,6 +33,8 @@ export default function StepLastClaim({
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
   const [error, setError] = useState<string>();
+  const [balanceEvm] = useBalanceEvmMutation();
+  const [isBalanceInsufficient, setIsBalanceInsufficient] = useState(false);
 
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const tokenAddress = Erc20Tokens[data.to.tokenName].address;
@@ -91,6 +95,31 @@ export default function StepLastClaim({
   useEffect(() => {
     setError(writeClaimTxnError?.message ?? claimTxnError?.message);
   }, [writeClaimTxnError, claimTxnError]);
+
+  useEffect(() => {
+    async function checkBalance() {
+      try {
+        const contractBalance = await balanceEvm({
+          tokenSymbol: data.to.tokenName.toUpperCase(),
+        }).unwrap();
+        const isInsufficient = data.to.amount.isGreaterThan(
+          new BigNumber(contractBalance)
+        );
+        setIsBalanceInsufficient(isInsufficient);
+      } catch (error) {
+        Logging.error(error);
+      }
+    }
+    checkBalance();
+  }, []);
+
+  useEffect(() => {
+    if (error && isBalanceInsufficient) {
+      setError(
+        "Quantum's servers are currently at capacity. We are unable to process transactions at this time, please try again in a few hours to claim your tokens."
+      );
+    }
+  }, [error, isBalanceInsufficient]);
 
   return (
     <>
