@@ -34,11 +34,6 @@ enum ContentLabel {
   ThrottleLimit = "Please wait for a minute and try again.",
 }
 
-export enum ValidationStatusLabel {
-  Validating = "Validating",
-  Validated = "Validated",
-}
-
 function DisplayButton({
   buttonLabel,
   validationSuccess,
@@ -187,13 +182,8 @@ export default function StepThreeVerification({
         >
           <QrAddress
             dfcUniqueAddress={dfcAddress}
-            validationStatus={
-              isValidating
-                ? ValidationStatusLabel.Validating
-                : validationSuccess
-                ? ValidationStatusLabel.Validated
-                : undefined
-            }
+            isValidating={isValidating}
+            shouldShowStatus={isValidating || validationSuccess}
           />
         </div>
       )}

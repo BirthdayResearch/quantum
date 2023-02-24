@@ -7,7 +7,6 @@ import { useStorageContext } from "@contexts/StorageContext";
 import { RiLoader2Line } from "react-icons/ri";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import TimeLimitCounter from "./erc-transfer/TimeLimitCounter";
-import { ValidationStatusLabel } from "./erc-transfer/StepThreeVerification";
 
 function SuccessCopy({
   containerClass,
@@ -36,13 +35,15 @@ export default function QrAddress({
   createdBeforeInMSec,
   setDfcUniqueAddress,
   setIsAddressExpired,
-  validationStatus,
+  isValidating,
+  shouldShowStatus = false,
 }: {
   dfcUniqueAddress: string;
   createdBeforeInMSec?: number;
   setDfcUniqueAddress?: (string) => void;
   setIsAddressExpired?: (boolean) => void;
-  validationStatus?: string;
+  isValidating?: boolean;
+  shouldShowStatus?: boolean;
 }) {
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const { copy } = useCopyToClipboard();
@@ -94,17 +95,15 @@ export default function QrAddress({
             />
           </div>
         )}
-        {validationStatus && (
+        {shouldShowStatus && (
           <div
             className={clsx(
               "flex flex-row w-full items-center justify-center text-xs mt-3",
-              validationStatus === ValidationStatusLabel.Validating
-                ? "text-warning"
-                : "text-valid"
+              isValidating ? "text-warning" : "text-valid"
             )}
           >
-            {validationStatus}
-            {validationStatus === ValidationStatusLabel.Validating ? (
+            {isValidating ? "Validating" : "Validated"}
+            {isValidating ? (
               <RiLoader2Line
                 size={16}
                 className={clsx("inline-block animate-spin ml-1")}
