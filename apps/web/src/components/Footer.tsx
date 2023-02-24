@@ -46,6 +46,13 @@ const BirthdayResearchSocialItems = [
 ];
 
 export default function Footer() {
+  const [version, setVersion] = React.useState("");
+  React.useEffect(() => {
+    fetch("http://localhost:5741/version")
+      .then((response) => response.json())
+      .then((data) => setVersion(data.v))
+      .catch((error) => console.error("Error fetching version:", error));
+  }, []);
   return (
     <footer
       data-testid="footer"
@@ -66,7 +73,8 @@ export default function Footer() {
           </div>
         </div>
         <div className="pl-1 flex-row justify-between">
-          <div className="font-semibold">
+          <div className="font-semibold">Version {version}</div>
+          <div>
             Quantum is a proud development of Birthday Research — the blockchain
             R&D arm of Cake DeFi.
           </div>
