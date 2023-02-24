@@ -1,7 +1,6 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import UtilityButton from "@components/commons/UtilityButton";
 import UtilitySecondaryButton from "@components/erc-transfer/VerifiedUtilityButton";
 import { useLazyVerifyQuery } from "@store/index";
@@ -12,7 +11,7 @@ import { HttpStatusCode } from "axios";
 import { useContractContext } from "@contexts/ContractContext";
 import useTimeout from "@hooks/useSetTimeout";
 import { useStorageContext } from "@contexts/StorageContext";
-import { DISCLAIMER_MESSAGE } from "../../constants";
+import QrAddress from "@components/QrAddress";
 
 enum ButtonLabel {
   Validating = "Verifying",
@@ -26,12 +25,48 @@ enum TitleLabel {
   Rejected = "Validation failed",
   ThrottleLimit = "Verification attempt limit reached",
 }
+
 type RejectedLabelType = `Something went wrong${string}`;
 
 enum ContentLabel {
-  Validating = "Please wait as your transaction is being verified. Once verified, you will be redirected to the next step.",
+  Validating = "Please wait as we verify the funds transfer to the provided address. Upon validation, you will be redirected to the next stage to claim your tokens",
   Validated = "Please wait as we redirect you to the next step.",
   ThrottleLimit = "Please wait for a minute and try again.",
+}
+
+export enum ValidationStatusLabel {
+  Validating = "Validating",
+  Validated = "Validated",
+}
+
+function DisplayButton({
+  buttonLabel,
+  validationSuccess,
+  isValidating,
+  isThrottled,
+  onClick,
+}: {
+  buttonLabel: string;
+  validationSuccess: boolean;
+  isValidating: boolean;
+  isThrottled: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <div className="mt-6">
+      {validationSuccess ? (
+        <UtilitySecondaryButton label={ButtonLabel.Validated} disabled />
+      ) : (
+        <UtilityButton
+          label={buttonLabel}
+          isLoading={isValidating}
+          disabled={isValidating || validationSuccess || isThrottled}
+          withRefreshIcon={!validationSuccess && !isValidating}
+          onClick={onClick}
+        />
+      )}
+    </div>
+  );
 }
 
 export default function StepThreeVerification({
@@ -67,6 +102,7 @@ export default function StepThreeVerification({
   const [buttonLabel, setButtonLabel] = useState<ButtonLabel>(
     ButtonLabel.Validating
   );
+  const displayTryAgain = buttonLabel === ButtonLabel.Rejected;
 
   const { txnForm: txn, dfcAddress } = useStorageContext();
   const [validationSuccess, setValidationSuccess] = useState(false);
@@ -133,42 +169,71 @@ export default function StepThreeVerification({
     triggerVerify();
   }, [isValidating, validationSuccess]);
 
+  function onTryAgainClicked() {
+    setTitle(TitleLabel.Validating);
+    setContent(ContentLabel.Validating);
+    setButtonLabel(ButtonLabel.Validating);
+    setIsValidating(true);
+  }
+
   return (
-    <div
-      className={clsx(
-        "flex flex-col items-center text-center mt-12 pb-2 justify-between",
-        "md:flex-row md:gap-6 md:text-left md:mt-6"
+    <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-7 md:mt-4")}>
+      {dfcAddress && (
+        <div
+          className={clsx(
+            "max-w-max mx-auto flex flex-row order-1 mt-6 justify-start border-[0.5px] border-dark-200 rounded",
+            "md:w-2/5 md:flex-col md:shrink-0 md:order-none px-6 pt-6 pb-3 md:mt-0"
+          )}
+        >
+          <QrAddress
+            dfcUniqueAddress={dfcAddress}
+            validationStatus={
+              isValidating
+                ? ValidationStatusLabel.Validating
+                : validationSuccess
+                ? ValidationStatusLabel.Validated
+                : undefined
+            }
+          />
+        </div>
       )}
-    >
-      <div>
+      <div
+        className={clsx(
+          "flex flex-col grow text-center",
+          "md:text-left md:mt-4"
+        )}
+      >
         <span className="font-semibold text-dark-900 tracking-[0.01em] md:tracking-wider">
           {title}
         </span>
         <p className="text-sm text-dark-700 mt-2">{content}</p>
-      </div>
-      <AlertInfoMessage
-        message={DISCLAIMER_MESSAGE}
-        containerStyle="px-5 py-4 mt-6 md:hidden"
-        textStyle="text-xs"
-      />
-      <div className={clsx("w-full px-6 pt-12", "md:px-0 md:pt-0 md:w-auto")}>
-        {validationSuccess ? (
-          <UtilitySecondaryButton label={ButtonLabel.Validated} disabled />
-        ) : (
-          <UtilityButton
-            label={buttonLabel}
-            isLoading={isValidating}
-            disabled={isValidating || validationSuccess || isThrottled}
-            withRefreshIcon={!validationSuccess && !isValidating}
-            onClick={() => {
-              setTitle(TitleLabel.Validating);
-              setContent(ContentLabel.Validating);
-              setButtonLabel(ButtonLabel.Validating);
-              triggerVerify();
-            }}
-          />
+
+        {/* Web confirm button */}
+        {displayTryAgain && (
+          <div className={clsx("w-full hidden", "md:block")}>
+            <DisplayButton
+              buttonLabel={buttonLabel}
+              validationSuccess={validationSuccess}
+              isValidating={isValidating}
+              isThrottled={isThrottled}
+              onClick={onTryAgainClicked}
+            />
+          </div>
         )}
       </div>
+
+      {/* Mobile confirm button */}
+      {displayTryAgain && (
+        <div className={clsx("order-last", "md:hidden")}>
+          <DisplayButton
+            buttonLabel={buttonLabel}
+            validationSuccess={validationSuccess}
+            isValidating={isValidating}
+            isThrottled={isThrottled}
+            onClick={onTryAgainClicked}
+          />
+        </div>
+      )}
     </div>
   );
 }
