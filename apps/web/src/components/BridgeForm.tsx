@@ -32,7 +32,6 @@ import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
   ETHEREUM_SYMBOL,
   FEES_INFO,
-  UtilityModalEnum,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
 import Logging from "../api/logging";
@@ -99,7 +98,6 @@ export default function BridgeForm({
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
 
-  type UtilityModalMessageType = Record<UtilityModalEnum, ModalConfigType>;
   const [utilityModalData, setUtilityModalData] =
     useState<ModalConfigType | null>(null);
 
@@ -205,7 +203,7 @@ export default function BridgeForm({
     }
   };
 
-  const UtilityModalMessage: UtilityModalMessageType = {
+  const UtilityModalMessage = {
     resetForm: {
       title: "Are you sure you want to reset form?",
       message:
