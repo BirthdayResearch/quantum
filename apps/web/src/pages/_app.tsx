@@ -1,8 +1,8 @@
 import "../styles/globals.scss";
 import NextNProgress from "nextjs-progressbar";
-import Base from "../layouts/Base";
 import React from "react";
 import Script from "next/script";
+import Base from "../layouts/Base";
 
 // @ts-ignore
 export default function BridgeApp({ Component, pageProps }): JSX.Element {
@@ -23,6 +23,7 @@ export default function BridgeApp({ Component, pageProps }): JSX.Element {
           window.dataLayer = window.dataLayer || [];
           function gtag() {
             // @ts-ignore
+            // eslint-disable-next-line prefer-rest-params
             window.dataLayer.push(arguments);
           }
           // @ts-ignore
