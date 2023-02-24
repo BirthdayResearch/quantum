@@ -20,7 +20,7 @@ export class VersionController {
         };
       },
       {
-        ttl: 86400_000, // 24 hr
+        ttl: 3600_000 * 24 * 7, // 1 week
       },
     )) as VersionModel;
   }
