@@ -80,7 +80,7 @@ jobs:
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test -- --maxWorkers=4 --coverage --forceExit
+      - run: pnpm test
         env:
           GH_INSTANCE_INDEX: ${{ matrix.instance }}
 
