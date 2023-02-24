@@ -53,7 +53,7 @@ function Home() {
         <div className="flex flex-col justify-between px-6 pb-7 md:px-0 md:pb-0 md:w-5/12 md:mr-8 lg:mr-[72px]">
           <WelcomeHeader />
         </div>
-        <div className="flex-1">
+        <div className="flex-1 md:max-w-[50%]">
           {(txnHash.unconfirmed ||
             txnHash.confirmed ||
             txnHash.reverted ||

@@ -50,29 +50,28 @@ function SwitchButton({
   disabled?: boolean;
 }) {
   return (
-    <Tooltip
-      content="Switch source"
-      containerClass="my-8 flex flex-row rounded"
-    >
+    <div className="my-8 flex flex-row rounded">
       <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
-        className={clsx(
-          "dark-card-bg dark-bg-card-section group flex h-12 w-12 items-center justify-center rounded-full",
-          { "pointer-events-none": disabled }
-        )}
-      >
-        <div className="hidden group-hover:hidden lg:block">
-          <ArrowDownIcon size={24} className="fill-dark-700" />
-        </div>
-        <div className="group-hover:block lg:hidden">
-          <SwitchIcon size={24} className="fill-dark-700" />
-        </div>
-      </button>
+      <Tooltip content="Switch source">
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={disabled}
+          className={clsx(
+            "dark-card-bg dark-bg-card-section group flex h-12 w-12 items-center justify-center rounded-full",
+            { "pointer-events-none": disabled }
+          )}
+        >
+          <div className="hidden group-hover:hidden lg:block">
+            <ArrowDownIcon size={24} className="fill-dark-700" />
+          </div>
+          <div className="group-hover:block lg:hidden">
+            <SwitchIcon size={24} className="fill-dark-700" />
+          </div>
+        </button>
+      </Tooltip>
       <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-    </Tooltip>
+    </div>
   );
 }
 
@@ -418,7 +417,7 @@ export default function BridgeForm({
           To receive
         </span>
         <NumericFormat
-          className="text-left text-xs text-dark-1000 lg:text-base"
+          className="max-w-[70%] block break-words text-right text-xs text-dark-1000 lg:text-base"
           value={amount || 0}
           thousandSeparator
           suffix={` ${selectedTokensB.tokenA.name}`}
@@ -435,7 +434,7 @@ export default function BridgeForm({
           </div>
         </div>
         <NumericFormat
-          className="text-left text-xs text-dark-1000 lg:text-base"
+          className="max-w-[70%] block break-words text-right text-xs text-dark-1000 lg:text-base"
           value={fee}
           thousandSeparator
           suffix={` ${feeSymbol}`}
