@@ -25,6 +25,7 @@ interface Props {
   onAddressInputChange: (address: string) => void;
   onAddressInputError: (hasError: boolean) => void;
   isPrimary?: boolean;
+  customMessage?: string;
 }
 
 /**
@@ -70,6 +71,7 @@ export default function WalletAddressInput({
   onAddressInputChange,
   onAddressInputError,
   isPrimary = true,
+  customMessage,
 }: Props): JSX.Element {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -147,7 +149,9 @@ export default function WalletAddressInput({
     let message: string;
     const isDeFiChain = blockchain === "DeFiChain";
     const hasInvalidInput = !!(addressInput && !isValidAddress);
-    if (hasInvalidInput) {
+    if (customMessage !== undefined) {
+      message = customMessage;
+    } else if (hasInvalidInput) {
       const dfiNetwork = isDeFiChain ? ` ${networkEnv}` : "";
       message = `Use correct address for ${Network[blockchain]}${dfiNetwork}`;
     } else {
@@ -164,7 +168,7 @@ export default function WalletAddressInput({
     }
     setError({ message, isError: hasInvalidInput });
     onAddressInputError(!addressInput || !isValidAddress);
-  }, [addressInput, isValidAddress, blockchain, networkEnv]);
+  }, [addressInput, isValidAddress, blockchain, networkEnv, customMessage]);
 
   useEffect(() => {
     if (copiedFromClipboard) {
