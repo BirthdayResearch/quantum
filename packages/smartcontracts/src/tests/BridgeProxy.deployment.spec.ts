@@ -23,6 +23,6 @@ describe('BridgeV1 deployment test', () => {
   });
   it('Successfully fetching constants', async () => {
     const { proxyBridge } = await loadFixture(deployContracts);
-    expect(await proxyBridge.name()).to.be.equal('QUANTUM_BRIDGE');
+    expect(await proxyBridge.NAME()).to.be.equal('QUANTUM_BRIDGE');
   });
 });

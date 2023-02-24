@@ -1,5 +1,6 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
+import BigNumber from 'bignumber.js';
 import {
   BridgeV1,
   HardhatNetwork,
@@ -62,7 +63,12 @@ describe('DeFiChain Verify fund Testing', () => {
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
-          defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC, transferFee: '0.003' },
+          defichain: {
+            whaleURL,
+            key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC,
+            transferFee: '0.003',
+            dustUTXO: '0.0001',
+          },
           startedHardhatContainer,
           testnet: {
             bridgeContractAddress: bridgeContract.address,
@@ -245,7 +251,14 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AmountNotValid });
   });
 
-  it('should verify fund in the wallet address', async () => {
+  it('should verify fund in the wallet address and top up UTXO', async () => {
+    const hotWallet = whaleWalletProvider.getHotWallet();
+    const hotWalletAddress = await hotWallet.getAddress();
+
+    // Send UTXO to Hot Wallet
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
+    await defichain.generateBlock();
+
     // Sends token to the address
     await defichain.playgroundClient?.rpc.call(
       'sendtokenstoaddress',
@@ -271,5 +284,10 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response.signature).toBeDefined();
     expect(response.nonce).toBeDefined();
     expect(response.deadline).toBeDefined();
+
+    await defichain.generateBlock();
+    expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
+      new BigNumber('0.0001').toFixed(8),
+    );
   });
 });

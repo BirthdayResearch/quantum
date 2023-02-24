@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { EthereumTransactionStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
-import { BigNumber as EthBigNumber, Contract, ethers } from 'ethers';
-import { BridgeV2TestNet__factory, ERC20__factory } from 'smartcontracts';
+import { BigNumber as EthBigNumber, ethers } from 'ethers';
+import { BridgeV1, BridgeV1__factory, ERC20__factory } from 'smartcontracts';
 
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
@@ -17,7 +17,7 @@ import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
 
 @Injectable()
 export class EVMTransactionConfirmerService {
-  private contract: Contract;
+  private contract: BridgeV1;
 
   private network: EnvironmentNetwork;
 
@@ -31,9 +31,8 @@ export class EVMTransactionConfirmerService {
     private prisma: PrismaService,
   ) {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
-    this.contract = new ethers.Contract(
+    this.contract = BridgeV1__factory.connect(
       this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address'),
-      BridgeV2TestNet__factory.abi,
       this.ethersRpcProvider,
     );
     this.logger = new Logger(EVMTransactionConfirmerService.name);
@@ -141,7 +140,7 @@ export class EVMTransactionConfirmerService {
 
       const { chainId } = await this.ethersRpcProvider.getNetwork();
       const nonce: EthBigNumber = await this.contract.eoaAddressToNonce(receiverAddress);
-      const domainName = await this.contract.name();
+      const domainName = await this.contract.NAME();
       const domainVersion = await this.contract.version();
       const deadline = getNextDayTimestamp();
 
@@ -311,7 +310,7 @@ export class EVMTransactionConfirmerService {
 }
 
 const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
-  const iface = new ethers.utils.Interface(BridgeV2TestNet__factory.abi);
+  const iface = new ethers.utils.Interface(BridgeV1__factory.abi);
   const decodedData = iface.parseTransaction({ data: txDetail.data, value: txDetail.value });
   const fragment = iface.getFunction(decodedData.name);
   const params = decodedData.args.reduce((res, param, i) => {

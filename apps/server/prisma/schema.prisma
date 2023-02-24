@@ -13,6 +13,11 @@ enum EthereumTransactionStatus {
   CONFIRMED
 }
 
+enum BotStatus {
+  SENT
+  ERROR
+}
+
 model DeFiChainAddressIndex {
   id                   BigInt    @id @default(autoincrement())
   index                Int
@@ -25,7 +30,7 @@ model DeFiChainAddressIndex {
   updatedAt            DateTime? @updatedAt
   hotWalletAddress     String
   ethReceiverAddress   String?
-
+  botStatus            BotStatus?
 
   @@unique([hotWalletAddress, index])
 }
