@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import * as ethers from "ethers";
 import { useAccount } from "wagmi";
@@ -159,8 +159,7 @@ export default function WalletAddressInput({
         isDeFiChain &&
         [
           EnvironmentNetwork.TestNet,
-          // Temp remove for Testnet environment
-          // EnvironmentNetwork.LocalPlayground,
+          EnvironmentNetwork.LocalPlayground,
         ].includes(networkEnv);
       message = isTestnet
         ? `Make sure to only use ${networkEnv} for testing`
