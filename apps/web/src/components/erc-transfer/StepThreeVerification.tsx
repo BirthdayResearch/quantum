@@ -97,7 +97,7 @@ export default function StepThreeVerification({
     </span>
   );
   const [content, setContent] = useState<ContentLabel | JSX.Element>(
-    contentLabelRejected
+    ContentLabel.Validating
   );
   const [buttonLabel, setButtonLabel] = useState<ButtonLabel>(
     ButtonLabel.Validating
@@ -177,7 +177,7 @@ export default function StepThreeVerification({
   }
 
   return (
-    <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-7 md:mt-4")}>
+    <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-6 md:mt-4")}>
       {dfcAddress && (
         <div
           className={clsx(
