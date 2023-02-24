@@ -49,3 +49,8 @@ export const ETHEREUM_SYMBOL = "ETH";
 export const CONFIRMATIONS_BLOCK_TOTAL = 65;
 
 export const ETHEREUM_MAINNET_ID = 1;
+
+export enum UtilityModalEnum {
+  ResetForm = "resetForm",
+  LeaveTransaction = "leaveTransaction",
+}

@@ -8,7 +8,9 @@ import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { Network, NetworkOptionsI, SelectionType, TokensI } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
-import UtilityModal from "@components/commons/UtilityModal";
+import UtilityModal, {
+  ModalConfigType,
+} from "@components/commons/UtilityModal";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
 import IconTooltip from "@components/commons/IconTooltip";
@@ -30,6 +32,7 @@ import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
   ETHEREUM_SYMBOL,
   FEES_INFO,
+  UtilityModalEnum,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
 import Logging from "../api/logging";
@@ -95,7 +98,7 @@ export default function BridgeForm({
   const [addressInput, setAddressInput] = useState<string>("");
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const [showResetModal, setShowResetModal] = useState<boolean>(false);
+  const [showUtilityModal, setShowUtilityModal] = useState<boolean>(false);
 
   const [fee, feeSymbol] = useTransferFee(amount);
 
@@ -173,7 +176,7 @@ export default function BridgeForm({
   };
 
   const onResetTransferForm = () => {
-    setShowResetModal(false);
+    setShowUtilityModal(false);
     setStorage("txn-form", null);
     setStorage("dfc-address", null);
     setStorage("dfc-address-details", null);
@@ -198,6 +201,49 @@ export default function BridgeForm({
         return "Connect wallet";
     }
   };
+
+  type UtilityModalMessageType = Record<
+    UtilityModalEnum,
+    Omit<ModalConfigType, "show">
+  >;
+
+  const UtilityModalMessage: UtilityModalMessageType = {
+    resetForm: {
+      title: "Are you sure you want to reset form?",
+      message:
+        "Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      primaryButtonLabel: "Reset form",
+      onPrimaryButtonClick: () => onResetTransferForm(),
+      secondaryButtonLabel: "Go back",
+      onSecondaryButtonClick: () => setShowUtilityModal(false),
+    },
+    leaveTransaction: {
+      title: "Are you sure you want to leave your transaction?",
+      message:
+        "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      primaryButtonLabel: "Leave transaction",
+      onPrimaryButtonClick: () => {
+        setShowConfirmModal(false);
+        setShowUtilityModal(false);
+      },
+      secondaryButtonLabel: "Go back",
+      onSecondaryButtonClick: () => setShowUtilityModal(false),
+    },
+  };
+
+  const [utilityModalData, setUtilityModalData] =
+    useState<Omit<ModalConfigType, "show">>();
+
+  function onUtilityModalClick(type: UtilityModalEnum) {
+    switch (type) {
+      case UtilityModalEnum.ResetForm:
+        return setUtilityModalData(UtilityModalMessage.resetForm);
+      case UtilityModalEnum.LeaveTransaction:
+        return setUtilityModalData(UtilityModalMessage.leaveTransaction);
+      default:
+        return null;
+    }
+  }
 
   useEffect(() => {
     if (amount) {
@@ -460,7 +506,10 @@ export default function BridgeForm({
           <div className="mt-3">
             <ActionButton
               label="Reset form"
-              onClick={() => setShowResetModal(true)}
+              onClick={() => {
+                setShowUtilityModal(true);
+                onUtilityModalClick(UtilityModalEnum.ResetForm);
+              }}
               variant="secondary"
             />
           </div>
@@ -474,20 +523,25 @@ export default function BridgeForm({
       <ConfirmTransferModal
         show={showConfirmModal}
         addressDetail={dfcAddressDetails}
-        onClose={() => setShowConfirmModal(false)}
+        onClose={() => {
+          setShowUtilityModal(true);
+          onUtilityModalClick(UtilityModalEnum.LeaveTransaction);
+        }}
         amount={amount}
         fromAddress={fromAddress}
         toAddress={addressInput}
       />
-      <UtilityModal
-        show={showResetModal}
-        title="Are you sure you want to reset form?"
-        message="Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution"
-        primaryButtonLabel="Reset form"
-        onPrimaryButtonClick={() => onResetTransferForm()}
-        secondaryButtonLabel="Go back"
-        onSecondaryButtonClick={() => setShowResetModal(false)}
-      />
+      {utilityModalData && (
+        <UtilityModal
+          show={showUtilityModal}
+          title={utilityModalData.title}
+          message={utilityModalData.message}
+          primaryButtonLabel={utilityModalData.primaryButtonLabel}
+          onPrimaryButtonClick={utilityModalData.onPrimaryButtonClick}
+          secondaryButtonLabel={utilityModalData.secondaryButtonLabel}
+          onSecondaryButtonClick={utilityModalData.onSecondaryButtonClick}
+        />
+      )}
     </div>
   );
 }
