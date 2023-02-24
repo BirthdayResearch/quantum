@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import BigNumber from "bignumber.js";
 import Image from "next/image";
-import { AddressDetails, NetworkName, RowDataI, TransferData } from "types";
+import { AddressDetails, Network, RowDataI, TransferData } from "types";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import useDisableEscapeKey from "@hooks/useDisableEscapeKey";
 import useTransferFee from "@hooks/useTransferFee";
@@ -127,12 +127,12 @@ export default function ConfirmTransferModal({
   const [fee, feeSymbol] = useTransferFee(amount);
 
   // Direction of transfer
-  const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
+  const isSendingToDFC = selectedNetworkB.name === Network.DeFiChain;
 
   const data: TransferData = {
     from: {
       address: (isSendingToDFC ? fromAddress : "DeFiChain address") as string,
-      networkName: NetworkName[selectedNetworkA.name],
+      networkName: Network[selectedNetworkA.name],
       networkIcon: selectedNetworkA.icon,
       tokenName: selectedTokensA.tokenA.name,
       tokenIcon: selectedTokensA.tokenA.icon,
@@ -140,7 +140,7 @@ export default function ConfirmTransferModal({
     },
     to: {
       address: toAddress,
-      networkName: NetworkName[selectedNetworkB.name],
+      networkName: Network[selectedNetworkB.name],
       networkIcon: selectedNetworkB.icon,
       tokenName: selectedTokensB.tokenA.name,
       tokenIcon: selectedTokensB.tokenA.icon,

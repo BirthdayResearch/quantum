@@ -72,7 +72,7 @@ export default function DeFiChainToERC20Transfer({
           refundAddress={refundAddress}
           setRefundAddress={setRefundAddress}
           // Note: Once the DFC address is generated, a refundAddress is already tied to it.
-          isDisabled={addressDetail?.refundAddress !== undefined}
+          isReadOnly={addressDetail?.refundAddress !== undefined}
           goToNextStep={() => {
             handleNextStep();
           }}

@@ -10,11 +10,6 @@ export enum Network {
   DeFiChain = "DeFiChain",
 }
 
-export enum NetworkName {
-  Ethereum = "ERC20",
-  DeFiChain = "DeFiChain",
-}
-
 export interface TokenDetailI {
   name: string;
   symbol: string;
@@ -42,7 +37,7 @@ export interface TokensI {
   tokenB: TokenDetailI;
 }
 export interface NetworkOptionsI {
-  name: string;
+  name: Network;
   icon: string;
   tokens: TokensI[];
 }
@@ -66,7 +61,7 @@ export interface UnconfirmedTxnI {
 
 export interface RowDataI {
   address: string;
-  networkName: NetworkName;
+  networkName: Network;
   networkIcon: string;
   tokenName: string;
   tokenIcon: string;

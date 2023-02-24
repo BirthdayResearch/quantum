@@ -150,7 +150,7 @@ export default function StepTwoSendConfirmation({
               "Address generation limit reached, please wait for a minute and try again"
             );
           } else {
-            setAddressGenerationError(data.error);
+            setAddressGenerationError(data?.error);
           }
           setDfcUniqueAddress("");
         } finally {

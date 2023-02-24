@@ -12,7 +12,7 @@ import {
   EnvironmentNetwork,
   getJellyfishNetwork,
 } from "@waveshq/walletkit-core";
-import { Network, NetworkName } from "types";
+import { Network } from "types";
 import Tooltip from "./commons/Tooltip";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 
@@ -25,6 +25,7 @@ interface Props {
   onAddressInputChange: (address: string) => void;
   onAddressInputError: (hasError: boolean) => void;
   isPrimary?: boolean;
+  customMessage?: string;
 }
 
 /**
@@ -70,6 +71,7 @@ export default function WalletAddressInput({
   onAddressInputChange,
   onAddressInputError,
   isPrimary = true,
+  customMessage,
 }: Props): JSX.Element {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -124,7 +126,7 @@ export default function WalletAddressInput({
   };
 
   useEffect(() => {
-    const displayedName = NetworkName[blockchain];
+    const displayedName = Network[blockchain];
     if (
       networkEnv === EnvironmentNetwork.TestNet &&
       blockchain === Network.DeFiChain
@@ -147,9 +149,11 @@ export default function WalletAddressInput({
     let message: string;
     const isDeFiChain = blockchain === "DeFiChain";
     const hasInvalidInput = !!(addressInput && !isValidAddress);
-    if (hasInvalidInput) {
+    if (customMessage !== undefined) {
+      message = customMessage;
+    } else if (hasInvalidInput) {
       const dfiNetwork = isDeFiChain ? ` ${networkEnv}` : "";
-      message = `Use correct address for ${NetworkName[blockchain]}${dfiNetwork}`;
+      message = `Use correct address for ${Network[blockchain]}${dfiNetwork}`;
     } else {
       const isTestnet =
         isDeFiChain &&
@@ -164,7 +168,7 @@ export default function WalletAddressInput({
     }
     setError({ message, isError: hasInvalidInput });
     onAddressInputError(!addressInput || !isValidAddress);
-  }, [addressInput, isValidAddress, blockchain, networkEnv]);
+  }, [addressInput, isValidAddress, blockchain, networkEnv, customMessage]);
 
   useEffect(() => {
     if (copiedFromClipboard) {

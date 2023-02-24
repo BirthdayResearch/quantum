@@ -8,7 +8,6 @@ import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import {
   Network,
-  NetworkName,
   NetworkOptionsI,
   SelectionType,
   TokensI,
@@ -135,7 +134,7 @@ export default function BridgeForm({
   };
 
   const validateAmountInput = (value: string) => {
-    const isSendingToDFC = selectedNetworkB.name === NetworkName.DeFiChain;
+    const isSendingToDFC = selectedNetworkB.name === Network.DeFiChain;
     let err = "";
     if (isSendingToDFC && new BigNumber(value).gt(maxAmount.toFixed(8))) {
       err = "Insufficient Funds";
