@@ -10,7 +10,7 @@ const securityHeaders = [
       `img-src 'self' images.prismic.io data:;` +
       `media-src 'self';` +
       `object-src 'none';` +
-      `script-src 'self' app.netlify.com netlify-cdp-loader.netlify.app *.googletagmanager.com 'unsafe-inline' ${
+      `script-src 'self' app.netlify.com netlify-cdp-loader.netlify.app *.googletagmanager.com ${
         process.env.NODE_ENV === "development" ? `'unsafe-eval'` : ""
       };` +
       `style-src 'self' fonts.googleapis.com 'unsafe-inline';` +
