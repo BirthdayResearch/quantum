@@ -66,7 +66,11 @@ export default function StepLastClaim({
   } = useContractWrite(bridgeConfig);
 
   // Wait and get result from write contract for `claimFund` function
-  const { error: claimTxnError, isSuccess } = useWaitForTransaction({
+  const {
+    error: claimTxnError,
+    isLoading: isClaimInProgress,
+    isSuccess,
+  } = useWaitForTransaction({
     hash: claimFundData?.hash,
     onSettled: () => setShowLoader(false),
   });
@@ -121,6 +125,13 @@ export default function StepLastClaim({
     }
   }, [error, isBalanceInsufficient]);
 
+  const statusMessage = {
+    title: isClaimInProgress ? "Processing" : "Waiting for confirmation",
+    message: isClaimInProgress
+      ? "Do not close or refresh the browser while processing. This will only take a few seconds."
+      : "Confirm this transaction in your Wallet.",
+  };
+
   return (
     <>
       {showLoader && (
@@ -128,16 +139,15 @@ export default function StepLastClaim({
           <div className="flex flex-col items-center mt-6 mb-14">
             <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
             <span className="font-bold text-2xl text-dark-900 mt-12">
-              Waiting for confirmation
+              {statusMessage.title}
             </span>
-            <span className="text-dark-900 mt-2">
-              Confirm this transaction in your Wallet.
+            <span className="text-dark-900 text-center mt-2">
+              {statusMessage.message}
             </span>
           </div>
         </Modal>
       )}
       {isSuccess && (
-        // TODO: Replace success ui/message
         <Modal isOpen={isSuccess} onClose={() => router.reload()}>
           <div className="flex flex-col items-center mt-6 mb-14">
             <FiCheck className="text-8xl text-valid ml-1" />
