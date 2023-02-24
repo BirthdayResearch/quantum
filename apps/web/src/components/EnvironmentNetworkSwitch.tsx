@@ -13,6 +13,7 @@ export default function EnvironmentNetworkSwitch({
     useNetworkEnvironmentContext();
 
   const handleOnClick = () => {
+    const isProduction = process.env.NODE_ENV === "production";
     let nextNetworkEnv: EnvironmentNetwork;
     switch (currentNetworkEnv) {
       // Temp remove for Testnet environment
@@ -22,9 +23,13 @@ export default function EnvironmentNetworkSwitch({
       // case EnvironmentNetwork.RemotePlayground:
       //   nextNetworkEnv = EnvironmentNetwork.LocalPlayground;
       //   break;
-      // case EnvironmentNetwork.LocalPlayground:
-      default:
+      case EnvironmentNetwork.LocalPlayground:
         nextNetworkEnv = EnvironmentNetwork.TestNet;
+        break;
+      default:
+        nextNetworkEnv = isProduction
+          ? EnvironmentNetwork.TestNet
+          : EnvironmentNetwork.LocalPlayground;
         break;
     }
 
@@ -32,7 +37,7 @@ export default function EnvironmentNetworkSwitch({
     /* switch (currentNetworkEnv) {
       case EnvironmentNetwork.TestNet:
         nextNetworkEnv =
-          process.env.NODE_ENV === "production"
+          isProduction
             ? EnvironmentNetwork.MainNet
             : EnvironmentNetwork.RemotePlayground;
         break;
