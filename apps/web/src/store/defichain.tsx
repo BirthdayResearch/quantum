@@ -107,10 +107,6 @@ export const bridgeApi = createApi({
       query: ({ baseUrl }) => ({
         url: `${baseUrl}/version`,
         method: "GET",
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          mode: "no-cors",
-        },
       }),
     }),
     allocateDfcFund: builder.mutation<{ transactionHash: string }, any>({

@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { FaReddit, FaGithub, FaTwitter } from "react-icons/fa";
 import { BsMedium } from "react-icons/bs";
 import Image from "next/image";
@@ -47,17 +47,17 @@ const BirthdayResearchSocialItems = [
 ];
 
 export default function Footer() {
-  const [version, setVersion] = React.useState("0.0.0");
+  const [version, setVersion] = useState("0.0.0");
 
   const [trigger] = useLazyBridgeVersionQuery();
 
-  React.useEffect(() => {
-    async function checkBridgeStatus() {
+  useEffect(() => {
+    async function getBridgeVersion() {
       const { data } = await trigger({});
-      if (data && data.v) setVersion(data.v);
+      if (data?.v) setVersion(data.v);
     }
 
-    checkBridgeStatus();
+    getBridgeVersion();
   }, []);
 
   return (
