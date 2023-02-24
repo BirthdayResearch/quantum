@@ -54,7 +54,7 @@ export default function Footer() {
   React.useEffect(() => {
     async function checkBridgeStatus() {
       const { data } = await trigger({});
-      setVersion(data.v);
+      if (data && data.v) setVersion(data.v);
     }
 
     checkBridgeStatus();

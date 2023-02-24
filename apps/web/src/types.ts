@@ -33,7 +33,7 @@ export interface BridgeStatus {
 }
 
 export interface BridgeVersion {
-  version: string;
+  v: string;
 }
 
 export enum SelectionType {
