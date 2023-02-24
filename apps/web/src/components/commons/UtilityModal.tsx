@@ -36,7 +36,7 @@ export default function UtilityModal({
           <ActionButton
             label={secondaryButtonLabel}
             variant="secondary"
-            customStyle="mt-2 md:px-2.5 lg:text-xl lg:leading-8 lg:py-2 lg:px-8 xl:px-14"
+            customStyle="mt-2 md:px-2.5 lg:text-xl lg:leading-8 lg:py-2 lg:px-8 xl:px-14 border-[0.5px] border-dark-500"
             onClick={onSecondaryButtonClick}
           />
         </span>
