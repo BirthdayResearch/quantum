@@ -169,12 +169,12 @@ export default function StepThreeVerification({
     triggerVerify();
   }, [isValidating, validationSuccess]);
 
-  function onTryAgainClicked() {
+  const onTryAgainClicked = () => {
     setTitle(TitleLabel.Validating);
     setContent(ContentLabel.Validating);
     setButtonLabel(ButtonLabel.Validating);
     setIsValidating(true);
-  }
+  };
 
   return (
     <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-6 md:mt-4")}>

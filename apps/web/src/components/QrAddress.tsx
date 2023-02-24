@@ -1,13 +1,35 @@
 import QRCode from "react-qr-code";
 import clsx from "clsx";
-import TimeLimitCounter from "./erc-transfer/TimeLimitCounter";
 import { useState } from "react";
 import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import Tooltip from "@components/commons/Tooltip";
 import { useStorageContext } from "@contexts/StorageContext";
-import { ValidationStatusLabel } from "./erc-transfer/StepThreeVerification";
 import { RiLoader2Line } from "react-icons/ri";
 import { IoCheckmarkCircle } from "react-icons/io5";
+import TimeLimitCounter from "./erc-transfer/TimeLimitCounter";
+import { ValidationStatusLabel } from "./erc-transfer/StepThreeVerification";
+
+function SuccessCopy({
+  containerClass,
+  show,
+}: {
+  containerClass: string;
+  show: boolean;
+}) {
+  return (
+    <div
+      className={clsx(
+        "absolute md:w-full text-center",
+        show ? "opacity-100" : "opacity-0",
+        containerClass
+      )}
+    >
+      <span className="rounded bg-valid px-2 py-1 text-xs text-dark-00  transition duration-300 md:text-xs">
+        Copied to clipboard
+      </span>
+    </div>
+  );
+}
 
 export default function QrAddress({
   dfcUniqueAddress,
@@ -30,28 +52,6 @@ export default function QrAddress({
     copy(text);
     setShowSuccessCopy(true);
   };
-
-  function SuccessCopy({
-    containerClass,
-    show,
-  }: {
-    containerClass: string;
-    show: boolean;
-  }) {
-    return (
-      <div
-        className={clsx(
-          "absolute md:w-full text-center",
-          show ? "opacity-100" : "opacity-0",
-          containerClass
-        )}
-      >
-        <span className="rounded bg-valid px-2 py-1 text-xs text-dark-00  transition duration-300 md:text-xs">
-          Copied to clipboard
-        </span>
-      </div>
-    );
-  }
 
   return (
     <div className="w-[164px]">
