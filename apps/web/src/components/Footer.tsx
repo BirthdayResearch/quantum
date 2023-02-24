@@ -2,6 +2,8 @@ import React from "react";
 import { FaReddit, FaGithub, FaTwitter } from "react-icons/fa";
 import { BsMedium } from "react-icons/bs";
 import Image from "next/image";
+import BASE_URLS from "config/networkUrl";
+import { useNetworkEnvironmentContext } from "layouts/contexts/NetworkEnvironmentContext";
 import Socials from "./commons/Socials";
 
 const DeFiChainSocialItems = [
@@ -47,8 +49,9 @@ const BirthdayResearchSocialItems = [
 
 export default function Footer() {
   const [version, setVersion] = React.useState("");
+  const { networkEnv } = useNetworkEnvironmentContext();
   React.useEffect(() => {
-    fetch("http://localhost:5741/version")
+    fetch(`${BASE_URLS[networkEnv]}/version`)
       .then((response) => response.json())
       .then((data) => setVersion(data.v))
       .catch((error) => console.error("Error fetching version:", error));
