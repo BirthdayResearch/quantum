@@ -70,11 +70,13 @@ export default function StepOneInitiate({
             disabled={hasAddressInputErr}
             onClick={goToNextStep}
           />
-          {hasAddressInputErr && (
-            <div className="text-dark-500 text-center text-xs pt-3">
-              You must enter an address for refund to continue.
-            </div>
-          )}
+          <div className="text-dark-500 text-center text-xs pt-3">
+            {hasAddressInputErr ? (
+              <span>You must enter an address for refund to continue.</span>
+            ) : (
+              <span>&nbsp;</span>
+            )}
+          </div>
         </div>
       </div>
     </div>

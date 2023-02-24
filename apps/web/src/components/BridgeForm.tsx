@@ -6,14 +6,9 @@ import { ConnectKitButton } from "connectkit";
 import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
 import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import {
-  Network,
-  NetworkOptionsI,
-  SelectionType,
-  TokensI,
-} from "types";
-import UtilityModal from "@components/commons/UtilityModal";
+import { Network, NetworkOptionsI, SelectionType, TokensI } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
+import UtilityModal from "@components/commons/UtilityModal";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
 import IconTooltip from "@components/commons/IconTooltip";
