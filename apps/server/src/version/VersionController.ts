@@ -1,17 +1,27 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
+import { SemaphoreCache } from '../libs/caches/SemaphoreCache';
 import { VersionModel } from './VersionInterface';
 
 @Controller('version')
 export class VersionController {
-  constructor(private configService: ConfigService) {}
+  constructor(private configService: ConfigService, protected readonly cache: SemaphoreCache) {}
 
   @Get()
-  public getVersion(): VersionModel {
-    const version = this.configService.get<string>('APP_VERSION');
-    return {
-      v: version ?? '0.0.0',
-    };
+  public async getVersion(): Promise<VersionModel> {
+    const key = `APP_VERSION`;
+    return (await this.cache.get(
+      key,
+      async () => {
+        const version = this.configService.get<string>('APP_VERSION');
+        return {
+          v: version ?? '0.0.0',
+        };
+      },
+      {
+        ttl: 86400_000, // 24 hr
+      },
+    )) as VersionModel;
   }
 }
