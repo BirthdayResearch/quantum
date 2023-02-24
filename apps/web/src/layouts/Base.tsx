@@ -1,5 +1,4 @@
 import Head from "next/head";
-import Script from "next/script";
 import React, { PropsWithChildren, useEffect, useState } from "react";
 import {
   appName,
@@ -125,19 +124,6 @@ function Base({ children }: PropsWithChildren<any>): JSX.Element | null {
           sizes="16x16"
           href="/favicon-16x16.png"
         />
-        <Script
-          strategy="afterInteractive"
-          src="https://www.googletagmanager.com/gtag/js?id=G-CNVHG8WSHW"
-        />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){window.dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-CNVHG8WSHW');
-        `}
-        </Script>
       </Head>
 
       <WagmiConfig client={client}>
