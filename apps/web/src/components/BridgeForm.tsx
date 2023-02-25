@@ -207,7 +207,7 @@ export default function BridgeForm({
       setHasUnconfirmedTxn(true);
       setAmount(localData.amount);
       setAddressInput(localData.toAddress);
-      setFromAddress(localData.fromAddress);
+      setFromAddress(localData.fromAddress ?? address);
       setSelectedNetworkA(localData.selectedNetworkA);
       setSelectedTokensA(localData.selectedTokensA);
       setSelectedNetworkB(localData.selectedNetworkB);
@@ -215,6 +215,7 @@ export default function BridgeForm({
       updateNetworkEnv(localData.networkEnv);
     } else {
       setHasUnconfirmedTxn(false);
+      setFromAddress(address as string);
     }
   }, [networkEnv, txnForm]);
 

@@ -104,10 +104,14 @@ export default function EvmToDeFiChainTransfer({
 
   // Requires approval for more allowance
   useEffect(() => {
-    if (eventError?.customErrorDisplay === "InsufficientAllowanceError") {
+    const hasInsufficientAllowance = data.to.amount.gt(tokenAllowance);
+    if (
+      eventError?.customErrorDisplay === "InsufficientAllowanceError" ||
+      hasInsufficientAllowance
+    ) {
       setRequiresApproval(true);
     }
-  }, [eventError?.customErrorDisplay]);
+  }, [eventError?.customErrorDisplay, tokenAllowance]);
 
   // Consolidate all the possible status of the txn before its tx hash is created
   useEffect(() => {
@@ -142,16 +146,15 @@ export default function EvmToDeFiChainTransfer({
   ]);
 
   useEffect(() => {
-    // Trigger `bridgeToDeFiChain` once allowance is approved
     const hasEnoughAllowance = data.to.amount.lte(tokenAllowance);
-    const successfulApproval =
-      requiresApproval && isApproveTxnSuccess && refetchedBridgeFn;
+    const successfulApproval = isApproveTxnSuccess && refetchedBridgeFn;
 
     if (successfulApproval && hasEnoughAllowance) {
+      // Automatically trigger `bridgeToDeFiChain` once allowance is approved
       setRequiresApproval(false);
       writeBridgeToDeFiChain?.();
-    } else if (successfulApproval && !hasEnoughAllowance) {
-      writeApprove?.();
+    } else if (hasEnoughAllowance) {
+      setRequiresApproval(false);
     }
   }, [isApproveTxnSuccess, tokenAllowance, refetchedBridgeFn]);
 
