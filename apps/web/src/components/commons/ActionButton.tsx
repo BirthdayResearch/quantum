@@ -24,16 +24,16 @@ export default function ActionButton({
   isRefresh?: boolean;
 }) {
   const responsiveSizing =
-    responsiveStyle ?? "lg:text-xl lg:leading-8 lg:py-4 lg:px-8 xl:px-14";
+    responsiveStyle ?? "lg:text-base lg:leading-8 lg:py-4 lg:px-8 xl:px-14";
   const isPrimary = variant === "primary";
   const defaultStyle =
-    "text-lg md:px-2.5 lg:text-xl lg:leading-8 lg:px-8 xl:px-14 lg:py-4";
+    "text-sm md:px-2.5 lg:text-base lg:leading-8 lg:px-8 xl:px-14 lg:py-4";
   return (
     <button
       data-testid={testId ?? "action-btn"}
       type="button"
       className={clsx(
-        "w-full flex items-center justify-center rounded-[92px] font-bold p-3.5",
+        "w-full flex items-center justify-center rounded-[92px] font-bold p-2.5",
         "focus-visible:outline-none disabled:opacity-30",
         "md:px-2.5",
         responsiveSizing,

@@ -63,7 +63,7 @@ export default function EnvironmentNetworkSwitch({
       type="button"
       className={clsx(
         "flex items-center rounded-[37px] dark-section-bg border border-dark-card-stroke px-2 py-1 ml-2 hover:dark-btn-hover hover:border-dark-500",
-        "lg:px-3 lg:py-2",
+        "lg:px-2.5 lg:py-1.5",
         {
           "pointer-events-none": disabled,
         }

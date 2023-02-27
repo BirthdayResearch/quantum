@@ -14,7 +14,7 @@ export default function WelcomeHeader() {
       <h1 className={clsx(headerStyle)}>Building a</h1>
       <h1 className={clsx(headerStyle)}>decentralised</h1>
       <h1 className={clsx(headerStyle)}>tomorrow</h1>
-      <div className="mt-2">
+      <div className="mt-2 lg:mt-3">
         <h2 className={clsx(bylineStyle)}>connecting one</h2>
         <h2 className={clsx(bylineStyle)}>blockchain at a time</h2>
         <div className="flex flex-row items-center xs:mt-[36px] md:mt-7 hidden md:inline-flex">

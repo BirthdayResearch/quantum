@@ -45,12 +45,9 @@ function Home() {
   };
 
   return (
-    <section
-      className="relative mt-8 flex min-h-screen flex-col md:mt-7 lg:mt-12"
-      data-testid="homepage"
-    >
-      <div className="flex flex-col md:flex-row w-full px-0 md:px-12 lg:px-[120px]">
-        <div className="flex flex-col justify-between px-6 pb-7 md:px-0 md:pb-0 md:w-5/12 md:mr-8 lg:mr-[72px]">
+    <section className="relative flex flex-col" data-testid="homepage">
+      <div className="flex flex-col justify-between md:flex-row w-full px-0 md:px-12 lg:px-[120px]">
+        <div className="flex flex-col justify-between px-6 pb-7 md:px-0 md:pb-0 md:w-5/12 mt-6 mb-5 md:mb-0 lg:mt-12">
           <WelcomeHeader />
         </div>
         <div className="flex-1 md:max-w-[50%]">

@@ -40,7 +40,7 @@ function NetworkOptions({ options }: { options: NetworkOptionsI[] }) {
               <Divider />
               <div
                 className={clsx(
-                  "px-5 lg:px-6 py-3 lg:py-4 my-1 lg:my-2",
+                  "px-5 lg:px-6 py-3 my-1 lg:my-2",
                   active && "bg-dark-gradient-1"
                 )}
               >
@@ -49,12 +49,12 @@ function NetworkOptions({ options }: { options: NetworkOptionsI[] }) {
                     <Image
                       width={100}
                       height={100}
-                      className="w-6 h-6 lg:w-[28px] lg:h-[28px]"
+                      className="w-6 h-6"
                       data-testid={option.name}
                       src={option.icon}
                       alt={option.name}
                     />
-                    <span className="truncate text-dark-1000 ml-2 text-base lg:text-lg">
+                    <span className="truncate text-dark-1000 ml-2 text-base">
                       {option.name}
                     </span>
                   </div>
@@ -85,7 +85,7 @@ function TokenOptions({ options }: { options: TokensI[] }) {
               <Divider />
               <div
                 className={clsx(
-                  "my-1 px-5 py-3 lg:my-2 lg:px-6 lg:py-4",
+                  "my-1 px-5 py-3 lg:my-2 lg:px-6 lg:py-3",
                   active && "bg-dark-gradient-1"
                 )}
               >
@@ -94,12 +94,12 @@ function TokenOptions({ options }: { options: TokensI[] }) {
                     <Image
                       width={100}
                       height={100}
-                      className="h-6 w-6 lg:h-[28px] lg:w-[28px]"
+                      className="h-6 w-6"
                       data-testid={option.tokenA.name}
                       src={option.tokenA.icon}
                       alt={option.tokenA.name}
                     />
-                    <span className="ml-2 truncate text-base lg:text-lg text-dark-1000">
+                    <span className="ml-2 truncate text-base text-dark-1000">
                       {option.tokenA.name}
                     </span>
                   </div>
@@ -110,12 +110,12 @@ function TokenOptions({ options }: { options: TokensI[] }) {
                     <Image
                       width={100}
                       height={100}
-                      className="h-6 w-6 lg:h-[28px] lg:w-[28px]"
+                      className="h-6 w-6"
                       data-testid={option.tokenB.name}
                       src={option.tokenB.icon}
                       alt={option.tokenB.name}
                     />
-                    <span className="ml-2 truncate text-base lg:text-lg text-dark-900">
+                    <span className="ml-2 truncate text-base text-dark-900">
                       {option.tokenB.name}
                     </span>
                   </div>
@@ -153,7 +153,7 @@ export default function InputSelector({
       : (value as TokensI).tokenA;
   return (
     <div>
-      <span className="text-dark-900 pl-4 lg:pl-5 text-xs font-semibold lg:text-base xl:tracking-wider">
+      <span className="text-dark-900 pl-4 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider">
         {label}
       </span>
       <Listbox value={value} onChange={onSelect}>
@@ -176,7 +176,7 @@ export default function InputSelector({
             >
               <div
                 className={clsx(
-                  "dark-card-bg-image flex h-full w-full flex-row items-center justify-between bg-dark-100 py-3 pl-5 pr-3 text-left lg:px-5 lg:py-[18px]",
+                  "dark-card-bg-image flex h-full w-full flex-row items-center justify-between bg-dark-100 py-2.5 px-3 text-left lg:px-4 lg:py-3.5",
                   roundedBorderStyle
                 )}
               >
@@ -187,9 +187,9 @@ export default function InputSelector({
                     src={icon}
                     alt={name}
                     data-testid={name}
-                    className="h-6 w-6 lg:h-9 lg:w-9"
+                    className="h-5 w-5 lg:h-6 lg:w-6"
                   />
-                  <span className="ml-2 block truncate text-sm text-dark-1000 lg:text-xl">
+                  <span className="ml-2 block truncate text-sm text-dark-1000 lg:text-base">
                     {name}
                   </span>
                 </div>
@@ -197,7 +197,7 @@ export default function InputSelector({
                   <span className="text-dark-900">
                     <FiChevronDown
                       className={clsx(
-                        "h-5 w-5 text-dark-900 transition-[transform] lg:h-6 lg:w-6",
+                        "h-4 w-4 text-dark-900 transition-[transform] lg:h-5 lg:w-5",
                         {
                           "rotate-180": open,
                         }
@@ -226,11 +226,11 @@ export default function InputSelector({
                     open ? "bg-gradient-2" : "bg-dark-200"
                   )}
                 >
-                  <div className="rounded-lg bg-dark-00 py-4">
+                  <div className="rounded-lg bg-dark-00 pt-4 pb-2">
                     <span className="px-5 text-xs font-semibold text-dark-700 lg:px-6 lg:text-sm">
                       {popUpLabel}
                     </span>
-                    <div className="mt-3 flex flex-col">
+                    <div className="mt-2 flex flex-col">
                       {type === SelectionType.Network ? (
                         <NetworkOptions
                           options={options as NetworkOptionsI[]}
