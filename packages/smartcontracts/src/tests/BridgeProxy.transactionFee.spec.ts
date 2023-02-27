@@ -32,7 +32,7 @@ describe('Transaction fee tests', () => {
     });
 
     describe('OPERATIONAL_ROLE', () => {
-      it('Succesfully change the fee by Operational address', async () => {
+      it('Successfully change the fee by Operational address', async () => {
         const { proxyBridge, operationalAdminSigner } = await loadFixture(deployContracts);
         // Event called TRANSACTION_FEE_CHANGED should be emitted on Successful change
         await expect(proxyBridge.connect(operationalAdminSigner).changeTxFee(50))
@@ -50,6 +50,13 @@ describe('Transaction fee tests', () => {
           'NON_AUTHORIZED_ADDRESS',
         );
       });
+    });
+    it('Successfully revert if the fee is greater than `MAX_FEE`', async () => {
+      const { proxyBridge } = await loadFixture(deployContracts);
+      // Admin should successfully changes the tx fees to 101%
+      await expect(proxyBridge.changeTxFee(10100)).to.be.revertedWithCustomError(proxyBridge, 'MORE_THAN_MAX_FEE');
+      // Fee should be 0.1%
+      expect(await proxyBridge.transactionFee()).to.equal(10);
     });
   });
 

@@ -66,6 +66,11 @@ error AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
  */
 error MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
 
+/** @notice @dev
+ * This error will occur when new `fee` is greater than `MAX_FEE`
+ */
+error MORE_THAN_MAX_FEE();
+
 contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -78,7 +83,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     string public constant NAME = 'QUANTUM_BRIDGE';
 
     address public constant ETH = address(0);
-
+    // Maximum transaction fee when bridging from EVM to DeFiChain. Based on dps (e.g 1% == 100dps)
+    uint256 public constant MAX_FEE = 10000;
     // Mapping to track the address's nonce
     mapping(address => uint256) public eoaAddressToNonce;
 
@@ -227,7 +233,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     }
 
     /**
-    * @notice To get the current version of the contract
+     * @notice To get the current version of the contract
      */
     function version() external view returns (string memory) {
         return StringsUpgradeable.toString(_getInitializedVersion());
@@ -389,6 +395,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     function changeTxFee(uint256 fee) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        if (fee > MAX_FEE) revert MORE_THAN_MAX_FEE();
         uint256 oldTxFee = transactionFee;
         transactionFee = fee;
         emit TRANSACTION_FEE_CHANGED(oldTxFee, transactionFee);
