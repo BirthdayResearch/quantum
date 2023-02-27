@@ -187,7 +187,10 @@ export default function ConfirmTransferModal({
       </div>
 
       {isSendingToDFC ? (
-        <EvmToDeFiChainTransfer data={data} onClose={() => onClose(true)} />
+        <EvmToDeFiChainTransfer
+          data={data}
+          onClose={(noCloseWarning) => onClose(noCloseWarning)}
+        />
       ) : (
         <DeFiChainToERC20Transfer data={data} addressDetail={addressDetail} />
       )}

@@ -26,7 +26,7 @@ export default function EvmToDeFiChainTransfer({
   onClose,
 }: {
   data: TransferData;
-  onClose: () => void;
+  onClose: (noCloseWarning: boolean) => void;
 }) {
   const [errorMessage, setErrorMessage] = useState<string>();
   const [eventError, setEventError] = useState<EventErrorI>();
@@ -35,7 +35,6 @@ export default function EvmToDeFiChainTransfer({
   const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>(
     BridgeStatus.NoTxCreated
   );
-
   const { isMobile } = useResponsive();
   const { networkEnv } = useNetworkEnvironmentContext();
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
@@ -101,7 +100,7 @@ export default function EvmToDeFiChainTransfer({
       setStorage("allocationTxnHash", null);
       setStorage("reverted", null);
       setStorage("txn-form", null);
-      onClose();
+      onClose(true);
     }
   }, [transactionHash]);
 
@@ -191,7 +190,7 @@ export default function EvmToDeFiChainTransfer({
       {errorMessage !== undefined && (
         <ErrorModal
           title="Transaction error"
-          message={errorMessage}
+          message="errorMessage"
           primaryButtonLabel={
             transactionHash ? "View on Etherscan" : "Try again"
           }
@@ -200,6 +199,7 @@ export default function EvmToDeFiChainTransfer({
               ? window.open(`${ExplorerURL}/tx/${transactionHash}`, "_blank")
               : handleInitiateTransfer()
           }
+          onClose={() => onClose(false)}
         />
       )}
 
