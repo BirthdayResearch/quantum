@@ -67,7 +67,7 @@ export const bridgeApi = createApi({
           symbol,
         },
       }),
-      extraOptions: { maxRetries: 3 },
+      extraOptions: { maxRetries: 0 },
     }),
     getAddressDetail: builder.mutation<AddressDetails, any>({
       query: ({ baseUrl, address }) => ({
