@@ -8,15 +8,17 @@ export default function ErrorModal({
   message,
   primaryButtonLabel,
   onPrimaryButtonClick,
+  onClose,
 }: {
   title: string;
   message: string;
   primaryButtonLabel: string;
   onPrimaryButtonClick?: () => void;
+  onClose: () => void;
 }): JSX.Element {
   const router = useRouter();
   return (
-    <Modal isOpen onClose={() => router.reload()}>
+    <Modal isOpen onClose={onClose}>
       <div className="flex flex-col items-center mt-6 mb-14">
         <FiAlertCircle className="text-8xl text-error ml-1" />
         <span className="font-bold text-2xl text-dark-900 mt-12">{title}</span>
