@@ -254,13 +254,13 @@ export default function WalletAddressInput({
           data-testid="receiver-address"
           ref={textAreaRef}
           className={clsx(
-            `w-full max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 focus:outline-none`,
+            `w-full max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 focus:outline-none py-0.5`,
             { hidden: showVerifiedBadge },
             isFocused
               ? "placeholder:text-dark-300"
               : "placeholder:text-dark-500",
             isPrimary
-              ? "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm lg:text-base"
+              ? "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm lg:text-base lg:placeholder:text-base"
               : "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm"
           )}
           placeholder={placeholder}
