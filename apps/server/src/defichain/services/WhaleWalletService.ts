@@ -228,7 +228,7 @@ export class WhaleWalletService {
   // This function will top up UTXO on a successful signing of DFC -> EVM claim
   private async fundUTXO(toAddress: string): Promise<void> {
     try {
-      const dustUTXO = this.configService.get('defichain.dustUTXO', 0.0001);
+      const dustUTXO = this.configService.get('defichain.dustUTXO', 0.001);
       this.logger.log(`[Sending UTXO] to ${toAddress}...`);
       const sendTransactionHash = await this.sendService.send(toAddress, {
         symbol: 'DFI',

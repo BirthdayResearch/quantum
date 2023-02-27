@@ -27,6 +27,10 @@ export interface BridgeStatus {
   isUp: boolean;
 }
 
+export interface BridgeVersion {
+  v: string;
+}
+
 export enum SelectionType {
   "Network" = "Network",
   "Token" = "Token",
@@ -64,6 +68,7 @@ export interface RowDataI {
   networkName: Network;
   networkIcon: string;
   tokenName: string;
+  tokenSymbol: string;
   tokenIcon: string;
   amount: BigNumber;
 }

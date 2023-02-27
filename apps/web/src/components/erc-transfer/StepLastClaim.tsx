@@ -10,15 +10,14 @@ import {
 import { useRouter } from "next/router";
 import { FiCheck } from "react-icons/fi";
 import { useContractContext } from "@contexts/ContractContext";
+import { useStorageContext } from "@contexts/StorageContext";
 import ActionButton from "@components/commons/ActionButton";
 import Modal from "@components/commons/Modal";
 import ErrorModal from "@components/commons/ErrorModal";
 import { SignedClaim, TransferData } from "types";
 import UtilityButton from "@components/commons/UtilityButton";
+import useCheckBalance from "@hooks/useCheckBalance";
 import useTransferFee from "@hooks/useTransferFee";
-import { useStorageContext } from "@contexts/StorageContext";
-import { useBalanceEvmMutation } from "@store/index";
-import Logging from "@api/logging";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again.  If the error persists get in touch with us.";
@@ -33,8 +32,6 @@ export default function StepLastClaim({
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
   const [error, setError] = useState<string>();
-  const [balanceEvm] = useBalanceEvmMutation();
-  const [isBalanceInsufficient, setIsBalanceInsufficient] = useState(false);
 
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const tokenAddress = Erc20Tokens[data.to.tokenName].address;
@@ -66,10 +63,19 @@ export default function StepLastClaim({
   } = useContractWrite(bridgeConfig);
 
   // Wait and get result from write contract for `claimFund` function
-  const { error: claimTxnError, isSuccess } = useWaitForTransaction({
+  const {
+    error: claimTxnError,
+    isLoading: isClaimInProgress,
+    isSuccess,
+  } = useWaitForTransaction({
     hash: claimFundData?.hash,
     onSettled: () => setShowLoader(false),
   });
+
+  const { balanceAmount } = useCheckBalance(data.to.tokenSymbol);
+  const isBalanceInsufficient = data.to.amount.isGreaterThan(
+    new BigNumber(balanceAmount)
+  );
 
   const handleOnClaim = async () => {
     setError(undefined);
@@ -97,29 +103,19 @@ export default function StepLastClaim({
   }, [writeClaimTxnError, claimTxnError]);
 
   useEffect(() => {
-    async function checkBalance() {
-      try {
-        const contractBalance = await balanceEvm({
-          tokenSymbol: data.to.tokenName.toUpperCase(),
-        }).unwrap();
-        const isInsufficient = data.to.amount.isGreaterThan(
-          new BigNumber(contractBalance)
-        );
-        setIsBalanceInsufficient(isInsufficient);
-      } catch (e) {
-        Logging.error(e);
-      }
-    }
-    checkBalance();
-  }, []);
-
-  useEffect(() => {
     if (error && isBalanceInsufficient) {
       setError(
         "Quantum's servers are currently at capacity. We are unable to process transactions at this time, please try again in a few hours to claim your tokens."
       );
     }
   }, [error, isBalanceInsufficient]);
+
+  const statusMessage = {
+    title: isClaimInProgress ? "Processing" : "Waiting for confirmation",
+    message: isClaimInProgress
+      ? "Do not close or refresh the browser while processing. This will only take a few seconds."
+      : "Confirm this transaction in your Wallet.",
+  };
 
   return (
     <>
@@ -128,16 +124,15 @@ export default function StepLastClaim({
           <div className="flex flex-col items-center mt-6 mb-14">
             <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
             <span className="font-bold text-2xl text-dark-900 mt-12">
-              Waiting for confirmation
+              {statusMessage.title}
             </span>
-            <span className="text-dark-900 mt-2">
-              Confirm this transaction in your Wallet.
+            <span className="text-dark-900 text-center mt-2">
+              {statusMessage.message}
             </span>
           </div>
         </Modal>
       )}
       {isSuccess && (
-        // TODO: Replace success ui/message
         <Modal isOpen={isSuccess} onClose={() => router.reload()}>
           <div className="flex flex-col items-center mt-6 mb-14">
             <FiCheck className="text-8xl text-valid ml-1" />

@@ -45,7 +45,7 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
       {
         tokenA: {
           name: "wBTC",
-          symbol: "BTC",
+          symbol: "WBTC",
           icon: "/tokens/wBTC.svg",
           supply: "1925543.1234",
         },
@@ -113,7 +113,7 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
         },
         tokenB: {
           name: "wBTC",
-          symbol: "BTC",
+          symbol: "WBTC",
           icon: "/tokens/wBTC.svg",
           supply: "1801245.4321",
         },

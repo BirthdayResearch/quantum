@@ -14,7 +14,7 @@ import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
 import { ETHEREUM_SYMBOL } from "../constants";
 
-interface EventErrorI {
+export interface EventErrorI {
   customErrorDisplay?:
     | "InsufficientAllowanceError"
     | "UserRejectedRequestError";
@@ -27,6 +27,7 @@ interface BridgeToDeFiChainI {
   tokenName: Erc20Token;
   tokenDecimals: number | "gwei";
   onBridgeTxnSettled: () => void;
+  setEventError: (error: EventErrorI | undefined) => void;
 }
 
 export default function useWriteBridgeToDeFiChain({
@@ -35,10 +36,10 @@ export default function useWriteBridgeToDeFiChain({
   tokenName,
   tokenDecimals,
   onBridgeTxnSettled,
+  setEventError,
 }: BridgeToDeFiChainI) {
   const { BridgeV1, Erc20Tokens } = useContractContext();
   const sendingFromETH = (tokenName as string) === ETHEREUM_SYMBOL;
-  const [eventError, setEventError] = useState<EventErrorI>();
   const [requiresApproval, setRequiresApproval] = useState(false);
 
   const handlePrepContractError = (err) => {
@@ -123,6 +124,5 @@ export default function useWriteBridgeToDeFiChain({
     writeBridgeToDeFiChain,
     transactionHash: bridgeContract?.hash,
     requiresApproval,
-    eventError,
   };
 }

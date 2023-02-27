@@ -125,7 +125,7 @@ export function StorageProvider({
         setUnsentFundTxnHashKey(value);
         setStorageItem(UNSENT_FUND_TXN_HASH_KEY, value);
       } else if (key === "allocationTxnHash") {
-        setUnsentFundTxnHashKey(value);
+        setAllocationTxnHashKey(value);
         setStorageItem(ALLOCATION_TXN_HASH_KEY, value);
       } else if (key === "dfc-address") {
         setDfcAddress(value);
@@ -165,7 +165,6 @@ export function StorageProvider({
 
       return value;
     };
-
     return {
       txnHash: {
         confirmed:
