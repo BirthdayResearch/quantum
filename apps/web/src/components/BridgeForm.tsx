@@ -221,6 +221,12 @@ export default function BridgeForm({
     },
   };
 
+  function confirmationModalonClose(noCloseWarning: boolean) {
+    if (noCloseWarning) {
+      setShowConfirmModal(false);
+    } else setUtilityModalData(UtilityModalMessage.leaveTransaction);
+  }
+
   useEffect(() => {
     if (amount) {
       // Revalidate entered amount when selected token is changed
@@ -476,8 +482,8 @@ export default function BridgeForm({
       <ConfirmTransferModal
         show={showConfirmModal}
         addressDetail={dfcAddressDetails}
-        onClose={() => {
-          setUtilityModalData(UtilityModalMessage.leaveTransaction);
+        onClose={(noCloseWarning) => {
+          confirmationModalonClose(noCloseWarning);
         }}
         amount={amount}
         fromAddress={fromAddress}

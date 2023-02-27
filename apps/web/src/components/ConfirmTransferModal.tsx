@@ -110,7 +110,7 @@ export default function ConfirmTransferModal({
   addressDetail,
 }: {
   show: boolean;
-  onClose: () => void;
+  onClose: (noCloseWarning: boolean) => void;
   amount: string;
   fromAddress: string;
   toAddress: string;
@@ -151,7 +151,11 @@ export default function ConfirmTransferModal({
   };
 
   return (
-    <Modal title="Review transaction" isOpen={show} onClose={onClose}>
+    <Modal
+      title="Review transaction"
+      isOpen={show}
+      onClose={() => onClose(true)}
+    >
       <RowData
         data={data.from}
         label="FROM"
@@ -183,7 +187,7 @@ export default function ConfirmTransferModal({
       </div>
 
       {isSendingToDFC ? (
-        <EvmToDeFiChainTransfer data={data} onClose={onClose} />
+        <EvmToDeFiChainTransfer data={data} onClose={() => onClose(true)} />
       ) : (
         <DeFiChainToERC20Transfer data={data} addressDetail={addressDetail} />
       )}
