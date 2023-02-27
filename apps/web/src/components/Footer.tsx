@@ -63,7 +63,7 @@ export default function Footer() {
   return (
     <footer
       data-testid="footer"
-      className="relative z-[1] w-full border-dark-300 pt-8 bg-gradient-to-r from-[#00000066] to-[#00000000]"
+      className="relative z-[1] w-full border-dark-300 pt-6 md:pt-5 lg:pt-8 bg-gradient-to-r from-[#00000066] to-[#00000000]"
     >
       <section
         data-testid="footer_web"
