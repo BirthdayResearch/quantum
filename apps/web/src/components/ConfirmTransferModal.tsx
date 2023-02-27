@@ -192,7 +192,11 @@ export default function ConfirmTransferModal({
           onClose={(noCloseWarning) => onClose(noCloseWarning)}
         />
       ) : (
-        <DeFiChainToERC20Transfer data={data} addressDetail={addressDetail} />
+        <DeFiChainToERC20Transfer
+          data={data}
+          addressDetail={addressDetail}
+          onClose={(noCloseWarning) => onClose(noCloseWarning)}
+        />
       )}
     </Modal>
   );

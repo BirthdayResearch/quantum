@@ -18,7 +18,6 @@ import { SignedClaim, TransferData } from "types";
 import UtilityButton from "@components/commons/UtilityButton";
 import useCheckBalance from "@hooks/useCheckBalance";
 import useTransferFee from "@hooks/useTransferFee";
-import UtilityModal from "@components/commons/UtilityModal";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again.  If the error persists get in touch with us.";
@@ -26,14 +25,15 @@ const CLAIM_INPUT_ERROR =
 export default function StepLastClaim({
   data,
   signedClaim,
+  onClose,
 }: {
   data: TransferData;
   signedClaim: SignedClaim;
+  onClose: () => void;
 }) {
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
   const [error, setError] = useState<string>();
-  const [showUtilityModal, setShowUtilityModal] = useState(false);
 
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const tokenAddress = Erc20Tokens[data.to.tokenName].address;
@@ -170,7 +170,7 @@ export default function StepLastClaim({
               ? window.open(`${ExplorerURL}/tx/${claimFundData.hash}`, "_blank")
               : handleOnClaim()
           }
-          onClose={() => setShowUtilityModal(true)}
+          onClose={onClose}
         />
       )}
       <div className={clsx("pt-4 px-6", "md:px-[73px] md:pt-4 md:pb-6")}>
@@ -184,16 +184,6 @@ export default function StepLastClaim({
         </span>
         <ActionButton label="Claim tokens" onClick={() => handleOnClaim()} />
       </div>
-      {showUtilityModal && (
-        <UtilityModal
-          title="Are you sure you want to leave your transaction?"
-          message="You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution"
-          primaryButtonLabel="Leave transaction"
-          onPrimaryButtonClick={() => router.reload()}
-          secondaryButtonLabel="Go back"
-          onSecondaryButtonClick={() => setShowUtilityModal(false)}
-        />
-      )}
     </>
   );
 }
