@@ -154,7 +154,7 @@ export default function ConfirmTransferModal({
     <Modal
       title="Review transaction"
       isOpen={show}
-      onClose={() => onClose(true)}
+      onClose={() => onClose(false)}
     >
       <RowData
         data={data.from}
