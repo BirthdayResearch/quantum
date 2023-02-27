@@ -110,7 +110,7 @@ export default function TransactionStatus({
   return (
     <div
       className={clsx(
-        "flex-1 px-8 py-6 text-dark-1000 rounded-xl border bg-dark-100",
+        "flex-1 px-6 py-6 lg:px-10 text-dark-1000 rounded-xl border bg-dark-100",
         {
           "border-warning": isReverted,
           "border-error": isUnsentFund,
@@ -145,7 +145,7 @@ export default function TransactionStatus({
           <div className="leading-5 lg:text-xl font-semibold">{title}</div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
           {allocationTxnHash && (
-            <div className="flex flex-row items-center mt-2.5 text-dark-900 lg:text-lg font-bold ">
+            <div className="flex flex-row items-center mt-3 lg:mt-4 text-dark-900 lg:text-lg font-bold">
               <a
                 className="flex flex-row items-center hover:opacity-70"
                 href={getTransactionUrl(allocationTxnHash)}
@@ -158,9 +158,9 @@ export default function TransactionStatus({
               </a>
             </div>
           )}
-          <div className="flex flex-row items-center mt-2.5 text-dark-900 lg:text-xl font-bold ">
+          <div className="flex flex-row items-center mt-3 lg:mt-4 text-dark-900 lg:text-xl font-bold">
             <a
-              className="flex flex-row items-center hover:opacity-70"
+              className="flex flex-row items-center hover:opacity-70 mb-1"
               href={`${ExplorerURL}/tx/${txnHash}`}
               target="_blank"
               rel="noreferrer"

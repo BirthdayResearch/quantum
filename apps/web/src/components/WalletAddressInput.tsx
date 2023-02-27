@@ -260,7 +260,7 @@ export default function WalletAddressInput({
               ? "placeholder:text-dark-300"
               : "placeholder:text-dark-500",
             isPrimary
-              ? "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm lg:text-base lg:placeholder:text-xl"
+              ? "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm lg:text-base"
               : "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm"
           )}
           placeholder={placeholder}

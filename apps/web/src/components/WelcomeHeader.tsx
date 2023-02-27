@@ -5,7 +5,7 @@ import { RiQuestionFill } from "react-icons/ri";
 
 export default function WelcomeHeader() {
   const headerStyle =
-    "text-[32px] leading-10 xs:text-[36px] xs:w-6/12 md:w-full lg:leading-[52px] text-dark-1000 lg:text-[52px]";
+    "text-[32px] leading-9 md:w-full lg:leading-[52px] text-dark-1000 lg:text-[52px]";
   const bylineStyle =
     "align-middle text-base text-dark-1000 lg:leading-10 lg:text-[32px] text-xl";
   const underText = "ml-2 lg:text-xl md:text-sm font-bold text-dark-1000";

@@ -33,7 +33,7 @@ export default function ActionButton({
       data-testid={testId ?? "action-btn"}
       type="button"
       className={clsx(
-        "w-full flex items-center justify-center rounded-[92px] font-bold p-2.5",
+        "w-full flex items-center justify-center rounded-[92px] font-bold p-3",
         "focus-visible:outline-none disabled:opacity-30",
         "md:px-2.5",
         responsiveSizing,
