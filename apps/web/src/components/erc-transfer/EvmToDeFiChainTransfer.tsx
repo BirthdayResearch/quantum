@@ -6,7 +6,9 @@ import { useContractContext } from "@contexts/ContractContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import useResponsive from "@hooks/useResponsive";
 import useWriteApproveToken from "@hooks/useWriteApproveToken";
-import useWriteBridgeToDeFiChain from "@hooks/useWriteBridgeToDeFiChain";
+import useWriteBridgeToDeFiChain, {
+  EventErrorI,
+} from "@hooks/useWriteBridgeToDeFiChain";
 import AlertInfoMessage from "@components/commons/AlertInfoMessage";
 import ActionButton from "@components/commons/ActionButton";
 import ErrorModal from "@components/commons/ErrorModal";
@@ -27,6 +29,7 @@ export default function EvmToDeFiChainTransfer({
   onClose: () => void;
 }) {
   const [errorMessage, setErrorMessage] = useState<string>();
+  const [eventError, setEventError] = useState<EventErrorI>();
   const [hasPendingTx, setHasPendingTx] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
   const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>(
@@ -66,7 +69,6 @@ export default function EvmToDeFiChainTransfer({
   );
 
   const {
-    eventError,
     isBridgeTxnLoading,
     isBridgeTxnCreated,
     refetchBridge,
@@ -78,6 +80,7 @@ export default function EvmToDeFiChainTransfer({
     tokenName: data.from.tokenName as Erc20Token,
     tokenDecimals,
     onBridgeTxnSettled: () => setHasPendingTx(false),
+    setEventError,
   });
 
   const {
@@ -104,22 +107,27 @@ export default function EvmToDeFiChainTransfer({
 
   // Requires approval for more allowance
   useEffect(() => {
-    if (eventError?.customErrorDisplay === "InsufficientAllowanceError") {
+    const hasInsufficientAllowance = data.to.amount.gt(tokenAllowance);
+    if (
+      eventError?.customErrorDisplay === "InsufficientAllowanceError" ||
+      hasInsufficientAllowance
+    ) {
       setRequiresApproval(true);
     }
-  }, [eventError?.customErrorDisplay]);
+  }, [eventError?.customErrorDisplay, tokenAllowance]);
 
   // Consolidate all the possible status of the txn before its tx hash is created
   useEffect(() => {
     let status = BridgeStatus.NoTxCreated;
 
-    if ((hasPendingTx && requiresApproval) || isApproveTxnLoading) {
-      status = BridgeStatus.IsTokenApprovalInProgress;
-    } else if (
+    if (
       eventError !== undefined &&
       eventError?.customErrorDisplay !== "InsufficientAllowanceError"
     ) {
       setErrorMessage(eventError.message);
+      setHasPendingTx(false);
+    } else if ((hasPendingTx && requiresApproval) || isApproveTxnLoading) {
+      status = BridgeStatus.IsTokenApprovalInProgress;
     } else if (hasPendingTx) {
       status = BridgeStatus.IsBridgeToDfcInProgress;
     } else if (isApproveTxnSuccess && requiresApproval) {
@@ -142,21 +150,22 @@ export default function EvmToDeFiChainTransfer({
   ]);
 
   useEffect(() => {
-    // Trigger `bridgeToDeFiChain` once allowance is approved
     const hasEnoughAllowance = data.to.amount.lte(tokenAllowance);
-    const successfulApproval =
-      requiresApproval && isApproveTxnSuccess && refetchedBridgeFn;
+    const successfulApproval = isApproveTxnSuccess && refetchedBridgeFn;
 
     if (successfulApproval && hasEnoughAllowance) {
+      // Automatically trigger `bridgeToDeFiChain` once allowance is approved
       setRequiresApproval(false);
-      writeBridgeToDeFiChain?.();
-    } else if (successfulApproval && !hasEnoughAllowance) {
-      writeApprove?.();
+      setHasPendingTx(true);
+      setTimeout(() => writeBridgeToDeFiChain?.(), 300);
+    } else if (hasEnoughAllowance) {
+      setRequiresApproval(false);
     }
   }, [isApproveTxnSuccess, tokenAllowance, refetchedBridgeFn]);
 
   const handleInitiateTransfer = () => {
     setErrorMessage(undefined);
+    setEventError(undefined);
     setHasPendingTx(true);
     if (requiresApproval) {
       writeApprove?.();

@@ -68,6 +68,7 @@ export interface RowDataI {
   networkName: Network;
   networkIcon: string;
   tokenName: string;
+  tokenSymbol: string;
   tokenIcon: string;
   amount: BigNumber;
 }

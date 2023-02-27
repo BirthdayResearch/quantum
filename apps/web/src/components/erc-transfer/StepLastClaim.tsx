@@ -10,15 +10,14 @@ import {
 import { useRouter } from "next/router";
 import { FiCheck } from "react-icons/fi";
 import { useContractContext } from "@contexts/ContractContext";
+import { useStorageContext } from "@contexts/StorageContext";
 import ActionButton from "@components/commons/ActionButton";
 import Modal from "@components/commons/Modal";
 import ErrorModal from "@components/commons/ErrorModal";
 import { SignedClaim, TransferData } from "types";
 import UtilityButton from "@components/commons/UtilityButton";
+import useCheckBalance from "@hooks/useCheckBalance";
 import useTransferFee from "@hooks/useTransferFee";
-import { useStorageContext } from "@contexts/StorageContext";
-import { useBalanceEvmMutation } from "@store/index";
-import Logging from "@api/logging";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again.  If the error persists get in touch with us.";
@@ -33,8 +32,6 @@ export default function StepLastClaim({
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
   const [error, setError] = useState<string>();
-  const [balanceEvm] = useBalanceEvmMutation();
-  const [isBalanceInsufficient, setIsBalanceInsufficient] = useState(false);
 
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const tokenAddress = Erc20Tokens[data.to.tokenName].address;
@@ -75,6 +72,11 @@ export default function StepLastClaim({
     onSettled: () => setShowLoader(false),
   });
 
+  const { balanceAmount } = useCheckBalance(data.to.tokenSymbol);
+  const isBalanceInsufficient = data.to.amount.isGreaterThan(
+    new BigNumber(balanceAmount)
+  );
+
   const handleOnClaim = async () => {
     setError(undefined);
     setShowLoader(true);
@@ -99,23 +101,6 @@ export default function StepLastClaim({
   useEffect(() => {
     setError(writeClaimTxnError?.message ?? claimTxnError?.message);
   }, [writeClaimTxnError, claimTxnError]);
-
-  useEffect(() => {
-    async function checkBalance() {
-      try {
-        const contractBalance = await balanceEvm({
-          tokenSymbol: data.to.tokenName.toUpperCase(),
-        }).unwrap();
-        const isInsufficient = data.to.amount.isGreaterThan(
-          new BigNumber(contractBalance)
-        );
-        setIsBalanceInsufficient(isInsufficient);
-      } catch (e) {
-        Logging.error(e);
-      }
-    }
-    checkBalance();
-  }, []);
 
   useEffect(() => {
     if (error && isBalanceInsufficient) {
