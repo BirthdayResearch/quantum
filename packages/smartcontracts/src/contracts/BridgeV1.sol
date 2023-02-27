@@ -337,11 +337,12 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param amount Requested amount to be withdraw. Amount would be in the denomination of ETH
      */
     function withdraw(address _tokenAddress, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        address _flushReceiveAddress = flushReceiveAddress;
         if (_tokenAddress == ETH) {
-            (bool sent, ) = msg.sender.call{value: amount}('');
+            (bool sent, ) = _flushReceiveAddress.call{value: amount}('');
             if (!sent) revert ETH_TRANSFER_FAILED();
-        } else IERC20Upgradeable(_tokenAddress).safeTransfer(msg.sender, amount);
-        emit WITHDRAWAL_BY_OWNER(msg.sender, _tokenAddress, amount);
+        } else IERC20Upgradeable(_tokenAddress).safeTransfer(_flushReceiveAddress, amount);
+        emit WITHDRAWAL_BY_OWNER(_flushReceiveAddress, _tokenAddress, amount);
     }
 
     /**
@@ -349,17 +350,18 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * anyone can call this function
      */
     function flushFund() external {
+        address _flushReceiveAddress = flushReceiveAddress;
         for (uint256 i = 0; i < supportedTokens.length(); ++i) {
             address supToken = supportedTokens.at(i);
             if (supToken == ETH) {
                 if (address(this).balance > tokenCap[ETH]) {
                     uint256 amountToFlush = address(this).balance - tokenCap[ETH];
-                    (bool sent, ) = flushReceiveAddress.call{value: amountToFlush}('');
+                    (bool sent, ) = _flushReceiveAddress.call{value: amountToFlush}('');
                     if (!sent) revert ETH_TRANSFER_FAILED();
                 }
             } else if (IERC20Upgradeable(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
                 uint256 amountToFlush = IERC20Upgradeable(supToken).balanceOf(address(this)) - tokenCap[supToken];
-                IERC20Upgradeable(supToken).safeTransfer(flushReceiveAddress, amountToFlush);
+                IERC20Upgradeable(supToken).safeTransfer(_flushReceiveAddress, amountToFlush);
             }
         }
         emit FLUSH_FUND();
