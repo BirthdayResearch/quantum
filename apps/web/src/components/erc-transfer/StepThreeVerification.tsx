@@ -60,6 +60,7 @@ function ValidationStatus({
     );
   }
 
+  // once button is shown, it will remain there with updated status, to make it consistent with the rest of the app
   if (showButton) {
     return (
       <div>
