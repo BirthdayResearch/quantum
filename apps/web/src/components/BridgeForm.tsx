@@ -17,14 +17,11 @@ import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
-import {
-  useBalanceDfcMutation,
-  useBalanceEvmMutation,
-  useGetAddressDetailMutation,
-} from "@store/index";
+import { useStorageContext } from "@contexts/StorageContext";
+import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
-import { useStorageContext } from "@contexts/StorageContext";
+import useCheckBalance from "@hooks/useCheckBalance";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
@@ -34,7 +31,6 @@ import {
   FEES_INFO,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
-import Logging from "../api/logging";
 
 function SwitchButton({
   onClick,
@@ -121,9 +117,7 @@ export default function BridgeForm({
 
   const [getAddressDetail] = useGetAddressDetailMutation();
 
-  const [balanceEvm] = useBalanceEvmMutation();
-  const [balanceDfc] = useBalanceDfcMutation();
-  const [balanceAmount, setBalanceAmount] = useState<string>("0");
+  const { balanceAmount } = useCheckBalance(selectedTokensA.tokenB.symbol);
 
   const isFormValid =
     amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
@@ -241,7 +235,7 @@ export default function BridgeForm({
       setHasUnconfirmedTxn(true);
       setAmount(localData.amount);
       setAddressInput(localData.toAddress);
-      setFromAddress(localData.fromAddress);
+      setFromAddress(localData.fromAddress ?? address);
       setSelectedNetworkA(localData.selectedNetworkA);
       setSelectedTokensA(localData.selectedTokensA);
       setSelectedNetworkB(localData.selectedNetworkB);
@@ -249,33 +243,11 @@ export default function BridgeForm({
       updateNetworkEnv(localData.networkEnv);
     } else {
       setHasUnconfirmedTxn(false);
+      setFromAddress(address as string);
     }
   }, [networkEnv, txnForm]);
 
-  useEffect(() => {
-    async function checkBalance() {
-      try {
-        let balanceRes;
-        if (selectedNetworkA.name === Network.Ethereum) {
-          balanceRes = await balanceEvm({
-            tokenSymbol: selectedTokensA.tokenA.name.toUpperCase(),
-          }).unwrap();
-        } else {
-          balanceRes = await balanceDfc({
-            tokenSymbol: selectedTokensA.tokenA.symbol,
-          }).unwrap();
-        }
-
-        setBalanceAmount(balanceRes);
-      } catch (error) {
-        Logging.error(error);
-      }
-    }
-
-    checkBalance();
-  }, [selectedNetworkA, selectedTokensA, networkEnv]);
-
-  const balanceInsufficient = new BigNumber(amount).isGreaterThan(
+  const isBalanceInsufficient = new BigNumber(amount).isGreaterThan(
     new BigNumber(balanceAmount)
   );
 
@@ -473,7 +445,7 @@ export default function BridgeForm({
               disabled={
                 (isConnected && !isFormValid) ||
                 hasPendingTxn ||
-                balanceInsufficient
+                isBalanceInsufficient
               }
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
@@ -495,7 +467,7 @@ export default function BridgeForm({
             />
           </div>
         )}
-        {balanceInsufficient && (
+        {isBalanceInsufficient && (
           <div className={clsx("pt-3", warningTextStyle)}>
             Unable to process transaction. <div>Please try again later</div>
           </div>

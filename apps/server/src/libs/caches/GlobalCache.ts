@@ -18,7 +18,7 @@ export class GlobalCache {
    * @param {string[]} ids to batch get from cache
    * @param {(id: string) => Promise<T | undefined>} fetch if miss cache
    * @param {GlobalCache} options
-   * @param {number} [options.ttl=600] cache ttl, 600 seconds
+   * @param {number} [options.ttl=600] cache ttl, 600 milliseconds
    * @return Promise<Record<string, T | undefined>>
    */
   async batch<T>(
@@ -41,7 +41,7 @@ export class GlobalCache {
    * @param {string} id to get from cache
    * @param {(id: string) => Promise<T | undefined>} fetch if miss cache
    * @param {GlobalCache} options
-   * @param {number} [options.ttl=600] cache ttl, 600 seconds
+   * @param {number} [options.ttl=600] cache ttl, 600 milliseconds
    * @return {Promise<T | undefined>}
    */
   async get<T>(
