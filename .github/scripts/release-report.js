@@ -9,7 +9,7 @@ module.exports = ({ context }) => {
   const hashLinks = getContainerHashLinks(context);
   return `
 
-Docker build preview for waveshq/bridge/apps is ready!
+Docker build preview for waveshq/quantum/apps is ready!
           
 Built with commit ${context.sha}
 

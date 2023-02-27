@@ -46,7 +46,7 @@ export default function StepLastClaim({
     functionName: "claimFund",
     args: [
       data.to.address,
-      utils.parseEther(amountLessFee.toString()),
+      utils.parseEther(amountLessFee.toFixed()),
       signedClaim.nonce,
       signedClaim.deadline,
       tokenAddress,

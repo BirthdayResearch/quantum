@@ -80,7 +80,7 @@ export class WhaleWalletService {
 
       // Successful verification, proceed to sign the claim
       const fee = new BigNumber(verify.amount).multipliedBy(this.configService.getOrThrow('defichain.transferFee'));
-      const amountLessFee = BigNumber.max(verify.amount.minus(fee), 0).toString();
+      const amountLessFee = BigNumber.max(verify.amount.minus(fee), 0).toFixed();
 
       const claim = await this.evmTransactionService.signClaim({
         receiverAddress: verify.ethReceiverAddress,
@@ -228,7 +228,7 @@ export class WhaleWalletService {
   // This function will top up UTXO on a successful signing of DFC -> EVM claim
   private async fundUTXO(toAddress: string): Promise<void> {
     try {
-      const dustUTXO = this.configService.get('defichain.dustUTXO', 0.0001);
+      const dustUTXO = this.configService.get('defichain.dustUTXO', 0.001);
       this.logger.log(`[Sending UTXO] to ${toAddress}...`);
       const sendTransactionHash = await this.sendService.send(toAddress, {
         symbol: 'DFI',
