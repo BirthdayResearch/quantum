@@ -3,7 +3,6 @@ import clsx from "clsx";
 import { PropsWithChildren, useState } from "react";
 import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import Tooltip from "@components/commons/Tooltip";
-import { useStorageContext } from "@contexts/StorageContext";
 
 function SuccessCopy({
   containerClass,
@@ -37,7 +36,6 @@ export default function QrAddress({
 }: PropsWithChildren<Props>) {
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const { copy } = useCopyToClipboard();
-  const { setStorage } = useStorageContext();
 
   const handleOnCopy = (text) => {
     copy(text);

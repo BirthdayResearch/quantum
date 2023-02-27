@@ -76,26 +76,26 @@ function ValidationStatus({
         )}
       </div>
     );
-  } else {
-    return (
-      <div
-        className={clsx(
-          "flex flex-row w-full items-center justify-center text-xs",
-          isValidating ? "text-warning" : "text-valid"
-        )}
-      >
-        {isValidating ? "Validating" : "Validated"}
-        {isValidating ? (
-          <RiLoader2Line
-            size={16}
-            className={clsx("inline-block animate-spin ml-1")}
-          />
-        ) : (
-          <IoCheckmarkCircle size={16} className={clsx("inline-block ml-1")} />
-        )}
-      </div>
-    );
   }
+
+  return (
+    <div
+      className={clsx(
+        "flex flex-row w-full items-center justify-center text-xs",
+        isValidating ? "text-warning" : "text-valid"
+      )}
+    >
+      {isValidating ? "Validating" : "Validated"}
+      {isValidating ? (
+        <RiLoader2Line
+          size={16}
+          className={clsx("inline-block animate-spin ml-1")}
+        />
+      ) : (
+        <IoCheckmarkCircle size={16} className={clsx("inline-block ml-1")} />
+      )}
+    </div>
+  );
 }
 
 export default function StepThreeVerification({
