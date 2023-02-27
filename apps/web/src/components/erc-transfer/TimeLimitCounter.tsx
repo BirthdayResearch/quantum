@@ -29,7 +29,7 @@ export default function TimeLimitCounter({
 }) {
   const { timeRemaining } = useTimeCounter(time, onTimeElapsed);
   return (
-    <div className="mt-4 text-center">
+    <div className="mt-3 text-center">
       <span className="text-dark-gradient-3 text-2xs font-bold">
         {getDuration(timeRemaining.dividedBy(1000).toNumber())}
       </span>

@@ -12,6 +12,8 @@ import { useContractContext } from "@contexts/ContractContext";
 import useTimeout from "@hooks/useSetTimeout";
 import { useStorageContext } from "@contexts/StorageContext";
 import QrAddress from "@components/QrAddress";
+import { RiLoader2Line } from "react-icons/ri";
+import { IoCheckmarkCircle } from "react-icons/io5";
 
 enum ButtonLabel {
   Validating = "Verifying",
@@ -34,34 +36,66 @@ enum ContentLabel {
   ThrottleLimit = "Please wait for a minute and try again.",
 }
 
-function DisplayButton({
+function ValidationStatus({
+  showButton,
   buttonLabel,
   validationSuccess,
   isValidating,
   isThrottled,
   onClick,
 }: {
+  showButton: boolean;
   buttonLabel: string;
   validationSuccess: boolean;
   isValidating: boolean;
   isThrottled: boolean;
   onClick: () => void;
 }) {
-  return (
-    <div className="mt-6">
-      {validationSuccess ? (
-        <UtilitySecondaryButton label={ButtonLabel.Validated} disabled />
-      ) : (
-        <UtilityButton
-          label={buttonLabel}
-          isLoading={isValidating}
-          disabled={isValidating || validationSuccess || isThrottled}
-          withRefreshIcon={!validationSuccess && !isValidating}
-          onClick={onClick}
-        />
-      )}
-    </div>
-  );
+  if (isThrottled) {
+    return (
+      <RiLoader2Line
+        size={24}
+        className={clsx("inline-block animate-spin text-brand-100")}
+      />
+    );
+  }
+
+  if (showButton) {
+    return (
+      <div>
+        {validationSuccess ? (
+          <UtilitySecondaryButton label={ButtonLabel.Validated} disabled />
+        ) : (
+          <UtilityButton
+            label={buttonLabel}
+            isLoading={isValidating}
+            disabled={isValidating || validationSuccess || isThrottled}
+            withRefreshIcon={!validationSuccess && !isValidating}
+            onClick={onClick}
+          />
+        )}
+      </div>
+    );
+  } else {
+    return (
+      <div
+        className={clsx(
+          "flex flex-row w-full items-center justify-center text-xs",
+          isValidating ? "text-warning" : "text-valid"
+        )}
+      >
+        {isValidating ? "Validating" : "Validated"}
+        {isValidating ? (
+          <RiLoader2Line
+            size={16}
+            className={clsx("inline-block animate-spin ml-1")}
+          />
+        ) : (
+          <IoCheckmarkCircle size={16} className={clsx("inline-block ml-1")} />
+        )}
+      </div>
+    );
+  }
 }
 
 export default function StepThreeVerification({
@@ -97,12 +131,12 @@ export default function StepThreeVerification({
   const [buttonLabel, setButtonLabel] = useState<ButtonLabel>(
     ButtonLabel.Validating
   );
-  const displayTryAgain = buttonLabel === ButtonLabel.Rejected;
 
   const { txnForm: txn, dfcAddress } = useStorageContext();
   const [validationSuccess, setValidationSuccess] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
   const [isThrottled, setIsThrottled] = useState(false);
+  const [showButton, setShowButton] = useState<boolean>(false);
 
   const [throttledTimeOut] = useTimeout(() => {
     setIsThrottled(false);
@@ -132,6 +166,7 @@ export default function StepThreeVerification({
           setValidationSuccess(false);
           setIsValidating(false);
           setButtonLabel(ButtonLabel.Rejected);
+          setShowButton(true);
           return;
         }
 
@@ -145,6 +180,7 @@ export default function StepThreeVerification({
         setButtonLabel(ButtonLabel.Rejected);
         setIsValidating(false);
         setValidationSuccess(false);
+        setShowButton(true);
 
         if (e.data?.statusCode === HttpStatusCode.TooManyRequests) {
           setTitle(TitleLabel.ThrottleLimit);
@@ -180,11 +216,18 @@ export default function StepThreeVerification({
             "md:w-2/5 md:flex-col md:shrink-0 md:order-none px-6 pt-6 pb-3 md:mt-0"
           )}
         >
-          <QrAddress
-            dfcUniqueAddress={dfcAddress}
-            isValidating={isValidating}
-            shouldShowStatus={isValidating || validationSuccess}
-          />
+          <QrAddress dfcUniqueAddress={dfcAddress}>
+            <div className="flex justify-center mt-3">
+              <ValidationStatus
+                showButton={showButton}
+                buttonLabel={buttonLabel}
+                validationSuccess={validationSuccess}
+                isValidating={isValidating}
+                isThrottled={isThrottled}
+                onClick={onTryAgainClicked}
+              />
+            </div>
+          </QrAddress>
         </div>
       )}
       <div
@@ -197,33 +240,7 @@ export default function StepThreeVerification({
           {title}
         </span>
         <p className="text-sm text-dark-700 mt-2">{content}</p>
-
-        {/* Web confirm button */}
-        {displayTryAgain && (
-          <div className={clsx("w-full hidden", "md:block")}>
-            <DisplayButton
-              buttonLabel={buttonLabel}
-              validationSuccess={validationSuccess}
-              isValidating={isValidating}
-              isThrottled={isThrottled}
-              onClick={onTryAgainClicked}
-            />
-          </div>
-        )}
       </div>
-
-      {/* Mobile confirm button */}
-      {displayTryAgain && (
-        <div className={clsx("order-last", "md:hidden")}>
-          <DisplayButton
-            buttonLabel={buttonLabel}
-            validationSuccess={validationSuccess}
-            isValidating={isValidating}
-            isThrottled={isThrottled}
-            onClick={onTryAgainClicked}
-          />
-        </div>
-      )}
     </div>
   );
 }

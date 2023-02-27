@@ -11,6 +11,7 @@ import AddressError from "@components/commons/AddressError";
 import { useStorageContext } from "@contexts/StorageContext";
 import { DFC_TO_ERC_RESET_FORM_TIME_LIMIT } from "../../constants";
 import QrAddress from "../QrAddress";
+import TimeLimitCounter from "./TimeLimitCounter";
 
 function debounce(func, wait) {
   let timeout;
@@ -53,7 +54,7 @@ function VerifyButton({
 function FaqSection() {
   return (
     <div className="mt-6 md:mt-2">
-      <span className={clsx("text-sm text-warning", "md:mt-2")}>
+      <span className={clsx("text-xs text-warning", "md:mt-2")}>
         Transactions in this Bridge, as with all other on-chain transactions,
         are irreversible. For more details, read&nbsp;
         <Link
@@ -171,12 +172,20 @@ export default function StepTwoSendConfirmation({
                     />
                   ) : (
                     dfcUniqueAddress && (
-                      <QrAddress
-                        dfcUniqueAddress={dfcUniqueAddress}
-                        createdBeforeInMSec={createdBeforeInMSec}
-                        setDfcUniqueAddress={setDfcUniqueAddress}
-                        setIsAddressExpired={setIsAddressExpired}
-                      />
+                      <QrAddress dfcUniqueAddress={dfcUniqueAddress}>
+                        {createdBeforeInMSec > 0 && (
+                          <div className="text-center">
+                            <TimeLimitCounter
+                              time={createdBeforeInMSec}
+                              onTimeElapsed={() => {
+                                setStorage("dfc-address", null);
+                                setDfcUniqueAddress("");
+                                setIsAddressExpired(true);
+                              }}
+                            />
+                          </div>
+                        )}
+                      </QrAddress>
                     )
                   )}
                 </div>

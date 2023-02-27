@@ -1,12 +1,9 @@
 import QRCode from "react-qr-code";
 import clsx from "clsx";
-import { useState } from "react";
+import { PropsWithChildren, useState } from "react";
 import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import Tooltip from "@components/commons/Tooltip";
 import { useStorageContext } from "@contexts/StorageContext";
-import { RiLoader2Line } from "react-icons/ri";
-import { IoCheckmarkCircle } from "react-icons/io5";
-import TimeLimitCounter from "./erc-transfer/TimeLimitCounter";
 
 function SuccessCopy({
   containerClass,
@@ -30,21 +27,14 @@ function SuccessCopy({
   );
 }
 
+interface Props {
+  dfcUniqueAddress: string;
+}
+
 export default function QrAddress({
   dfcUniqueAddress,
-  createdBeforeInMSec,
-  setDfcUniqueAddress,
-  setIsAddressExpired,
-  isValidating,
-  shouldShowStatus = false,
-}: {
-  dfcUniqueAddress: string;
-  createdBeforeInMSec?: number;
-  setDfcUniqueAddress?: (string) => void;
-  setIsAddressExpired?: (boolean) => void;
-  isValidating?: boolean;
-  shouldShowStatus?: boolean;
-}) {
+  children,
+}: PropsWithChildren<Props>) {
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const { copy } = useCopyToClipboard();
   const { setStorage } = useStorageContext();
@@ -79,43 +69,7 @@ export default function QrAddress({
             {dfcUniqueAddress}
           </button>
         </Tooltip>
-        {createdBeforeInMSec && createdBeforeInMSec > 0 && (
-          <div className="text-center">
-            <TimeLimitCounter
-              time={createdBeforeInMSec}
-              onTimeElapsed={() => {
-                setStorage("dfc-address", null);
-                if (setDfcUniqueAddress !== undefined) {
-                  setDfcUniqueAddress("");
-                }
-                if (setIsAddressExpired !== undefined) {
-                  setIsAddressExpired(true);
-                }
-              }}
-            />
-          </div>
-        )}
-        {shouldShowStatus && (
-          <div
-            className={clsx(
-              "flex flex-row w-full items-center justify-center text-xs mt-3",
-              isValidating ? "text-warning" : "text-valid"
-            )}
-          >
-            {isValidating ? "Validating" : "Validated"}
-            {isValidating ? (
-              <RiLoader2Line
-                size={16}
-                className={clsx("inline-block animate-spin ml-1")}
-              />
-            ) : (
-              <IoCheckmarkCircle
-                size={16}
-                className={clsx("inline-block ml-1")}
-              />
-            )}
-          </div>
-        )}
+        {children}
       </div>
     </div>
   );
