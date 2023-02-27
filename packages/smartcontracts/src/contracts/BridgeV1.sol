@@ -71,6 +71,11 @@ error MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
  */
 error MORE_THAN_MAX_FEE();
 
+/** @notice @dev
+ * This error will occur when `_toIndex` is greater than `supportedTokens.length()`
+ */
+error INVALID_TOINDEX();
+
 contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -347,11 +352,14 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
 
     /**
      * @notice Function to flush the excess funds across supported tokens to a hardcoded address
-     * anyone can call this function
+     * anyone can call this function, if pass (0,3), only token at index 0, 1 and 2 will be flushed.
+     * @param _fromIndex Finishing index for array `supportedTokens.values()` to flush from
+     * @param _toIndex Starting index for array `supportedTokens.values()` to flush to
      */
-    function flushFund() external {
+    function flushFund(uint256 _fromIndex, uint256 _toIndex) external {
+        if (_toIndex > supportedTokens.length()) revert INVALID_TOINDEX();
         address _flushReceiveAddress = flushReceiveAddress;
-        for (uint256 i = 0; i < supportedTokens.length(); ++i) {
+        for (uint256 i = _fromIndex; i < _toIndex; ++i) {
             address supToken = supportedTokens.at(i);
             if (supToken == ETH) {
                 if (address(this).balance > tokenCap[ETH]) {
@@ -362,6 +370,29 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
             } else if (IERC20Upgradeable(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
                 uint256 amountToFlush = IERC20Upgradeable(supToken).balanceOf(address(this)) - tokenCap[supToken];
                 IERC20Upgradeable(supToken).safeTransfer(_flushReceiveAddress, amountToFlush);
+            }
+        }
+        emit FLUSH_FUND();
+    }
+
+    /**
+     * @notice Function to flush the excess funds across supported token to a hardcoded address
+     * anyone can call this function
+     * @param _tokenAddress address of the token to be flushed
+     */
+    function flushFundPerToken(address _tokenAddress) external {
+        address _flushReceiveAddress = flushReceiveAddress;
+        if (_tokenAddress == ETH) {
+            if (address(this).balance > tokenCap[ETH]) {
+                uint256 amountToFlush = address(this).balance - tokenCap[ETH];
+                (bool sent, ) = _flushReceiveAddress.call{value: amountToFlush}('');
+                if (!sent) revert ETH_TRANSFER_FAILED();
+            }
+        } else {
+            if (IERC20Upgradeable(_tokenAddress).balanceOf(address(this)) > tokenCap[_tokenAddress]) {
+                uint256 amountToFlush = IERC20Upgradeable(_tokenAddress).balanceOf(address(this)) -
+                    tokenCap[_tokenAddress];
+                IERC20Upgradeable(_tokenAddress).safeTransfer(_flushReceiveAddress, amountToFlush);
             }
         }
         emit FLUSH_FUND();
