@@ -8,14 +8,17 @@ import { toWei } from './testUtils/mathUtils';
 describe('Withdrawal tests', () => {
   describe('DEFAULT_ADMIN_ROLE', () => {
     it('Successful Withdrawal of ERC20 by Admin only', async () => {
-      const { proxyBridge, testToken, testToken2, defaultAdminSigner } = await loadFixture(deployContracts);
+      const { proxyBridge, testToken, testToken2, defaultAdminSigner, flushReceiveSigner } = await loadFixture(
+        deployContracts,
+      );
       // Minting 100 tokens to Bridge
       await testToken.mint(proxyBridge.address, toWei('100'));
       await testToken2.mint(proxyBridge.address, toWei('100'));
       // Checking the current balance
       expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('100'));
       expect(await testToken2.balanceOf(proxyBridge.address)).to.equal(toWei('100'));
-
+      // Checking flush address balance before the withdraw
+      expect(await testToken.balanceOf(flushReceiveSigner.address)).to.be.equal(0);
       // Withdrawal by Admin
       let tx = await proxyBridge.connect(defaultAdminSigner).withdraw(testToken.address, toWei('20'));
       await tx.wait();
@@ -24,12 +27,12 @@ describe('Withdrawal tests', () => {
       // Sanity check for account balances
       expect(await testToken.balanceOf(proxyBridge.address)).to.equal(toWei('80'));
       expect(await testToken2.balanceOf(proxyBridge.address)).to.equal(toWei('70'));
-      expect(await testToken.balanceOf(defaultAdminSigner.address)).to.equal(toWei('20'));
-      expect(await testToken2.balanceOf(defaultAdminSigner.address)).to.equal(toWei('30'));
+      expect(await testToken.balanceOf(flushReceiveSigner.address)).to.equal(toWei('20'));
+      expect(await testToken2.balanceOf(flushReceiveSigner.address)).to.equal(toWei('30'));
     });
 
-    it('Succesful withdrawal of ETH by Admin only', async () => {
-      const { proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts);
+    it('Successful withdrawal of ETH by Admin only', async () => {
+      const { proxyBridge, defaultAdminSigner, flushReceiveSigner } = await loadFixture(deployContracts);
       await expect(
         defaultAdminSigner.sendTransaction({
           to: proxyBridge.address,
@@ -39,15 +42,13 @@ describe('Withdrawal tests', () => {
         .to.emit(proxyBridge, 'ETH_RECEIVED_VIA_RECEIVE_FUNCTION')
         .withArgs(defaultAdminSigner.address, toWei('100'));
       expect(await ethers.provider.getBalance(proxyBridge.address)).to.equal(toWei('100'));
-      const balanceAdminBeforeWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
+      const balanceAdminBeforeWithdraw = await ethers.provider.getBalance(flushReceiveSigner.address);
       const balanceBridgeBeforeWithdraw = await ethers.provider.getBalance(proxyBridge.address);
       const tx = await proxyBridge.connect(defaultAdminSigner).withdraw(ethers.constants.AddressZero, toWei('10'));
-      const receipt = await tx.wait();
-      const balanceAdminAfterWithdraw = await ethers.provider.getBalance(defaultAdminSigner.address);
+      await tx.wait();
+      const balanceAdminAfterWithdraw = await ethers.provider.getBalance(flushReceiveSigner.address);
       const balanceBridgeAfterWithdraw = await ethers.provider.getBalance(proxyBridge.address);
-      expect(balanceAdminAfterWithdraw).to.equal(
-        balanceAdminBeforeWithdraw.sub(receipt.gasUsed.mul(receipt.effectiveGasPrice)).add(toWei('10')),
-      );
+      expect(balanceAdminAfterWithdraw).to.equal(balanceAdminBeforeWithdraw.add(toWei('10')));
       expect(balanceBridgeAfterWithdraw).to.equal(balanceBridgeBeforeWithdraw.sub(toWei('10')));
     });
 
