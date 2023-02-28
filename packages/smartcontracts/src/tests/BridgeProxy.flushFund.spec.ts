@@ -48,6 +48,14 @@ describe('Test flushMultipleTokenFunds functionalities', () => {
     expect(balanceETHAfterFlush.sub(balanceETHBeforeFlush)).to.equal(toWei('40'));
   });
 
+  it('Should revert if ERC20 no supported', async () => {
+    const { proxyBridge, testToken } = await loadFixture(deployContracts);
+    await expect(proxyBridge.flushFundPerToken(testToken.address)).to.be.revertedWithCustomError(
+      proxyBridge,
+      'TOKEN_NOT_SUPPORTED',
+    );
+  });
+
   it('Should flush the funds per token successfully when there is initial redundant funds per `tokenAddress`', async () => {
     const { proxyBridge, testToken, testToken2, flushReceiveSigner, defaultAdminSigner } = await loadFixture(
       deployContracts,

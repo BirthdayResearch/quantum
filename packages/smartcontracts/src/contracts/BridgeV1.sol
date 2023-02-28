@@ -389,6 +389,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _tokenAddress address of the token to be flushed
      */
     function flushFundPerToken(address _tokenAddress) external {
+        if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
         if (_tokenAddress == ETH) {
             if (address(this).balance > tokenCap[ETH]) {
                 uint256 amountToFlush = address(this).balance - tokenCap[ETH];
