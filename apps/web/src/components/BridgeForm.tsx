@@ -471,7 +471,7 @@ export default function BridgeForm({
           !addressInput &&
           !hasPendingTxn &&
           !txnHash.confirmed && (
-            <div className="text-dark-700 text-center mt-4">
+            <div className="text-xs lg:text-sm leading-4 lg:leading-5 text-dark-700 text-center mt-4">
               Transaction interrupted?{" "}
               <button
                 type="button"

@@ -95,7 +95,7 @@ export default function RestoreTransactionModal({
         <div className="font-bold text-xl lg:text-2xl text-dark-900">
           {title}
         </div>
-        <div className="text-sm md:text-base leading-5 w-full text-dark-700 mt-2">
+        <div className="text-sm lg:text-base lg:leading-5 w-full text-dark-700 mt-2">
           {message}
         </div>
 
@@ -144,7 +144,7 @@ export default function RestoreTransactionModal({
           <textarea
             ref={textAreaRef}
             className={clsx(
-              `w-full max-h-36 grow resize-none bg-transparent text-base tracking-[0.01em] text-dark-1000 focus:outline-none`,
+              `w-full max-h-36 grow resize-none bg-transparent text-sm lg:text-base leading-5 tracking-[0.01em] text-dark-1000 focus:outline-none`,
               isFocused
                 ? "placeholder:text-dark-300"
                 : "placeholder:text-dark-500"
@@ -181,14 +181,14 @@ export default function RestoreTransactionModal({
           </span>
         )}
 
-        <span className="mt-[76px]">
+        <div className="mt-8 lg:px-[31px]">
           <ActionButton
             label="Restore transaction"
             customStyle="bg-dark-1000 md:px-6 text-xg lg:leading-8 lg:py-2 lg:px-8 xl:px-14"
             disabled={txnAddress === ""}
             onClick={checkTXnHash}
           />
-        </span>
+        </div>
       </div>
     </Modal>
   );
