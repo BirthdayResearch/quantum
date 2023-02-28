@@ -39,7 +39,7 @@ function SetAmountButton({
   hasBorder,
   disabled,
 }: SetAmountButtonProps): JSX.Element {
-  const decimalPlace = 8;
+  const decimalPlace = 6;
   let value = amount.toFixed(decimalPlace);
   switch (type) {
     case AmountButtonTypes.TwentyFive:
