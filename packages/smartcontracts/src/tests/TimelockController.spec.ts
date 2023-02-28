@@ -16,9 +16,6 @@ const getRanHex = (size: Number) => {
   return result.join('');
 };
 
-// one timelock controller for the operational role, which is to change the parameters
-// another timelock controller for only admin role, which is to withdraw any amount they want
-
 describe('Sanity tests for Timelock Controller', () => {
   describe('Test change the Tx Fee', async () => {
     let timelockController: TimelockController;
