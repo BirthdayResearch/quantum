@@ -86,7 +86,7 @@ export default function BridgeForm({
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
-  const { dfcAddress, dfcAddressDetails, txnForm, setStorage } =
+  const { dfcAddress, dfcAddressDetails, txnForm, setStorage, txnHash } =
     useStorageContext();
 
   const [amount, setAmount] = useState<string>("");
@@ -468,7 +468,9 @@ export default function BridgeForm({
         {isConnected &&
           selectedNetworkA.name === Network.Ethereum &&
           !amount &&
-          !addressInput && (
+          !addressInput &&
+          !hasPendingTxn &&
+          !txnHash.confirmed && (
             <div className="text-dark-700 text-center mt-4">
               Transaction interrupted?{" "}
               <button

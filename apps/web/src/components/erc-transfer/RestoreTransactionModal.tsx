@@ -42,21 +42,21 @@ export default function RestoreTransactionModal({
     setPlaceholder("Enter Transaction ID");
   }, []);
 
-  const checkTXnHash = () => {
+  const checkTXnHash = async () => {
     if (typeof txnAddress === "string") {
-      provider
-        .getTransaction(txnAddress)
-        .then((receipt) => {
-          if (receipt) {
-            setStorage("unconfirmed", txnAddress);
-            setIsNotValidTxn(false);
-          } else {
-            setIsNotValidTxn(true);
-          }
-        })
-        .catch(() => {
+      try {
+        const receipt = await provider.getTransaction(txnAddress);
+        if (receipt) {
+          // setStorage("unconfirmed", txnAddress);
+          setStorage("confirmed", txnAddress);
+          setIsNotValidTxn(false);
+          onClose();
+        } else {
           setIsNotValidTxn(true);
-        });
+        }
+      } catch (error) {
+        setIsNotValidTxn(true);
+      }
     }
   };
 
@@ -76,6 +76,7 @@ export default function RestoreTransactionModal({
   const invalidTxnHash = txnAddress && isNotValidTxn;
 
   const handlePasteBtnClick = async () => {
+    setIsNotValidTxn(false);
     const copiedText = await navigator.clipboard.readText();
     if (copiedText) {
       setTxnAddress(copiedText);
@@ -92,7 +93,7 @@ export default function RestoreTransactionModal({
   return (
     <Modal isOpen onClose={onClose}>
       <div className="flex flex-col mt-6 mb-14 w-full px-6">
-        <div className="font-bold text-lg lg:text-2xl text-dark-900">
+        <div className="font-bold text-xl lg:text-2xl text-dark-900">
           {title}
         </div>
         <div className="text-sm md:text-base leading-5 w-full text-dark-700 mt-2">
