@@ -3,7 +3,6 @@ import { FiArrowUpRight } from "react-icons/fi";
 import { IoCloseOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
-import truncateTextFromMiddle from "@utils/textHelper";
 
 import { useAllocateDfcFundMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
@@ -144,21 +143,7 @@ export default function TransactionStatus({
         <div className="flex-1 flex-col">
           <div className="leading-5 lg:text-xl font-semibold">{title}</div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
-          {allocationTxnHash && (
-            <div className="flex flex-row items-center mt-3 lg:mt-4 text-dark-900 lg:text-lg font-bold">
-              <a
-                className="flex flex-row items-center hover:opacity-70"
-                href={getTransactionUrl(allocationTxnHash)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FiArrowUpRight size={16} className="mr-2" />
-                View on DeFiScan:{" "}
-                {truncateTextFromMiddle(allocationTxnHash, isLg ? 5 : 4)}
-              </a>
-            </div>
-          )}
-          <div className="flex flex-row items-center mt-3 lg:mt-4 text-dark-900 lg:text-xl font-bold">
+          <div className="flex flex-row items-center mt-3 lg:mt-4 text-dark-900 md:text-sm lg:text-base font-bold">
             <a
               className="flex flex-row items-center hover:opacity-70 mb-1"
               href={`${ExplorerURL}/tx/${txnHash}`}
@@ -166,8 +151,19 @@ export default function TransactionStatus({
               rel="noreferrer"
             >
               <FiArrowUpRight size={20} className="mr-2" />
-              View on Etherscan
+              {allocationTxnHash ? "Etherscan" : "View on Etherscan"}
             </a>
+            {allocationTxnHash && (
+              <a
+                className="flex flex-row items-center hover:opacity-70 mb-1 ml-4"
+                href={getTransactionUrl(allocationTxnHash)}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <FiArrowUpRight size={20} className="mr-2" />
+                DeFiScan
+              </a>
+            )}
             {/*
              {ethTxnStatus.isConfirmed && (
               <a className="flex flex-row items-center hover:opacity-70 ml-5">
