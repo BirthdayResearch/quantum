@@ -58,7 +58,7 @@ export default function useWatchEthTxn() {
         }
       } catch ({ data }) {
         if (data?.error?.includes("Fund already allocated")) {
-          setStorage("unsent-fund", unconfirmed ?? null);
+          setStorage("confirmed", unconfirmed ?? null);
           setStorage("unconfirmed", null);
         } else if (
           data?.error?.includes("There is a problem in allocating fund")
