@@ -105,7 +105,7 @@ export default function RestoreTransactionModal({
           </span>
           <div
             className={clsx(
-              "absolute right-0 rounded bg-valid px-2 py-1 text-2xs text-dark-00  transition duration-300 lg:text-xs",
+              "absolute right-0 rounded bg-valid px-2 py-1 text-2xs text-dark-00 transition duration-300 lg:text-xs",
               copiedFromClipboard ? "opacity-100" : "opacity-0"
             )}
           >
@@ -127,7 +127,6 @@ export default function RestoreTransactionModal({
           )}
         >
           {/* Paste icon with tooltip */}
-
           <Tooltip
             content="Paste from clipboard"
             containerClass="mr-3 lg:mr-6 shrink-0 cursor-pointer hover:bg-dark-200 active:dark-btn-pressed"
