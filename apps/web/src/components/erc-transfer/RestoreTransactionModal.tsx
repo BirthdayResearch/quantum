@@ -47,8 +47,7 @@ export default function RestoreTransactionModal({
       try {
         const receipt = await provider.getTransaction(txnAddress);
         if (receipt) {
-          // setStorage("unconfirmed", txnAddress);
-          setStorage("confirmed", txnAddress);
+          setStorage("unconfirmed", txnAddress);
           setIsNotValidTxn(false);
           onClose();
         } else {
