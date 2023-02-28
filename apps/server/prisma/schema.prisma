@@ -16,6 +16,8 @@ enum EthereumTransactionStatus {
 enum BotStatus {
   COMPLETE
   CANNOT_COMPLETE
+  TOKEN_NOT_FOUND
+  NO_UTXO
   SENT
   ERROR
 }

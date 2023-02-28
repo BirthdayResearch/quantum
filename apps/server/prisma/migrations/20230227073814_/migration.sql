@@ -1,2 +1,0 @@
--- AlterEnum
-ALTER TYPE "BotStatus" ADD VALUE 'CANNOT_COMPLETE';

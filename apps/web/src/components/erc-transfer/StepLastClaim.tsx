@@ -25,9 +25,11 @@ const CLAIM_INPUT_ERROR =
 export default function StepLastClaim({
   data,
   signedClaim,
+  onClose,
 }: {
   data: TransferData;
   signedClaim: SignedClaim;
+  onClose: () => void;
 }) {
   const router = useRouter();
   const [showLoader, setShowLoader] = useState(false);
@@ -168,6 +170,7 @@ export default function StepLastClaim({
               ? window.open(`${ExplorerURL}/tx/${claimFundData.hash}`, "_blank")
               : handleOnClaim()
           }
+          onClose={onClose}
         />
       )}
       <div className={clsx("pt-4 px-6", "md:px-[73px] md:pt-4 md:pb-6")}>

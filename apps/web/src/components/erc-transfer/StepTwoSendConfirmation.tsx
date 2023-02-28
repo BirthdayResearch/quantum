@@ -1,10 +1,7 @@
 import clsx from "clsx";
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FiAlertCircle, FiLoader } from "react-icons/fi";
-import QRCode from "react-qr-code";
-import useCopyToClipboard from "@hooks/useCopyToClipboard";
-import Tooltip from "@components/commons/Tooltip";
 import UtilityButton from "@components/commons/UtilityButton";
 import { useGenerateAddressMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
@@ -13,6 +10,7 @@ import dayjs from "dayjs";
 import AddressError from "@components/commons/AddressError";
 import { useStorageContext } from "@contexts/StorageContext";
 import { DFC_TO_ERC_RESET_FORM_TIME_LIMIT } from "../../constants";
+import QrAddress from "../QrAddress";
 import TimeLimitCounter from "./TimeLimitCounter";
 
 function debounce(func, wait) {
@@ -53,32 +51,10 @@ function VerifyButton({
   );
 }
 
-function SuccessCopy({
-  containerClass,
-  show,
-}: {
-  containerClass: string;
-  show: boolean;
-}) {
-  return (
-    <div
-      className={clsx(
-        "absolute md:w-full text-center",
-        show ? "opacity-100" : "opacity-0",
-        containerClass
-      )}
-    >
-      <span className="rounded bg-valid px-2 py-1 text-xs text-dark-00  transition duration-300 md:text-xs">
-        Copied to clipboard
-      </span>
-    </div>
-  );
-}
-
 function FaqSection() {
   return (
     <div className="mt-6 md:mt-2">
-      <span className={clsx("text-sm text-warning", "md:mt-2")}>
+      <span className={clsx("text-xs text-warning", "md:mt-2")}>
         Transactions in this Bridge, as with all other on-chain transactions,
         are irreversible. For more details, read&nbsp;
         <Link
@@ -104,7 +80,6 @@ export default function StepTwoSendConfirmation({
   addressDetail?: AddressDetails;
 }) {
   const [dfcUniqueAddress, setDfcUniqueAddress] = useState<string>("");
-  const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAddressExpired, setIsAddressExpired] = useState(false);
   const [createdBeforeInMSec, setCreatedBeforeInMSec] = useState(
@@ -112,16 +87,10 @@ export default function StepTwoSendConfirmation({
   );
   const [addressGenerationError, setAddressGenerationError] = useState("");
   const [generateAddress] = useGenerateAddressMutation();
-  const { copy } = useCopyToClipboard();
   const { setStorage, dfcAddress } = useStorageContext();
 
   const handleConfirmClick = () => {
     goToNextStep();
-  };
-
-  const handleOnCopy = (text) => {
-    copy(text);
-    setShowSuccessCopy(true);
   };
 
   const generateDfcUniqueAddress = useCallback(
@@ -165,12 +134,6 @@ export default function StepTwoSendConfirmation({
     generateDfcUniqueAddress();
   }, []);
 
-  useEffect(() => {
-    if (showSuccessCopy) {
-      setTimeout(() => setShowSuccessCopy(false), 2000);
-    }
-  }, [showSuccessCopy]);
-
   return (
     <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-7 md:mt-4")}>
       <div
@@ -209,44 +172,20 @@ export default function StepTwoSendConfirmation({
                     />
                   ) : (
                     dfcUniqueAddress && (
-                      <>
-                        <SuccessCopy
-                          containerClass="m-auto right-0 left-0 top-2"
-                          show={showSuccessCopy}
-                        />
-                        <div className="h-[164px] bg-dark-1000 p-0.5 md:rounded">
-                          <QRCode value={dfcUniqueAddress} size={160} />
-                        </div>
-                        <div className="flex flex-col">
-                          <Tooltip
-                            content="Click to copy address"
-                            containerClass={clsx("relative p-0 mt-1")}
-                          >
-                            <button
-                              type="button"
-                              className={clsx(
-                                "text-dark-700 text-left break-all focus-visible:outline-none text-center mt-3",
-                                "text-xs cursor-pointer hover:underline"
-                              )}
-                              onClick={() => handleOnCopy(dfcUniqueAddress)}
-                            >
-                              {dfcUniqueAddress}
-                            </button>
-                          </Tooltip>
-                          {createdBeforeInMSec > 0 && (
-                            <div className="text-center">
-                              <TimeLimitCounter
-                                time={createdBeforeInMSec}
-                                onTimeElapsed={() => {
-                                  setStorage("dfc-address", null);
-                                  setDfcUniqueAddress("");
-                                  setIsAddressExpired(true);
-                                }}
-                              />
-                            </div>
-                          )}
-                        </div>
-                      </>
+                      <QrAddress dfcUniqueAddress={dfcUniqueAddress}>
+                        {createdBeforeInMSec > 0 && (
+                          <div className="text-center">
+                            <TimeLimitCounter
+                              time={createdBeforeInMSec}
+                              onTimeElapsed={() => {
+                                setStorage("dfc-address", null);
+                                setDfcUniqueAddress("");
+                                setIsAddressExpired(true);
+                              }}
+                            />
+                          </div>
+                        )}
+                      </QrAddress>
                     )
                   )}
                 </div>

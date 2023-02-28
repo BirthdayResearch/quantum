@@ -8,7 +8,9 @@ import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { Network, NetworkOptionsI, SelectionType, TokensI } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
-import UtilityModal from "@components/commons/UtilityModal";
+import UtilityModal, {
+  ModalConfigType,
+} from "@components/commons/UtilityModal";
 import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
 import IconTooltip from "@components/commons/IconTooltip";
@@ -91,7 +93,9 @@ export default function BridgeForm({
   const [addressInput, setAddressInput] = useState<string>("");
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
-  const [showResetModal, setShowResetModal] = useState<boolean>(false);
+
+  const [utilityModalData, setUtilityModalData] =
+    useState<ModalConfigType | null>(null);
 
   const [fee, feeSymbol] = useTransferFee(amount);
 
@@ -171,7 +175,7 @@ export default function BridgeForm({
   };
 
   const onResetTransferForm = () => {
-    setShowResetModal(false);
+    setUtilityModalData(null);
     setStorage("txn-form", null);
     setStorage("dfc-address", null);
     setStorage("dfc-address-details", null);
@@ -196,6 +200,36 @@ export default function BridgeForm({
         return "Connect wallet";
     }
   };
+
+  const UtilityModalMessage = {
+    resetForm: {
+      title: "Are you sure you want to reset form?",
+      message:
+        "Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      primaryButtonLabel: "Reset form",
+      onPrimaryButtonClick: () => onResetTransferForm(),
+      secondaryButtonLabel: "Go back",
+      onSecondaryButtonClick: () => setUtilityModalData(null),
+    },
+    leaveTransaction: {
+      title: "Are you sure you want to leave your transaction?",
+      message:
+        "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      primaryButtonLabel: "Leave transaction",
+      onPrimaryButtonClick: () => {
+        setShowConfirmModal(false);
+        setUtilityModalData(null);
+      },
+      secondaryButtonLabel: "Go back",
+      onSecondaryButtonClick: () => setUtilityModalData(null),
+    },
+  };
+
+  function confirmationModalonClose(noCloseWarning: boolean) {
+    if (noCloseWarning) {
+      setShowConfirmModal(false);
+    } else setUtilityModalData(UtilityModalMessage.leaveTransaction);
+  }
 
   useEffect(() => {
     if (amount) {
@@ -436,7 +470,9 @@ export default function BridgeForm({
           <div className="mt-3">
             <ActionButton
               label="Reset form"
-              onClick={() => setShowResetModal(true)}
+              onClick={() => {
+                setUtilityModalData(UtilityModalMessage.resetForm);
+              }}
               variant="secondary"
             />
           </div>
@@ -450,20 +486,23 @@ export default function BridgeForm({
       <ConfirmTransferModal
         show={showConfirmModal}
         addressDetail={dfcAddressDetails}
-        onClose={() => setShowConfirmModal(false)}
+        onClose={(noCloseWarning) => {
+          confirmationModalonClose(noCloseWarning);
+        }}
         amount={amount}
         fromAddress={fromAddress}
         toAddress={addressInput}
       />
-      <UtilityModal
-        show={showResetModal}
-        title="Are you sure you want to reset form?"
-        message="Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution"
-        primaryButtonLabel="Reset form"
-        onPrimaryButtonClick={() => onResetTransferForm()}
-        secondaryButtonLabel="Go back"
-        onSecondaryButtonClick={() => setShowResetModal(false)}
-      />
+      {utilityModalData && (
+        <UtilityModal
+          title={utilityModalData.title}
+          message={utilityModalData.message}
+          primaryButtonLabel={utilityModalData.primaryButtonLabel}
+          onPrimaryButtonClick={utilityModalData.onPrimaryButtonClick}
+          secondaryButtonLabel={utilityModalData.secondaryButtonLabel}
+          onSecondaryButtonClick={utilityModalData.onSecondaryButtonClick}
+        />
+      )}
     </div>
   );
 }

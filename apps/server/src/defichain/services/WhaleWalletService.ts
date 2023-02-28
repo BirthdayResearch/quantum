@@ -150,6 +150,7 @@ export class WhaleWalletService {
         refundAddress: data.refundAddress,
       };
     } catch (e: any) {
+      this.logger.log(e);
       if (e instanceof BadRequestException) {
         throw e;
       }
