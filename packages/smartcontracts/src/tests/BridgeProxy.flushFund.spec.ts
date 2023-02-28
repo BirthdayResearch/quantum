@@ -69,17 +69,6 @@ describe('Test flushFund functionalities', () => {
     });
   });
 
-  describe('OPERATIONAL_ROLE', () => {
-    it('Should be able to change `flushReceiveAddress`', async () => {
-      const { proxyBridge, flushReceiveSigner, arbitrarySigner, operationalAdminSigner } = await loadFixture(
-        deployContracts,
-      );
-      expect(await proxyBridge.flushReceiveAddress()).to.be.equal(flushReceiveSigner.address);
-      await proxyBridge.connect(operationalAdminSigner).changeFlushReceiveAddress(arbitrarySigner.address);
-      expect(await proxyBridge.flushReceiveAddress()).to.be.equal(arbitrarySigner.address);
-    });
-  });
-
   describe('ARBITRARY_EOA', () => {
     it('Revert when changing `flushReceiveAddress`', async () => {
       const { proxyBridge, defaultAdminSigner, flushReceiveSigner, arbitrarySigner } = await loadFixture(
@@ -88,7 +77,9 @@ describe('Test flushFund functionalities', () => {
       expect(await proxyBridge.flushReceiveAddress()).to.be.equal(flushReceiveSigner.address);
       await expect(
         proxyBridge.connect(arbitrarySigner).changeFlushReceiveAddress(defaultAdminSigner.address),
-      ).to.be.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
+      ).to.be.revertedWith(
+        `AccessControl: account ${arbitrarySigner.address.toLowerCase()} is missing role 0x${'0'.repeat(64)}`,
+      );
       expect(await proxyBridge.flushReceiveAddress()).to.be.equal(flushReceiveSigner.address);
     });
   });

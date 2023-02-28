@@ -5,13 +5,13 @@ import { deployContracts } from './testUtils/deployment';
 
 describe('Test ', () => {
   it('Should disable the initialization of the implementation contract after creating it', async () => {
-    const { bridgeImplementation, defaultAdminSigner, operationalAdminSigner, communityAddress, flushReceiveSigner } =
+    const { bridgeImplementation, defaultAdminSigner, withdrawSigner, communityAddress, flushReceiveSigner } =
       await loadFixture(deployContracts);
 
     await expect(
       bridgeImplementation.initialize(
         defaultAdminSigner.address,
-        operationalAdminSigner.address,
+        withdrawSigner.address,
         defaultAdminSigner.address,
         communityAddress,
         10,

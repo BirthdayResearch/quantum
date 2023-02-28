@@ -6,7 +6,7 @@ import { BridgeV1, BridgeV1__factory, TestToken } from '../../generated';
 export async function deployContracts(): Promise<BridgeDeploymentResult> {
   const accounts = await ethers.provider.listAccounts();
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
-  const operationalAdminSigner = await ethers.getSigner(accounts[1]);
+  const withdrawSigner = await ethers.getSigner(accounts[1]);
   const arbitrarySigner = await ethers.getSigner(accounts[2]);
   const flushReceiveSigner = await ethers.getSigner(accounts[3]);
   const BridgeUpgradeable = await ethers.getContractFactory('BridgeV1');
@@ -15,9 +15,9 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
   const BridgeProxy = await ethers.getContractFactory('BridgeProxy');
   // deployment arguments for the Proxy contract
   const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-    // admin address
+    // default admin address
     accounts[0],
-    // operational address
+    // withdraw address
     accounts[1],
     // relayer address
     accounts[0],
@@ -42,7 +42,7 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
     testToken,
     testToken2,
     defaultAdminSigner,
-    operationalAdminSigner,
+    withdrawSigner,
     arbitrarySigner,
     communityAddress: accounts[4],
     flushReceiveSigner,
@@ -55,7 +55,7 @@ interface BridgeDeploymentResult {
   testToken: TestToken;
   testToken2: TestToken;
   defaultAdminSigner: SignerWithAddress;
-  operationalAdminSigner: SignerWithAddress;
+  withdrawSigner: SignerWithAddress;
   arbitrarySigner: SignerWithAddress;
   communityAddress: string;
   flushReceiveSigner: SignerWithAddress;

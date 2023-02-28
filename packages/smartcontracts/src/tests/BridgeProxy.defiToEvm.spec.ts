@@ -12,7 +12,7 @@ describe('DeFiChain --> EVM', () => {
   let testToken: TestToken;
   let testToken2: TestToken;
   let defaultAdminSigner: SignerWithAddress;
-  let operationalAdminSigner: SignerWithAddress;
+  let withdrawSigner: SignerWithAddress;
   let arbitrarySigner: SignerWithAddress;
   let domainData: any;
   const eip712Types = {
@@ -27,8 +27,9 @@ describe('DeFiChain --> EVM', () => {
 
   describe('Test for ERC20', () => {
     beforeEach(async () => {
-      ({ proxyBridge, testToken, testToken2, defaultAdminSigner, operationalAdminSigner, arbitrarySigner } =
-        await loadFixture(deployContracts));
+      ({ proxyBridge, testToken, testToken2, defaultAdminSigner, withdrawSigner, arbitrarySigner } = await loadFixture(
+        deployContracts,
+      ));
       domainData = {
         name: 'QUANTUM_BRIDGE',
         version: '1',
@@ -67,7 +68,7 @@ describe('DeFiChain --> EVM', () => {
 
     it('Valid signature, recipient address is different from msg.sender', async () => {
       const eip712Data = {
-        to: operationalAdminSigner.address,
+        to: withdrawSigner.address,
         amount: toWei('10'),
         nonce: 0,
         deadline: ethers.constants.MaxUint256,
@@ -76,34 +77,27 @@ describe('DeFiChain --> EVM', () => {
 
       const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
       // Checking Balance before claiming fund, should be 0
-      expect(await testToken.balanceOf(operationalAdminSigner.address)).to.equal(0);
+      expect(await testToken.balanceOf(withdrawSigner.address)).to.equal(0);
       await proxyBridge
         .connect(defaultAdminSigner)
-        .claimFund(
-          operationalAdminSigner.address,
-          toWei('10'),
-          0,
-          ethers.constants.MaxUint256,
-          testToken.address,
-          signature,
-        );
+        .claimFund(withdrawSigner.address, toWei('10'), 0, ethers.constants.MaxUint256, testToken.address, signature);
       // Checking Balance after claiming fund, should be 10
-      expect(await testToken.balanceOf(operationalAdminSigner.address)).to.equal(toWei('10'));
+      expect(await testToken.balanceOf(withdrawSigner.address)).to.equal(toWei('10'));
     });
 
     it('Invalid Signature', async () => {
       const eip712Data = {
-        to: operationalAdminSigner.address,
+        to: withdrawSigner.address,
         amount: toWei('10'),
         nonce: 0,
         deadline: ethers.constants.MaxUint256,
         tokenAddress: testToken.address,
       };
       // Relayer address is defaultAdminSigner, if not signed by relayer address, txn should fail.
-      const signature = await operationalAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
+      const signature = await withdrawSigner._signTypedData(domainData, eip712Types, eip712Data);
       await expect(
         proxyBridge.claimFund(
-          operationalAdminSigner.address,
+          withdrawSigner.address,
           toWei('10'),
           0,
           ethers.constants.MaxUint256,
@@ -112,14 +106,14 @@ describe('DeFiChain --> EVM', () => {
         ),
       ).to.be.revertedWithCustomError(proxyBridge, 'FAKE_SIGNATURE');
       // Checking Balance after Unsuccessfully claiming fund, should be 0
-      expect(await testToken.balanceOf(operationalAdminSigner.address)).to.equal(0);
+      expect(await testToken.balanceOf(withdrawSigner.address)).to.equal(0);
     });
 
     it('Incorrect nonce', async () => {
       // Correct nonce should be Zero
       await expect(
         proxyBridge.claimFund(
-          operationalAdminSigner.address,
+          withdrawSigner.address,
           toWei('10'),
           1,
           ethers.constants.MaxUint256,
@@ -128,14 +122,14 @@ describe('DeFiChain --> EVM', () => {
         ),
       ).to.be.revertedWithCustomError(proxyBridge, 'INCORRECT_NONCE');
       // Checking Balance after Unsuccessfully claiming fund, should be 0
-      expect(await testToken.balanceOf(operationalAdminSigner.address)).to.equal(0);
+      expect(await testToken.balanceOf(withdrawSigner.address)).to.equal(0);
     });
 
     it('Unsupported token', async () => {
       await testToken2.mint(proxyBridge.address, toWei('100'));
       await expect(
         proxyBridge.claimFund(
-          operationalAdminSigner.address,
+          withdrawSigner.address,
           toWei('10'),
           0,
           ethers.constants.MaxUint256,
@@ -145,7 +139,7 @@ describe('DeFiChain --> EVM', () => {
       ).to.be.revertedWithCustomError(proxyBridge, 'TOKEN_NOT_SUPPORTED');
       expect(await testToken2.balanceOf(proxyBridge.address)).to.equal(toWei('100'));
       // Checking Balance after Unsuccessfully claiming fund, should be 0
-      expect(await testToken2.balanceOf(operationalAdminSigner.address)).to.equal(0);
+      expect(await testToken2.balanceOf(withdrawSigner.address)).to.equal(0);
     });
 
     it('Successfully revert when claiming more ERC20 than available balance', async () => {
@@ -230,9 +224,7 @@ describe('DeFiChain --> EVM', () => {
 
   describe('Test for ETH', () => {
     beforeEach(async () => {
-      ({ proxyBridge, testToken, testToken2, defaultAdminSigner, operationalAdminSigner } = await loadFixture(
-        deployContracts,
-      ));
+      ({ proxyBridge, testToken, testToken2, defaultAdminSigner, withdrawSigner } = await loadFixture(deployContracts));
       domainData = {
         name: 'QUANTUM_BRIDGE',
         version: '1',
@@ -278,20 +270,20 @@ describe('DeFiChain --> EVM', () => {
 
     it('Successfully claim when the signature is valid, msg.sender is different from the recipient of the fund', async () => {
       const eip712Data = {
-        to: operationalAdminSigner.address,
+        to: withdrawSigner.address,
         amount: toWei('10'),
         nonce: 0,
         deadline: ethers.constants.MaxUint256,
         tokenAddress: ethers.constants.AddressZero,
       };
       const signature = await defaultAdminSigner._signTypedData(domainData, eip712Types, eip712Data);
-      const ethBalanceOperationalAdminBeforeClaim = await ethers.provider.getBalance(operationalAdminSigner.address);
+      const ethBalanceWithdrawSignerBeforeClaim = await ethers.provider.getBalance(withdrawSigner.address);
       const ethBalanceBridgeBeforeClaim = await ethers.provider.getBalance(proxyBridge.address);
       const ethBalanceDefaultAdminBeforeClaim = await ethers.provider.getBalance(defaultAdminSigner.address);
       const tx = await proxyBridge
         .connect(defaultAdminSigner)
         .claimFund(
-          operationalAdminSigner.address,
+          withdrawSigner.address,
           toWei('10'),
           0,
           ethers.constants.MaxUint256,
@@ -299,11 +291,11 @@ describe('DeFiChain --> EVM', () => {
           signature,
         );
       const receipt = await tx.wait();
-      const ethBalanceOperationalAdminAfterClaim = await ethers.provider.getBalance(operationalAdminSigner.address);
+      const ethBalanceWithdrawSignerAfterClaim = await ethers.provider.getBalance(withdrawSigner.address);
       const ethBalanceBridgeAfterClaim = await ethers.provider.getBalance(proxyBridge.address);
       const ethBalanceDefaultAdminAfterClaim = await ethers.provider.getBalance(defaultAdminSigner.address);
       // Checking Balance after claiming fund, should be 10
-      expect(ethBalanceOperationalAdminAfterClaim).to.equal(ethBalanceOperationalAdminBeforeClaim.add(toWei('10')));
+      expect(ethBalanceWithdrawSignerAfterClaim).to.equal(ethBalanceWithdrawSignerBeforeClaim.add(toWei('10')));
       expect(ethBalanceBridgeAfterClaim).to.equal(ethBalanceBridgeBeforeClaim.sub(toWei('10')));
       expect(ethBalanceDefaultAdminAfterClaim).to.equal(
         ethBalanceDefaultAdminBeforeClaim.sub(receipt.gasUsed.mul(receipt.effectiveGasPrice)),
@@ -312,7 +304,7 @@ describe('DeFiChain --> EVM', () => {
 
     it('Invalid Signature', async () => {
       const eip712Data = {
-        to: operationalAdminSigner.address,
+        to: withdrawSigner.address,
         amount: toWei('10'),
         nonce: 0,
         deadline: ethers.constants.MaxUint256,
@@ -320,10 +312,10 @@ describe('DeFiChain --> EVM', () => {
       };
       // Relayer address is defaultAdminSigner, if not signed by relayer address, txn should fail.
       const signature = await arbitrarySigner._signTypedData(domainData, eip712Types, eip712Data);
-      const balanceOperationalAdminBeforeClaim = await ethers.provider.getBalance(operationalAdminSigner.address);
+      const balanceWithdrawSignerBeforeClaim = await ethers.provider.getBalance(withdrawSigner.address);
       await expect(
         proxyBridge.claimFund(
-          operationalAdminSigner.address,
+          withdrawSigner.address,
           toWei('10'),
           0,
           ethers.constants.MaxUint256,
@@ -331,16 +323,16 @@ describe('DeFiChain --> EVM', () => {
           signature,
         ),
       ).to.be.revertedWithCustomError(proxyBridge, 'FAKE_SIGNATURE');
-      const balanceOperationalAdminAfterClaim = await ethers.provider.getBalance(operationalAdminSigner.address);
-      expect(balanceOperationalAdminAfterClaim).to.equal(balanceOperationalAdminBeforeClaim);
+      const balanceWithdrawSignerAfterClaim = await ethers.provider.getBalance(withdrawSigner.address);
+      expect(balanceWithdrawSignerAfterClaim).to.equal(balanceWithdrawSignerBeforeClaim);
     });
 
     it('Incorrect nonce', async () => {
-      const ethBalanceOperationalAdminBeforeClaim = await ethers.provider.getBalance(operationalAdminSigner.address);
+      const ethBalanceWithdrawSignerBeforeClaim = await ethers.provider.getBalance(withdrawSigner.address);
       // Correct nonce should be Zero
       await expect(
         proxyBridge.claimFund(
-          operationalAdminSigner.address,
+          withdrawSigner.address,
           toWei('10'),
           1,
           ethers.constants.MaxUint256,
@@ -348,9 +340,9 @@ describe('DeFiChain --> EVM', () => {
           '0x00',
         ),
       ).to.be.revertedWithCustomError(proxyBridge, 'INCORRECT_NONCE');
-      const ethBalanceOperationalAdminAfterClaim = await ethers.provider.getBalance(operationalAdminSigner.address);
+      const ethBalanceWithdrawSignerAfterClaim = await ethers.provider.getBalance(withdrawSigner.address);
       // ETH Balance of operational admin after claiming is equal to the one before claiming
-      expect(ethBalanceOperationalAdminAfterClaim).to.equal(ethBalanceOperationalAdminBeforeClaim);
+      expect(ethBalanceWithdrawSignerAfterClaim).to.equal(ethBalanceWithdrawSignerBeforeClaim);
     });
 
     it('Successfully revert when claiming more ETH than available balance', async () => {

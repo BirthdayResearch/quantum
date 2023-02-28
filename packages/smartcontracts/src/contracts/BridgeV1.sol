@@ -32,11 +32,6 @@ error TOKEN_ALREADY_SUPPORTED();
 error ZERO_ADDRESS();
 
 /** @notice @dev
-/* This error occurs when the msg.sender doesn't have neither DEFAULT_ADMIN_ROLE or OPERATIONAL_ROLE assigned
-*/
-error NON_AUTHORIZED_ADDRESS();
-
-/** @notice @dev
 /* This error occurs when Admin(s) try to change daily allowance of un-supported token.
 */
 error ONLY_SUPPORTED_TOKENS();
@@ -73,7 +68,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     bytes32 constant DATA_TYPE_HASH =
         keccak256('CLAIM(address to,uint256 amount,uint256 nonce,uint256 deadline,address tokenAddress)');
 
-    bytes32 public constant OPERATIONAL_ROLE = keccak256('OPERATIONAL_ROLE');
+    bytes32 public constant WITHDRAW_ROLE = keccak256('WITHDRAW_ROLE');
 
     string public constant NAME = 'QUANTUM_BRIDGE';
 
@@ -202,15 +197,15 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
 
     /**
      * @notice To initialize this contract (No constructor as part of the proxy pattery )
-     * @param _initialAdmin Initial admin address of this contract
-     * @param _initialOperational Initial operational address of this contract
+     * @param _timelockContract TimelockContract who will have the DEFAULT_ADMIN_ROLE
+     * @param _initialWithdraw Initial withdraw address of the contract
      * @param _relayerAddress Relayer address for signature
      * @param _communityWallet Community address for tx fees
      * @param _fee Fee charged on each transcation (initial fee: 0.3%)
      */
     function initialize(
-        address _initialAdmin,
-        address _initialOperational,
+        address _timelockContract,
+        address _initialWithdraw,
         address _relayerAddress,
         address _communityWallet,
         uint256 _fee,
@@ -218,8 +213,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     ) external initializer {
         __UUPSUpgradeable_init();
         __EIP712_init(NAME, '1');
-        _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
-        _grantRole(OPERATIONAL_ROLE, _initialOperational);
+        _grantRole(DEFAULT_ADMIN_ROLE, _timelockContract);
+        _grantRole(WITHDRAW_ROLE, _initialWithdraw);
         communityWallet = _communityWallet;
         relayerAddress = _relayerAddress;
         transactionFee = _fee;
@@ -227,7 +222,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     }
 
     /**
-    * @notice To get the current version of the contract
+     * @notice To get the current version of the contract
      */
     function version() external view returns (string memory) {
         return StringsUpgradeable.toString(_getInitializedVersion());
@@ -305,8 +300,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _tokenAddress The token address to be added to supported list
      * @param _tokenCap maximum balance of tokens the contract can hold per `_tokenAddress`
      */
-    function addSupportedTokens(address _tokenAddress, uint256 _tokenCap) external {
-        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+    function addSupportedTokens(address _tokenAddress, uint256 _tokenCap) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (supportedTokens.contains(_tokenAddress)) revert TOKEN_ALREADY_SUPPORTED();
         supportedTokens.add(_tokenAddress);
         tokenCap[_tokenAddress] = _tokenCap;
@@ -317,8 +311,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Used by addresses with Admin and Operational roles to remove an exisiting supported token
      * @param _tokenAddress The token address to be removed from supported list
      */
-    function removeSupportedTokens(address _tokenAddress) external {
-        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+    function removeSupportedTokens(address _tokenAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
         supportedTokens.remove(_tokenAddress);
         tokenCap[_tokenAddress] = 0;
@@ -330,7 +323,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _tokenAddress The token that will be withdraw
      * @param amount Requested amount to be withdraw. Amount would be in the denomination of ETH
      */
-    function withdraw(address _tokenAddress, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdraw(address _tokenAddress, uint256 amount) external onlyRole(WITHDRAW_ROLE) {
         if (_tokenAddress == ETH) {
             (bool sent, ) = msg.sender.call{value: amount}('');
             if (!sent) revert ETH_TRANSFER_FAILED();
@@ -363,8 +356,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Used by addresses with Admin and Operational roles to set the new flush receive address
      * @param _newAddress new address to be flushed to
      */
-    function changeFlushReceiveAddress(address _newAddress) external {
-        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+    function changeFlushReceiveAddress(address _newAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (_newAddress == address(0)) revert ZERO_ADDRESS();
         address _oldAddress = flushReceiveAddress;
         flushReceiveAddress = _newAddress;
@@ -375,8 +367,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Used by addresses with Admin and Operational roles to set the new _relayerAddress
      * @param _relayerAddress The new relayer address, ie. the address used by the server for signing claims
      */
-    function changeRelayerAddress(address _relayerAddress) external {
-        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+    function changeRelayerAddress(address _relayerAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (_relayerAddress == address(0)) revert ZERO_ADDRESS();
         address oldRelayerAddress = relayerAddress;
         relayerAddress = _relayerAddress;
@@ -387,8 +378,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Called by addresses with Admin and Operational roles to set the new txn fee
      * @param fee The new fee
      */
-    function changeTxFee(uint256 fee) external {
-        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+    function changeTxFee(uint256 fee) external onlyRole(DEFAULT_ADMIN_ROLE) {
         uint256 oldTxFee = transactionFee;
         transactionFee = fee;
         emit TRANSACTION_FEE_CHANGED(oldTxFee, transactionFee);
@@ -398,8 +388,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Called by addresses with Admin and Operational roles to set the new wallet for sending transaction fees to
      * @param _newAddress The new community address
      */
-    function changeTxFeeAddress(address _newAddress) external {
-        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+    function changeTxFeeAddress(address _newAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (_newAddress == address(0)) revert ZERO_ADDRESS();
         address oldAddress = communityWallet;
         communityWallet = _newAddress;
@@ -410,8 +399,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @notice Called by addresses with Admin and Operational roles to reset the maximum balance of tokens the contract
      * @param _newTokenCap The new maximum balance of tokens the contract can hold per token address.
      */
-    function changeTokenCap(address _tokenAddress, uint256 _newTokenCap) external {
-        if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+    function changeTokenCap(address _tokenAddress, uint256 _newTokenCap) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
         uint256 oldTokenCap = tokenCap[_tokenAddress];
         tokenCap[_tokenAddress] = _newTokenCap;
@@ -437,14 +425,6 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     receive() external payable {
         emit ETH_RECEIVED_VIA_RECEIVE_FUNCTION(msg.sender, msg.value);
-    }
-
-    /**
-     * @notice Primarily being used to check the admin roles
-     * @return check true if msg.sender id one of admins, false otherwise.
-     */
-    function checkRoles() internal view returns (bool check) {
-        return check = hasRole(DEFAULT_ADMIN_ROLE, msg.sender) || hasRole(OPERATIONAL_ROLE, msg.sender);
     }
 
     /**

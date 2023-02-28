@@ -31,23 +31,12 @@ describe('Transaction fee tests', () => {
       });
     });
 
-    describe('OPERATIONAL_ROLE', () => {
-      it('Succesfully change the fee by Operational address', async () => {
-        const { proxyBridge, operationalAdminSigner } = await loadFixture(deployContracts);
-        // Event called TRANSACTION_FEE_CHANGED should be emitted on Successful change
-        await expect(proxyBridge.connect(operationalAdminSigner).changeTxFee(50))
-          .to.emit(proxyBridge, 'TRANSACTION_FEE_CHANGED')
-          .withArgs(10, 50);
-      });
-    });
-
     describe('ARBITRARY_EOA', () => {
       it('Unable to change the fee by another address', async () => {
         const { proxyBridge, arbitrarySigner } = await loadFixture(deployContracts);
         // Txn should revert with the AccessControl error
-        await expect(proxyBridge.connect(arbitrarySigner).changeTxFee(50)).to.be.revertedWithCustomError(
-          proxyBridge,
-          'NON_AUTHORIZED_ADDRESS',
+        await expect(proxyBridge.connect(arbitrarySigner).changeTxFee(50)).to.be.revertedWith(
+          `AccessControl: account ${arbitrarySigner.address.toLowerCase()} is missing role 0x${'0'.repeat(64)}`,
         );
       });
     });
@@ -67,25 +56,15 @@ describe('Transaction fee tests', () => {
       });
     });
 
-    describe('OPERATIONAL_ROLE', () => {
-      it('Successfully change the address', async () => {
-        const { proxyBridge, operationalAdminSigner, arbitrarySigner, communityAddress } = await loadFixture(
-          deployContracts,
-        );
-        // Changing the community wallet address
-        await expect(proxyBridge.connect(operationalAdminSigner).changeTxFeeAddress(arbitrarySigner.address))
-          .to.emit(proxyBridge, 'TRANSACTION_FEE_ADDRESS_CHANGED')
-          .withArgs(communityAddress, arbitrarySigner.address);
-      });
-    });
-
     describe('ARBITRARY_EOA', () => {
       it('Successfully revert when changing the community wallet ', async () => {
         const { proxyBridge, arbitrarySigner, communityAddress } = await loadFixture(deployContracts);
         // Changing the community wallet address
         await expect(
           proxyBridge.connect(arbitrarySigner).changeTxFeeAddress(arbitrarySigner.address),
-        ).to.be.revertedWithCustomError(proxyBridge, 'NON_AUTHORIZED_ADDRESS');
+        ).to.be.revertedWith(
+          `AccessControl: account ${arbitrarySigner.address.toLowerCase()} is missing role 0x${'0'.repeat(64)}`,
+        );
 
         expect(await proxyBridge.communityWallet()).to.be.equal(communityAddress);
       });
