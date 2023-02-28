@@ -5,7 +5,7 @@ import { ethers } from 'hardhat';
 import { deployContracts } from './testUtils/deployment';
 import { toWei } from './testUtils/mathUtils';
 
-describe('Test flushFund functionalities', () => {
+describe('Test flushMultipleTokenFunds functionalities', () => {
   it('Should flush the funds successfully when there is initial redundant funds', async () => {
     const { proxyBridge, testToken, testToken2, flushReceiveSigner, defaultAdminSigner } = await loadFixture(
       deployContracts,
@@ -28,16 +28,16 @@ describe('Test flushFund functionalities', () => {
       to: proxyBridge.address,
       value: toWei('100'),
     });
-    // Getting balance of respected tokens before calling `flushFund()`
+    // Getting balance of respected tokens before calling `flushMultipleTokenFunds()`
     const balance1BeforeFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balance2BeforeFlush = await testToken2.balanceOf(flushReceiveSigner.address);
     const balance3BeforeFlush = await testToken3.balanceOf(flushReceiveSigner.address);
     const balanceETHBeforeFlush = await ethers.provider.getBalance(flushReceiveSigner.address);
     // This tokens should revert as we don't _`toIndex` is greater than supportedTokens.length
-    await expect(proxyBridge.flushFund(0, 5)).to.revertedWithCustomError(proxyBridge, 'INVALID_TOINDEX');
+    await expect(proxyBridge.flushMultipleTokenFunds(0, 5)).to.revertedWithCustomError(proxyBridge, 'INVALID_TOINDEX');
     // Flushing token from 0 to 4 index. This will flush 0, 1, 2 and 3 tokens.
-    await proxyBridge.flushFund(0, 4);
-    // Getting balance of respected tokens after calling `flushFund()`
+    await proxyBridge.flushMultipleTokenFunds(0, 4);
+    // Getting balance of respected tokens after calling `flushMultipleTokenFunds()`
     const balance1AfterFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balance2AfterFlush = await testToken2.balanceOf(flushReceiveSigner.address);
     const balance3AfterFlush = await testToken3.balanceOf(flushReceiveSigner.address);
@@ -48,7 +48,7 @@ describe('Test flushFund functionalities', () => {
     expect(balanceETHAfterFlush.sub(balanceETHBeforeFlush)).to.equal(toWei('40'));
   });
 
-  it('Should flush the funds successfully when there is initial redundant funds per `tokenAddress`', async () => {
+  it('Should flush the funds per token successfully when there is initial redundant funds per `tokenAddress`', async () => {
     const { proxyBridge, testToken, testToken2, flushReceiveSigner, defaultAdminSigner } = await loadFixture(
       deployContracts,
     );
@@ -66,7 +66,7 @@ describe('Test flushFund functionalities', () => {
       to: proxyBridge.address,
       value: toWei('100'),
     });
-    // Getting balance of respected tokens before calling `flushFund()`
+    // Getting balance of respected tokens before calling `flushMultipleTokenFunds()`
     const balance1BeforeFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balance2BeforeFlush = await testToken2.balanceOf(flushReceiveSigner.address);
     const balanceETHBeforeFlush = await ethers.provider.getBalance(flushReceiveSigner.address);
@@ -74,7 +74,7 @@ describe('Test flushFund functionalities', () => {
     await proxyBridge.flushFundPerToken(testToken.address);
     await proxyBridge.flushFundPerToken(testToken2.address);
     await proxyBridge.flushFundPerToken(ethers.constants.AddressZero);
-    // Getting balance of respected tokens after calling `flushFund()`
+    // Getting balance of respected tokens after calling `flushMultipleTokenFunds()`
     const balance1AfterFlush = await testToken.balanceOf(flushReceiveSigner.address);
     const balance2AfterFlush = await testToken2.balanceOf(flushReceiveSigner.address);
     const balanceETHAfterFlush = await ethers.provider.getBalance(flushReceiveSigner.address);

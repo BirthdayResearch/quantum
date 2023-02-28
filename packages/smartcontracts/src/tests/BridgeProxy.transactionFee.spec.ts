@@ -53,7 +53,7 @@ describe('Transaction fee tests', () => {
     });
     it('Successfully revert if the fee is greater than `MAX_FEE`', async () => {
       const { proxyBridge } = await loadFixture(deployContracts);
-      // Admin should successfully changes the tx fees to 101%
+      // Admin should not be able to change the tx fees to more than 100%
       await expect(proxyBridge.changeTxFee(10100)).to.be.revertedWithCustomError(proxyBridge, 'MORE_THAN_MAX_FEE');
       // Fee should be 0.1%
       expect(await proxyBridge.transactionFee()).to.equal(10);

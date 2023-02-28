@@ -351,12 +351,12 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     }
 
     /**
-     * @notice Function to flush the excess funds across supported tokens to a hardcoded address
-     * anyone can call this function, if pass (0,3), only token at index 0, 1 and 2 will be flushed.
-     * @param _fromIndex Finishing index for array `supportedTokens.values()` to flush from
+     * @notice anyone can call this function. For example, calling flushMultipleTokenFunds(0,3),
+     * only the tokens at index 0, 1 and 2 will be flushed.
+     * @param _fromIndex _fromIndex End index for array `supportedTokens.values()` to flush from
      * @param _toIndex Starting index for array `supportedTokens.values()` to flush to
      */
-    function flushFund(uint256 _fromIndex, uint256 _toIndex) external {
+    function flushMultipleTokenFunds(uint256 _fromIndex, uint256 _toIndex) external {
         if (_toIndex > supportedTokens.length()) revert INVALID_TOINDEX();
         address _flushReceiveAddress = flushReceiveAddress;
         for (uint256 i = _fromIndex; i < _toIndex; ++i) {
