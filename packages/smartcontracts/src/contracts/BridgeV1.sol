@@ -177,8 +177,16 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
 
     /**
      * @notice Emitted when fund is flushed
+     * @param _tokenAddress ERC20 token to be flushed
      */
-    event FLUSH_FUND();
+    event FLUSH_FUND(address _tokenAddress);
+
+    /**
+     * @notice Emitted when fund is flushed
+     * @param _fromIndex Starting index
+     * @param _toIndex Ending index
+     */
+    event FLUSH_FUND_MULTIPLE_TOKENS(uint256 _fromIndex, uint256 _toIndex);
 
     /**
      * @notice Emitted when the address to be flushed to is changed
@@ -353,8 +361,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * @notice anyone can call this function. For example, calling flushMultipleTokenFunds(0,3),
      * only the tokens at index 0, 1 and 2 will be flushed.
-     * @param _fromIndex _fromIndex End index for array `supportedTokens.values()` to flush from
-     * @param _toIndex Starting index for array `supportedTokens.values()` to flush to
+     * @param _fromIndex Starting index for array `supportedTokens.values()` to flush from (inclusive)
+     * @param _toIndex Ending index for array `supportedTokens.values()` to flush to (exclusive)
      */
     function flushMultipleTokenFunds(uint256 _fromIndex, uint256 _toIndex) external {
         if (_toIndex > supportedTokens.length()) revert INVALID_TOINDEX();
@@ -372,7 +380,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
                 IERC20Upgradeable(supToken).safeTransfer(_flushReceiveAddress, amountToFlush);
             }
         }
-        emit FLUSH_FUND();
+        emit FLUSH_FUND_MULTIPLE_TOKENS(_fromIndex, _toIndex);
     }
 
     /**
@@ -381,21 +389,20 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _tokenAddress address of the token to be flushed
      */
     function flushFundPerToken(address _tokenAddress) external {
-        address _flushReceiveAddress = flushReceiveAddress;
         if (_tokenAddress == ETH) {
             if (address(this).balance > tokenCap[ETH]) {
                 uint256 amountToFlush = address(this).balance - tokenCap[ETH];
-                (bool sent, ) = _flushReceiveAddress.call{value: amountToFlush}('');
+                (bool sent, ) = flushReceiveAddress.call{value: amountToFlush}('');
                 if (!sent) revert ETH_TRANSFER_FAILED();
             }
         } else {
             if (IERC20Upgradeable(_tokenAddress).balanceOf(address(this)) > tokenCap[_tokenAddress]) {
                 uint256 amountToFlush = IERC20Upgradeable(_tokenAddress).balanceOf(address(this)) -
                     tokenCap[_tokenAddress];
-                IERC20Upgradeable(_tokenAddress).safeTransfer(_flushReceiveAddress, amountToFlush);
+                IERC20Upgradeable(_tokenAddress).safeTransfer(flushReceiveAddress, amountToFlush);
             }
         }
-        emit FLUSH_FUND();
+        emit FLUSH_FUND(_tokenAddress);
     }
 
     /**
