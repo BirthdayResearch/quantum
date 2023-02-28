@@ -24,10 +24,10 @@ export default function ActionButton({
   isRefresh?: boolean;
 }) {
   const responsiveSizing =
-    responsiveStyle ?? "lg:text-xl lg:leading-8 lg:py-4 lg:px-8 xl:px-14";
+    responsiveStyle ?? "lg:text-base lg:leading-8 lg:py-4 lg:px-8 xl:px-14";
   const isPrimary = variant === "primary";
   const defaultStyle =
-    "text-lg md:px-2.5 lg:text-xl lg:leading-8 lg:px-8 xl:px-14 lg:py-4";
+    "text-sm md:px-2.5 lg:text-base lg:leading-8 lg:px-8 xl:px-14 lg:py-4";
   return (
     <button
       data-testid={testId ?? "action-btn"}
