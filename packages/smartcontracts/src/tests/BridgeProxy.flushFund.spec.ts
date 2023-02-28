@@ -48,7 +48,7 @@ describe('Test flushMultipleTokenFunds functionalities', () => {
     expect(balanceETHAfterFlush.sub(balanceETHBeforeFlush)).to.equal(toWei('40'));
   });
 
-  it('Should revert if ERC20 no supported', async () => {
+  it('Should revert if ERC20 is not supported', async () => {
     const { proxyBridge, testToken } = await loadFixture(deployContracts);
     await expect(proxyBridge.flushFundPerToken(testToken.address)).to.be.revertedWithCustomError(
       proxyBridge,
