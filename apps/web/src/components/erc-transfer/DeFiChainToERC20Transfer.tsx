@@ -24,9 +24,11 @@ const DfcToErcTransferSteps: ProgressStepI[] = [
 export default function DeFiChainToERC20Transfer({
   data,
   addressDetail,
+  onClose,
 }: {
   data: TransferData;
   addressDetail?: AddressDetails;
+  onClose: (noCloseWarning: boolean) => void;
 }) {
   const [activeStep, setActiveStep] = useState(1);
   const { isMobile } = useResponsive();
@@ -92,7 +94,11 @@ export default function DeFiChainToERC20Transfer({
         />
       )}
       {activeStep >= 4 && signedClaim && (
-        <StepLastClaim data={data} signedClaim={signedClaim} />
+        <StepLastClaim
+          data={data}
+          signedClaim={signedClaim}
+          onClose={() => onClose(false)}
+        />
       )}
     </div>
   );

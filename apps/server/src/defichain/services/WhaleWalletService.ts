@@ -80,7 +80,7 @@ export class WhaleWalletService {
 
       // Successful verification, proceed to sign the claim
       const fee = new BigNumber(verify.amount).multipliedBy(this.configService.getOrThrow('defichain.transferFee'));
-      const amountLessFee = BigNumber.max(verify.amount.minus(fee), 0).toString();
+      const amountLessFee = BigNumber.max(verify.amount.minus(fee), 0).toFixed();
 
       const claim = await this.evmTransactionService.signClaim({
         receiverAddress: verify.ethReceiverAddress,
@@ -150,6 +150,7 @@ export class WhaleWalletService {
         refundAddress: data.refundAddress,
       };
     } catch (e: any) {
+      this.logger.log(e);
       if (e instanceof BadRequestException) {
         throw e;
       }
