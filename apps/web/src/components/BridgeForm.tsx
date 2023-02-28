@@ -22,6 +22,7 @@ import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
+import RestoreTransactionModal from "@components/erc-transfer/RestoreTransactionModal";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
@@ -93,6 +94,8 @@ export default function BridgeForm({
   const [addressInput, setAddressInput] = useState<string>("");
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [showErcToDfcRestoreModal, setShowErcToDfcRestoreModal] =
+    useState<boolean>(false);
 
   const [utilityModalData, setUtilityModalData] =
     useState<ModalConfigType | null>(null);
@@ -240,6 +243,7 @@ export default function BridgeForm({
 
   useEffect(() => {
     const localData = txnForm;
+
     if (localData && networkEnv === localData.networkEnv) {
       // Load data from storage
       setHasUnconfirmedTxn(true);
@@ -461,6 +465,22 @@ export default function BridgeForm({
             />
           )}
         </ConnectKitButton.Custom>
+        {isConnected &&
+          selectedNetworkA.name === Network.Ethereum &&
+          !amount &&
+          !addressInput && (
+            <div className="text-dark-700 text-center mt-4">
+              Transaction interrupted?{" "}
+              <button
+                type="button"
+                className="text-dark-1000 font-bold"
+                onClick={() => setShowErcToDfcRestoreModal(true)}
+              >
+                Recover it here
+              </button>
+            </div>
+          )}
+
         {hasPendingTxn && (
           <span className={clsx("pt-2", warningTextStyle)}>
             Unable to edit while transaction is pending
@@ -501,6 +521,13 @@ export default function BridgeForm({
           onPrimaryButtonClick={utilityModalData.onPrimaryButtonClick}
           secondaryButtonLabel={utilityModalData.secondaryButtonLabel}
           onSecondaryButtonClick={utilityModalData.onSecondaryButtonClick}
+        />
+      )}
+      {showErcToDfcRestoreModal && (
+        <RestoreTransactionModal
+          title="Recover transaction"
+          message="Enter your Ethereum transaction ID to load your transaction again for review"
+          onClose={() => setShowErcToDfcRestoreModal(false)}
         />
       )}
     </div>
