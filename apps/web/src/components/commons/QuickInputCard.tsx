@@ -119,8 +119,8 @@ export function QuickInputCard({
           />
         )}
         {disabled && (
-          <span>
-            <HiLockClosed size={18} className="text-dark-800 self-center" />
+          <span className="self-center">
+            <HiLockClosed size={18} className="text-dark-800" />
           </span>
         )}
       </div>
