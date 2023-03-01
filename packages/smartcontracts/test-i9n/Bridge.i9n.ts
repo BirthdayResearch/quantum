@@ -17,7 +17,7 @@ describe('Bridge Contract', () => {
   let hardhatNetwork: HardhatNetwork;
   let evmContractManager: EvmContractManager;
   let defaultAdminAddress: string;
-  let operationalAdminAddress: string;
+  let withdrawSignerAddress: string;
   let communityAddress: string;
   let bridgeUpgradeable: BridgeV1;
   let bridgeProxy: BridgeProxy;
@@ -28,7 +28,7 @@ describe('Bridge Contract', () => {
     evmContractManager = hardhatNetwork.contracts;
     // Default and operational admin account
     ({ testWalletAddress: defaultAdminAddress } = await hardhatNetwork.createTestWallet());
-    ({ testWalletAddress: operationalAdminAddress } = await hardhatNetwork.createTestWallet());
+    ({ testWalletAddress: withdrawSignerAddress } = await hardhatNetwork.createTestWallet());
     ({ testWalletAddress: communityAddress } = await hardhatNetwork.createTestWallet());
     // Deploying BridgeV1 contract
     bridgeUpgradeable = await evmContractManager.deployContract<BridgeV1>({
@@ -40,7 +40,7 @@ describe('Bridge Contract', () => {
     // deployment arguments for the Proxy contract
     const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
       defaultAdminAddress,
-      operationalAdminAddress,
+      withdrawSignerAddress,
       defaultAdminAddress,
       communityAddress,
       10, // 0.1% txn fee
@@ -72,9 +72,9 @@ describe('Bridge Contract', () => {
       const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
       expect(await bridgeUpgradeable.hasRole(DEFAULT_ADMIN_ROLE, defaultAdminAddress)).toBe(true);
     });
-    it('Operational address should be Operational Admin address', async () => {
-      const OPERATIONAL_ROLE = ethers.utils.solidityKeccak256(['string'], ['OPERATIONAL_ROLE']);
-      expect(await bridgeUpgradeable.hasRole(OPERATIONAL_ROLE, operationalAdminAddress)).toBe(true);
+    it('Withdraw address should be Withdraw address', async () => {
+      const WITHDRAW_ROLE = ethers.utils.solidityKeccak256(['string'], ['WITHDRAW_ROLE']);
+      expect(await bridgeUpgradeable.hasRole(WITHDRAW_ROLE, withdrawSignerAddress)).toBe(true);
     });
     it('Relayer address should be Default Admin address', async () => {
       expect(await bridgeUpgradeable.relayerAddress()).toBe(defaultAdminAddress);
