@@ -66,6 +66,16 @@ error AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
  */
 error MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
 
+/** @notice @dev
+ * This error will occur when new `fee` is greater than `MAX_FEE`
+ */
+error MORE_THAN_MAX_FEE();
+
+/** @notice @dev
+ * This error will occur when `_toIndex` is greater than `supportedTokens.length()`
+ */
+error INVALID_TOINDEX();
+
 contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeable {
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -78,7 +88,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     string public constant NAME = 'QUANTUM_BRIDGE';
 
     address public constant ETH = address(0);
-
+    // Maximum transaction fee when bridging from EVM to DeFiChain. Based on dps (e.g 1% == 100dps)
+    uint256 public constant MAX_FEE = 10000;
     // Mapping to track the address's nonce
     mapping(address => uint256) public eoaAddressToNonce;
 
@@ -166,8 +177,16 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
 
     /**
      * @notice Emitted when fund is flushed
+     * @param _tokenAddress ERC20 token to be flushed
      */
-    event FLUSH_FUND();
+    event FLUSH_FUND(address _tokenAddress);
+
+    /**
+     * @notice Emitted when fund is flushed
+     * @param _fromIndex Starting index
+     * @param _toIndex Ending index
+     */
+    event FLUSH_FUND_MULTIPLE_TOKENS(uint256 _fromIndex, uint256 _toIndex);
 
     /**
      * @notice Emitted when the address to be flushed to is changed
@@ -227,7 +246,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     }
 
     /**
-    * @notice To get the current version of the contract
+     * @notice To get the current version of the contract
      */
     function version() external view returns (string memory) {
         return StringsUpgradeable.toString(_getInitializedVersion());
@@ -331,32 +350,60 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param amount Requested amount to be withdraw. Amount would be in the denomination of ETH
      */
     function withdraw(address _tokenAddress, uint256 amount) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        address _flushReceiveAddress = flushReceiveAddress;
         if (_tokenAddress == ETH) {
-            (bool sent, ) = msg.sender.call{value: amount}('');
+            (bool sent, ) = _flushReceiveAddress.call{value: amount}('');
             if (!sent) revert ETH_TRANSFER_FAILED();
-        } else IERC20Upgradeable(_tokenAddress).safeTransfer(msg.sender, amount);
-        emit WITHDRAWAL_BY_OWNER(msg.sender, _tokenAddress, amount);
+        } else IERC20Upgradeable(_tokenAddress).safeTransfer(_flushReceiveAddress, amount);
+        emit WITHDRAWAL_BY_OWNER(_flushReceiveAddress, _tokenAddress, amount);
     }
 
     /**
-     * @notice Function to flush the excess funds across supported tokens to a hardcoded address
-     * anyone can call this function
+     * @notice anyone can call this function. For example, calling flushMultipleTokenFunds(0,3),
+     * only the tokens at index 0, 1 and 2 will be flushed.
+     * @param _fromIndex Starting index for array `supportedTokens.values()` to flush from (inclusive)
+     * @param _toIndex Ending index for array `supportedTokens.values()` to flush to (exclusive)
      */
-    function flushFund() external {
-        for (uint256 i = 0; i < supportedTokens.length(); ++i) {
+    function flushMultipleTokenFunds(uint256 _fromIndex, uint256 _toIndex) external {
+        if (_toIndex > supportedTokens.length()) revert INVALID_TOINDEX();
+        address _flushReceiveAddress = flushReceiveAddress;
+        for (uint256 i = _fromIndex; i < _toIndex; ++i) {
             address supToken = supportedTokens.at(i);
             if (supToken == ETH) {
                 if (address(this).balance > tokenCap[ETH]) {
                     uint256 amountToFlush = address(this).balance - tokenCap[ETH];
-                    (bool sent, ) = flushReceiveAddress.call{value: amountToFlush}('');
+                    (bool sent, ) = _flushReceiveAddress.call{value: amountToFlush}('');
                     if (!sent) revert ETH_TRANSFER_FAILED();
                 }
             } else if (IERC20Upgradeable(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
                 uint256 amountToFlush = IERC20Upgradeable(supToken).balanceOf(address(this)) - tokenCap[supToken];
-                IERC20Upgradeable(supToken).safeTransfer(flushReceiveAddress, amountToFlush);
+                IERC20Upgradeable(supToken).safeTransfer(_flushReceiveAddress, amountToFlush);
             }
         }
-        emit FLUSH_FUND();
+        emit FLUSH_FUND_MULTIPLE_TOKENS(_fromIndex, _toIndex);
+    }
+
+    /**
+     * @notice Function to flush the excess funds across supported token to a hardcoded address
+     * anyone can call this function
+     * @param _tokenAddress address of the token to be flushed
+     */
+    function flushFundPerToken(address _tokenAddress) external {
+        if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
+        if (_tokenAddress == ETH) {
+            if (address(this).balance > tokenCap[ETH]) {
+                uint256 amountToFlush = address(this).balance - tokenCap[ETH];
+                (bool sent, ) = flushReceiveAddress.call{value: amountToFlush}('');
+                if (!sent) revert ETH_TRANSFER_FAILED();
+            }
+        } else {
+            if (IERC20Upgradeable(_tokenAddress).balanceOf(address(this)) > tokenCap[_tokenAddress]) {
+                uint256 amountToFlush = IERC20Upgradeable(_tokenAddress).balanceOf(address(this)) -
+                    tokenCap[_tokenAddress];
+                IERC20Upgradeable(_tokenAddress).safeTransfer(flushReceiveAddress, amountToFlush);
+            }
+        }
+        emit FLUSH_FUND(_tokenAddress);
     }
 
     /**
@@ -389,6 +436,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      */
     function changeTxFee(uint256 fee) external {
         if (!checkRoles()) revert NON_AUTHORIZED_ADDRESS();
+        if (fee > MAX_FEE) revert MORE_THAN_MAX_FEE();
         uint256 oldTxFee = transactionFee;
         transactionFee = fee;
         emit TRANSACTION_FEE_CHANGED(oldTxFee, transactionFee);
