@@ -92,6 +92,7 @@ describe('Withdrawal tests', () => {
       const { proxyBridge, arbitrarySigner, testToken } = await loadFixture(deployContracts);
       const WITHDRAW_ROLE = ethers.utils.solidityKeccak256(['string'], ['WITHDRAW_ROLE']);
       expect(await proxyBridge.hasRole(WITHDRAW_ROLE, arbitrarySigner.address)).to.equal(false);
+      // sanity check on whether we need to make the defaultadminsigner.address to lower-case
       await expect(proxyBridge.connect(arbitrarySigner).withdraw(testToken.address, toWei('20'))).to.be.revertedWith(
         `AccessControl: account ${arbitrarySigner.address.toLowerCase()} is missing role ${WITHDRAW_ROLE}`,
       );
