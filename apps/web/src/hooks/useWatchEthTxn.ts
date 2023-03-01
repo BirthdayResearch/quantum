@@ -47,6 +47,7 @@ export default function useWatchEthTxn() {
               setStorage("allocationTxnHash", fundData?.transactionHash);
               setStorage("confirmed", unconfirmed ?? null);
               setStorage("unconfirmed", null);
+              setStorage("txn-form", null);
             }
           }
 
@@ -60,6 +61,7 @@ export default function useWatchEthTxn() {
         if (data?.error?.includes("Fund already allocated")) {
           setStorage("confirmed", unconfirmed ?? null);
           setStorage("unconfirmed", null);
+          setStorage("txn-form", null);
         } else if (
           data?.error?.includes("There is a problem in allocating fund")
         ) {
