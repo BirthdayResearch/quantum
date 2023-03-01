@@ -51,7 +51,7 @@
     ]
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.5.1",
+    "@birthdayresearch/eslint-config": "^0.5.2",
     "@birthdayresearch/sticky-testcontainers": "^0.5.2",
     "@birthdayresearch/sticky-turbo-jest": "^0.5.2",
     "@birthdayresearch/sticky-typescript": "^0.5.2",
