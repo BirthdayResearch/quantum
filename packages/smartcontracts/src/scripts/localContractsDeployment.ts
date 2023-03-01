@@ -13,17 +13,17 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
   // On local testNet this is the accounts[0]
   const defaultAdminSigner = await ethers.getSigner(accounts[0]);
   const eoaAddress = defaultAdminSigner.address;
-  console.log('EOA/Admin address: ', eoaAddress);
+  console.log('Admin address: ', eoaAddress);
   console.log('Relayer address: ', eoaAddress);
   // On local testNet this is the accounts[1]
-  const defaultOperationalSigner = await ethers.getSigner(accounts[1]);
-  const eoaOperationalAddress = defaultOperationalSigner.address;
-  console.log('Operational address: ', eoaOperationalAddress);
+  const defaultWithdrawSigner = await ethers.getSigner(accounts[1]);
+  const withdrawSignerAddress = defaultWithdrawSigner.address;
+  console.log('Withdraw address: ', withdrawSignerAddress);
   console.log('---------------------------------------------');
   const bridgeV1 = await bridgeImplementation();
   const bridgeProxy = await deployBridgeProxy({
     adminAddress: eoaAddress,
-    operationalAddress: eoaOperationalAddress,
+    withdrawAddress: withdrawSignerAddress,
     relayerAddress: eoaAddress,
     bridgeV1Address: bridgeV1.address,
     txFeeAddress: accounts[3],

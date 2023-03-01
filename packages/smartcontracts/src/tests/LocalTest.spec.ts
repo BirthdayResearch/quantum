@@ -1,4 +1,3 @@
-import { time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
@@ -12,7 +11,7 @@ describe('SetupLocalTestTask', () => {
     const { usdtContract, usdcContract, bridgeImplementationContract } = await mintAndApproveTestTokensLocal();
     // suppressing type error - method is actually properly typed
     // @ts-ignore
-    const [adminSigner, operationalSigner] = await ethers.getSigners();
+    const [adminSigner, withdrawSigner] = await ethers.getSigners();
     const adminAddress = adminSigner.address;
 
     const musdtContract = TestToken__factory.connect(usdtContract.address, adminSigner);
@@ -30,9 +29,9 @@ describe('SetupLocalTestTask', () => {
     expect(await proxyBridge.hasRole(DEFAULT_ADMIN_ROLE, adminAddress)).to.equal(true);
     // Check if the relayer address is same as accounts[0]
     expect(adminAddress).to.be.equal(await proxyBridge.relayerAddress());
-    // Check if the accounts[1] has the OPERATIONAL_ROLE.
-    const OPERATIONAL_ROLE = ethers.utils.solidityKeccak256(['string'], ['OPERATIONAL_ROLE']);
-    expect(await proxyBridge.hasRole(OPERATIONAL_ROLE, operationalSigner.address)).to.equal(true);
+    // Check if the accounts[1] has the WITHDRAW_ROLE.
+    const WITHDRAW_ROLE = ethers.utils.solidityKeccak256(['string'], ['WITHDRAW_ROLE']);
+    expect(await proxyBridge.hasRole(WITHDRAW_ROLE, withdrawSigner.address)).to.equal(true);
 
     // Checking that MUSDT is supported on the bridge
     expect(await proxyBridge.isSupported(musdtAddress)).to.equal(true);
@@ -45,7 +44,6 @@ describe('SetupLocalTestTask', () => {
 
     // Before bridging, approval needed for the proxy contracts. `approve()` is being called for both mUsdc and mUsdt in `mintAndApproveTestTokensLocal()`
     // Then the call should not revert
-    await time.increase(90);
     await proxyBridge.bridgeToDeFiChain(ethers.constants.AddressZero, musdtAddress, toWei('1'));
     // And the EOA's balance of MUSDT should be reduced by 1
     expect((await musdtContract.balanceOf(adminAddress)).eq(toWei('99999'))).to.eq(true);

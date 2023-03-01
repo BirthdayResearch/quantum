@@ -6,7 +6,7 @@ const TRANSACTION_FEE = 10;
 
 export async function deployBridgeProxy({
   adminAddress,
-  operationalAddress,
+  withdrawAddress,
   relayerAddress,
   bridgeV1Address,
   txFeeAddress,
@@ -15,10 +15,10 @@ export async function deployBridgeProxy({
   const { chainId } = network.config;
   const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
   const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-    // admin address
+    // admin address, or timelock contract address
     adminAddress,
-    // operational address
-    operationalAddress,
+    // withdraw address
+    withdrawAddress,
     // relayer address
     relayerAddress,
     // community wallet address
@@ -40,7 +40,7 @@ export async function deployBridgeProxy({
 
 interface InputsForInitialization {
   adminAddress: string;
-  operationalAddress: string;
+  withdrawAddress: string;
   relayerAddress: string;
   bridgeV1Address: string;
   txFeeAddress: string;
