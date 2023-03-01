@@ -2,6 +2,7 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresear
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
 
 import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
+import { sleep } from '../helper/sleep';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
@@ -25,12 +26,6 @@ describe('DeFiChain Send Transaction Testing', () => {
     });
     const response = JSON.parse(initialResponse.body);
     return response;
-  }
-
-  function delay(ms: number) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
   }
 
   beforeAll(async () => {
@@ -133,7 +128,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(await getBalance('USDT')).toStrictEqual(10);
 
     // Delay to workaround throttler exception
-    await delay(30000);
+    await sleep(30000);
 
     expect(await getBalance('ETH')).toStrictEqual(10);
     expect(await getBalance('DFI')).toStrictEqual(10);

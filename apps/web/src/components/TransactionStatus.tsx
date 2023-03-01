@@ -69,9 +69,9 @@ export default function TransactionStatus({
       setTitle("Transaction confirmed");
       setDescription("Expect to receive your tokens in your wallet shortly.");
     } else {
-      setTitle("Processing transaction");
+      setTitle("Awaiting confirmation");
       setDescription(
-        "Do not refresh, leave the browser, or close the tab until transaction is complete. Doing so may interrupt the transaction and cause loss of funds."
+        "It is unsafe for you to close your browser tab, your transaction will be processed once the required number of confirmations is reached."
       );
     }
   }, [isConfirmed, isReverted, isUnsentFund]);
