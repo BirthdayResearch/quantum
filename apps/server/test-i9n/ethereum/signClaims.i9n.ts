@@ -11,6 +11,7 @@ import {
 import { WhaleWalletService } from '../../src/defichain/services/WhaleWalletService';
 import { EVMTransactionConfirmerService } from '../../src/ethereum/services/EVMTransactionConfirmerService';
 import { PrismaService } from '../../src/PrismaService';
+import { sleep } from '../helper/sleep';
 import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
@@ -143,6 +144,7 @@ describe('Sign Claims Tests', () => {
     expect(claim1.nonce).toBeDefined();
     expect(claim1.deadline).toBeDefined();
 
+    await sleep(2000);
     const { address: address2 } = await whaleWalletService.generateAddress(
       'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g',
       EnvironmentNetwork.LocalPlayground,
