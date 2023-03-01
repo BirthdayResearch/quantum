@@ -78,10 +78,10 @@ describe('Withdrawal tests', () => {
     it('Unsuccessful withdrawal by those with DEFAULT_ADMIN_ROLE but does not have WITHDRAW_ROLE', async () => {
       const { proxyBridge, testToken, defaultAdminSigner } = await loadFixture(deployContracts);
       const WITHDRAW_ROLE = ethers.utils.solidityKeccak256(['string'], ['WITHDRAW_ROLE']);
-      // sanity check on whether we need to make the defaultadminsigner.address to lower-case
       expect(await proxyBridge.hasRole(`0x${'0'.repeat(64)}`, defaultAdminSigner.address)).to.equal(true);
       expect(await proxyBridge.hasRole(WITHDRAW_ROLE, defaultAdminSigner.address)).to.equal(false);
       // Withdrawal by defaultAdminSigner should be rejected if it has not been granted WITHDRAW_ROLE
+      // sanity check on whether we need to make the defaultadminsigner.address to lower-case
       await expect(proxyBridge.connect(defaultAdminSigner).withdraw(testToken.address, toWei('20'))).to.be.revertedWith(
         `AccessControl: account ${defaultAdminSigner.address.toLowerCase()} is missing role ${WITHDRAW_ROLE}`,
       );
