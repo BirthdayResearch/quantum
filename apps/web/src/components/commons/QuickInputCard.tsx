@@ -41,26 +41,26 @@ function SetAmountButton({
   disabled,
 }: SetAmountButtonProps): JSX.Element {
   const decimalPlace = 6;
-  let value = amount.toFixed(decimalPlace, BigNumber.ROUND_DOWN);
+  let value = amount.toFixed(decimalPlace, BigNumber.ROUND_FLOOR);
   switch (type) {
     case AmountButtonTypes.TwentyFive:
       value = amount
         .multipliedBy(0.25)
-        .toFixed(decimalPlace, BigNumber.ROUND_DOWN);
+        .toFixed(decimalPlace, BigNumber.ROUND_FLOOR);
       break;
     case AmountButtonTypes.Half:
       value = amount
         .multipliedBy(0.5)
-        .toFixed(decimalPlace, BigNumber.ROUND_DOWN);
+        .toFixed(decimalPlace, BigNumber.ROUND_FLOOR);
       break;
     case AmountButtonTypes.SeventyFive:
       value = amount
         .multipliedBy(0.75)
-        .toFixed(decimalPlace, BigNumber.ROUND_DOWN);
+        .toFixed(decimalPlace, BigNumber.ROUND_FLOOR);
       break;
     case AmountButtonTypes.Max:
     default:
-      value = amount.toFixed(decimalPlace, BigNumber.ROUND_DOWN);
+      value = amount.toFixed(decimalPlace, BigNumber.ROUND_FLOOR);
       break;
   }
 
