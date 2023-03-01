@@ -1,6 +1,7 @@
 import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { IoCloseCircleSharp } from "react-icons/io5";
+import { HiLockClosed } from "react-icons/hi";
 
 interface QuickInputCardProps {
   maxValue: BigNumber;
@@ -98,7 +99,7 @@ export function QuickInputCard({
     <div
       className={clsx(
         "relative w-full outline-0 group p-px rounded-lg mt-1 lg:mt-2 border",
-        { "pointer-events-none": disabled },
+        { "pointer-events-none bg-dark-100": disabled },
         error === ""
           ? "border-dark-300 hover:border-dark-500 focus-within:!border-transparent focus-within:before:dark-gradient-2 focus-within:before:-inset-[1px] focus-within:before:rounded-lg focus-within:before:p-px"
           : "border-error"
@@ -122,6 +123,11 @@ export function QuickInputCard({
             onClick={() => onChange("")}
             className="text-dark-500 self-center cursor-pointer"
           />
+        )}
+        {disabled && (
+          <span className="self-center">
+            <HiLockClosed size={18} className="text-dark-800" />
+          </span>
         )}
       </div>
       {showAmountsBtn && (

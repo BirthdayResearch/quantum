@@ -12,7 +12,7 @@ import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClient
 import { SendService } from '../../defichain/services/SendService';
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
-import { getNextDayTimestamp } from '../../utils/DateUtils';
+import { getNextDayTimestampInSec } from '../../utils/DateUtils';
 import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
 
 @Injectable()
@@ -142,7 +142,7 @@ export class EVMTransactionConfirmerService {
       const nonce: EthBigNumber = await this.contract.eoaAddressToNonce(receiverAddress);
       const domainName = await this.contract.NAME();
       const domainVersion = await this.contract.version();
-      const deadline = getNextDayTimestamp();
+      const deadline = getNextDayTimestampInSec();
 
       const domain = {
         name: domainName,

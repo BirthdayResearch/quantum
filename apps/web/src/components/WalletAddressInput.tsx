@@ -4,6 +4,7 @@ import * as ethers from "ethers";
 import { useAccount } from "wagmi";
 import { FiClipboard } from "react-icons/fi";
 import { IoCloseCircle } from "react-icons/io5";
+import { HiLockClosed } from "react-icons/hi";
 import { fromAddress } from "@defichain/jellyfish-address";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import useResponsive from "@hooks/useResponsive";
@@ -217,7 +218,7 @@ export default function WalletAddressInput({
               showErrorBorder ||
               isFocused
             ),
-            "pointer-events-none": readOnly,
+            "pointer-events-none bg-dark-100": readOnly,
             "lg:px-5 lg:py-3": isPrimary,
           }
         )}
@@ -285,6 +286,12 @@ export default function WalletAddressInput({
               handleFocusWithCursor();
             }}
           />
+        )}
+
+        {readOnly && (
+          <span className="self-center">
+            <HiLockClosed size={18} className="text-dark-800" />
+          </span>
         )}
       </div>
 

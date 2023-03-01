@@ -8,7 +8,8 @@ export default function WelcomeHeader() {
     "text-[32px] leading-9 md:w-full lg:leading-[52px] text-dark-1000 lg:text-[52px]";
   const bylineStyle =
     "align-middle text-base text-dark-1000 lg:leading-10 lg:text-[32px] text-xl";
-  const underText = "ml-2 lg:text-xl md:text-sm font-bold text-dark-1000";
+  const underText =
+    "ml-2 lg:text-xl md:text-sm font-bold text-dark-900 hover:text-dark-500";
   return (
     <div>
       <h1 className={clsx(headerStyle)}>Building a</h1>
@@ -22,18 +23,24 @@ export default function WelcomeHeader() {
             href="https://birthdayresearch.notion.site/birthdayresearch/Quantum-Documentation-dc1d9174dd294b06833e7859d437e25e"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-row items-center"
+            className="flex flex-row items-center group"
           >
-            <FiBook size={20} className="text-dark-1000" />
+            <FiBook
+              size={20}
+              className="text-dark-900 group-hover:text-dark-500"
+            />
             <span className={clsx(underText)}>Documentation</span>
           </Link>
           <Link
             href="https://birthdayresearch.notion.site/FAQs-58af5cc140de432e8c9d1510ead3e3c0"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-6 flex flex-row items-center"
+            className="ml-6 flex flex-row items-center group"
           >
-            <RiQuestionFill size={20} className="text-dark-1000" />
+            <RiQuestionFill
+              size={20}
+              className="text-dark-900 group-hover:text-dark-500"
+            />
             <span className={clsx(underText)}>FAQs</span>
           </Link>
         </div>
