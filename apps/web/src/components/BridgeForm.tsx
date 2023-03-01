@@ -22,6 +22,7 @@ import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
+import RestoreTransactionModal from "@components/erc-transfer/RestoreTransactionModal";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
@@ -40,27 +41,27 @@ function SwitchButton({
   disabled?: boolean;
 }) {
   return (
-    <div className="my-8 flex flex-row rounded">
-      <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-      <Tooltip content="Switch source">
+    <div className="my-4 flex flex-row rounded">
+      <div className="mt-5 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
+      <Tooltip content="Switch source" containerClass="py-0">
         <button
           type="button"
           onClick={onClick}
           disabled={disabled}
           className={clsx(
-            "dark-card-bg dark-bg-card-section group flex h-12 w-12 items-center justify-center rounded-full",
+            "dark-card-bg dark-bg-card-section group flex h-10 w-10 items-center justify-center rounded-full",
             { "pointer-events-none": disabled }
           )}
         >
           <div className="hidden group-hover:hidden lg:block">
-            <ArrowDownIcon size={24} className="fill-dark-700" />
+            <ArrowDownIcon size={20} className="fill-dark-700" />
           </div>
           <div className="group-hover:block lg:hidden">
-            <SwitchIcon size={24} className="fill-dark-700" />
+            <SwitchIcon size={20} className="fill-dark-700" />
           </div>
         </button>
       </Tooltip>
-      <div className="mt-6 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
+      <div className="mt-5 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
     </div>
   );
 }
@@ -85,7 +86,7 @@ export default function BridgeForm({
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
-  const { dfcAddress, dfcAddressDetails, txnForm, setStorage } =
+  const { dfcAddress, dfcAddressDetails, txnForm, setStorage, txnHash } =
     useStorageContext();
 
   const [amount, setAmount] = useState<string>("");
@@ -93,6 +94,8 @@ export default function BridgeForm({
   const [addressInput, setAddressInput] = useState<string>("");
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
+  const [showErcToDfcRestoreModal, setShowErcToDfcRestoreModal] =
+    useState<boolean>(false);
 
   const [utilityModalData, setUtilityModalData] =
     useState<ModalConfigType | null>(null);
@@ -240,6 +243,7 @@ export default function BridgeForm({
 
   useEffect(() => {
     const localData = txnForm;
+
     if (localData && networkEnv === localData.networkEnv) {
       // Load data from storage
       setHasUnconfirmedTxn(true);
@@ -321,7 +325,7 @@ export default function BridgeForm({
     "block text-xs text-warning text-center lg:px-6 lg:text-sm";
 
   return (
-    <div className="w-full md:w-[calc(100%+2px)] lg:w-full dark-card-bg-image p-6 md:pt-8 pb-16 lg:p-12 rounded-lg lg:rounded-xl border border-dark-200 backdrop-blur-[18px]">
+    <div className="w-full md:w-[calc(100%+2px)] lg:w-full dark-card-bg-image p-6 md:pt-8 pb-16 lg:p-10 rounded-lg lg:rounded-xl border border-dark-200 backdrop-blur-[18px]">
       <div className="flex flex-row items-center" ref={reference}>
         <div className="w-1/2">
           <InputSelector
@@ -348,8 +352,8 @@ export default function BridgeForm({
           />
         </div>
       </div>
-      <div className="mt-5">
-        <span className="pl-4 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-base">
+      <div className="mt-4">
+        <span className="pl-4 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-sm">
           Amount to transfer
         </span>
         <QuickInputCard
@@ -360,7 +364,7 @@ export default function BridgeForm({
           showAmountsBtn={selectedNetworkA.name === Network.Ethereum}
           disabled={hasUnconfirmedTxn}
         />
-        <div className="flex flex-row pl-4 lg:pl-5 mt-2">
+        <div className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2">
           {amountErr ? (
             <span className="text-xs lg:text-sm text-error">{amountErr}</span>
           ) : (
@@ -383,7 +387,7 @@ export default function BridgeForm({
       </div>
       <SwitchButton onClick={switchNetwork} disabled={hasUnconfirmedTxn} />
 
-      <div className="flex flex-row items-end mb-4 lg:mb-5">
+      <div className="flex flex-row items-end mb-4">
         <div className="w-1/2">
           <InputSelector
             label="Destination Network"
@@ -405,7 +409,7 @@ export default function BridgeForm({
           />
         </div>
       </div>
-      <div className="mb-8">
+      <div className="mb-6">
         <WalletAddressInput
           label="Address"
           blockchain={selectedNetworkB.name as Network}
@@ -416,7 +420,7 @@ export default function BridgeForm({
           readOnly={hasUnconfirmedTxn}
         />
       </div>
-      <div className="flex flex-row justify-between items-center px-4 lg:px-5">
+      <div className="flex flex-row justify-between items-center mt-6 lg:mt-0 px-3 lg:px-5">
         <span className="text-dark-700 text-xs lg:text-base font-semibold md:font-normal">
           To receive
         </span>
@@ -428,7 +432,7 @@ export default function BridgeForm({
           trimTrailingZeros
         />
       </div>
-      <div className="flex flex-row justify-between items-center px-4 lg:px-5 mt-4 lg:mt-6">
+      <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-4 lg:mt-[18px]">
         <div className="flex flex-row items-center">
           <span className="text-dark-700 text-xs lg:text-base font-semibold md:font-normal">
             Fees
@@ -445,7 +449,7 @@ export default function BridgeForm({
           trimTrailingZeros
         />
       </div>
-      <div className="mt-8 px-6 md:mt-6 md:px-4 lg:mt-16 lg:mb-0 lg:px-0 xl:px-20">
+      <div className="mt-8 px-6 md:px-4 lg:mt-12 lg:mb-0 lg:px-0 xl:px-20">
         <ConnectKitButton.Custom>
           {({ show }) => (
             <ActionButton
@@ -461,6 +465,24 @@ export default function BridgeForm({
             />
           )}
         </ConnectKitButton.Custom>
+        {isConnected &&
+          selectedNetworkA.name === Network.Ethereum &&
+          !amount &&
+          !addressInput &&
+          !hasPendingTxn &&
+          !txnHash.confirmed && (
+            <div className="text-xs lg:text-sm leading-4 lg:leading-5 text-dark-700 text-center mt-4">
+              Transaction interrupted?{" "}
+              <button
+                type="button"
+                className="text-dark-1000 font-bold"
+                onClick={() => setShowErcToDfcRestoreModal(true)}
+              >
+                Recover it here
+              </button>
+            </div>
+          )}
+
         {hasPendingTxn && (
           <span className={clsx("pt-2", warningTextStyle)}>
             Unable to edit while transaction is pending
@@ -501,6 +523,13 @@ export default function BridgeForm({
           onPrimaryButtonClick={utilityModalData.onPrimaryButtonClick}
           secondaryButtonLabel={utilityModalData.secondaryButtonLabel}
           onSecondaryButtonClick={utilityModalData.onSecondaryButtonClick}
+        />
+      )}
+      {showErcToDfcRestoreModal && (
+        <RestoreTransactionModal
+          title="Recover transaction"
+          message="Enter your Ethereum transaction ID to load your transaction again for review"
+          onClose={() => setShowErcToDfcRestoreModal(false)}
         />
       )}
     </div>

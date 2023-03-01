@@ -63,14 +63,14 @@ export default function Footer() {
   return (
     <footer
       data-testid="footer"
-      className="relative z-[1] w-full border-dark-300 pt-8 bg-gradient-to-r from-[#00000066] to-[#00000000]"
+      className="relative z-[1] w-full border-dark-300 pt-6 md:pt-5 lg:pt-8 bg-gradient-to-r from-[#00000066] to-[#00000000]"
     >
       <section
         data-testid="footer_web"
-        className="text-dark-900 xs:px-[24px] px-5 pb-[51px] md:px-[48px] lg:px-[120px] lg:pb-[34px] text-sm"
+        className="text-dark-900 px-6 md:px-12 lg:px-[120px] pb-12 lg:pb-8 text-sm"
       >
-        <div className="border-t-[0.5px] border-dark-300 pb-[17.5px] pt-[15px]">
-          <div className="relative h-[28px] w-[250px] mt-3">
+        <div className="border-t-[0.5px] border-dark-300 py-4 md:py-6 lg:py-8">
+          <div className="relative w-[216px] h-6 md:w-[252px] md:h-7 lg:h-9 lg:w-[316px]">
             <Image
               fill
               data-testid="footer-bridge-logo"
@@ -85,15 +85,15 @@ export default function Footer() {
             Quantum is a proud development of Birthday Research — the blockchain
             R&D arm of Cake DeFi.
           </div>
-          <div className="flex flex-row justify-between pt-[19px] md:pt-[26px] lg:pt-0">
+          <div className="flex flex-row justify-between pt-[19px] md:pt-[26px] lg:pt-2">
             <div className="flex flex-col md:flex-row md:items-end">
-              <div className="pb-2 pr-[11px] md:pb-0  xs:pb-[12.5px]">
+              <div className="pb-2 md:pb-0 pr-2">
                 &copy; {new Date().getFullYear()} Birthday Research
               </div>
               <Socials items={BirthdayResearchSocialItems} />
             </div>
             <div className="md:flex md:flex-row-reverse lg:flex-col lg:items-end lg:pt-0">
-              <div className="pb-2 xs:pb-[12.5px] md:pl-2 md:pb-0 lg:relative lg:bottom-[20px]">
+              <div className="pb-2 md:pl-2 md:pb-0 lg:relative lg:bottom-[28px] lg:h-0">
                 &copy; DeFiChain
               </div>
               <Socials items={DeFiChainSocialItems} />

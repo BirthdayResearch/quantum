@@ -183,11 +183,11 @@ export default function WalletAddressInput({
       {/* Address label */}
       <div
         className={clsx({
-          "md:h-5 lg:h-7 group relative mb-2 flex items-center lg:mb-3":
+          "md:h-5 lg:h-7 group relative mb-2 flex items-center lg:mb-2":
             isPrimary,
         })}
       >
-        <span className="pl-5 text-xs font-semibold xl:tracking-wider lg:text-base text-dark-900">
+        <span className="pl-5 text-xs font-semibold xl:tracking-wider lg:text-sm text-dark-900">
           {label}
         </span>
         {/*  Network environment */}
@@ -219,7 +219,7 @@ export default function WalletAddressInput({
               isFocused
             ),
             "pointer-events-none bg-dark-100": readOnly,
-            "lg:px-5 lg:py-[21px]": isPrimary,
+            "lg:px-5 lg:py-3": isPrimary,
           }
         )}
       >
@@ -227,14 +227,14 @@ export default function WalletAddressInput({
         {isPrimary && (
           <Tooltip
             content="Paste from clipboard"
-            containerClass={clsx("mr-3 lg:mr-6 shrink-0", {
+            containerClass={clsx("mr-3 shrink-0 !p-0", {
               "cursor-pointer hover:bg-dark-200 active:dark-btn-pressed":
                 !disabled,
             })}
             disableTooltip={disabled || isMobile} // Disable tooltip for mobile
           >
             <FiClipboard
-              size={20}
+              size={24}
               className="text-dark-1000"
               onMouseDown={handlePasteBtnClick}
             />
@@ -255,13 +255,13 @@ export default function WalletAddressInput({
           data-testid="receiver-address"
           ref={textAreaRef}
           className={clsx(
-            `w-full max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 focus:outline-none`,
+            `w-full max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 focus:outline-none py-0.5`,
             { hidden: showVerifiedBadge },
             isFocused
               ? "placeholder:text-dark-300"
               : "placeholder:text-dark-500",
             isPrimary
-              ? "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm lg:text-xl lg:placeholder:text-xl"
+              ? "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm lg:text-base lg:placeholder:text-base"
               : "text-sm tracking-[0.01em] text-dark-1000 placeholder:text-sm"
           )}
           placeholder={placeholder}

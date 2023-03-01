@@ -72,8 +72,8 @@ function SetAmountButton({
       }}
       disabled={disabled}
     >
-      <div className="py-1 lg:py-1.5">
-        <span className="font-semibold text-base lg:text-lg text-transparent">
+      <div className="py-1 lg:py-0.5">
+        <span className="font-semibold text-sm lg:text-base text-transparent">
           {type}
         </span>
       </div>
@@ -99,11 +99,11 @@ export function QuickInputCard({
           : "border-error"
       )}
     >
-      <div className="flex flex-row px-5 py-[18px] lg:py-[22px]">
+      <div className="flex flex-row px-4 lg:px-5 py-3.5">
         <input
           data-testid="amount"
           className={clsx(
-            "w-full max-h-36 grow resize-none bg-transparent text-lg lg:text-2xl text-dark-1000 focus:outline-none caret-dark-1000 placeholder-dark-500 hover:placeholder-dark-800 focus:placeholder-dark-300"
+            "w-full max-h-36 grow resize-none bg-transparent text-base text-dark-1000 focus:outline-none caret-dark-1000 placeholder-dark-500 hover:placeholder-dark-800 focus:placeholder-dark-300"
           )}
           placeholder="0.00"
           value={value}
@@ -125,7 +125,7 @@ export function QuickInputCard({
         )}
       </div>
       {showAmountsBtn && (
-        <div className="flex flex-row justify-between items-center py-1.5 lg:p-2 border-t border-dark-300/50 bg-dark-gradient-3">
+        <div className="flex flex-row justify-between items-center py-1.5 border-t border-dark-300/50 bg-dark-gradient-3">
           {Object.values(AmountButtonTypes).map((type, index, { length }) => (
             <SetAmountButton
               key={type}

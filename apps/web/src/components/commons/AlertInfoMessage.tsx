@@ -1,15 +1,13 @@
 import clsx from "clsx";
 import { FiAlertTriangle } from "react-icons/fi";
+import { PropsWithChildren } from "react";
 
 export default function AlertInfoMessage({
-  message,
   containerStyle,
-  textStyle,
-}: {
-  message: string;
+  children,
+}: PropsWithChildren<{
   containerStyle?: string;
-  textStyle?: string;
-}) {
+}>) {
   return (
     <div
       className={clsx(
@@ -18,9 +16,7 @@ export default function AlertInfoMessage({
       )}
     >
       <FiAlertTriangle size={24} className="shrink-0 text-warning" />
-      <span className={clsx("text-left text-warning ml-3", textStyle)}>
-        {message}
-      </span>
+      {children}
     </div>
   );
 }

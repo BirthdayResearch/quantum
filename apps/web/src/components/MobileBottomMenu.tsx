@@ -27,7 +27,7 @@ export default function MobileBottomMenu() {
 
   return (
     <nav>
-      <ul className="grid grid-cols-2 gap-2">
+      <ul className="grid grid-cols-2 gap-2 mb-1">
         {menuList.map(({ icon: Icon, ...item }) => (
           <li key={item.title}>
             <Link

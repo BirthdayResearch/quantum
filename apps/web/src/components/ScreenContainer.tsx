@@ -47,7 +47,7 @@ export default function ScreenContainer({
   return (
     <div className="relative">
       <Header />
-      <div className="relative z-[1] flex-grow md:pb-28">
+      <div className="relative z-[1] flex-grow md:pb-12 lg:pb-20">
         {isBridgeUp ? <main>{children}</main> : <Maintenance />}
       </div>
       <div

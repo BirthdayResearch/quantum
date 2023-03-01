@@ -20,7 +20,7 @@ import useCheckBalance from "@hooks/useCheckBalance";
 import useTransferFee from "@hooks/useTransferFee";
 
 const CLAIM_INPUT_ERROR =
-  "Check your connection and try again.  If the error persists get in touch with us.";
+  "Check your connection and try again. If the error persists get in touch with us.";
 
 export default function StepLastClaim({
   data,
