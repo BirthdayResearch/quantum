@@ -174,21 +174,21 @@ contract BridgeV2TestNet is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpg
      * @notice Emitted when fund is flushed
      * @param _tokenAddress ERC20 token to be flushed
      */
-    event FLUSH_FUND(address _tokenAddress);
+    event FLUSH_FUND(address indexed _tokenAddress);
 
     /**
      * @notice Emitted when fund is flushed
      * @param _fromIndex Starting index
      * @param _toIndex Ending index
      */
-    event FLUSH_FUND_MULTIPLE_TOKENS(uint256 _fromIndex, uint256 _toIndex);
+    event FLUSH_FUND_MULTIPLE_TOKENS(uint256 indexed _fromIndex, uint256 indexed _toIndex);
 
     /**
      * @notice Emitted when the address to be flushed to is changed
      * @param oldAddress The old address to be flushed to
      * @param newAddress The new address to be flushed to
      */
-    event CHANGE_FLUSH_RECEIVE_ADDRESS(address oldAddress, address newAddress);
+    event CHANGE_FLUSH_RECEIVE_ADDRESS(address indexed oldAddress, address indexed newAddress);
 
     /**
      * @notice Emitted when the tokenCap of an existing supported token is changed by only Admin accounts
@@ -220,13 +220,6 @@ contract BridgeV2TestNet is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpg
      */
     function initialize(uint8 _version) external reinitializer(_version) {
         __EIP712_init(NAME, StringsUpgradeable.toString(_version));
-    }
-
-    /**
-     * @notice To get the current version of the contract
-     */
-    function version() external view returns (string memory) {
-        return StringsUpgradeable.toString(_getInitializedVersion());
     }
 
     /**
@@ -437,6 +430,20 @@ contract BridgeV2TestNet is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpg
     }
 
     /**
+     * @notice to receive ether
+     */
+    receive() external payable {
+        emit ETH_RECEIVED_VIA_RECEIVE_FUNCTION(msg.sender, msg.value);
+    }
+
+    /**
+     * @notice To get the current version of the contract
+     */
+    function version() external view returns (string memory) {
+        return StringsUpgradeable.toString(_getInitializedVersion());
+    }
+
+    /**
      * @notice to get the supported tokens, as recursive data structure (supportedTokens) cannot be made public
      */
     function getSupportedTokens() external view returns (address[] memory) {
@@ -448,13 +455,6 @@ contract BridgeV2TestNet is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpg
      */
     function isSupported(address _tokenAddress) external view returns (bool) {
         return supportedTokens.contains(_tokenAddress);
-    }
-
-    /**
-     * @notice to receive ether
-     */
-    receive() external payable {
-        emit ETH_RECEIVED_VIA_RECEIVE_FUNCTION(msg.sender, msg.value);
     }
 
     /**

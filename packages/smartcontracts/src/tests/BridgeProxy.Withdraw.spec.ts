@@ -56,7 +56,7 @@ describe('Withdrawal tests', () => {
     it('Unable to withdraw more ERC20 than the balance of the Bridge', async () => {
       const { proxyBridge, testToken, withdrawSigner } = await loadFixture(deployContracts);
       // Contract balance of testToken is '0'
-      // Test should be revert with a mention string if requesting amount bigger than actual balance of the Bridge.
+      // Test should revert if requesting amount bigger than actual balance of the Bridge.
       await expect(proxyBridge.connect(withdrawSigner).withdraw(testToken.address, toWei('110'))).to.be.revertedWith(
         'ERC20: transfer amount exceeds balance',
       );
