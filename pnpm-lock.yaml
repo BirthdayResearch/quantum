@@ -33,7 +33,7 @@ importers:
       '@nestjs/terminus': ^9.2.1
       '@nestjs/testing': ^9.3.9
       '@nestjs/throttler': ^4.0.0
-      '@prisma/client': ^4.10.1
+      '@prisma/client': ^4.11.0
       '@types/express': ^4.17.17
       '@types/jest': ^29.4.0
       '@types/node': ^18.14.0
@@ -50,7 +50,7 @@ importers:
       light-my-request: ^5.8.0
       nestjs-pino: ^3.1.2
       pg: ^8.9.0
-      prisma: ^4.10.1
+      prisma: ^4.11.0
       shuffle-seed: ^1.1.6
       smartcontracts: workspace:0.0.0
       source-map-support: ^0.5.21
@@ -69,9 +69,9 @@ importers:
       '@nestjs/platform-fastify': 9.3.9_77foi4w27ghy47yutmnzv7krjy
       '@nestjs/terminus': 9.2.1_lihhleoztkrt6ljfmhgd75r4x4
       '@nestjs/throttler': 4.0.0_shbtxdxgogsm4p64bg2toeylku
-      '@prisma/client': 4.10.1_prisma@4.10.1
+      '@prisma/client': 4.11.0_prisma@4.11.0
       '@waveshq/walletkit-core': 0.38.1
-      '@waveshq/walletkit-ui': 0.38.1_7ku6mxjmnhk5xr7tkhrmqwchtm
+      '@waveshq/walletkit-ui': 0.38.1_bdg25lgzpqgox33owcws6pnwdq
       async-mutex: 0.4.0
       bignumber.js: 9.1.1
       cache-manager: 5.1.7
@@ -97,7 +97,7 @@ importers:
       '@types/node': 18.14.0
       '@types/supertest': 2.0.12
       light-my-request: 5.8.0
-      prisma: 4.10.1
+      prisma: 4.11.0
       shuffle-seed: 1.1.6
       smartcontracts: link:../../packages/smartcontracts
       source-map-support: 0.5.21
@@ -4196,8 +4196,8 @@ packages:
       tiny-glob: 0.2.9
       tslib: 2.5.0
 
-  /@prisma/client/4.10.1_prisma@4.10.1:
-    resolution: {integrity: sha512-VonXLJZybdt8e5XZH5vnIGCRNnIh6OMX1FS3H/yzMGLT3STj5TJ/OkMcednrvELgk8PK89Vo3aSh51MWNO0axA==}
+  /@prisma/client/4.11.0_prisma@4.11.0:
+    resolution: {integrity: sha512-0INHYkQIqgAjrt7NzhYpeDQi8x3Nvylc2uDngKyFDDj1tTRQ4uV1HnVmd1sQEraeVAN63SOK0dgCKQHlvjL0KA==}
     engines: {node: '>=14.17'}
     requiresBuild: true
     peerDependencies:
@@ -4206,16 +4206,16 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.10.1-2.aead147aa326ccb985dcfed5b065b4fdabd44b19
-      prisma: 4.10.1
+      '@prisma/engines-version': 4.11.0-57.8fde8fef4033376662cad983758335009d522acb
+      prisma: 4.11.0
     dev: false
 
-  /@prisma/engines-version/4.10.1-2.aead147aa326ccb985dcfed5b065b4fdabd44b19:
-    resolution: {integrity: sha512-tsjTho7laDhf9EJ9EnDxAPEf7yrigSMDhniXeU4YoWc7azHAs4GPxRi2P9LTFonmHkJLMOLjR77J1oIP8Ife1w==}
+  /@prisma/engines-version/4.11.0-57.8fde8fef4033376662cad983758335009d522acb:
+    resolution: {integrity: sha512-3Vd8Qq06d5xD8Ch5WauWcUUrsVPdMC6Ge8ILji8RFfyhUpqon6qSyGM0apvr1O8n8qH8cKkEFqRPsYjuz5r83g==}
     dev: false
 
-  /@prisma/engines/4.10.1:
-    resolution: {integrity: sha512-B3tcTxjx196nuAu1GOTKO9cGPUgTFHYRdkPkTS4m5ptb2cejyBlH9X7GOfSt3xlI7p4zAJDshJP4JJivCg9ouA==}
+  /@prisma/engines/4.11.0:
+    resolution: {integrity: sha512-0AEBi2HXGV02cf6ASsBPhfsVIbVSDC9nbQed4iiY5eHttW9ZtMxHThuKZE1pnESbr8HRdgmFSa/Kn4OSNYuibg==}
     requiresBuild: true
 
   /@react-native-community/cli-clean/9.2.1:
@@ -6196,7 +6196,7 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web/0.43.0_gmr4xqdxo4qdrhy4o6uytp37na:
+  /@waveshq/standard-web/0.43.0_zq3akvhituy6kmfavolvztvu4m:
     resolution: {integrity: sha512-lH6ghFBynB2/8JjV1/pn86nIIlFj89z77rK4zZa/UtKj7RuciEL5RMan/rpJP4j5IntPpahDupRk0FpkRtQixw==}
     dependencies:
       '@netlify/ipx': 1.3.3
@@ -6210,7 +6210,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.7.1_react@18.2.0
-      react-redux: 8.0.5_3xleytyzprlgycb2ded54tx72i
+      react-redux: 8.0.5_epqzsux5te4oifde32lbaj3ih4
       react-responsive: 9.0.2_react@18.2.0
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -6269,12 +6269,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui/0.38.1_7ku6mxjmnhk5xr7tkhrmqwchtm:
+  /@waveshq/walletkit-ui/0.38.1_bdg25lgzpqgox33owcws6pnwdq:
     resolution: {integrity: sha512-39EHkbdPy8/7MQZoVNrdj7J42/KiWQw8Ogbu7MyrogPjBDgd8Krv4rDVI2YIzcVmulbOupAQzPARfbETcTyY+A==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.0_ktwaios2c7v32t7koainjith74
       '@waveshq/standard-defichain-jellyfishsdk': 0.43.0_@types+tar-fs@2.0.1
-      '@waveshq/standard-web': 0.43.0_gmr4xqdxo4qdrhy4o6uytp37na
+      '@waveshq/standard-web': 0.43.0_zq3akvhituy6kmfavolvztvu4m
       '@waveshq/standard-web-linter': 0.43.0_e6p36zlotpqtdteaznzfs6stxu
       '@waveshq/walletkit-core': 0.38.1
       bignumber.js: 9.1.1
@@ -15303,13 +15303,13 @@ packages:
       ansi-styles: 5.2.0
       react-is: 18.2.0
 
-  /prisma/4.10.1:
-    resolution: {integrity: sha512-0jDxgg+DruB1kHVNlcspXQB9au62IFfVg9drkhzXudszHNUAQn0lVuu+T8np0uC2z1nKD5S3qPeCyR8u5YFLnA==}
+  /prisma/4.11.0:
+    resolution: {integrity: sha512-4zZmBXssPUEiX+GeL0MUq/Yyie4ltiKmGu7jCJFnYMamNrrulTBc+D+QwAQSJ01tyzeGHlD13kOnqPwRipnlNw==}
     engines: {node: '>=14.17'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.10.1
+      '@prisma/engines': 4.11.0
 
   /process-nextick-args/2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
@@ -15706,7 +15706,7 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-redux/8.0.5_3xleytyzprlgycb2ded54tx72i:
+  /react-redux/8.0.5_epqzsux5te4oifde32lbaj3ih4:
     resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
     peerDependencies:
       '@types/react': ^16.8 || ^17.0 || ^18.0
@@ -15736,6 +15736,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-is: 18.2.0
+      redux: 4.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
