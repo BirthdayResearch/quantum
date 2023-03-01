@@ -31,31 +31,26 @@ export default function RestoreTransactionModal({
   const [isNotValidTxn, setIsNotValidTxn] = useState<boolean>(false);
   const [copiedFromClipboard, setCopiedFromClipboard] =
     useState<boolean>(false);
-  const [placeholder, setPlaceholder] = useState<string>("");
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  useAutoResizeTextArea(textAreaRef.current, [txnAddress, placeholder]);
+  useAutoResizeTextArea(textAreaRef.current, [
+    txnAddress,
+    "Enter Transaction ID",
+  ]);
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
 
-  // Required to set it as state to fix resize issue
-  useEffect(() => {
-    setPlaceholder("Enter Transaction ID");
-  }, []);
-
   const checkTXnHash = async () => {
-    if (typeof txnAddress === "string") {
-      try {
-        const receipt = await provider.getTransaction(txnAddress);
-        if (receipt) {
-          setStorage("unconfirmed", txnAddress);
-          setIsNotValidTxn(false);
-          onClose();
-        } else {
-          setIsNotValidTxn(true);
-        }
-      } catch (error) {
+    try {
+      const receipt = await provider.getTransaction(txnAddress);
+      if (receipt) {
+        setStorage("unconfirmed", txnAddress);
+        setIsNotValidTxn(false);
+        onClose();
+      } else {
         setIsNotValidTxn(true);
       }
+    } catch (error) {
+      setIsNotValidTxn(true);
     }
   };
 
@@ -143,17 +138,17 @@ export default function RestoreTransactionModal({
           <textarea
             ref={textAreaRef}
             className={clsx(
-              `w-full max-h-36 grow resize-none bg-transparent text-sm lg:text-base leading-5 tracking-[0.01em] text-dark-1000 focus:outline-none`,
+              `w-full h-6 grow resize-none bg-transparent text-sm lg:text-base leading-5 tracking-[0.01em] text-dark-1000 focus:outline-none`,
               isFocused
                 ? "placeholder:text-dark-300"
                 : "placeholder:text-dark-500"
             )}
-            placeholder={placeholder}
+            placeholder="Enter Transaction ID"
             value={txnAddress}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             onChange={(e) => setTxnAddress(e.target.value)}
-            onKeyPress={(e) => {
+            onKeyDown={(e) => {
               if (e.key === "Enter") e.preventDefault();
             }}
             spellCheck={false}
@@ -183,7 +178,7 @@ export default function RestoreTransactionModal({
         <div className="mt-8 lg:px-[31px]">
           <ActionButton
             label="Restore transaction"
-            customStyle="bg-dark-1000 md:px-6 text-xg lg:leading-8 lg:py-2 lg:px-8 xl:px-14"
+            customStyle="bg-dark-1000 md:px-6 text-lg lg:leading-8 lg:py-2 lg:px-8 xl:px-14"
             disabled={txnAddress === ""}
             onClick={checkTXnHash}
           />
