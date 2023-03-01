@@ -158,7 +158,7 @@ export default function TransactionStatus({
               </a>
             </div>
           )}
-          <div className="flex flex-row items-center mt-2.5 text-dark-900 lg:text-xl font-bold ">
+          <div className="flex flex-row items-center mt-2.5 text-dark-900 text-sm lg:text-base font-bold ">
             <a
               className="flex flex-row items-center hover:opacity-70"
               href={`${ExplorerURL}/tx/${txnHash}`}
