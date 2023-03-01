@@ -42,7 +42,7 @@ function SetAmountButton({
 }: SetAmountButtonProps): JSX.Element {
   const decimalPlace = 6;
 
-  // ROUND_FLORR is used to prevent the amount from being rounded up and exceeding the Hot Wallet Balance
+  // ROUND_FLOOR is used to prevent the amount from being rounded up and exceeding the max amount
   let value = amount.toFixed(decimalPlace, BigNumber.ROUND_FLOOR);
   switch (type) {
     case AmountButtonTypes.TwentyFive:
