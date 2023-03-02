@@ -41,11 +41,20 @@ To change the state of any smart contract, users need to approve the smart contr
 
 We are implementing a TimeLock contract that will work as an Admin address for ADMIN ONLY tx. There will be 3 days delay on every operational tx except when calling `Withdraw()` function.
 
-#### TimeLock Contract Account Permission
+### TimeLock Contract Account Permission
 
 Gnosis safe will be implemented with both proposers and executors roles. Gnosis Safe has the authority to grant roles to addresses, as long as it holds the corresponding role itself. When revoking privileges, either the revokeRole() or renounceRole() functions must be used.
 
-#### Bridge Contract Account Permission
+To execute only Admin transactions, the developer will need to follow these steps:
+
+- First, create a transaction using Safe [guide](<(https://help.safe.global/en/articles/3738081-contract-interactions),>).
+- After providing the contract address and ABI, the developer can select the contract method (in this case, we will try to change the transaction fee).
+- Select "Schedule". According to the Schedule() function, the following arguments need to be provided: address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt, and uint256 delay.
+- The target address is the Proxy Bridge. The value will usually be 0. The data is the encoded data of the function and arguments (BridgeV1Interface.encodeFunctionData('changeTxFee', [100])). The predecessor is ZERO_BYTES32, and the salt will be in incremented order (e.g., 0x0...1, 0x0...2, 0x0...3, and so on).
+
+The reason behind choosing this way is to avoid having the same transaction multiple times.
+
+### Bridge Contract Account Permission
 
 There are only two roles: DEFAULT_ADMIN_ROLE and WITHDRAW_ROLE.
 
