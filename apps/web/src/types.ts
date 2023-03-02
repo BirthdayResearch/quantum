@@ -22,11 +22,6 @@ export interface AddressDetails {
   refundAddress: string;
   createdAt: Date;
 }
-
-export interface BridgeStatus {
-  isUp: boolean;
-}
-
 export interface BridgeVersion {
   v: string;
 }
