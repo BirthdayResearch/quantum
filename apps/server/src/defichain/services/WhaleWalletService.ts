@@ -99,7 +99,6 @@ export class WhaleWalletService {
 
       return { isValid: true, signature: claim.signature, nonce: claim.nonce, deadline: claim.deadline };
     } catch (error) {
-      this.logger.error(error);
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -155,7 +154,6 @@ export class WhaleWalletService {
       if (e instanceof BadRequestException) {
         throw e;
       }
-      // TODO: Improve error handling
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -188,7 +186,6 @@ export class WhaleWalletService {
       }
       return data;
     } catch (e: any) {
-      // TODO: Improve error handling
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
