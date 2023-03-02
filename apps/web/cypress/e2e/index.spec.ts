@@ -4,10 +4,15 @@ const BirthdayResearchSocialItems = [
   { id: "gitHub_br", url: "https://github.com/BirthdayResearch" },
 ];
 
+beforeEach(() => {
+  cy.visit("http://localhost:3000/");
+  cy.intercept("GET", "**/bridge/status", {
+    body: { isUp: true },
+  });
+});
+
 describe("Navigation", () => {
   it("should navigate to the home page", () => {
-    cy.visit("http://localhost:3000/");
-
     cy.findByTestId("homepage").should("exist");
     cy.findByTestId("header-bridge-logo").should("exist");
     cy.findByTestId("connect-button").should("exist");
