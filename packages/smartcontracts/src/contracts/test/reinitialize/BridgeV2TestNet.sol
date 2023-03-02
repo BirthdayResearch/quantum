@@ -218,16 +218,8 @@ contract BridgeV2TestNet is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpg
      * @notice To initialize the proxy state
      * @param _version Contract's version
      */
-    function initialize(
-        address _timelockContract,
-        address _initialWithdraw,
-        uint256 _fee,
-        uint8 _version
-    ) external reinitializer(_version) {
+    function initialize(uint8 _version) external reinitializer(_version) {
         __EIP712_init(NAME, StringsUpgradeable.toString(_version));
-        _grantRole(DEFAULT_ADMIN_ROLE, _timelockContract);
-        _grantRole(WITHDRAW_ROLE, _initialWithdraw);
-        transactionFee = _fee;
     }
 
     /**

@@ -39,13 +39,27 @@ TODO
 
 To change the state of any smart contract, users need to approve the smart contract of the respective token via the `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
 
+We are implementing a TimeLock contract that will work as an Admin address for ADMIN ONLY tx. There will be 3 days delay on every operational tx except when calling `Withdraw()` function.
+
+#### TimeLock Contract Account Permission
+
+Gnosis safe will be implemented with both proposers and executors roles. Gnosis Safe has the authority to grant roles to addresses, as long as it holds the corresponding role itself. When revoking privileges, either the revokeRole() or renounceRole() functions must be used.
+
+#### Bridge Contract Account Permission
+
+There are only two roles: DEFAULT_ADMIN_ROLE and WITHDRAW_ROLE.
+
+The TimeLock contract is assigned the DEFAULT_ADMIN_ROLE, while another Gnosis Safe is assigned the WITHDRAW_ROLE. The DEFAULT_ADMIN_ROLE has the ability to change both roles to other addresses, but this change will only take effect after three days.
+
+Finally, both addresses can renounce their own roles by calling the renounceRole() function.
+
 ### Bridge ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
 
 Once approved, user will call the `bridgeToDeFiChain()` function with following arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
 
 ### Add supported token
 
-Only addresses with the Admin role can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token and ETH identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
+Only address with the Admin role can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token and ETH identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
 
 In case of ETH, address(0) will be used as an address.
 
@@ -53,7 +67,7 @@ In case of ETH, address(0) will be used as an address.
 
 ### Remove supported token
 
-Only addresses with the Admin role can call the `removeSupportedTokens()` function. This also sets the `_tokenCap` to `0`.
+Only address with the Admin role can call the `removeSupportedTokens()` function. This also sets the `_tokenCap` to `0`.
 
 ### Withdraw
 
@@ -86,7 +100,7 @@ Only address with admin role can change `communityWallet`. This is where the tx 
 
 ### Change Token Cap
 
-Only addresses with admin role can change `tokenCap`.
+Only address with admin role can change `tokenCap`.
 
 ### Modify admin and operational address
 
@@ -151,7 +165,7 @@ Admins can send ERC20 tokens via the `transfer(address _to, uint256 _amount)` fu
 
 ### Withdrawing funds
 
-ERC20 tokens can be withdrawn by the Admin address only via the `withdraw(address _tokenAddress, uint256 amount)` function.
+ETH and ERC20 tokens can be withdrawn by the address with WITHDRAW_ROLE only via the `withdraw(address _tokenAddress, uint256 amount)` function.
 
 ## Admin address - Gnosis safe
 
