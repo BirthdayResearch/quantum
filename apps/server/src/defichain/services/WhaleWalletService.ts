@@ -150,11 +150,10 @@ export class WhaleWalletService {
         refundAddress: data.refundAddress,
       };
     } catch (e: any) {
-      this.logger.log(e);
+      this.logger.error(e);
       if (e instanceof BadRequestException) {
         throw e;
       }
-      // TODO: Improve error handling
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
@@ -187,7 +186,6 @@ export class WhaleWalletService {
       }
       return data;
     } catch (e: any) {
-      // TODO: Improve error handling
       throw new HttpException(
         {
           status: HttpStatus.INTERNAL_SERVER_ERROR,
