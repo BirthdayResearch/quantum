@@ -45,7 +45,7 @@ Once approved, user will call the `bridgeToDeFiChain()` function with following 
 
 ### Add supported token
 
-Only addresses with the Admin and Operational roles can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token and ETH identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
+Only addresses with the Admin role can call the `addSupportedTokens()` function. This sets the `_tokenCap` for an ERC20 token and ETH identified by its `_tokenAddress`. All added tokens will be instantly supported by the bridge.
 
 In case of ETH, address(0) will be used as an address.
 
@@ -53,11 +53,11 @@ In case of ETH, address(0) will be used as an address.
 
 ### Remove supported token
 
-Only addresses with the Admin and Operational role can call the `removeSupportedTokens()` function. This also sets the `_tokenCap` to `0`.
+Only addresses with the Admin role can call the `removeSupportedTokens()` function. This also sets the `_tokenCap` to `0`.
 
 ### Withdraw
 
-`withdraw()` function when called will withdraw an ERC20 token and ETH (address == 0x0). Only the address with the Admin role can call this function.
+`withdraw()` function when called will withdraw an ERC20 token and ETH (address == 0x0). Only the address with the WITHDRAW role can call this function.
 
 ### FlushFund
 
@@ -65,28 +65,28 @@ Only addresses with the Admin and Operational role can call the `removeSupported
 
 ### Change Flush Receive Address
 
-Both the Admin and Operational addresses can change `flushReceiveAddress`.
+Admin address can change `flushReceiveAddress`.
 `changeFlushReceiveAddress` function will reset the `flushReceiveAddress` to new address.
 
 ### Change relayer address
 
-Both the Admin and Operational addresses can change `relayerAddress`.
+Admin address can change `relayerAddress`.
 
 The relayer address will primarily be used for verifying the signature that is signed by the server. The server will need to sign with the corresponding private key of the relayer address.
 
 ### Transaction fee change
 
-Only addresses with Admin and Operational roles can change `transactionFee`.
+Only address with Admin role can change `transactionFee`.
 
-Initial fee will be set to 0.1%. This means that if the user bridges `X` tokens, 99.9% of X will be bridged. The other 0.1% will be taken as fees and sent to `communityWallet`.
+Initial fee will be set to 0%. This means that if the user bridges `X` tokens, 100% of X will be bridged to defiChain. If in future, fee > 0, respected amount will be sent to `communityWallet`.
 
 ### Change Tx Fee Address
 
-Only addresses with admin and Operational roles can change `communityWallet`. This is where the tx fees upon bridging will go.
+Only address with admin role can change `communityWallet`. This is where the tx fees upon bridging will go.
 
 ### Change Token Cap
 
-Only addresses with admin and Operational roles can change `tokenCap`.
+Only addresses with admin role can change `tokenCap`.
 
 ### Modify admin and operational address
 
@@ -129,9 +129,13 @@ MUSDT Contract address: [0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF](https://goe
 
 MUSDC Contract address: [0xB200af2b733B831Fbb3d98b13076BC33F605aD58](https://goerli.etherscan.io/address/0xB200af2b733B831Fbb3d98b13076BC33F605aD58)
 
+### TimeLock
+
+Time lock Contract address: [0x78B29c165d2faFc78b76A029F0014cAd89900DCa](https://goerli.etherscan.io/address/0x78B29c165d2faFc78b76A029F0014cAd89900DCa)
+
 ### BridgeV1
 
-BridgeV1 Contract address: [0xB5AA3ba3F4bF825AAF96F1ee9Fa0D6b3702Dc8B6](https://goerli.etherscan.io/address/0xB5AA3ba3F4bF825AAF96F1ee9Fa0D6b3702Dc8B6)
+BridgeV1 Contract address: [0x57762d794587EdF59f2087DCD6D99eB0105b1A8f](https://goerli.etherscan.io/address/0x57762d794587EdF59f2087DCD6D99eB0105b1A8f)
 
 ### BridgeProxy
 
@@ -149,11 +153,13 @@ Admins can send ERC20 tokens via the `transfer(address _to, uint256 _amount)` fu
 
 ERC20 tokens can be withdrawn by the Admin address only via the `withdraw(address _tokenAddress, uint256 amount)` function.
 
-## Admin and Operational addresses - Gnosis safe
+## Admin address - Gnosis safe
 
-Admin and Operational addresses will be Gnosis safes, ideally will be with at least 3 owners with a 2/3 quorum.
+Admin address will be Gnosis safe, ideally will be with at least 3 owners with a 2/3 quorum.
 
 More admins can be added later, for more info, refer to [Gnosis safe: adding owners](https://help.gnosis-safe.io/en/articles/3950657-add-owners).
+
+Admin Gnosis address: [gor:0xdD42792d3F18bb693A669e5096f866cb96AEdA13](https://goerli.etherscan.io/address/0xdD42792d3F18bb693A669e5096f866cb96AEdA13)
 
 ## Workflow for generating Prisma Client and applying database migrations
 
