@@ -23,8 +23,8 @@ export async function deployContracts(): Promise<BridgeDeploymentResult> {
     accounts[0],
     // community wallet address
     accounts[4],
-    // 0.1%
-    10,
+    // 0%
+    0,
     // flushReceiveAddress
     accounts[3],
   ]);

@@ -101,5 +101,20 @@ describe('Sanity tests for Timelock Controller', () => {
         ),
       ).to.revertedWith('TimelockController: operation already scheduled');
     });
+
+    it('Changing tx time', async () => {
+      console.log('data: ', BridgeV1Interface.encodeFunctionData('changeTxFee', [0]));
+      console.log('predecessor: ', ZERO_BYTES32);
+      console.log('salt: ', '0x1');
+      console.log(
+        await timelockController.hashOperation(
+          '0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef',
+          0,
+          '0x610103d90000000000000000000000000000000000000000000000000000000000000000',
+          '0x0000000000000000000000000000000000000000000000000000000000000000',
+          '0x0000000000000000000000000000000000000000000000000000000000000001',
+        ),
+      );
+    });
   });
 });

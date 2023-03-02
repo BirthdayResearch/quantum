@@ -7,10 +7,10 @@ import { deployContracts } from './testUtils/deployment';
 describe('Transaction fee tests', () => {
   describe('Tx Fee tests', () => {
     describe('DEFAULT_ADMIN_ROLE', () => {
-      it('Successfully implemented the 0.1% fee', async () => {
+      it('Successfully implemented the 0% fee', async () => {
         const { proxyBridge } = await loadFixture(deployContracts);
-        // Checking if the implemented fee is 0.1%
-        expect(await proxyBridge.transactionFee()).to.equal(10);
+        // Checking if the implemented fee is 0%
+        expect(await proxyBridge.transactionFee()).to.equal(0);
       });
 
       it('Successfully changes the fee by Admin account', async () => {
@@ -26,7 +26,7 @@ describe('Transaction fee tests', () => {
           // Event called TRANSACTION_FEE_CHANGED should be emitted on Successful withdrawal by the Admin only
           await expect(proxyBridge.connect(defaultAdminSigner).changeTxFee(50))
             .to.emit(proxyBridge, 'TRANSACTION_FEE_CHANGED')
-            .withArgs(10, 50);
+            .withArgs(0, 50);
         });
       });
     });
@@ -44,8 +44,8 @@ describe('Transaction fee tests', () => {
       const { proxyBridge } = await loadFixture(deployContracts);
       // Admin should not be able to change the tx fees to more than 100%
       await expect(proxyBridge.changeTxFee(10100)).to.be.revertedWithCustomError(proxyBridge, 'MORE_THAN_MAX_FEE');
-      // Fee should be 0.1%
-      expect(await proxyBridge.transactionFee()).to.equal(10);
+      // Fee should be 0%
+      expect(await proxyBridge.transactionFee()).to.equal(0);
     });
   });
 
