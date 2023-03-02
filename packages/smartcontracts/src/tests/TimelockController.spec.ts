@@ -27,7 +27,7 @@ describe('Sanity tests for Timelock Controller', () => {
     const callDataForChangeTxFee = BridgeV1Interface.encodeFunctionData('changeTxFee', [1000]);
 
     it('Schedule successfully', async () => {
-      ({ proxyBridge, defaultAdminSigner, arbitrarySigner } = await loadFixture(deployContracts));
+      ({ proxyBridge, defaultAdminSigner } = await loadFixture(deployContracts));
       const TimelockControllerFactory = await ethers.getContractFactory('TimelockController');
       timelockController = await TimelockControllerFactory.deploy(
         // minDelay
