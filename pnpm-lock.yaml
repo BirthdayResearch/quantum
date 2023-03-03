@@ -71,7 +71,7 @@ importers:
       '@nestjs/throttler': 4.0.0_shbtxdxgogsm4p64bg2toeylku
       '@prisma/client': 4.11.0_prisma@4.11.0
       '@waveshq/walletkit-core': 0.39.0
-      '@waveshq/walletkit-ui': 0.39.0_wuzjao5olztpyxn4und3ktpmcm
+      '@waveshq/walletkit-ui': 0.39.0_ti7fk6heezesn6gjaavu2fo2fi
       async-mutex: 0.4.0
       bignumber.js: 9.1.1
       cache-manager: 5.1.7
@@ -185,7 +185,7 @@ importers:
       '@ethersproject/providers': 5.7.2
       '@nomicfoundation/hardhat-chai-matchers': 1.0.6
       '@nomicfoundation/hardhat-network-helpers': ^1.0.8
-      '@nomicfoundation/hardhat-toolbox': ^2.0.1
+      '@nomicfoundation/hardhat-toolbox': ^2.0.2
       '@openzeppelin/contracts': 4.8.2
       '@openzeppelin/contracts-upgradeable': 4.8.2
       '@typechain/ethers-v5': 10.2.0
@@ -202,13 +202,13 @@ importers:
     devDependencies:
       '@birthdayresearch/eslint-config': 0.5.3_typescript@4.9.5
       '@birthdayresearch/sticky-testcontainers': 0.5.3
-      '@birthdayresearch/sticky-turbo-jest': 0.5.3_75a4kujyprhkaydblscdnunyua
+      '@birthdayresearch/sticky-turbo-jest': 0.5.3_ktwaios2c7v32t7koainjith74
       '@birthdayresearch/sticky-typescript': 0.5.3
       '@ethersproject/abi': 5.7.0
       '@ethersproject/providers': 5.7.2
       '@nomicfoundation/hardhat-chai-matchers': 1.0.6_5h2wsktwjis7lmzn2zb7mgvahm
       '@nomicfoundation/hardhat-network-helpers': 1.0.8_hardhat@2.12.7
-      '@nomicfoundation/hardhat-toolbox': 2.0.1_b7yv4jaqoslkdoi6h32k7fpsui
+      '@nomicfoundation/hardhat-toolbox': 2.0.2_b7yv4jaqoslkdoi6h32k7fpsui
       '@openzeppelin/contracts': 4.8.2
       '@openzeppelin/contracts-upgradeable': 4.8.2
       '@typechain/ethers-v5': 10.2.0_kuvqdvnhbslgxdpi2awxjzdvhe
@@ -1614,27 +1614,6 @@ packages:
       - typescript
     dev: true
 
-  /@birthdayresearch/sticky-jest/0.5.3_75a4kujyprhkaydblscdnunyua:
-    resolution: {integrity: sha512-DvIyyGZ73OayL6iCr+3KDabaNIp3+gYxMog3okzMb4MtCgNaGhsNQDbttRK9FeIAuyDZ/wUsIORMQvaXLGsxww==}
-    dependencies:
-      '@types/jest': 29.4.0
-      jest: 29.4.3_lszm27wzplody5hzcr5ax274dy
-      jest-extended: 3.2.3_jest@29.4.3
-      ts-jest: 29.0.5_orzzknleilowtsz34rkaotjvzm
-      wait-for-expect: 3.0.2
-      whatwg-fetch: 3.6.2
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@jest/types'
-      - '@types/node'
-      - babel-jest
-      - esbuild
-      - node-notifier
-      - supports-color
-      - ts-node
-      - typescript
-    dev: true
-
   /@birthdayresearch/sticky-jest/0.5.3_ktwaios2c7v32t7koainjith74:
     resolution: {integrity: sha512-DvIyyGZ73OayL6iCr+3KDabaNIp3+gYxMog3okzMb4MtCgNaGhsNQDbttRK9FeIAuyDZ/wUsIORMQvaXLGsxww==}
     dependencies:
@@ -1690,23 +1669,6 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
-    dev: true
-
-  /@birthdayresearch/sticky-turbo-jest/0.5.3_75a4kujyprhkaydblscdnunyua:
-    resolution: {integrity: sha512-xzPYyAhL+jpxPvUlaqKETlpOxBnyiDIRqCzIUbSVrB6mhPEBt7YxDoRJcUU1XnHd18XiOfII0S5oYszFH/99fw==}
-    dependencies:
-      '@birthdayresearch/sticky-jest': 0.5.3_75a4kujyprhkaydblscdnunyua
-      '@birthdayresearch/sticky-turbo': 0.5.3
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@jest/types'
-      - '@types/node'
-      - babel-jest
-      - esbuild
-      - node-notifier
-      - supports-color
-      - ts-node
-      - typescript
     dev: true
 
   /@birthdayresearch/sticky-turbo-jest/0.5.3_ktwaios2c7v32t7koainjith74:
@@ -3853,8 +3815,8 @@ packages:
       hardhat: 2.12.7_6qtx7vkbdhwvdm4crzlegk4mvi
     dev: true
 
-  /@nomicfoundation/hardhat-toolbox/2.0.1_b7yv4jaqoslkdoi6h32k7fpsui:
-    resolution: {integrity: sha512-/pr8m9xlqiNlq6fXv4hEPNwdNwUhysoB2qbDCKqERfPpq34EydUQTC3Vis4aIea8RLwSrU8sDXFdv4TQxYstKw==}
+  /@nomicfoundation/hardhat-toolbox/2.0.2_b7yv4jaqoslkdoi6h32k7fpsui:
+    resolution: {integrity: sha512-vnN1AzxbvpSx9pfdRHbUzTRIXpMLPXnUlkW855VaDk6N1pwRaQ2gNzEmFAABk4lWf11E00PKwFd/q27HuwYrYg==}
     peerDependencies:
       '@ethersproject/abi': ^5.4.7
       '@ethersproject/providers': ^5.4.7
@@ -5957,7 +5919,7 @@ packages:
       - supports-color
     dev: false
 
-  /@waveshq/standard-web/0.44.2_curc76cg6epmf2r6eui4pvxzoq:
+  /@waveshq/standard-web/0.44.2_74szalr6nvm2vfmc55i43xp6ce:
     resolution: {integrity: sha512-bPvvDn7pO8V2Y8vHrX87hzZIeexbLZEXLzrRw0MaahSY77yos1CphDKXfYgbIz7lwLugWcPt1FJuY7osCgPgTg==}
     dependencies:
       '@netlify/ipx': 1.3.3
@@ -5971,7 +5933,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.7.1_react@18.2.0
-      react-redux: 8.0.5_3xleytyzprlgycb2ded54tx72i
+      react-redux: 8.0.5_epqzsux5te4oifde32lbaj3ih4
       react-responsive: 9.0.2_react@18.2.0
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -6031,12 +5993,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui/0.39.0_wuzjao5olztpyxn4und3ktpmcm:
+  /@waveshq/walletkit-ui/0.39.0_ti7fk6heezesn6gjaavu2fo2fi:
     resolution: {integrity: sha512-2WN/kGifhXV1Hhj/Exkehl7B7HKeSCmIH7two7eoGPAQjECp53Id0E6g1iCnb87RgCTv4aqTy0MNZBP4M6Ng2w==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.3_ktwaios2c7v32t7koainjith74
       '@waveshq/standard-defichain-jellyfishsdk': 0.44.2_@types+tar-fs@2.0.1
-      '@waveshq/standard-web': 0.44.2_curc76cg6epmf2r6eui4pvxzoq
+      '@waveshq/standard-web': 0.44.2_74szalr6nvm2vfmc55i43xp6ce
       '@waveshq/standard-web-linter': 0.44.2_naodgfovmiulq7vic3ejd6hose
       '@waveshq/walletkit-core': 0.39.0
       bignumber.js: 9.1.1
@@ -15245,7 +15207,7 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-redux/8.0.5_3xleytyzprlgycb2ded54tx72i:
+  /react-redux/8.0.5_epqzsux5te4oifde32lbaj3ih4:
     resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
     peerDependencies:
       '@types/react': ^16.8 || ^17.0 || ^18.0
@@ -15275,6 +15237,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-is: 18.2.0
+      redux: 4.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
@@ -17187,39 +17150,6 @@ packages:
       semver: 7.3.8
       typescript: 4.9.5
       yargs-parser: 21.1.1
-
-  /ts-jest/29.0.5_orzzknleilowtsz34rkaotjvzm:
-    resolution: {integrity: sha512-PL3UciSgIpQ7f6XjVOmbi96vmDHUqAyqDr8YxzopDqX3kfgYtX1cuNeBjP+L9sFXi6nzsGGA6R3fP3DDDJyrxA==}
-    engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-    hasBin: true
-    peerDependencies:
-      '@babel/core': '>=7.0.0-beta.0 <8'
-      '@jest/types': ^29.0.0
-      babel-jest: ^29.0.0
-      esbuild: '*'
-      jest: ^29.0.0
-      typescript: '>=4.3'
-    peerDependenciesMeta:
-      '@babel/core':
-        optional: true
-      '@jest/types':
-        optional: true
-      babel-jest:
-        optional: true
-      esbuild:
-        optional: true
-    dependencies:
-      bs-logger: 0.2.6
-      fast-json-stable-stringify: 2.1.0
-      jest: 29.4.3_lszm27wzplody5hzcr5ax274dy
-      jest-util: 29.4.3
-      json5: 2.2.3
-      lodash.memoize: 4.1.2
-      make-error: 1.3.6
-      semver: 7.3.8
-      typescript: 4.9.5
-      yargs-parser: 21.1.1
-    dev: true
 
   /ts-loader/9.4.2_hhrrucqyg4eysmfpujvov2ym5u:
     resolution: {integrity: sha512-OmlC4WVmFv5I0PpaxYb+qGeGOdm5giHU7HwDDUjw59emP2UYMHy9fFSDcYgSNoH8sXcj4hGCSEhlDZ9ULeDraA==}
