@@ -11,10 +11,12 @@ export function appConfig() {
       network: process.env.DEFICHAIN_NETWORK,
       transferFee: process.env.DFC_FEE_PERCENTAGE,
       dustUTXO: process.env.DEFICHAIN_DUST_UTXO,
+      supportedTokens: process.env.SUPPORTED_DFC_TOKENS,
     },
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
       transferFee: process.env.ETH_FEE_PERCENTAGE,
+      supportedTokens: process.env.SUPPORTED_EVM_TOKENS,
       contracts: {
         bridgeProxy: {
           address: process.env.BRIDGE_PROXY_ADDRESS,

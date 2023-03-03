@@ -2,6 +2,7 @@ describe("Maintenance", () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/");
   });
+
   it("should display homepage when bridge is not down", () => {
     cy.intercept("GET", "**/bridge/status", {
       body: { isUp: true },
@@ -9,6 +10,7 @@ describe("Maintenance", () => {
     cy.findByTestId("homepage").should("exist");
     cy.findByTestId("maintenance").should("not.exist");
   });
+
   it("should display maintenance page when Quantum Bridge is down", () => {
     cy.intercept("GET", "**/bridge/status", {
       body: { isUp: false },

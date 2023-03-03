@@ -10,6 +10,7 @@ import {
 } from 'smartcontracts';
 
 import { PrismaService } from '../../src/PrismaService';
+import { StartedDeFiChainStubContainer } from '../defichain/containers/DeFiChainStubContainer';
 import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
@@ -40,6 +41,7 @@ describe('Bridge Service Integration Tests', () => {
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
+          defichain: { key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
           startedHardhatContainer,
           testnet: { bridgeContractAddress: bridgeContract.address },
           startedPostgresContainer,

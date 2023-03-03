@@ -13,9 +13,9 @@ const BASE_URLS: { [key in EnvironmentNetwork]: string } = {
   [EnvironmentNetwork.LocalPlayground]: "http://localhost:5741",
   // [EnvironmentNetwork.RemotePlayground]:
   //   "https://dihwwizbqe.eu-west-1.awsapprunner.com",
-  [EnvironmentNetwork.TestNet]: "https://sdwkea6kd9.eu-west-1.awsapprunner.com",
+  [EnvironmentNetwork.TestNet]: "https://sejzgjmns5.eu-west-1.awsapprunner.com",
   [EnvironmentNetwork.DevNet]: "http://localhost:5741",
-  [EnvironmentNetwork.MainNet]: "https://wtrc3mhkhd.eu-west-1.awsapprunner.com",
+  [EnvironmentNetwork.MainNet]: "https://nm5sgb3mzq.eu-west-1.awsapprunner.com",
 };
 
 export const DEFICHAIN_WALLET_URL = "https://wallet.defichain.com/api/v0";

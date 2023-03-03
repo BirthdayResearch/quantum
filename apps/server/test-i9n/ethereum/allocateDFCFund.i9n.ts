@@ -57,7 +57,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
         buildTestConfig({
           startedHardhatContainer,
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
-          ethereum: { transferFee: '0.001' },
+          ethereum: { transferFee: '0' },
           testnet: { bridgeContractAddress: bridgeContract.address },
           startedPostgresContainer,
           usdcAddress: musdcContract.address,

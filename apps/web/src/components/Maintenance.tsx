@@ -23,7 +23,10 @@ export const SocialItems = [
 
 export default function Maintenance(): JSX.Element {
   return (
-    <div className="mx-0 min-h-screen" data-testid="maintenance">
+    <div
+      className="mx-0 min-h-[60vh] lg:min-h-[50vh]"
+      data-testid="maintenance"
+    >
       <div className="flex flex-col md:flex-row w-full md:px-[40px] lg:px-[120px]">
         <div className="flex flex-col justify-between px-6 pb-6 md:px-0 md:pb-0 md:mr-8 lg:mr-[72px]">
           <div>

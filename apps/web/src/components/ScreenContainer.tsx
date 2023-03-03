@@ -5,7 +5,6 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Maintenance from "./Maintenance";
 import { useLazyBridgeStatusQuery } from "../store";
-import { BridgeStatus } from "../types";
 
 export default function ScreenContainer({
   children,
@@ -17,26 +16,24 @@ export default function ScreenContainer({
   // if isMaintenanceEnabled is true, this condition will supersede /404 page display
   const [trigger] = useLazyBridgeStatusQuery();
 
+  const [isLoaded, setIsLoaded] = useState(false);
   const [isBridgeUp, setIsBridgeUp] = useState(true);
-  const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>();
-  const [isBridgeStatusSuccess, setIsBridgeStatusSuccess] = useState<boolean>();
+
+  async function checkBridgeStatus() {
+    try {
+      const { data, isSuccess } = await trigger({});
+      // Assumes that the bridge is up unless the api explicitly returns isUp !== true
+      if (isSuccess) {
+        setIsBridgeUp(data?.isUp === true);
+      }
+    } finally {
+      setIsLoaded(true);
+    }
+  }
 
   useEffect(() => {
-    async function checkBridgeStatus() {
-      const { data, isSuccess } = await trigger({});
-      setBridgeStatus(data);
-      setIsBridgeStatusSuccess(isSuccess);
-    }
-
     checkBridgeStatus();
   }, []);
-
-  useEffect(() => {
-    // Assumes that the bridge is up unless the api explicitly returns isUp !== true
-    if (isBridgeStatusSuccess) {
-      setIsBridgeUp(bridgeStatus?.isUp === true);
-    }
-  }, [bridgeStatus, isBridgeStatusSuccess]);
 
   // background picture has 2 conditions/designs: connected wallet bg design vs preconnected wallet bg design
   const bgPicture =
@@ -48,14 +45,20 @@ export default function ScreenContainer({
     <div className="relative">
       <Header />
       <div className="relative z-[1] flex-grow md:pb-12 lg:pb-20">
-        {isBridgeUp ? <main>{children}</main> : <Maintenance />}
-      </div>
-      <div
-        className={clsx(
-          "absolute top-0 left-0 z-auto h-full w-full bg-cover bg-local bg-clip-padding bg-top bg-no-repeat bg-origin-padding mix-blend-screen lg:bg-center",
-          bgPicture
+        {isLoaded ? (
+          <div>{isBridgeUp ? <main>{children}</main> : <Maintenance />}</div>
+        ) : (
+          <div className="min-h-[60vh] lg:min-h-[50vh]" />
         )}
-      />
+      </div>
+      {isLoaded && (
+        <div
+          className={clsx(
+            "absolute top-0 left-0 z-auto h-full w-full bg-cover bg-local bg-clip-padding bg-top bg-no-repeat bg-origin-padding mix-blend-screen lg:bg-center",
+            bgPicture
+          )}
+        />
+      )}
       <Footer />
     </div>
   );

@@ -24,7 +24,7 @@ export default function RestoreTransactionModal({
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
-  const { EthereumRpcUrl } = useContractContext();
+  const { BridgeV1, EthereumRpcUrl } = useContractContext();
 
   const [txnAddress, setTxnAddress] = useState<string>("");
   const [isFocused, setIsFocused] = useState<boolean>(false);
@@ -38,17 +38,23 @@ export default function RestoreTransactionModal({
   ]);
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
+  const bridgeIface = new ethers.utils.Interface(BridgeV1.abi);
 
   const checkTXnHash = async () => {
     try {
       const receipt = await provider.getTransaction(txnAddress);
+      const decodedData = bridgeIface.parseTransaction({ data: receipt.data });
+      if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
+        setIsNotValidTxn(true);
+        return;
+      }
       if (receipt) {
         setStorage("unconfirmed", txnAddress);
         setIsNotValidTxn(false);
         onClose();
-      } else {
-        setIsNotValidTxn(true);
+        return;
       }
+      setIsNotValidTxn(true);
     } catch (error) {
       setIsNotValidTxn(true);
     }
@@ -171,7 +177,7 @@ export default function RestoreTransactionModal({
         {/* Error messages */}
         {invalidTxnHash && (
           <span className="block px-4 pt-2 text-xs lg:px-6 lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
-            Enter a valid txid for Ethereum
+            Enter a valid Ethereum txid performed on Quantum
           </span>
         )}
 

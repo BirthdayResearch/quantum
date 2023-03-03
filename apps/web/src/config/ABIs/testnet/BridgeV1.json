@@ -9,12 +9,13 @@
   { "inputs": [], "name": "EXPIRED_CLAIM", "type": "error" },
   { "inputs": [], "name": "FAKE_SIGNATURE", "type": "error" },
   { "inputs": [], "name": "INCORRECT_NONCE", "type": "error" },
+  { "inputs": [], "name": "INVALID_TOINDEX", "type": "error" },
+  { "inputs": [], "name": "MORE_THAN_MAX_FEE", "type": "error" },
   {
     "inputs": [],
     "name": "MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20",
     "type": "error"
   },
-  { "inputs": [], "name": "NON_AUTHORIZED_ADDRESS", "type": "error" },
   { "inputs": [], "name": "REQUESTED_BRIDGE_AMOUNT_IS_ZERO", "type": "error" },
   { "inputs": [], "name": "TOKEN_ALREADY_SUPPORTED", "type": "error" },
   { "inputs": [], "name": "TOKEN_NOT_SUPPORTED", "type": "error" },
@@ -105,13 +106,13 @@
     "anonymous": false,
     "inputs": [
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "oldAddress",
         "type": "address"
       },
       {
-        "indexed": false,
+        "indexed": true,
         "internalType": "address",
         "name": "newAddress",
         "type": "address"
@@ -189,7 +190,38 @@
     "name": "ETH_RECEIVED_VIA_RECEIVE_FUNCTION",
     "type": "event"
   },
-  { "anonymous": false, "inputs": [], "name": "FLUSH_FUND", "type": "event" },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "_tokenAddress",
+        "type": "address"
+      }
+    ],
+    "name": "FLUSH_FUND",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_fromIndex",
+        "type": "uint256"
+      },
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "_toIndex",
+        "type": "uint256"
+      }
+    ],
+    "name": "FLUSH_FUND_MULTIPLE_TOKENS",
+    "type": "event"
+  },
   {
     "anonymous": false,
     "inputs": [
@@ -367,7 +399,7 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "ownerAddress",
+        "name": "withdrawAddress",
         "type": "address"
       },
       {
@@ -383,7 +415,7 @@
         "type": "uint256"
       }
     ],
-    "name": "WITHDRAWAL_BY_OWNER",
+    "name": "WITHDRAWAL",
     "type": "event"
   },
   {
@@ -402,6 +434,13 @@
   },
   {
     "inputs": [],
+    "name": "MAX_FEE",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "NAME",
     "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
     "stateMutability": "view",
@@ -409,7 +448,7 @@
   },
   {
     "inputs": [],
-    "name": "OPERATIONAL_ROLE",
+    "name": "WITHDRAW_ROLE",
     "outputs": [{ "internalType": "bytes32", "name": "", "type": "bytes32" }],
     "stateMutability": "view",
     "type": "function"
@@ -417,7 +456,7 @@
   {
     "inputs": [
       { "internalType": "address", "name": "_tokenAddress", "type": "address" },
-      { "internalType": "uint256", "name": "_currentCap", "type": "uint256" }
+      { "internalType": "uint256", "name": "_tokenCap", "type": "uint256" }
     ],
     "name": "addSupportedTokens",
     "outputs": [],
@@ -512,8 +551,20 @@
     "type": "function"
   },
   {
-    "inputs": [],
-    "name": "flushFund",
+    "inputs": [
+      { "internalType": "address", "name": "_tokenAddress", "type": "address" }
+    ],
+    "name": "flushFundPerToken",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      { "internalType": "uint256", "name": "_fromIndex", "type": "uint256" },
+      { "internalType": "uint256", "name": "_toIndex", "type": "uint256" }
+    ],
+    "name": "flushMultipleTokenFunds",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"
@@ -565,6 +616,17 @@
   },
   {
     "inputs": [
+      {
+        "internalType": "address",
+        "name": "_timelockContract",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_initialWithdraw",
+        "type": "address"
+      },
+      { "internalType": "uint256", "name": "_fee", "type": "uint256" },
       { "internalType": "uint8", "name": "_version", "type": "uint8" }
     ],
     "name": "initialize",
@@ -684,7 +746,7 @@
   {
     "inputs": [
       { "internalType": "address", "name": "_tokenAddress", "type": "address" },
-      { "internalType": "uint256", "name": "amount", "type": "uint256" }
+      { "internalType": "uint256", "name": "_amount", "type": "uint256" }
     ],
     "name": "withdraw",
     "outputs": [],

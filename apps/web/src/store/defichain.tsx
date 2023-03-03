@@ -1,6 +1,6 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { FetchArgs } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
-import { AddressDetails, BridgeStatus, BridgeVersion } from "types";
+import { AddressDetails, BridgeSettings, BridgeVersion } from "types";
 import { HttpStatusCode } from "axios";
 
 const staggeredBaseQueryWithBailOut = retry(
@@ -93,7 +93,7 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 0 },
     }),
-    bridgeStatus: builder.query<BridgeStatus, any>({
+    bridgeStatus: builder.query<{ isUp: boolean }, any>({
       query: ({ baseUrl }) => ({
         url: `${baseUrl}/bridge/status`,
         method: "GET",
@@ -106,6 +106,12 @@ export const bridgeApi = createApi({
     bridgeVersion: builder.query<BridgeVersion, any>({
       query: ({ baseUrl }) => ({
         url: `${baseUrl}/version`,
+        method: "GET",
+      }),
+    }),
+    bridgeSettings: builder.query<BridgeSettings, any>({
+      query: ({ baseUrl }) => ({
+        url: `${baseUrl}/settings`,
         method: "GET",
       }),
     }),

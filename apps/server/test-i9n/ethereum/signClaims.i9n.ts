@@ -11,6 +11,7 @@ import {
 import { WhaleWalletService } from '../../src/defichain/services/WhaleWalletService';
 import { EVMTransactionConfirmerService } from '../../src/ethereum/services/EVMTransactionConfirmerService';
 import { PrismaService } from '../../src/PrismaService';
+import { StartedDeFiChainStubContainer } from '../defichain/containers/DeFiChainStubContainer';
 import { sleep } from '../helper/sleep';
 import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
@@ -44,6 +45,7 @@ describe('Sign Claims Tests', () => {
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
+          defichain: { key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
           startedHardhatContainer,
           testnet: {
             bridgeContractAddress: bridgeContract.address,

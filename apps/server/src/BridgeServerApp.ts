@@ -4,7 +4,7 @@ import { NestApplicationOptions, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
-import { Logger } from 'nestjs-pino';
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
 
 import { BaseModule } from './modules/BaseModule';
 
@@ -41,6 +41,7 @@ export class BridgeServerApp<App extends NestFastifyApplication = NestFastifyApp
 
   async configureApp(app: NestFastifyApplication): Promise<void> {
     app.useGlobalPipes(new ValidationPipe());
+    app.useGlobalInterceptors(new LoggerErrorInterceptor());
     app.useLogger(app.get(Logger));
     app.enableCors({
       origin: process.env.NODE_ENV === 'production' ? ['https://quantumbridge.app'] : '*',

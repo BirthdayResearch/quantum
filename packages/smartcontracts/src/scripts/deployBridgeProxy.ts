@@ -1,8 +1,10 @@
-import { ethers, network } from 'hardhat';
+import { ethers } from 'hardhat';
 
 import { BridgeProxy, BridgeV1__factory } from '../generated';
+import { verify } from './utils/verify';
 
-const TRANSACTION_FEE = 10;
+// Tx fee should be 0
+const TRANSACTION_FEE = 0;
 
 export async function deployBridgeProxy({
   adminAddress,
@@ -12,7 +14,6 @@ export async function deployBridgeProxy({
   txFeeAddress,
   flushReceiveAddress,
 }: InputsForInitialization): Promise<BridgeProxy> {
-  const { chainId } = network.config;
   const bridgeProxyContract = await ethers.getContractFactory('BridgeProxy');
   const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
     // admin address, or timelock contract address
@@ -29,12 +30,8 @@ export async function deployBridgeProxy({
   const bridgeProxy = await bridgeProxyContract.deploy(bridgeV1Address, encodedData);
   await bridgeProxy.deployed();
   console.log('Proxy Address: ', bridgeProxy.address);
-  if (chainId !== 1337) {
-    console.log(
-      `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/BridgeProxy.sol:BridgeProxy ${bridgeProxy.address} ${bridgeV1Address} ${encodedData}`,
-    );
-  }
-
+  console.log('Verifying...');
+  await verify({ contractAddress: bridgeProxy.address, args: [bridgeV1Address, encodedData] });
   return bridgeProxy;
 }
 

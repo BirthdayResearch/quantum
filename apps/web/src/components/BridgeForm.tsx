@@ -420,19 +420,7 @@ export default function BridgeForm({
           readOnly={hasUnconfirmedTxn}
         />
       </div>
-      <div className="flex flex-row justify-between items-center mt-6 lg:mt-0 px-3 lg:px-5">
-        <span className="text-dark-700 text-xs lg:text-base font-semibold md:font-normal">
-          To receive
-        </span>
-        <NumericFormat
-          className="max-w-[70%] block break-words text-right text-xs text-dark-1000 lg:text-base"
-          value={amount || 0}
-          thousandSeparator
-          suffix={` ${selectedTokensB.tokenA.name}`}
-          trimTrailingZeros
-        />
-      </div>
-      <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-4 lg:mt-[18px]">
+      <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-6 lg:mt-0">
         <div className="flex flex-row items-center">
           <span className="text-dark-700 text-xs lg:text-base font-semibold md:font-normal">
             Fees
@@ -446,6 +434,18 @@ export default function BridgeForm({
           value={fee}
           thousandSeparator
           suffix={` ${feeSymbol}`}
+          trimTrailingZeros
+        />
+      </div>
+      <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-4 lg:mt-[18px]">
+        <span className="text-dark-700 text-xs lg:text-base font-semibold md:font-normal">
+          To receive
+        </span>
+        <NumericFormat
+          className="max-w-[70%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-lg lg:leading-6 font-bold"
+          value={BigNumber(new BigNumber(amount || 0).minus(fee))}
+          thousandSeparator
+          suffix={` ${selectedTokensB.tokenA.name}`}
           trimTrailingZeros
         />
       </div>

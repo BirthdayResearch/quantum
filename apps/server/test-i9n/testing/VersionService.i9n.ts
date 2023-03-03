@@ -1,6 +1,7 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { ConfigService } from '@nestjs/config';
 
+import { StartedDeFiChainStubContainer } from '../defichain/containers/DeFiChainStubContainer';
 import { BridgeServerTestingApp } from './BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from './TestingModule';
 
@@ -15,6 +16,7 @@ describe('Version Service Test', () => {
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
+          defichain: { key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
           startedPostgresContainer,
         }),
       ),

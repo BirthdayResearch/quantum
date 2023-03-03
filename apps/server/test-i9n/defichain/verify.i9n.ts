@@ -67,7 +67,7 @@ describe('DeFiChain Verify fund Testing', () => {
             whaleURL,
             key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC,
             transferFee: '0.003',
-            dustUTXO: '0.0001',
+            dustUTXO: '0.001',
           },
           startedHardhatContainer,
           testnet: {
@@ -287,7 +287,7 @@ describe('DeFiChain Verify fund Testing', () => {
 
     await defichain.generateBlock();
     expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
-      new BigNumber('0.0001').toFixed(8),
+      new BigNumber('0.001').toFixed(8),
     );
   });
 });

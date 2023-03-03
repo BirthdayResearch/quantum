@@ -9,6 +9,7 @@ import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
+import { SettingsModule } from './settings/SettingsModule';
 import { VersionModule } from './version/VersionModule';
 
 @Module({
@@ -38,6 +39,7 @@ import { VersionModule } from './version/VersionModule';
     HealthModule,
     VersionModule,
     BalancesModule,
+    SettingsModule,
   ],
   controllers: [],
   providers: [
