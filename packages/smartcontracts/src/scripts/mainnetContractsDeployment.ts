@@ -9,9 +9,9 @@ require('dotenv').config({
 });
 
 // when deploying, replace the following values with the correct ones
-const minDelay = 0;
-const TIMELOCK_ADMIN_ADDRESS = '';
-const BRIDGE_WITHDRAW_ADDRESS = '';
+const minDelay = 259200; // 3 days
+const TIMELOCK_ADMIN_ADDRESS = ''; // Multi sig wallet
+const BRIDGE_WITHDRAW_ADDRESS = ''; // Multi sig wallet
 const RELAYER_ADDRESS = '';
 const TX_FEE_ADDRESS = '';
 const FLUSH_ADDRESS = '';

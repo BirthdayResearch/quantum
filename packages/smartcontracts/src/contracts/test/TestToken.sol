@@ -1,4 +1,4 @@
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import '@openzeppelin/contracts/token/ERC20/ERC20.sol';
 
 contract TestToken is ERC20 {
     constructor(string memory a, string memory b) ERC20(a, b) {}
