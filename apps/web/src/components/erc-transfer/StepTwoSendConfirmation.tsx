@@ -11,21 +11,10 @@ import AddressError from "@components/commons/AddressError";
 import { useStorageContext } from "@contexts/StorageContext";
 import BigNumber from "bignumber.js";
 import AlertInfoMessage from "@components/commons/AlertInfoMessage";
+import debounce from "@utils/debounce";
 import { DFC_TO_ERC_RESET_FORM_TIME_LIMIT } from "../../constants";
 import QrAddress from "../QrAddress";
 import TimeLimitCounter from "./TimeLimitCounter";
-
-function debounce(func, wait) {
-  let timeout;
-  return (...args) => {
-    const context = this;
-    if (timeout) clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      timeout = null;
-      func.apply(context, args);
-    }, wait);
-  };
-}
 
 function getTimeDifference(createdAt?: Date): number {
   if (createdAt) {

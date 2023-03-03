@@ -21,7 +21,8 @@ import useTransferFee from "@hooks/useTransferFee";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again. If the error persists get in touch with us.";
-
+const INSUFFICIENT_FUND_ERROR =
+  "Quantum's servers are currently at capacity. We are unable to process transactions at this time, please try again in a few hours to claim your tokens.";
 export default function StepLastClaim({
   data,
   signedClaim,
@@ -74,17 +75,33 @@ export default function StepLastClaim({
     onSettled: () => setShowLoader(false),
   });
 
-  const { balanceAmount } = useCheckBalance(data.to.tokenSymbol);
-  const isBalanceInsufficient = data.to.amount.isGreaterThan(
-    new BigNumber(balanceAmount)
-  );
+  const { getBalance } = useCheckBalance();
+  const isSufficientBalance = (balance): boolean =>
+    new BigNumber(balance).isGreaterThan(data.to.amount);
+  const [isBalanceSufficient, setIsBalanceSufficient] = useState(false);
+
+  async function checkBalance() {
+    const balance = await getBalance(data.to.tokenSymbol);
+    const isSufficient = isSufficientBalance(balance);
+    if (!isSufficient) {
+      setError(INSUFFICIENT_FUND_ERROR);
+    }
+    setIsBalanceSufficient(isSufficient);
+  }
+
+  useEffect(() => {
+    checkBalance();
+  }, []);
 
   const handleOnClaim = async () => {
     setError(undefined);
     setShowLoader(true);
     if (!write) {
-      setTimeout(() => {
-        setError(CLAIM_INPUT_ERROR);
+      checkBalance();
+      setTimeout(async () => {
+        if (isBalanceSufficient) {
+          setError(CLAIM_INPUT_ERROR);
+        }
         setShowLoader(false);
       }, 500);
       return;
@@ -103,14 +120,6 @@ export default function StepLastClaim({
   useEffect(() => {
     setError(writeClaimTxnError?.message ?? claimTxnError?.message);
   }, [writeClaimTxnError, claimTxnError]);
-
-  useEffect(() => {
-    if (error && isBalanceInsufficient) {
-      setError(
-        "Quantum's servers are currently at capacity. We are unable to process transactions at this time, please try again in a few hours to claim your tokens."
-      );
-    }
-  }, [error, isBalanceInsufficient]);
 
   const statusMessage = {
     title: isClaimInProgress ? "Processing" : "Waiting for confirmation",
