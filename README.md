@@ -46,7 +46,7 @@ To execute only Admin transactions, the developer will need to follow these step
 - First, create a transaction using Safe [guide](<(https://help.safe.global/en/articles/3738081-contract-interactions),>).
 - After providing the contract address and ABI, the developer can select the contract method (in this case, we will try to change the transaction fee).
 - Select "Schedule". According to the Schedule() function, the following arguments need to be provided: address target, uint256 value, bytes calldata data, bytes32 predecessor, bytes32 salt, and uint256 delay.
-- The target address is the Proxy Bridge. The value will usually be 0. The data is the encoded data of the function and arguments (BridgeV1Interface.encodeFunctionData('changeTxFee', [100])). Predecessor should almost always be 0x0 unless we have a prerequisite transaction, salt will be in incremented order (e.g., 0x0...1, 0x0...2, 0x0...3, and so on) and delay should be >= `getMinDelay()` which will be set to 3 days.
+- The target address is the Proxy Bridge. The value will usually be 0. The data is the encoded data of the function and arguments (BridgeV1Interface.encodeFunctionData('changeTxFee', [100])). Predecessor should almost always be 0x0 unless we have a prerequisite transaction, salt will be in incremented order (e.g., 0x0...1, 0x0...2, 0x0...3, and so on) and delay (in seconds) should be >= `getMinDelay()` which will be set to 3 days.
 
 The reason behind choosing different salt is to avoid having the same transaction again.
 
