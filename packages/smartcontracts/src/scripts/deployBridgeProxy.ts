@@ -3,7 +3,8 @@ import { ethers } from 'hardhat';
 import { BridgeProxy, BridgeV1__factory } from '../generated';
 import { verify } from './utils/verify';
 
-const TRANSACTION_FEE = 10;
+// Tx fee should be 0
+const TRANSACTION_FEE = 0;
 
 export async function deployBridgeProxy({
   adminAddress,
