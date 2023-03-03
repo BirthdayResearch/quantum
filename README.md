@@ -31,11 +31,11 @@ TODO
 
 TODO
 
-## Operational Transactions
+####
 
 To change the state of any smart contract, users need to approve the smart contract of the respective token via the `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
 
-We are implementing a TimeLock contract that will work as an Admin address for ADMIN ONLY tx. There will be 3 days delay on every operational tx except when calling `Withdraw()` function.
+We are implementing a TimeLock contract that will work as an Admin address for ADMIN ONLY tx. There will be 3 days delay on every operational tx except when calling `Withdraw()` function, TimeLock contract is not able to call this function.
 
 ### TimeLock Contract Account Permission
 
@@ -55,11 +55,13 @@ The reason behind choosing different salt is to avoid having the same transactio
 
 After scheduling the transaction using a timelock, the developer must call the execute() function with the provided arguments(same as above). If the execute() function is called before the specified `delay` time has passed, the transaction will revert with the error message "TimelockController: operation is not ready". This is because the timelock is designed to ensure that the specified delay time has elapsed before the transaction can be executed. Once the delay time has passed, the transaction can be executed normally.
 
+## Operational Transactions
+
 ### Bridge Contract Account Permission
 
 There are only two roles: DEFAULT_ADMIN_ROLE and WITHDRAW_ROLE.
 
-The TimeLock contract is assigned the DEFAULT_ADMIN_ROLE, while another Gnosis Safe is assigned the WITHDRAW_ROLE. The DEFAULT_ADMIN_ROLE has the ability to change both roles to other addresses, but this change will only take effect after three days.
+The TimeLock contract is assigned the DEFAULT_ADMIN_ROLE, while another Gnosis Safe is assigned the WITHDRAW_ROLE. The DEFAULT_ADMIN_ROLE has the ability to grant both roles to other addresses, but this change will only take effect after three days.
 
 Finally, both addresses can renounce their own roles by calling the renounceRole() function.
 
@@ -83,9 +85,13 @@ Only address with the Admin role can call the `removeSupportedTokens()` function
 
 `withdraw()` function when called will withdraw an ERC20 token and ETH (address == 0x0). Only the address with the WITHDRAW role can call this function.
 
-### FlushFund
+### flushMultipleTokenFunds
 
-`flushFund` function to flush the excess funds `(token.balanceOf(Bridge) - tokenCap)` across supported tokens to a hardcoded address (`flushReceiveAddress`) anyone can call this function. This applies to all tokens and ETH.
+`flushMultipleTokenFunds(uint256 _fromIndex, uint256 _toIndex)` function to flush the excess funds `(token.balanceOf(Bridge) - tokenCap)` across supported tokens to a hardcoded address (`flushReceiveAddress`) anyone can call this function. For example, calling flushMultipleTokenFunds(0,3), only the tokens at index 0, 1 and 2 will be flushed. This applies to all tokens and ETH.
+
+### flushFundPerToken
+
+`flushFundPerToken(address _tokenAddress)` is doing same as above function, however doing on token basis instead of from and to indexes.
 
 ### Change Flush Receive Address
 
