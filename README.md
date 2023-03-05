@@ -147,6 +147,22 @@ Before running the above command, following `vars` need to be addressed:
 
 To Mint the test tokens and Approve the Bridge Contract devs will have to run a command `npx hardhat run --network goerli ./scripts/mintTestToken.ts` in smartContract directory. Script will mint `100_000` tokens.
 
+## Mainnet Addresses
+
+### TimeLock
+
+Time lock Contract address: [0xbfe4a2126313bcdc44daf3551b9f22ddda02c937](https://etherscan.io/address/0xbfe4a2126313bcdc44daf3551b9f22ddda02c937)
+
+### BridgeV1
+
+BridgeV1 Contract address: [0x7bdbd5675bad2653cba9bc0e09564dd8d7b53957](https://etherscan.io/address/0x7bdbd5675bad2653cba9bc0e09564dd8d7b53957)
+
+### BridgeProxy
+
+BridgeProxy Contract address: [0x54346d39976629b65ba54eac1c9ef0af3be1921b](https://etherscan.io/address/0x54346d39976629b65ba54eac1c9ef0af3be1921b)
+
+## Testnet Addresses
+
 ### MWBTC
 
 MWBTC Contract address: [0xD723D679d1A3b23d0Aafe4C0812f61DDA84fc043](https://goerli.etherscan.io/address/0xd723d679d1a3b23d0aafe4c0812f61dda84fc043)
