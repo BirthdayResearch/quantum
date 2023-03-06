@@ -71,7 +71,7 @@ importers:
       '@nestjs/throttler': 4.0.0_shbtxdxgogsm4p64bg2toeylku
       '@prisma/client': 4.11.0_prisma@4.11.0
       '@waveshq/walletkit-core': 0.39.0
-      '@waveshq/walletkit-ui': 0.39.0_ti7fk6heezesn6gjaavu2fo2fi
+      '@waveshq/walletkit-ui': 0.39.0_wuzjao5olztpyxn4und3ktpmcm
       async-mutex: 0.4.0
       bignumber.js: 9.1.1
       cache-manager: 5.1.7
@@ -113,7 +113,7 @@ importers:
       '@babel/types': ^7.21.2
       '@cypress/code-coverage': ^3.10.0
       '@floating-ui/react-dom': ^1.3.0
-      '@headlessui/react': ^1.7.11
+      '@headlessui/react': ^1.7.13
       '@netlify/plugin-lighthouse': ^4.0.7
       '@netlify/plugin-nextjs': ^4.30.4
       '@reduxjs/toolkit': ^1.9.3
@@ -144,7 +144,7 @@ importers:
     dependencies:
       '@babel/types': 7.21.2
       '@floating-ui/react-dom': 1.3.0_biqbaboplfbrettd7655fr4n2y
-      '@headlessui/react': 1.7.11_biqbaboplfbrettd7655fr4n2y
+      '@headlessui/react': 1.7.13_biqbaboplfbrettd7655fr4n2y
       '@reduxjs/toolkit': 1.9.3_react@18.2.0
       '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.7
       '@waveshq/standard-web': 0.44.2_zdyvr5z7dtzl4fykjwgfshqkju
@@ -2506,8 +2506,8 @@ packages:
       '@hapi/hoek': 11.0.2
     dev: false
 
-  /@headlessui/react/1.7.11_biqbaboplfbrettd7655fr4n2y:
-    resolution: {integrity: sha512-EaDbVgcyiylhtskZZf4Qb/JiiByY7cYbd0qgZ9xm2pm2X7hKojG0P4TaQYKgPOV3vojPhd/pZyQh3nmRkkcSyw==}
+  /@headlessui/react/1.7.13_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-9n+EQKRtD9266xIHXdY5MfiXPDfYwl7zBM7KOx2Ae3Gdgxy8QML1FkCMjq6AsOf0l6N9uvI4HcFtuFlenaldKg==}
     engines: {node: '>=10'}
     peerDependencies:
       react: ^16 || ^17 || ^18
@@ -5876,7 +5876,7 @@ packages:
       - supports-color
     dev: false
 
-  /@waveshq/standard-web/0.44.2_74szalr6nvm2vfmc55i43xp6ce:
+  /@waveshq/standard-web/0.44.2_curc76cg6epmf2r6eui4pvxzoq:
     resolution: {integrity: sha512-bPvvDn7pO8V2Y8vHrX87hzZIeexbLZEXLzrRw0MaahSY77yos1CphDKXfYgbIz7lwLugWcPt1FJuY7osCgPgTg==}
     dependencies:
       '@netlify/ipx': 1.3.3
@@ -5890,7 +5890,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.7.1_react@18.2.0
-      react-redux: 8.0.5_epqzsux5te4oifde32lbaj3ih4
+      react-redux: 8.0.5_3xleytyzprlgycb2ded54tx72i
       react-responsive: 9.0.2_react@18.2.0
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -5950,12 +5950,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui/0.39.0_ti7fk6heezesn6gjaavu2fo2fi:
+  /@waveshq/walletkit-ui/0.39.0_wuzjao5olztpyxn4und3ktpmcm:
     resolution: {integrity: sha512-2WN/kGifhXV1Hhj/Exkehl7B7HKeSCmIH7two7eoGPAQjECp53Id0E6g1iCnb87RgCTv4aqTy0MNZBP4M6Ng2w==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.3_ktwaios2c7v32t7koainjith74
       '@waveshq/standard-defichain-jellyfishsdk': 0.44.2_@types+tar-fs@2.0.1
-      '@waveshq/standard-web': 0.44.2_74szalr6nvm2vfmc55i43xp6ce
+      '@waveshq/standard-web': 0.44.2_curc76cg6epmf2r6eui4pvxzoq
       '@waveshq/standard-web-linter': 0.44.2_naodgfovmiulq7vic3ejd6hose
       '@waveshq/walletkit-core': 0.39.0
       bignumber.js: 9.1.1
@@ -15124,7 +15124,7 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-redux/8.0.5_epqzsux5te4oifde32lbaj3ih4:
+  /react-redux/8.0.5_3xleytyzprlgycb2ded54tx72i:
     resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
     peerDependencies:
       '@types/react': ^16.8 || ^17.0 || ^18.0
@@ -15154,7 +15154,6 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-is: 18.2.0
-      redux: 4.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
