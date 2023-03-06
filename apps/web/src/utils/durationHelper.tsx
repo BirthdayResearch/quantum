@@ -1,4 +1,4 @@
-export default function secondsToTime(value: number): {
+export function secondsToTime(value: number): {
   y: number;
   m: number;
   d: number;
@@ -32,4 +32,52 @@ export default function secondsToTime(value: number): {
     min,
     s,
   };
+}
+
+type CustomLabel = {
+  months?: string;
+  days?: string;
+  hrs?: string;
+  mins?: string;
+  secs?: string;
+};
+
+export function getDuration(
+  seconds: number,
+  customLabel?: CustomLabel
+): string {
+  const { y, m, d, h, min, s } = secondsToTime(seconds);
+  const yDisplay = y > 0 ? `${y}y` : "";
+  const mDisplay =
+    m > 0
+      ? ` ${y > 0 ? m.toString().padStart(2, "0") : m} ${
+          customLabel?.months ?? "MONTHS"
+        }`
+      : "";
+  const dDisplay =
+    d > 0
+      ? ` ${m > 0 ? d.toString().padStart(2, "0") : d} ${
+          customLabel?.days ?? "DAYS"
+        }`
+      : "";
+  const hDisplay =
+    h > 0
+      ? ` ${d > 0 ? h.toString().padStart(2, "0") : h} ${
+          customLabel?.hrs ?? "HOURS"
+        }`
+      : "";
+  const minDisplay =
+    min > 0
+      ? ` ${h > 0 ? min.toString().padStart(2, "0") : min} ${
+          customLabel?.mins ?? "MINS"
+        }`
+      : "";
+  if (`${yDisplay}${mDisplay}${dDisplay}${hDisplay}${minDisplay}` !== "") {
+    return `${yDisplay}${mDisplay}${dDisplay}${hDisplay}${minDisplay}`;
+  }
+  const sDisplay =
+    s > 0 && minDisplay === ""
+      ? ` ${s.toString().padStart(2, "0")} ${customLabel?.secs ?? "SECS"}`
+      : "";
+  return `${yDisplay}${mDisplay}${dDisplay}${hDisplay}${minDisplay}${sDisplay}`;
 }

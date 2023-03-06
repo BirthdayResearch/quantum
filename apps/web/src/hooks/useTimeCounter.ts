@@ -11,7 +11,7 @@ export default function useTimeCounter(
   const intervalRef = useRef<any>(null);
 
   const decreaseTimeRemaining = () =>
-    setTimeRemaining((time) => time.minus(1000));
+    setTimeRemaining((time) => BigNumber.max(time.minus(1000), 0));
   useEffect(() => {
     intervalRef.current = setInterval(decreaseTimeRemaining, 1000);
     return () => clearInterval(intervalRef.current);
@@ -19,7 +19,6 @@ export default function useTimeCounter(
 
   useEffect(() => {
     if (timeRemaining.lte(0)) {
-      setTimeRemaining(new BigNumber(0));
       clearInterval(intervalRef.current);
       onTimeCounterEnd();
     }
