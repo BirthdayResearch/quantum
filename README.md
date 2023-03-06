@@ -37,9 +37,9 @@ To change the state of any smart contract, users need to approve the smart contr
 
 We are implementing a TimeLock contract that will work as an Admin address for ADMIN ONLY tx. There will be 3 days delay on every operational tx except when calling `Withdraw()` function, TimeLock contract is not able to call this function.
 
-### TimeLock Contract Account Permission
+### TimeLock Contract Operations
 
-Gnosis safe will be implemented with both proposers and executors roles. Gnosis Safe has the authority to grant roles to addresses, as long as it holds the corresponding role itself. When revoking privileges, either the revokeRole() or renounceRole() functions must be used.
+Gnosis safe will be implemented with both proposers and executors roles. Only the Timelock smart contract has the role (TIMELOCK_ADMIN_ROLE) to grant roles for now. If we want to grant new roles to new addresses, have to go through a round of scheduling and executing the grantRole functions through the Timelock contract. When revoking privileges, either the revokeRole() or renounceRole() functions must be used.
 
 To execute only Admin transactions, the developer will need to follow these steps:
 
@@ -51,17 +51,17 @@ To execute only Admin transactions, the developer will need to follow these step
 Salt can be `0x0000000000000000000000000000000000000000000000000000000000000000` for 1st transaction,
 `0x0000000000000000000000000000000000000000000000000000000000000001` for 2nd transaction and so on.
 
-The reason behind choosing different salt is to avoid having the same transaction again.
+The reason behind choosing different salt is to avoid having he same operation identifier again.
 
 After scheduling the transaction using a timelock, the developer must call the execute() function with the provided arguments(same as above). If the execute() function is called before the specified `delay` time has passed, the transaction will revert with the error message "TimelockController: operation is not ready". This is because the timelock is designed to ensure that the specified delay time has elapsed before the transaction can be executed. Once the delay time has passed, the transaction can be executed normally.
 
-## Operational Transactions
+## Bridge Contract operations
 
 ### Bridge Contract Account Permission
 
 There are only two roles: DEFAULT_ADMIN_ROLE and WITHDRAW_ROLE.
 
-The TimeLock contract is assigned the DEFAULT_ADMIN_ROLE, while another Gnosis Safe is assigned the WITHDRAW_ROLE. The DEFAULT_ADMIN_ROLE has the ability to grant both roles to other addresses, but this change will only take effect after three days.
+The TimeLock contract is assigned the DEFAULT_ADMIN_ROLE, while another Gnosis Safe is assigned the WITHDRAW_ROLE. The DEFAULT_ADMIN_ROLE has the ability to grant both roles to other addresses, but this changes will happen instantly once executed.
 
 Finally, both addresses can renounce their own roles by calling the renounceRole() function.
 
@@ -194,18 +194,6 @@ BridgeProxy Contract address: [0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef](https
 Anyone can send funds to the bridge contract. Ideally, this should be done by liquidity providers. If there are tokens sent by other addresses to the contract, those tokens will be unaccounted for.
 
 Admins can send ERC20 tokens via the `transfer(address _to, uint256 _amount)` function or utilizing wallets such as Metamask.
-
-### Withdrawing funds
-
-ETH and ERC20 tokens can be withdrawn by the address with WITHDRAW_ROLE only via the `withdraw(address _tokenAddress, uint256 amount)` function.
-
-## Admin address - Gnosis safe
-
-Admin address will be Gnosis safe, ideally will be with at least 3 owners with a 2/3 quorum.
-
-More admins can be added later, for more info, refer to [Gnosis safe: adding owners](https://help.gnosis-safe.io/en/articles/3950657-add-owners).
-
-Admin Gnosis address: [gor:0xdD42792d3F18bb693A669e5096f866cb96AEdA13](https://goerli.etherscan.io/address/0xdD42792d3F18bb693A669e5096f866cb96AEdA13)
 
 ## Workflow for generating Prisma Client and applying database migrations
 
