@@ -52,7 +52,7 @@ function AddressWithVerifiedBadge({
         isLg
           ? "after:-bottom-1 after:ml-2 after:content-[url('/verified-24x24.svg')]"
           : "after:ml-1 after:content-[url('/verified-20x20.svg')]",
-        isPrimary ? "text-sm lg:text-xl" : "text-sm"
+        isPrimary ? "text-sm lg:text-base" : "text-sm"
       )}
       onClick={() => onClick()}
       onKeyDown={() => {}}
