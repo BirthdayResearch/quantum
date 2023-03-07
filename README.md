@@ -33,8 +33,6 @@ TODO
 
 ## Contract Operations
 
-To change the state of any smart contract, users need to approve the smart contract of the respective token via the `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
-
 We are implementing a TimeLock contract that will work as an Admin address for ADMIN ONLY tx. There will be 3 days delay on every operational tx except when calling `Withdraw()` function, TimeLock contract is not able to call this function.
 
 ## TimeLock Contract Operations
@@ -67,7 +65,7 @@ Finally, both addresses can renounce their own roles by calling the renounceRole
 
 ### Bridge ERC20 tokens - to transfer ERC20 tokens from an EOA to the Bridge
 
-Once approved, user will call the `bridgeToDeFiChain()` function with following arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
+Once approving the bridge contract, user will call the `bridgeToDeFiChain()` function with following arguments: `_defiAddress`- address on Defi Chain that receiving funds, `_tokenAddress` - ERC20 token's address and `_amount` amount to bridge over to Defi chain.
 
 ### Add supported token
 
