@@ -31,7 +31,7 @@ TODO
 
 TODO
 
-####
+## Contract Operations
 
 To change the state of any smart contract, users need to approve the smart contract of the respective token via the `approve()` function first. Once approved, user will be able to bridge the token over to DefiChain.
 
