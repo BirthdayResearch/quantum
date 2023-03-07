@@ -20,7 +20,7 @@
     "@waveshq/standard-defichain-jellyfishsdk": "^0.44.2"
   },
   "devDependencies": {
-    "@birthdayresearch/sticky-turbo": "^0.5.3",
+    "@birthdayresearch/sticky-turbo": "^0.5.4",
     "husky": "^8.0.3",
     "lint-staged": "^13.1.2"
   },
