@@ -47,7 +47,7 @@
     "ethers": "^5.7.2",
     "joi": "^17.8.1",
     "nestjs-pino": "^3.1.2",
-    "pg": "^8.9.0",
+    "pg": "^8.10.0",
     "typeorm": "^0.3.12"
   },
   "devDependencies": {
