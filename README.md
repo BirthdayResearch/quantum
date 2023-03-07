@@ -37,7 +37,7 @@ To change the state of any smart contract, users need to approve the smart contr
 
 We are implementing a TimeLock contract that will work as an Admin address for ADMIN ONLY tx. There will be 3 days delay on every operational tx except when calling `Withdraw()` function, TimeLock contract is not able to call this function.
 
-### TimeLock Contract Operations
+## TimeLock Contract Operations
 
 Gnosis safe will be implemented with both proposers and executors roles. Only the Timelock smart contract has the role (TIMELOCK_ADMIN_ROLE) to grant roles for now. If we want to grant new roles to new addresses, have to go through a round of scheduling and executing the grantRole functions through the Timelock contract. When revoking privileges, either the revokeRole() or renounceRole() functions must be used.
 
@@ -51,7 +51,7 @@ To execute only Admin transactions, the developer will need to follow these step
 Salt can be `0x0000000000000000000000000000000000000000000000000000000000000000` for 1st transaction,
 `0x0000000000000000000000000000000000000000000000000000000000000001` for 2nd transaction and so on.
 
-The reason behind choosing different salt is to avoid having he same operation identifier again.
+The reason behind choosing different salt is to avoid having the same operation identifier again.
 
 After scheduling the transaction using a timelock, the developer must call the execute() function with the provided arguments(same as above). If the execute() function is called before the specified `delay` time has passed, the transaction will revert with the error message "TimelockController: operation is not ready". This is because the timelock is designed to ensure that the specified delay time has elapsed before the transaction can be executed. Once the delay time has passed, the transaction can be executed normally.
 
@@ -61,7 +61,7 @@ After scheduling the transaction using a timelock, the developer must call the e
 
 There are only two roles: DEFAULT_ADMIN_ROLE and WITHDRAW_ROLE.
 
-The TimeLock contract is assigned the DEFAULT_ADMIN_ROLE, while another Gnosis Safe is assigned the WITHDRAW_ROLE. The DEFAULT_ADMIN_ROLE has the ability to grant both roles to other addresses, but this changes will happen instantly once executed.
+The TimeLock contract is assigned the DEFAULT_ADMIN_ROLE, while another Gnosis Safe is assigned the WITHDRAW_ROLE. The DEFAULT_ADMIN_ROLE has the ability to grant both roles to other addresses, but these changes will happen instantly once executed.
 
 Finally, both addresses can renounce their own roles by calling the renounceRole() function.
 
