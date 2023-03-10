@@ -30,6 +30,10 @@ export const getDTokenDetailsByWToken = (
           id: '5',
           symbol: 'USDC',
         },
+        MEUROC: {
+          id: '216',
+          symbol: 'EUROC',
+        },
       };
       break;
     case EnvironmentNetwork.LocalPlayground:
@@ -49,6 +53,10 @@ export const getDTokenDetailsByWToken = (
         MUSDC: {
           id: '5',
           symbol: 'USDC',
+        },
+        MEUROC: {
+          id: '216',
+          symbol: 'EUROC',
         },
       };
       break;
@@ -71,6 +79,10 @@ export const getDTokenDetailsByWToken = (
           id: '22',
           symbol: 'USDC',
         },
+        MEUROC: {
+          id: '216',
+          symbol: 'EUROC',
+        },
       };
       break;
     case EnvironmentNetwork.MainNet:
@@ -91,6 +103,10 @@ export const getDTokenDetailsByWToken = (
         USDC: {
           id: '13',
           symbol: 'USDC',
+        },
+        EUROC: {
+          id: '216',
+          symbol: 'EUROC',
         },
       };
       break;

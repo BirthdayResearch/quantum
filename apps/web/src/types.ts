@@ -10,11 +10,10 @@ export enum Network {
   DeFiChain = "DeFiChain",
 }
 
-export interface TokenDetailI {
-  name: string;
+export interface TokenDetailI<T> {
+  name: T;
   symbol: string;
   icon: string;
-  supply: string;
 }
 
 export interface AddressDetails {
@@ -43,8 +42,8 @@ export enum SelectionType {
 }
 
 export interface TokensI {
-  tokenA: TokenDetailI;
-  tokenB: TokenDetailI;
+  tokenA: TokenDetailI<string>;
+  tokenB: TokenDetailI<string>;
 }
 export interface NetworkOptionsI {
   name: Network;
@@ -84,7 +83,7 @@ export interface TransferData {
   to: RowDataI;
 }
 
-export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH";
+export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH" | "EUROC";
 
 interface ContractConfigI {
   address: `0x${string}`;

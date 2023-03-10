@@ -66,6 +66,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(await getBalance('USDT')).toStrictEqual(0);
     expect(await getBalance('ETH')).toStrictEqual(0);
     expect(await getBalance('DFI')).toStrictEqual(0);
+    expect(await getBalance('EUROC')).toStrictEqual(0);
 
     // Send 10 BTC to hotwallet
     await defichain.playgroundClient?.rpc.call(
@@ -106,6 +107,20 @@ describe('DeFiChain Send Transaction Testing', () => {
     );
     await defichain.generateBlock();
 
+    // TODO uncomment when we have EUROC token
+    // // Send 10 EUROC to hotwallet
+    // await defichain.playgroundClient?.rpc.call(
+    //   'sendtokenstoaddress',
+    //   [
+    //     {},
+    //     {
+    //       [hotWalletAddress]: `10@EUROC`,
+    //     },
+    //   ],
+    //   'number',
+    // );
+    // await defichain.generateBlock();
+
     // Send 10 ETH to hotwallet
     await defichain.playgroundClient?.rpc.call(
       'sendtokenstoaddress',
@@ -126,6 +141,8 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(await getBalance('BTC')).toStrictEqual(10);
     expect(await getBalance('USDC')).toStrictEqual(10);
     expect(await getBalance('USDT')).toStrictEqual(10);
+    // TODO uncomment when we have EUROC token
+    // expect(await getBalance('EUROC')).toStrictEqual(10);
 
     // Delay to workaround throttler exception
     await sleep(30000);

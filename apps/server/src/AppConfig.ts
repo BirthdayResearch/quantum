@@ -30,6 +30,9 @@ export function appConfig() {
         [SupportedEVMTokenSymbols.WBTC]: {
           address: process.env.WBTC_ADDRESS,
         },
+        [SupportedEVMTokenSymbols.EUROC]: {
+          address: process.env.EUROC_ADDRESS,
+        },
       },
       ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
     },
@@ -61,6 +64,7 @@ export enum SupportedEVMTokenSymbols {
   USDT = 'USDT',
   WBTC = 'WBTC',
   ETH = 'ETH',
+  EUROC = 'EUROC',
 }
 export enum SupportedDFCTokenSymbols {
   USDC = 'USDC',
@@ -68,4 +72,5 @@ export enum SupportedDFCTokenSymbols {
   BTC = 'BTC',
   ETH = 'ETH',
   DFI = 'DFI',
+  EUROC = 'EUROC',
 }

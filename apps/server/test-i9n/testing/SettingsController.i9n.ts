@@ -15,8 +15,8 @@ describe('Settings Controller Test', () => {
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
-          defichain: { transferFee: '0.003', supportedTokens: 'BTC,ETH,USDT,USDC' },
-          ethereum: { transferFee: '0', supportedTokens: 'WBTC,ETH,USDT,USDC' },
+          defichain: { transferFee: '0.003', supportedTokens: 'BTC,ETH,USDT,USDC,EUROC' },
+          ethereum: { transferFee: '0', supportedTokens: 'WBTC,ETH,USDT,USDC,EUROC' },
           startedPostgresContainer,
         }),
       ),
