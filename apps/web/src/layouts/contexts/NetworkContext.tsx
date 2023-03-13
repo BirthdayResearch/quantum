@@ -65,18 +65,6 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/dETH.svg",
         },
       },
-      {
-        tokenA: {
-          name: "EUROC",
-          symbol: "EUROC",
-          icon: "/tokens/EUROC.svg",
-        },
-        tokenB: {
-          name: "dEUROC",
-          symbol: "EUROC",
-          icon: "/tokens/dEUROC.svg",
-        },
-      },
     ],
   },
   {
@@ -105,18 +93,6 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           name: "ETH",
           symbol: "ETH",
           icon: "/tokens/ETH.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "dEUROC",
-          symbol: "EUROC",
-          icon: "/tokens/dEUROC.svg",
-        },
-        tokenB: {
-          name: "EUROC",
-          symbol: "EUROC",
-          icon: "/tokens/EUROC.svg",
         },
       },
     ],
