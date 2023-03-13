@@ -167,19 +167,18 @@ describe('DeFiChain Send Transaction Testing', () => {
     await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 6);
     await defichain.generateBlock();
 
-    // TODO uncomment when we have EUROC token
-    // // Send 5 ETH to hotwallet
-    // await defichain.playgroundClient?.rpc.call(
-    //   'sendtokenstoaddress',
-    //   [
-    //     {},
-    //     {
-    //       [hotWalletAddress]: `5@EUROC`,
-    //     },
-    //   ],
-    //   'number',
-    // );
-    // await defichain.generateBlock();
+    // Send 5 ETH to hotwallet
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [hotWalletAddress]: `5@EUROC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock();
 
     const initialResponse = await testing.inject({
       method: 'GET',
@@ -192,8 +191,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(new BigNumber(response.DFC.USDT)).toStrictEqual(new BigNumber(8));
     expect(new BigNumber(response.DFC.ETH)).toStrictEqual(new BigNumber(7));
     expect(new BigNumber(response.DFC.DFI)).toStrictEqual(new BigNumber(6));
-    // TODO uncomment when we have EUROC token
-    // expect(new BigNumber(response.DFC.EUROC)).toStrictEqual(new BigNumber(5));
+    expect(new BigNumber(response.DFC.EUROC)).toStrictEqual(new BigNumber(5));
   });
 
   it('When adding funds to EVM wallet Should return updated balances of EVM hot wallets ', async () => {
