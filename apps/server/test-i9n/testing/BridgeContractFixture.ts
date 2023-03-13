@@ -155,7 +155,7 @@ export class BridgeContractFixture {
       abi: TestToken__factory.abi,
     });
 
-    // Deploy MockWBTC
+    // Deploy MockEUROC
     const meuroc = await this.contractManager.deployContract<TestToken>({
       deploymentName: BridgeContractFixture.Contracts.MockEUROC.deploymentName,
       contractName: BridgeContractFixture.Contracts.MockEUROC.contractName,
