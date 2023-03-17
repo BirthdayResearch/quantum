@@ -71,7 +71,7 @@ export default function TransactionStatus({
     } else {
       setTitle("Awaiting confirmation");
       setDescription(
-        "It is unsafe for you to close your browser tab, your transaction will be processed once the required number of confirmations is reached."
+        "Your transaction is being processed. It is safe to close this tab, we recommend to keep it open to get your transaction ID."
       );
     }
   }, [isConfirmed, isReverted, isUnsentFund]);
