@@ -20,13 +20,20 @@ interface SelectorI {
   options?: NetworkOptionsI[] | TokensI[];
   onSelect?: (value: any) => void;
   value: NetworkOptionsI | TokensI;
+  testId?: string;
 }
 
 function Divider() {
   return <div className="mx-5 border-t-[0.5px] border-[#42424280] lg:mx-6" />;
 }
 
-function NetworkOptions({ options }: { options: NetworkOptionsI[] }) {
+function NetworkOptions({
+  options,
+  testId,
+}: {
+  options: NetworkOptionsI[];
+  testId?: string;
+}) {
   return (
     <>
       {options.map((option) => (
@@ -34,6 +41,7 @@ function NetworkOptions({ options }: { options: NetworkOptionsI[] }) {
           key={option.name}
           className="relative select-none cursor-pointer"
           value={option}
+          data-testid={`${testId}_${option.name}`}
         >
           {({ selected, active }) => (
             <>
@@ -50,16 +58,19 @@ function NetworkOptions({ options }: { options: NetworkOptionsI[] }) {
                       width={100}
                       height={100}
                       className="w-6 h-6"
-                      data-testid={option.name}
                       src={option.icon}
                       alt={option.name}
+                      data-testid={`${testId}_${option.name}_logo`}
                     />
                     <span className="truncate text-dark-1000 ml-2 text-base">
                       {option.name}
                     </span>
                   </div>
                   {selected && (
-                    <MdCheckCircle className="h-6 w-6 text-[#00AD1D]" />
+                    <MdCheckCircle
+                      className="h-6 w-6 text-[#00AD1D]"
+                      data-testid={`${testId}_${option.name}_checked_marker`}
+                    />
                   )}
                 </div>
               </div>
@@ -143,6 +154,7 @@ export default function InputSelector({
   floatingObj,
   type,
   disabled = false,
+  testId,
 }: SelectorI) {
   const { floating, y, strategy } = floatingObj;
   const roundedBorderStyle =
@@ -152,11 +164,15 @@ export default function InputSelector({
       ? (value as NetworkOptionsI)
       : (value as TokensI).tokenA;
   return (
-    <div>
+    <div data-testid={`${testId}-input`}>
       <span className="text-dark-900 pl-4 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider">
         {label}
       </span>
-      <Listbox value={value} onChange={onSelect}>
+      <Listbox
+        value={value}
+        onChange={onSelect}
+        data-testid={`${testId}-dropdown-btn`}
+      >
         {({ open }) => (
           <div className="relative mt-1 lg:mt-2">
             <Listbox.Button
@@ -173,6 +189,7 @@ export default function InputSelector({
                 roundedBorderStyle,
                 !disabled && "hover:bg-dark-500 hover:pr-px"
               )}
+              data-testid={`selected-${testId}-${name}`}
             >
               <div
                 className={clsx(
@@ -186,8 +203,8 @@ export default function InputSelector({
                     height={100}
                     src={icon}
                     alt={name}
-                    data-testid={name}
                     className="h-5 w-5 lg:h-6 lg:w-6"
+                    data-testid={`selected-${testId}-${name}-logo`}
                   />
                   <span className="ml-2 block truncate text-sm text-dark-1000 lg:text-base">
                     {name}
@@ -225,6 +242,7 @@ export default function InputSelector({
                     { "right-0": type !== SelectionType.Network },
                     open ? "bg-gradient-2" : "bg-dark-200"
                   )}
+                  data-testid={`${testId}_dropdown_options`}
                 >
                   <div className="rounded-lg bg-dark-00 pt-4 pb-2">
                     <span className="px-5 text-xs font-semibold text-dark-700 lg:px-6 lg:text-sm">
@@ -234,6 +252,7 @@ export default function InputSelector({
                       {type === SelectionType.Network ? (
                         <NetworkOptions
                           options={options as NetworkOptionsI[]}
+                          testId={`${testId}_dropdown_option`}
                         />
                       ) : (
                         <TokenOptions options={options as TokensI[]} />

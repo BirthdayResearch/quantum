@@ -30,7 +30,7 @@ export class WhaleWalletService {
   }
 
   async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
-    this.logger.log(`[Verify] ${verify.amount} ${verify.symbol} ${verify.address}`);
+    this.logger.log(`[Verify] ${verify.amount} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`);
 
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
@@ -121,6 +121,7 @@ export class WhaleWalletService {
         HttpStatus.INTERNAL_SERVER_ERROR,
         {
           cause: error as Error,
+          description: `[Verify ERROR] ${verify.amount} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`,
         },
       );
     }
@@ -164,7 +165,7 @@ export class WhaleWalletService {
         refundAddress: data.refundAddress,
       };
     } catch (e: any) {
-      this.logger.error(e);
+      this.logger.error(`[GA ERROR] ${refundAddress} ${network}`, e);
       if (e instanceof BadRequestException) {
         throw e;
       }

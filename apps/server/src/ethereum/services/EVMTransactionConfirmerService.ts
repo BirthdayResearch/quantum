@@ -15,6 +15,7 @@ import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
 import { getNextDayTimestampInSec } from '../../utils/DateUtils';
 import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
+import { StatsDto, StatsQueryDto } from '../EthereumInterface';
 
 @Injectable()
 export class EVMTransactionConfirmerService {
@@ -59,6 +60,88 @@ export class EVMTransactionConfirmerService {
     const balance = await tokenContract.balanceOf(this.contract.address);
     const assetDecimalPlaces = await tokenContract.decimals();
     return ethers.utils.formatUnits(balance, assetDecimalPlaces);
+  }
+
+  async getStats(date?: StatsQueryDto): Promise<StatsDto> {
+    // Use today's date if no param is given
+    // NOTE: REMOVE THE TIMESTAMP UNLESS YOU WANT A 24-HOUR ROLLING WINDOW
+    const dateOnly = date ?? new Date().toISOString().slice(0, 10);
+    const dateFrom = new Date(dateOnly as string);
+    const today = new Date();
+
+    if (dateFrom > today) {
+      throw new BadRequestException(`Cannot query future date`);
+    }
+
+    dateFrom.setUTCHours(0, 0, 0, 0); // set to UTC +0
+    const dateTo = new Date(today);
+    dateTo.setDate(dateFrom.getDate() + 1);
+
+    // CONCURRENCY!!
+    const [totalTransactions, confirmedTransactions] = await Promise.all([
+      this.prisma.bridgeEventTransactions.count({
+        where: {
+          createdAt: {
+            gte: dateFrom.toISOString(),
+            lt: dateTo.toISOString(),
+          },
+        },
+      }),
+
+      // Count only confirmed transactions
+      this.prisma.bridgeEventTransactions.findMany({
+        where: {
+          status: 'CONFIRMED',
+          tokenSymbol: { not: null },
+          amount: { not: null },
+          sendTransactionHash: { not: null },
+          createdAt: {
+            gte: dateFrom.toISOString(),
+            lt: dateTo.toISOString(),
+          },
+        },
+      }),
+    ]);
+
+    // First, sum each token with BigNumber for accuracy
+    const amountBridgedBigN: { [k in SupportedEVMTokenSymbols]: BigNumber } = {
+      ETH: BigNumber(0),
+      USDT: BigNumber(0),
+      USDC: BigNumber(0),
+      WBTC: BigNumber(0),
+      EUROC: BigNumber(0),
+    };
+
+    for (const transaction of confirmedTransactions) {
+      const { tokenSymbol, amount } = transaction;
+      if (tokenSymbol && tokenSymbol in SupportedEVMTokenSymbols) {
+        amountBridgedBigN[tokenSymbol as SupportedEVMTokenSymbols] = amountBridgedBigN[
+          tokenSymbol as SupportedEVMTokenSymbols
+        ].plus(BigNumber(amount as string));
+      }
+    }
+
+    // Then, convert to string in preparation for response payload
+    const numericalPlaceholder = '0.000000';
+    const amountBridged: { [k in SupportedEVMTokenSymbols]: string } = {
+      ETH: numericalPlaceholder,
+      USDT: numericalPlaceholder,
+      USDC: numericalPlaceholder,
+      WBTC: numericalPlaceholder,
+      EUROC: numericalPlaceholder,
+    };
+
+    Object.keys(amountBridged).forEach((token) => {
+      amountBridged[token as SupportedEVMTokenSymbols] = amountBridgedBigN[token as SupportedEVMTokenSymbols]
+        .decimalPlaces(6, BigNumber.ROUND_FLOOR)
+        .toString();
+    });
+
+    return {
+      totalTransactions,
+      confirmedTransactions: confirmedTransactions.length,
+      amountBridged,
+    };
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
@@ -120,7 +203,7 @@ export class EVMTransactionConfirmerService {
     uniqueDfcAddress,
   }: SignClaim): Promise<{ signature: string; nonce: number; deadline: number }> {
     try {
-      this.logger.log(`[Sign] ${amount} ${tokenAddress} ${receiverAddress}`);
+      this.logger.log(`[Sign] ${amount} ${tokenAddress} ${uniqueDfcAddress} ${receiverAddress}`);
 
       // Check and return same claim details if txn is already signed previously
       const existingTxn = await this.prisma.deFiChainAddressIndex.findFirst({
@@ -199,9 +282,10 @@ export class EVMTransactionConfirmerService {
         },
       });
 
-      this.logger.log(`[Sign SUCCESS] ${amount} ${tokenAddress} ${receiverAddress}`);
+      this.logger.log(`[Sign SUCCESS] ${amount} ${tokenAddress} ${uniqueDfcAddress} ${receiverAddress}`);
       return { signature, nonce: nonce.toNumber(), deadline };
     } catch (e: any) {
+      this.logger.log(`[Sign ERROR] ${amount} ${tokenAddress} ${uniqueDfcAddress} ${receiverAddress}`);
       throw new Error('There is a problem in signing this claim', { cause: e });
     }
   }
@@ -294,6 +378,7 @@ export class EVMTransactionConfirmerService {
         HttpStatus.INTERNAL_SERVER_ERROR,
         {
           cause: e,
+          description: `[AllocateDFCFund ERROR] ${transactionHash}`,
         },
       );
     }

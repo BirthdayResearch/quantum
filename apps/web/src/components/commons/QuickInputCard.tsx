@@ -10,6 +10,7 @@ interface QuickInputCardProps {
   error?: string;
   showAmountsBtn?: boolean;
   disabled?: boolean;
+  testId?: string;
 }
 
 interface SetAmountButtonProps {
@@ -18,6 +19,7 @@ interface SetAmountButtonProps {
   amount: BigNumber;
   hasBorder?: boolean;
   disabled?: boolean;
+  testId?: string;
 }
 
 export enum AmountButtonTypes {
@@ -39,6 +41,7 @@ function SetAmountButton({
   amount,
   hasBorder,
   disabled,
+  testId,
 }: SetAmountButtonProps): JSX.Element {
   const decimalPlace = 5;
 
@@ -79,6 +82,7 @@ function SetAmountButton({
         onClick(value);
       }}
       disabled={disabled}
+      data-testid={`${testId}-set-amount-${type}`}
     >
       <div className="py-1 lg:py-0.5">
         <span className="font-semibold text-sm lg:text-base text-transparent">
@@ -96,6 +100,7 @@ export function QuickInputCard({
   error = "",
   disabled,
   showAmountsBtn = true,
+  testId,
 }: QuickInputCardProps): JSX.Element {
   return (
     <div
@@ -106,10 +111,11 @@ export function QuickInputCard({
           ? "border-dark-300 hover:border-dark-500 focus-within:!border-transparent focus-within:before:dark-gradient-2 focus-within:before:-inset-[1px] focus-within:before:rounded-lg focus-within:before:p-px"
           : "border-error"
       )}
+      data-testid={testId}
     >
       <div className="flex flex-row px-4 lg:px-5 py-3.5">
         <input
-          data-testid="amount"
+          // data-testid="amount"
           className={clsx(
             "w-full max-h-36 grow resize-none bg-transparent text-base text-dark-1000 focus:outline-none caret-dark-1000 placeholder-dark-500 hover:placeholder-dark-800 focus:placeholder-dark-300"
           )}
@@ -118,6 +124,7 @@ export function QuickInputCard({
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
           spellCheck={false}
+          data-testid={`${testId}-set-amount`}
         />
         {value !== "" && !disabled && (
           <IoCloseCircleSharp
@@ -133,7 +140,10 @@ export function QuickInputCard({
         )}
       </div>
       {showAmountsBtn && (
-        <div className="flex flex-row justify-between items-center py-1.5 border-t border-dark-300/50 bg-dark-gradient-3">
+        <div
+          className="flex flex-row justify-between items-center py-1.5 border-t border-dark-300/50 bg-dark-gradient-3"
+          data-testid={`${testId}-set-btn`}
+        >
           {Object.values(AmountButtonTypes).map((type, index, { length }) => (
             <SetAmountButton
               key={type}
@@ -142,6 +152,7 @@ export function QuickInputCard({
               type={type}
               hasBorder={length - 1 !== index}
               disabled={disabled}
+              testId={testId}
             />
           ))}
         </div>

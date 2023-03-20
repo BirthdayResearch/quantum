@@ -7,8 +7,17 @@
     "strict": true,
     "moduleResolution": "node",
     "target": "esnext",
-    "lib": ["esnext", "dom"],
-    "types": ["cypress", "@testing-library/cypress"]
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "types": [
+      "cypress",
+      "@testing-library/cypress",
+      "@synthetixio/synpress/support"
+    ]
   },
-  "include": ["**/*.ts"]
+  "include": [
+    "**/*.ts"
+  ]
 }

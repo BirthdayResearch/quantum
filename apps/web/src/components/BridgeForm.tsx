@@ -55,6 +55,7 @@ function SwitchButton({
             "dark-card-bg dark-bg-card-section group flex h-10 w-10 items-center justify-center rounded-full",
             { "pointer-events-none": disabled }
           )}
+          data-testid="transfer-flow-swap-btn"
         >
           <div className="hidden group-hover:hidden lg:block">
             <ArrowDownIcon size={20} className="fill-dark-700" />
@@ -382,7 +383,10 @@ export default function BridgeForm({
     "block text-xs text-warning text-center lg:px-6 lg:text-sm";
 
   return (
-    <div className="w-full md:w-[calc(100%+2px)] lg:w-full dark-card-bg-image p-6 md:pt-8 pb-16 lg:p-10 rounded-lg lg:rounded-xl border border-dark-200 backdrop-blur-[18px]">
+    <div
+      className="w-full md:w-[calc(100%+2px)] lg:w-full dark-card-bg-image p-6 md:pt-8 pb-16 lg:p-10 rounded-lg lg:rounded-xl border border-dark-200 backdrop-blur-[18px]"
+      data-testid="bridge-form"
+    >
       <div className="flex flex-row items-center" ref={reference}>
         <div className="w-1/2">
           <InputSelector
@@ -394,6 +398,7 @@ export default function BridgeForm({
             onSelect={(value: NetworkOptionsI) => setSelectedNetworkA(value)}
             value={selectedNetworkA}
             disabled={hasUnconfirmedTxn}
+            testId="source-network"
           />
         </div>
         <div className="w-1/2">
@@ -406,6 +411,7 @@ export default function BridgeForm({
             onSelect={(value: TokensI) => setSelectedTokensA(value)}
             value={selectedTokensA}
             disabled={hasUnconfirmedTxn}
+            testId="tokenA"
           />
         </div>
       </div>
@@ -420,9 +426,13 @@ export default function BridgeForm({
           error={amountErr}
           showAmountsBtn={selectedNetworkA.name === Network.Ethereum}
           disabled={hasUnconfirmedTxn}
+          testId="quick-input-card"
         />
         {isConnected && (
-          <div className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2 items-center">
+          <div
+            className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2 items-center"
+            data-testid="available-liquidity"
+          >
             {amountErr ? (
               <span className="text-xs lg:text-sm text-error">{amountErr}</span>
             ) : (
@@ -462,6 +472,7 @@ export default function BridgeForm({
             floatingObj={floatingObj}
             type={SelectionType.Network}
             value={selectedNetworkB}
+            testId="destination-network"
           />
         </div>
         <div className="w-1/2">
@@ -472,6 +483,7 @@ export default function BridgeForm({
             floatingObj={floatingObj}
             type={SelectionType.Token}
             value={selectedTokensB}
+            testId="tokenB"
           />
         </div>
       </div>
