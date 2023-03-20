@@ -21,7 +21,7 @@ The MUSDT and MUSDC contract have been deployed on Goerli for testing. Users wil
 
 ### When bridging from DeFiChain, what is the expected signed message?
 
-Expected message should be similar to `0x9a2618a0503cf675a85e4519fc97890fba5b851d15e02b8bc8f351d22b46580059c03992465695e89fc29e528797972d05de0b34768d5d3d7f772f2422eb9af01b == relayerAddress._signTypedData(domainData, eip712Types, eip712Data)`. This data is singed by the relayer address. Data that hasn't signed by the relayer address will revert with the error `FAKE_SIGNATURE`.
+Expected message should be similar to `0x9a2618a0503cf675a85e4519fc97890fba5b851d15e02b8bc8f351d22b46580059c03992465695e89fc29e528797972d05de0b34768d5d3d7f772f2422eb9af01b == relayerAddress._signTypedData(domainData, eip712Types, eip712Data)`. This data is signed by the relayer address. Data that hasn't been signed by the relayer address will revert with the error `FAKE_SIGNATURE`.
 
 ### Sample metamask transaction of claim transaction?
 
@@ -73,7 +73,7 @@ Only address with the Admin role can call the `addSupportedTokens()` function. T
 
 In case of ETH, address(0) will be used as an address.
 
-`_tokenCap` represent the maximum balance of tokens the contract can hold per `_tokenAddress`
+`_tokenCap` represents the maximum balance of tokens the contract can hold per `_tokenAddress`
 
 ### Remove supported token
 
@@ -106,7 +106,7 @@ The relayer address will primarily be used for verifying the signature that is s
 
 Only address with Admin role can change `transactionFee`.
 
-Initial fee will be set to 0%. This means that if the user bridges `X` tokens, 100% of X will be bridged to defiChain. If in future, fee > 0, respected amount will be sent to `communityWallet`.
+Initial fee will be set to 0%. This means that if the user bridges `X` tokens, 100% of X will be bridged to defiChain. If in the future, fee > 0, respected amount will be sent to `communityWallet`.
 
 ### Change Tx Fee Address
 
@@ -118,7 +118,7 @@ Only address with admin role can change `tokenCap`.
 
 ### Modify admin and operational address
 
-`grantRole` and `revokeRole` will be used to a grant role to new addresses and revoke the existing addresses role respectively. Only Admin address can make these changes.
+`grantRole` and `revokeRole` will be used to grant a role to new addresses and revoke the existing addresses role respectively. Only Admin address can make these changes.
 
 ## Deployed Smart Contracts on Goerli testnet
 
