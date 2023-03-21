@@ -141,16 +141,18 @@ function TokenDetails({
         />
       </div>
       <div className="w-full flex flex-row items-center justify-between lg:w-2/12">
-        <span className="lg:hidden text-dark-700 text-sm">Blockchain</span>
+        <span className="lg:hidden text-dark-700 text-sm w-5/12">
+          Blockchain
+        </span>
         <TokenInfo name={name} icon={icon} iconClass="h-5 w-5 lg:h-8 lg:w-8" />
       </div>
       <div className="w-full flex flex-row items-center justify-between lg:w-4/12">
-        <div className="flex flex-row items-center lg:hidden text-dark-700">
+        <div className="flex flex-row items-center lg:hidden text-dark-700 w-5/12">
           <span className="text-sm">Liquidity</span>
           <FiInfo size={16} className="ml-1" />
         </div>
         <NumericFormat
-          className="text-dark-1000 text-sm lg:text-base text-dark-1000"
+          className="text-dark-1000 text-sm lg:text-base text-dark-1000 text-right lg:text-left flex-1"
           value={amount}
           decimalScale={8}
           thousandSeparator
@@ -158,7 +160,7 @@ function TokenDetails({
         />
       </div>
       <div className="w-full flex flex-row items-start lg:items-center justify-between lg:w-4/12">
-        <span className="lg:hidden text-dark-700 text-sm w-1/2">Address</span>
+        <span className="lg:hidden text-dark-700 text-sm w-5/12">Address</span>
         <AddressComponent address={address} isDeFiAddress={isDeFiAddress} />
       </div>
     </div>
