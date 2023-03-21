@@ -149,9 +149,9 @@ export default function OverviewList({ balances }) {
   const [firstNetwork, secondNetwork] = networks;
   const getAmount = (symbol: string, network): BigNumber => {
     if (network === Network.DeFiChain) {
-      return new BigNumber(balances.DFC[symbol]);
+      return new BigNumber(balances.DFC?.[symbol] ?? 0);
     }
-    return new BigNumber(balances.EVM[symbol]);
+    return new BigNumber(balances.EVM?.[symbol] ?? 0);
   };
 
   return (
