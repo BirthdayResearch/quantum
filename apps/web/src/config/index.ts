@@ -41,7 +41,7 @@ export const LOCAL_HARDHAT_CONFIG: ContractContextI = {
   EthereumRpcUrl: "http://127.0.0.1:8545",
   ExplorerURL: "https://goerli.etherscan.io",
   BridgeV1: {
-    address: "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef",
+    address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
     abi: BridgeV1Testnet,
   },
   Erc20Tokens: {

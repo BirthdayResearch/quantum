@@ -32,7 +32,7 @@ export async function tokenDeployment(): Promise<TestTokens> {
   }
   const mockTokenEUROC = await ERC20.deploy('MockEUROC', 'MEUROC');
   await mockTokenEUROC.deployed();
-  console.log('Test MEURO token is deployed to ', mockTokenEUROC.address);
+  console.log('Test MEUROC token is deployed to ', mockTokenEUROC.address);
   if (chainId !== 1337) {
     console.log(
       `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/TestToken.sol:TestToken ${mockTokenEUROC.address} MockEURO MEUROC`,
