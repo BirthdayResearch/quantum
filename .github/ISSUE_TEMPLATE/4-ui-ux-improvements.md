@@ -1,6 +1,6 @@
 ---
 name: UI/UX improvements
-about: Suggest a UI/UX improvement for DQuantum
+about: Suggest a UI/UX improvement for Quantum
 labels: "kind/feature,area/ui-ux"
 ---
 
