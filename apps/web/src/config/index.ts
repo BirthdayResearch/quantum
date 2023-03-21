@@ -10,6 +10,7 @@ export const MAINNET_CONFIG: ContractContextI = {
     address: "0x54346d39976629b65ba54eac1c9ef0af3be1921b",
     abi: BridgeV1,
   },
+  hotWalletAddress: "df1qgq0rjw09hr6vr7sny2m55hkr5qgze5l9hcm0lg",
   Erc20Tokens: {
     WBTC: { address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599" },
     USDT: { address: "0xdAC17F958D2ee523a2206206994597C13D831ec7" },
@@ -27,6 +28,7 @@ export const TESTNET_CONFIG: ContractContextI = {
     address: "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef",
     abi: BridgeV1Testnet,
   },
+  hotWalletAddress: "tf1qsckyp02vdzaf95cjl5dr95n8stcalze0pfswcp",
   Erc20Tokens: {
     WBTC: { address: "0xD723D679d1A3b23d0Aafe4C0812f61DDA84fc043" },
     USDT: { address: "0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF" },

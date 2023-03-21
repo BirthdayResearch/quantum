@@ -4,6 +4,8 @@ import { useNetworkEnvironmentContext } from "./NetworkEnvironmentContext";
 
 interface DeFiScanContextI {
   getTransactionUrl: (txid: string, rawtx?: string) => string;
+  getPOBUrl: () => string;
+  getAddressUrl: (address: string) => string;
 }
 
 const DeFiScanContext = createContext<DeFiScanContextI>(undefined as any);
@@ -45,6 +47,21 @@ export function getTxURLByNetwork(
   return baseUrl;
 }
 
+export function getPOBURLByNetwork(network: EnvironmentNetwork): string {
+  let baseUrl = `${baseDefiScanUrl}/proof-of-backing/`;
+  baseUrl += getNetworkParams(network);
+  return baseUrl;
+}
+
+export function getAddressUrlByNetwork(
+  network: EnvironmentNetwork,
+  address: string
+): string {
+  let baseUrl = `${baseDefiScanUrl}/address/${address}`;
+  baseUrl += getNetworkParams(network);
+  return baseUrl;
+}
+
 export function getURLByNetwork(
   path: string,
   network: EnvironmentNetwork,
@@ -65,6 +82,9 @@ export function DeFiScanProvider({
     () => ({
       getTransactionUrl: (txid: string, rawtx?: string): string =>
         getTxURLByNetwork(networkEnv, txid, rawtx),
+      getPOBUrl: (): string => getPOBURLByNetwork(networkEnv),
+      getAddressUrl: (address: string): string =>
+        getAddressUrlByNetwork(networkEnv, address),
     }),
     [networkEnv]
   );
