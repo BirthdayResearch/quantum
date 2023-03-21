@@ -4,40 +4,57 @@ import { networks } from "@contexts/NetworkContext";
 import Image from "next/image";
 import NumericFormat from "@components/commons/NumericFormat";
 import BigNumber from "bignumber.js";
-import { FiArrowUpRight, FiInfo } from "react-icons/fi";
+import {
+  FiArrowUpRight,
+  FiInfo,
+  FiChevronDown,
+  FiChevronUp,
+} from "react-icons/fi";
 import { useContractContext } from "@contexts/ContractContext";
-import { Network } from "types";
+import { Network, TokensI } from "types";
 import clsx from "clsx";
+import useResponsive from "@hooks/useResponsive";
+import { Disclosure } from "@headlessui/react";
 
 function TokenInfo({
   name,
   icon,
   iconClass,
   nameClass,
+  onClose,
 }: {
   name: string;
   icon: string;
   iconClass?: string;
   nameClass?: string;
+  onClose?: () => void;
 }) {
   return (
-    <div className="flex flex-row items-center">
-      <Image
-        width={100}
-        height={100}
-        src={icon}
-        alt={name}
-        data-testid={name}
-        className={iconClass ?? "h-8 w-8"}
-      />
-      <span
-        className={clsx(
-          "ml-2 lg:ml-3 block truncate text-dark-1000 text-base",
-          nameClass
-        )}
-      >
-        {name}
-      </span>
+    <div className="flex flex-row items-center justify-between">
+      <div className="flex flex-row items-center">
+        <Image
+          width={100}
+          height={100}
+          src={icon}
+          alt={name}
+          data-testid={name}
+          className={iconClass ?? "h-8 w-8"}
+        />
+        <span
+          className={clsx(
+            "ml-2 lg:ml-3 block truncate text-dark-1000 text-base",
+            nameClass
+          )}
+        >
+          {name}
+        </span>
+      </div>
+      {onClose !== undefined && (
+        <FiChevronUp
+          onClick={onClose}
+          className={clsx("h-6 w-6 text-dark-1000 transition-[transform]")}
+        />
+      )}
     </div>
   );
 }
@@ -95,6 +112,7 @@ function TokenDetails({
   isDeFiAddress,
   amount,
   containerClass,
+  onClose,
 }: {
   name: string;
   tokenName: string;
@@ -103,6 +121,7 @@ function TokenDetails({
   isDeFiAddress: boolean;
   amount: BigNumber;
   containerClass?: string;
+  onClose?: () => void;
 }) {
   const { BridgeV1, hotWalletAddress } = useContractContext();
   const address = isDeFiAddress ? hotWalletAddress : BridgeV1.address;
@@ -117,6 +136,7 @@ function TokenDetails({
         <TokenInfo
           name={tokenName}
           icon={tokenIcon}
+          onClose={onClose}
           nameClass="font-semibold lg:font-normal"
         />
       </div>
@@ -147,12 +167,82 @@ function TokenDetails({
 
 export default function OverviewList({ balances }) {
   const [firstNetwork, secondNetwork] = networks;
+  const { isMobile } = useResponsive();
+
   const getAmount = (symbol: string, network): BigNumber => {
     if (network === Network.DeFiChain) {
       return new BigNumber(balances.DFC?.[symbol] ?? 0);
     }
     return new BigNumber(balances.EVM?.[symbol] ?? 0);
   };
+
+  function getTokenRow(item: TokensI, onClose?: () => void) {
+    return (
+      <>
+        <TokenDetails
+          name={secondNetwork.name}
+          tokenName={item.tokenA.name}
+          icon={secondNetwork.icon}
+          tokenIcon={item.tokenA.icon}
+          isDeFiAddress={secondNetwork.name === Network.DeFiChain}
+          amount={getAmount(item.tokenA.symbol, secondNetwork.name)}
+          onClose={onClose}
+          containerClass="pb-4 md:pb-0 lg:pb-5  md:pr-5 lg:pr-0"
+        />
+        <TokenDetails
+          name={firstNetwork.name}
+          tokenName={item.tokenB.name}
+          icon={firstNetwork.icon}
+          tokenIcon={item.tokenB.icon}
+          isDeFiAddress={firstNetwork.name === Network.DeFiChain}
+          amount={getAmount(item.tokenB.symbol, firstNetwork.name)}
+          containerClass={clsx(
+            "border-t-[0.5px] md:border-t-0 md:border-l-[0.5px] lg:border-l-0 lg:border-t-[0.5px] border-dark-200",
+            "pt-4 md:pt-0 lg:pt-5 md:pl-5 lg:pl-0"
+          )}
+        />
+      </>
+    );
+  }
+
+  function getTokenCard(item: TokensI) {
+    return (
+      <Disclosure>
+        {({ open, close }) => (
+          <>
+            {!open && (
+              <Disclosure.Button>
+                <div className="flex flex-row justify-between items-center">
+                  <div className="flex flex-row">
+                    <div className="mr-3">
+                      <TokenInfo
+                        name={item.tokenA.name}
+                        icon={item.tokenA.icon}
+                        iconClass="h-6 w-6"
+                        nameClass="font-semibold"
+                      />
+                    </div>
+                    <div className="pl-3 border-l-[0.5px] border-dark-200">
+                      <TokenInfo
+                        name={item.tokenB.name}
+                        icon={item.tokenB.icon}
+                        iconClass="h-6 w-6"
+                        nameClass="font-semibold"
+                      />
+                    </div>
+                  </div>
+                  <FiChevronDown className="h-6 w-6 text-dark-1000 transition-[transform]" />
+                </div>
+              </Disclosure.Button>
+            )}
+            <Disclosure.Panel className="text-gray-500">
+              {getTokenRow(item, close)}
+            </Disclosure.Panel>
+          </>
+        )}
+      </Disclosure>
+    );
+  }
 
   return (
     <>
@@ -179,27 +269,7 @@ export default function OverviewList({ balances }) {
             key={item.tokenA.name}
             className="px-4 md:px-5 lg:px-8 py-5 md:py-6 lg:py-5 flex flex-col md:flex-row lg:flex-col"
           >
-            <TokenDetails
-              name={secondNetwork.name}
-              tokenName={item.tokenA.name}
-              icon={secondNetwork.icon}
-              tokenIcon={item.tokenA.icon}
-              isDeFiAddress={secondNetwork.name === Network.DeFiChain}
-              amount={getAmount(item.tokenA.symbol, secondNetwork.name)}
-              containerClass="pb-4 md:pb-0 lg:pb-5  md:pr-5 lg:pr-0"
-            />
-            <TokenDetails
-              name={firstNetwork.name}
-              tokenName={item.tokenB.name}
-              icon={firstNetwork.icon}
-              tokenIcon={item.tokenB.icon}
-              isDeFiAddress={firstNetwork.name === Network.DeFiChain}
-              amount={getAmount(item.tokenB.symbol, firstNetwork.name)}
-              containerClass={clsx(
-                "border-t-[0.5px] md:border-t-0 md:border-l-[0.5px] lg:border-l-0 lg:border-t-[0.5px] border-dark-200",
-                "pt-4 md:pt-0 lg:pt-5 md:pl-5 lg:pl-0"
-              )}
-            />
+            {isMobile ? getTokenCard(item) : getTokenRow(item)}
           </BorderDiv>
         ))}
       </div>
