@@ -81,7 +81,7 @@ export class WhaleWalletService {
       const tokens = await wallet.client.address.listToken(address);
       const token = tokens.find((t) => t.symbol === verify.symbol.toString());
 
-      // If no amount has been received yet for DFI
+      // If no utxo has been received yet for DFI
       if (verify.symbol === TokenSymbol.DFI && new BigNumber(utxo).isZero()) {
         return { isValid: false, statusCode: CustomErrorCodes.IsZeroBalance };
       }
@@ -89,6 +89,11 @@ export class WhaleWalletService {
       // If no amount has been received yet for other tokens
       if ((token === undefined || new BigNumber(token?.amount).isZero()) && verify.symbol !== TokenSymbol.DFI) {
         return { isValid: false, statusCode: CustomErrorCodes.IsZeroBalance };
+      }
+
+      // Verify that the amount === utxo balance
+      if (verify.symbol === TokenSymbol.DFI && !new BigNumber(verify.amount).isEqualTo(utxo)) {
+        return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
       // Verify that the amount === token balance
