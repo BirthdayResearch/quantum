@@ -22,10 +22,13 @@ export class StatsDto {
     EUROC: string;
   };
 
+  readonly totalBridgedAmount: Record<SupportedEVMTokenSymbols, string>;
+
   constructor(
     totalTransactions: number,
     confirmedTransactions: number,
     amountBridged: Record<SupportedEVMTokenSymbols, string>,
+    totalBridgedAmount: Record<SupportedEVMTokenSymbols, string>,
   ) {
     this.totalTransactions = totalTransactions;
     this.confirmedTransactions = confirmedTransactions;
@@ -36,5 +39,6 @@ export class StatsDto {
       ETH: amountBridged[SupportedEVMTokenSymbols.ETH]?.toString(),
       EUROC: amountBridged[SupportedEVMTokenSymbols.EUROC]?.toString(),
     };
+    this.totalBridgedAmount = totalBridgedAmount;
   }
 }

@@ -1,7 +1,7 @@
 import { fromAddress } from '@defichain/jellyfish-address';
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EthereumTransactionStatus } from '@prisma/client';
+import { EthereumTransactionStatus, Prisma } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
@@ -140,10 +140,24 @@ export class EVMTransactionConfirmerService {
         .toString();
     });
 
+    // Get overall total amount of tokens bridged
+    const totalBridgedAmount = { ...amountBridged };
+    const totalAmounts: any[] = await this.prisma.$queryRaw(
+      Prisma.sql`
+        SELECT SUM(amount::DECIMAL) AS "totalBridgedAmount", "tokenSymbol" 
+        FROM "BridgeEventTransactions" WHERE amount IS NOT NULL GROUP BY "tokenSymbol";`,
+    );
+    for (const total of totalAmounts) {
+      totalBridgedAmount[total.tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalBridgedAmount)
+        .decimalPlaces(6, BigNumber.ROUND_FLOOR)
+        .toString();
+    }
+
     return {
       totalTransactions,
       confirmedTransactions: confirmedTransactions.length,
       amountBridged,
+      totalBridgedAmount,
     };
   }
 

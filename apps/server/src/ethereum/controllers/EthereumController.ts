@@ -25,11 +25,7 @@ export class EthereumController {
       `ETH_STATS_${date ?? 'TODAY'}`,
       async () => {
         try {
-          // const statsModel = await this.evmTransactionConfirmerService.getStats(date);
-          // return new StatsDto(statsModel);
-          const { totalTransactions, confirmedTransactions, amountBridged } =
-            await this.evmTransactionConfirmerService.getStats(date);
-          return new StatsDto(totalTransactions, confirmedTransactions, amountBridged);
+          return await this.evmTransactionConfirmerService.getStats(date);
         } catch (e: any) {
           throw new HttpException(
             {
