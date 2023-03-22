@@ -1,7 +1,7 @@
 import { fromAddress } from '@defichain/jellyfish-address';
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EthereumTransactionStatus, Prisma } from '@prisma/client';
+import { EthereumTransactionStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
@@ -15,7 +15,6 @@ import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
 import { getNextDayTimestampInSec } from '../../utils/DateUtils';
 import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
-import { StatsDto, StatsQueryDto } from '../EthereumInterface';
 
 @Injectable()
 export class EVMTransactionConfirmerService {
@@ -60,105 +59,6 @@ export class EVMTransactionConfirmerService {
     const balance = await tokenContract.balanceOf(this.contract.address);
     const assetDecimalPlaces = await tokenContract.decimals();
     return ethers.utils.formatUnits(balance, assetDecimalPlaces);
-  }
-
-  async getStats(date?: StatsQueryDto): Promise<StatsDto> {
-    // Use today's date if no param is given
-    // NOTE: REMOVE THE TIMESTAMP UNLESS YOU WANT A 24-HOUR ROLLING WINDOW
-    const dateOnly = date ?? new Date().toISOString().slice(0, 10);
-    const dateFrom = new Date(dateOnly as string);
-    const today = new Date();
-
-    if (dateFrom > today) {
-      throw new BadRequestException(`Cannot query future date`);
-    }
-
-    dateFrom.setUTCHours(0, 0, 0, 0); // set to UTC +0
-    const dateTo = new Date(today);
-    dateTo.setDate(dateFrom.getDate() + 1);
-
-    // CONCURRENCY!!
-    const [totalTransactions, confirmedTransactions] = await Promise.all([
-      this.prisma.bridgeEventTransactions.count({
-        where: {
-          createdAt: {
-            gte: dateFrom.toISOString(),
-            lt: dateTo.toISOString(),
-          },
-        },
-      }),
-
-      // Count only confirmed transactions
-      this.prisma.bridgeEventTransactions.findMany({
-        where: {
-          status: 'CONFIRMED',
-          tokenSymbol: { not: null },
-          amount: { not: null },
-          sendTransactionHash: { not: null },
-          createdAt: {
-            gte: dateFrom.toISOString(),
-            lt: dateTo.toISOString(),
-          },
-        },
-      }),
-    ]);
-
-    // First, sum each token with BigNumber for accuracy
-    const amountBridgedBigN: { [k in SupportedEVMTokenSymbols]: BigNumber } = {
-      ETH: BigNumber(0),
-      USDT: BigNumber(0),
-      USDC: BigNumber(0),
-      WBTC: BigNumber(0),
-      EUROC: BigNumber(0),
-    };
-
-    for (const transaction of confirmedTransactions) {
-      let { tokenSymbol } = transaction;
-      if (tokenSymbol === TokenSymbol.BTC) {
-        tokenSymbol = SupportedEVMTokenSymbols.WBTC;
-      }
-      if (tokenSymbol && tokenSymbol in SupportedEVMTokenSymbols) {
-        amountBridgedBigN[tokenSymbol as SupportedEVMTokenSymbols] = amountBridgedBigN[
-          tokenSymbol as SupportedEVMTokenSymbols
-        ].plus(BigNumber(transaction.amount as string));
-      }
-    }
-
-    // Then, convert to string in preparation for response payload
-    const numericalPlaceholder = '0.000000';
-    const amountBridged: { [k in SupportedEVMTokenSymbols]: string } = {
-      ETH: numericalPlaceholder,
-      USDT: numericalPlaceholder,
-      USDC: numericalPlaceholder,
-      WBTC: numericalPlaceholder,
-      EUROC: numericalPlaceholder,
-    };
-
-    Object.keys(amountBridged).forEach((token) => {
-      amountBridged[token as SupportedEVMTokenSymbols] = amountBridgedBigN[token as SupportedEVMTokenSymbols]
-        .decimalPlaces(6, BigNumber.ROUND_FLOOR)
-        .toString();
-    });
-
-    // Get overall total amount of tokens bridged
-    const totalBridgedAmount = { ...amountBridged };
-    const totalAmounts: any[] = await this.prisma.$queryRaw(
-      Prisma.sql`
-        SELECT SUM(amount::DECIMAL) AS "totalBridgedAmount", "tokenSymbol" 
-        FROM "BridgeEventTransactions" WHERE amount IS NOT NULL GROUP BY "tokenSymbol";`,
-    );
-    for (const total of totalAmounts) {
-      totalBridgedAmount[total.tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalBridgedAmount)
-        .decimalPlaces(6, BigNumber.ROUND_FLOOR)
-        .toString();
-    }
-
-    return {
-      totalTransactions,
-      confirmedTransactions: confirmedTransactions.length,
-      amountBridged,
-      totalBridgedAmount,
-    };
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
