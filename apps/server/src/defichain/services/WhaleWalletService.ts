@@ -79,7 +79,7 @@ export class WhaleWalletService {
       }
 
       let utxo: string = '';
-        let tokens: AddressToken[] = [];
+      let tokens: AddressToken[] = [];
       if (verify.symbol === TokenSymbol.DFI) {
         utxo = await wallet.client.address.getBalance(address);
       } else {
