@@ -135,7 +135,7 @@ importers:
       ethers: ^5.7.2
       postcss: ^8.4.21
       react-circular-progressbar: ^2.1.0
-      react-content-loader: ^6.2.0
+      react-content-loader: ^6.2.1
       react-qr-code: ^2.0.11
       react-secure-storage: ^1.1.0
       sass: ^1.58.3
@@ -155,7 +155,7 @@ importers:
       dayjs: 1.11.7
       ethers: 5.7.2
       react-circular-progressbar: 2.1.0_react@18.2.0
-      react-content-loader: 6.2.0_react@18.2.0
+      react-content-loader: 6.2.1_react@18.2.0
       react-qr-code: 2.0.11_react@18.2.0
       react-secure-storage: 1.1.0
       sass: 1.58.3
@@ -13987,8 +13987,8 @@ packages:
       react: 18.2.0
     dev: false
 
-  /react-content-loader/6.2.0_react@18.2.0:
-    resolution: {integrity: sha512-r1dI6S+uHNLW68qraLE2njJYOuy6976PpCExuCZUcABWbfnF3FMcmuESRI8L4Bj45wnZ7n8g71hkPLzbma7/Cw==}
+  /react-content-loader/6.2.1_react@18.2.0:
+    resolution: {integrity: sha512-6ONbFX+Hi3SHuP66JB8CPvJn372pj+qwltJV0J8z/8MFrq98I1cbFdZuhDWeQXu3CFxiiDTXJn7DFxx2ZvrO7g==}
     engines: {node: '>=10'}
     peerDependencies:
       react: '>=16.0.0'
