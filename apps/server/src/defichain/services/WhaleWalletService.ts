@@ -1,4 +1,5 @@
 import { fromAddress } from '@defichain/jellyfish-address';
+import { AddressToken } from '@defichain/whale-api-client/dist/api/address';
 import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DeFiChainAddressIndex } from '@prisma/client';
@@ -9,7 +10,7 @@ import { SupportedDFCTokenSymbols } from '../../AppConfig';
 import { CustomErrorCodes } from '../../CustomErrorCodes';
 import { EVMTransactionConfirmerService } from '../../ethereum/services/EVMTransactionConfirmerService';
 import { PrismaService } from '../../PrismaService';
-import { VerifyObject } from '../model/VerifyDto';
+import { TokenSymbol, VerifyObject } from '../model/VerifyDto';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 import { SendService } from './SendService';
@@ -77,17 +78,32 @@ export class WhaleWalletService {
         return { isValid: false, statusCode: CustomErrorCodes.AddressNotOwned };
       }
 
-      // TODO: Add support for DFI (UTXO)
-      const tokens = await wallet.client.address.listToken(address);
+      let utxo: string = '';
+      let tokens: AddressToken[] = [];
+      if (verify.symbol === TokenSymbol.DFI) {
+        utxo = await wallet.client.address.getBalance(address);
+      } else {
+        tokens = await wallet.client.address.listToken(address);
+      }
       const token = tokens.find((t) => t.symbol === verify.symbol.toString());
 
-      // If no amount has been received yet
-      if (token === undefined || new BigNumber(token?.amount).isZero()) {
+      // If no utxo has been received yet for DFI
+      if (verify.symbol === TokenSymbol.DFI && new BigNumber(utxo).isZero()) {
         return { isValid: false, statusCode: CustomErrorCodes.IsZeroBalance };
       }
 
+      // If no amount has been received yet for other tokens
+      if ((token === undefined || new BigNumber(token?.amount).isZero()) && verify.symbol !== TokenSymbol.DFI) {
+        return { isValid: false, statusCode: CustomErrorCodes.IsZeroBalance };
+      }
+
+      // Verify that the amount === utxo balance
+      if (verify.symbol === TokenSymbol.DFI && !new BigNumber(verify.amount).isEqualTo(utxo)) {
+        return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
+      }
+
       // Verify that the amount === token balance
-      if (!new BigNumber(verify.amount).isEqualTo(token.amount)) {
+      if (token !== undefined && !new BigNumber(verify.amount).isEqualTo(token.amount)) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 

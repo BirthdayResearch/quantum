@@ -25,6 +25,8 @@ export class EVMTransactionConfirmerService {
 
   private readonly logger: Logger;
 
+  private readonly MIN_REQUIRED_CONFIRMATION = 65;
+
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private readonly clientProvider: WhaleApiClientProvider,
@@ -110,14 +112,18 @@ export class EVMTransactionConfirmerService {
       USDC: BigNumber(0),
       WBTC: BigNumber(0),
       EUROC: BigNumber(0),
+      DFI: BigNumber(0),
     };
 
     for (const transaction of confirmedTransactions) {
-      const { tokenSymbol, amount } = transaction;
+      let { tokenSymbol } = transaction;
+      if (tokenSymbol === TokenSymbol.BTC) {
+        tokenSymbol = SupportedEVMTokenSymbols.WBTC;
+      }
       if (tokenSymbol && tokenSymbol in SupportedEVMTokenSymbols) {
         amountBridgedBigN[tokenSymbol as SupportedEVMTokenSymbols] = amountBridgedBigN[
           tokenSymbol as SupportedEVMTokenSymbols
-        ].plus(BigNumber(amount as string));
+        ].plus(BigNumber(transaction.amount as string));
       }
     }
 
@@ -129,6 +135,7 @@ export class EVMTransactionConfirmerService {
       USDC: numericalPlaceholder,
       WBTC: numericalPlaceholder,
       EUROC: numericalPlaceholder,
+      DFI: numericalPlaceholder,
     };
 
     Object.keys(amountBridged).forEach((token) => {
@@ -164,7 +171,7 @@ export class EVMTransactionConfirmerService {
       },
     });
     if (txHashFound === null) {
-      if (numberOfConfirmations < 65) {
+      if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
         await this.prisma.bridgeEventTransactions.create({
           data: {
             transactionHash,
@@ -181,7 +188,7 @@ export class EVMTransactionConfirmerService {
       });
       return { numberOfConfirmations, isConfirmed: true };
     }
-    if (numberOfConfirmations < 65) {
+    if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
       return { numberOfConfirmations, isConfirmed: false };
     }
     await this.prisma.bridgeEventTransactions.update({
@@ -328,7 +335,7 @@ export class EVMTransactionConfirmerService {
       const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
 
       // check if tx is confirmed with min required confirmation
-      if (numberOfConfirmations < 65) {
+      if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
         throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 

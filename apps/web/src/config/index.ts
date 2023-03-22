@@ -17,6 +17,7 @@ export const MAINNET_CONFIG: ContractContextI = {
     USDC: { address: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" },
     ETH: { address: "0x0000000000000000000000000000000000000000" },
     EUROC: { address: "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c" },
+    DFI: { address: "0x8fc8f8269ebca376d046ce292dc7eac40c8d358a" },
   },
 };
 
@@ -35,5 +36,6 @@ export const TESTNET_CONFIG: ContractContextI = {
     USDC: { address: "0xB200af2b733B831Fbb3d98b13076BC33F605aD58" },
     ETH: { address: "0x0000000000000000000000000000000000000000" },
     EUROC: { address: "0x5ea4bbB3204522f3Ac65137D1E12027D9848231A" },
+    DFI: { address: "0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673" },
   },
 };
