@@ -1,9 +1,10 @@
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import BigNumber from 'bignumber.js';
 
 import { SupportedDFCTokenSymbols } from '../../AppConfig';
 import { PrismaService } from '../../PrismaService';
-import { BridgedDfcToEvm, DeFiChainStats, DFCStatsDto } from '../DefichainInterface';
+import { BridgedDfcToEvm, BridgedDFCTokenSum, DeFiChainStats, DFCStatsDto } from '../DefichainInterface';
 
 @Injectable()
 export class DeFiChainStatsService {
@@ -53,10 +54,24 @@ export class DeFiChainStatsService {
 
       const amountBridged = getAmountBridged(confirmedTransactions);
 
+      // Get overall total amount of tokens claimed
+      const totalBridgedAmount = { ...amountBridged };
+      const totalAmounts: BridgedDFCTokenSum[] = await this.prisma.$queryRaw(
+        Prisma.sql`
+        SELECT SUM("claimAmount"::DECIMAL) AS "totalAmount", "tokenSymbol"
+        FROM "DeFiChainAddressIndex" WHERE "claimAmount" IS NOT NULL GROUP BY "tokenSymbol";`,
+      );
+      for (const total of totalAmounts) {
+        totalBridgedAmount[total.tokenSymbol as SupportedDFCTokenSymbols] = BigNumber(total.totalAmount)
+          .decimalPlaces(6, BigNumber.ROUND_FLOOR)
+          .toFixed(6);
+      }
+
       return {
         totalTransactions,
         confirmedTransactions: confirmedTransactions.length,
         amountBridged,
+        totalBridgedAmount,
       };
     } catch (e: any) {
       throw new HttpException(
@@ -106,7 +121,7 @@ function getAmountBridged(
   Object.keys(amountBridgedBigN).forEach((key) => {
     amountBridgedToEVM[key as SupportedDFCTokenSymbols] = amountBridgedBigN[key as SupportedDFCTokenSymbols]
       .decimalPlaces(6, BigNumber.ROUND_FLOOR)
-      .toString();
+      .toFixed(6);
   });
 
   return amountBridgedToEVM;

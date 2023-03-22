@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { IsDateString, IsOptional } from 'class-validator';
 
 import { SupportedEVMTokenSymbols } from '../AppConfig';
@@ -14,13 +15,7 @@ export class StatsDto {
 
   readonly confirmedTransactions: number;
 
-  readonly amountBridged: {
-    USDC: string;
-    USDT: string;
-    WBTC: string;
-    ETH: string;
-    EUROC: string;
-  };
+  readonly amountBridged: Record<SupportedEVMTokenSymbols, string>;
 
   readonly totalBridgedAmount: Record<SupportedEVMTokenSymbols, string>;
 
@@ -32,13 +27,11 @@ export class StatsDto {
   ) {
     this.totalTransactions = totalTransactions;
     this.confirmedTransactions = confirmedTransactions;
-    this.amountBridged = {
-      USDC: amountBridged[SupportedEVMTokenSymbols.USDC]?.toString(),
-      USDT: amountBridged[SupportedEVMTokenSymbols.USDT]?.toString(),
-      WBTC: amountBridged[SupportedEVMTokenSymbols.WBTC]?.toString(),
-      ETH: amountBridged[SupportedEVMTokenSymbols.ETH]?.toString(),
-      EUROC: amountBridged[SupportedEVMTokenSymbols.EUROC]?.toString(),
-    };
+    this.amountBridged = amountBridged;
     this.totalBridgedAmount = totalBridgedAmount;
   }
 }
+
+export type BridgedEVMTokenSum = Prisma.PickArray<Prisma.BridgeEventTransactionsGroupByOutputType, 'tokenSymbol'[]> & {
+  totalAmount: string;
+};

@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { TokenSymbol } from '../../defichain/model/VerifyDto';
 import { PrismaService } from '../../PrismaService';
-import { StatsDto, StatsQueryDto } from '../EthereumInterface';
+import { BridgedEVMTokenSum, StatsDto, StatsQueryDto } from '../EthereumInterface';
 
 @Injectable()
 export class EthereumStatsService {
@@ -87,20 +87,20 @@ export class EthereumStatsService {
       Object.keys(amountBridged).forEach((token) => {
         amountBridged[token as SupportedEVMTokenSymbols] = amountBridgedBigN[token as SupportedEVMTokenSymbols]
           .decimalPlaces(6, BigNumber.ROUND_FLOOR)
-          .toString();
+          .toFixed(6);
       });
 
       // Get overall total amount of tokens bridged
       const totalBridgedAmount = { ...amountBridged };
-      const totalAmounts: any[] = await this.prisma.$queryRaw(
+      const totalAmounts: BridgedEVMTokenSum[] = await this.prisma.$queryRaw(
         Prisma.sql`
-        SELECT SUM(amount::DECIMAL) AS "totalBridgedAmount", "tokenSymbol" 
+        SELECT SUM(amount::DECIMAL) AS "totalAmount", "tokenSymbol" 
         FROM "BridgeEventTransactions" WHERE amount IS NOT NULL GROUP BY "tokenSymbol";`,
       );
       for (const total of totalAmounts) {
-        totalBridgedAmount[total.tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalBridgedAmount)
+        totalBridgedAmount[total.tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalAmount)
           .decimalPlaces(6, BigNumber.ROUND_FLOOR)
-          .toString();
+          .toFixed(6);
       }
 
       return {
