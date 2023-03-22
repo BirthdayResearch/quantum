@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { IsDateString, IsOptional } from 'class-validator';
 
 import { SupportedEVMTokenSymbols } from '../AppConfig';
@@ -32,6 +31,7 @@ export class StatsDto {
   }
 }
 
-export type BridgedEVMTokenSum = Prisma.PickArray<Prisma.BridgeEventTransactionsGroupByOutputType, 'tokenSymbol'[]> & {
+export type BridgedEVMTokenSum = {
+  tokenSymbol: SupportedEVMTokenSymbols;
   totalAmount: string;
 };
