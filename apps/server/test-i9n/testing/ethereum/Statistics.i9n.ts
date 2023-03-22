@@ -19,6 +19,7 @@ describe('Statistics Service Test', () => {
     expect(parsedPayload.amountBridged).toHaveProperty('USDT');
     expect(parsedPayload.amountBridged).toHaveProperty('USDC');
     expect(parsedPayload.amountBridged).toHaveProperty('EUROC');
+    expect(parsedPayload.amountBridged).toHaveProperty('DFI');
   }
 
   beforeAll(async () => {

@@ -128,7 +128,7 @@ describe('DeFiChain Verify fund Testing', () => {
 
     expect(response).toStrictEqual({
       error: 'Bad Request',
-      message: ['symbol must be one of the following values: BTC, USDT, USDC, ETH, EUROC'],
+      message: ['symbol must be one of the following values: BTC, USDT, USDC, ETH, EUROC, DFI'],
       statusCode: 400,
     });
   });
