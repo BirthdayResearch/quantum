@@ -219,9 +219,11 @@ export default function StepTwoSendConfirmation({
                 {sourceDetail.tokenName}
               </div>
             </div>
-            <div className="text-xs text-warning pt-1 md:pt-0">
-              Please only send DFI (UTXO) tokens.
-            </div>
+            {sourceDetail.tokenName === "DFI" && (
+              <div className="text-xs text-warning pt-1 md:pt-0">
+                Please only send DFI (UTXO) tokens.
+              </div>
+            )}
           </div>
 
           <div className={clsx("hidden self-end", "md:block")}>
