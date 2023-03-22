@@ -18,7 +18,7 @@ export default function Navigation() {
           Bridge
         </a>
       </Link>
-      <Link href={{ pathname: "/liquidityOverview" }}>
+      <Link href={{ pathname: "/liquidity" }}>
         <a
           className={clsx(
             "w-1/2 text-xs md:text-sm py-3 min-w-[136px] text-center font-semibold rounded-[40px]",
