@@ -116,11 +116,14 @@ export class EVMTransactionConfirmerService {
     };
 
     for (const transaction of confirmedTransactions) {
-      const { tokenSymbol, amount } = transaction;
+      let { tokenSymbol } = transaction;
+      if (tokenSymbol === TokenSymbol.BTC) {
+        tokenSymbol = SupportedEVMTokenSymbols.WBTC;
+      }
       if (tokenSymbol && tokenSymbol in SupportedEVMTokenSymbols) {
         amountBridgedBigN[tokenSymbol as SupportedEVMTokenSymbols] = amountBridgedBigN[
           tokenSymbol as SupportedEVMTokenSymbols
-        ].plus(BigNumber(amount as string));
+        ].plus(BigNumber(transaction.amount as string));
       }
     }
 
