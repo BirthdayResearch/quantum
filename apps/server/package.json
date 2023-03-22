@@ -56,7 +56,7 @@
     "@birthdayresearch/sticky-testcontainers": "^0.5.6",
     "@birthdayresearch/sticky-turbo-jest": "^0.5.6",
     "@birthdayresearch/sticky-typescript": "^0.5.6",
-    "@nestjs/cli": "^9.2.0",
+    "@nestjs/cli": "^9.3.0",
     "@nestjs/schematics": "^9.0.4",
     "@nestjs/testing": "^9.3.10",
     "@jest/test-sequencer": "^29.5.0",
