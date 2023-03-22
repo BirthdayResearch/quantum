@@ -1,4 +1,5 @@
 import { fromAddress } from '@defichain/jellyfish-address';
+import { AddressToken } from '@defichain/whale-api-client/dist/api/address';
 import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DeFiChainAddressIndex } from '@prisma/client';
@@ -77,8 +78,13 @@ export class WhaleWalletService {
         return { isValid: false, statusCode: CustomErrorCodes.AddressNotOwned };
       }
 
-      const utxo = await wallet.client.address.getBalance(address);
-      const tokens = await wallet.client.address.listToken(address);
+      let utxo: string = '';
+        let tokens: AddressToken[] = [];
+      if (verify.symbol === TokenSymbol.DFI) {
+        utxo = await wallet.client.address.getBalance(address);
+      } else {
+        tokens = await wallet.client.address.listToken(address);
+      }
       const token = tokens.find((t) => t.symbol === verify.symbol.toString());
 
       // If no utxo has been received yet for DFI
