@@ -42,7 +42,7 @@
     "@testing-library/cypress": "^9.0.0",
     "@types/node": "18.14.0",
     "@waveshq/standard-web-linter": "^0.46.0",
-    "autoprefixer": "^10.4.13",
+    "autoprefixer": "^10.4.14",
     "babel-plugin-istanbul": "^6.1.1",
     "babel-plugin-jsx-remove-data-test-id": "^3.0.0",
     "cypress": "^12.8.1",
