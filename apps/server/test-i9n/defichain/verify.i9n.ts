@@ -311,6 +311,7 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response.deadline).toBeDefined();
 
     await defichain.generateBlock();
+    await defichain.generateBlock();
     expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
       new BigNumber('0.001').toFixed(8),
     );
