@@ -1,11 +1,27 @@
 import Logging from "@api/logging";
+import { useState, useEffect } from "react";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
 import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 import OverviewList from "@components/OverviewList";
+import { useBridgeBalancesMutation } from "@store/index";
+import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import BASE_URLS from "../../config/networkUrl";
 
-export default function LiquidityOverview({ balances }) {
+export default function LiquidityOverview({ defaultBalances }) {
   const { getPOBUrl } = useDeFiScanContext();
+  const { networkEnv } = useNetworkEnvironmentContext();
+
+  const [balances, seBalances] = useState(defaultBalances);
+  const [getBridgeBalance] = useBridgeBalancesMutation();
+
+  useEffect(() => {
+    getBridgeBalance({})
+      .unwrap()
+      .then((data) => {
+        seBalances(data);
+      });
+  }, [networkEnv]);
+
   return (
     <section className="relative flex flex-col" data-testid="liquidityOverview">
       <div className="justify-between md:flex-row w-full px-0 md:px-12 lg:px-[120px]">
@@ -49,7 +65,7 @@ export async function getServerSideProps({ query }) {
     const baseUrl =
       BASE_URLS[query.network] ?? BASE_URLS[EnvironmentNetwork.MainNet];
     const balancesRes = await fetch(`${baseUrl}/balances`);
-    const [balances, balancesSC] = await Promise.all([
+    const [defaultBalances, balancesSC] = await Promise.all([
       balancesRes.json(),
       balancesRes.status,
     ]);
@@ -59,12 +75,12 @@ export async function getServerSideProps({ query }) {
       Logging.error("Get bridge balance API error.");
     }
     return {
-      props: { isBridgeUp, balances }, // will be passed to the page component as props
+      props: { isBridgeUp, defaultBalances }, // will be passed to the page component as props
     };
   } catch (e) {
     Logging.error(`${e}`);
     return {
-      props: { isBridgeUp, balances: {} }, // will be passed to the page component as props
+      props: { isBridgeUp, defaultBalances: {} }, // will be passed to the page component as props
     };
   }
 }

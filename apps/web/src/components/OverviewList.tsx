@@ -4,17 +4,13 @@ import { networks } from "@contexts/NetworkContext";
 import Image from "next/image";
 import NumericFormat from "@components/commons/NumericFormat";
 import BigNumber from "bignumber.js";
-import {
-  FiArrowUpRight,
-  FiInfo,
-  FiChevronDown,
-  FiChevronUp,
-} from "react-icons/fi";
+import { FiArrowUpRight, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useContractContext } from "@contexts/ContractContext";
 import { Network, TokensI } from "types";
 import clsx from "clsx";
 import useResponsive from "@hooks/useResponsive";
 import { Disclosure } from "@headlessui/react";
+import IconTooltip from "./commons/IconTooltip";
 
 function TokenInfo({
   name,
@@ -147,9 +143,13 @@ function TokenDetails({
         <TokenInfo name={name} icon={icon} iconClass="h-5 w-5 lg:h-8 lg:w-8" />
       </div>
       <div className="w-full flex flex-row items-center justify-between lg:w-4/12">
-        <div className="flex flex-row items-center lg:hidden text-dark-700 w-5/12">
+        <div className="flex flex-row items-center lg:hidden text-dark-700 w-5/12 space-x-1">
           <span className="text-sm">Liquidity</span>
-          <FiInfo size={16} className="ml-1" />
+          <IconTooltip
+            size={16}
+            customIconColor="text-dark-1000"
+            content="The max amount available to bridge for a specific token."
+          />
         </div>
         <NumericFormat
           className="text-dark-1000 text-sm lg:text-base text-dark-1000 text-right lg:text-left flex-1"
@@ -256,9 +256,13 @@ export default function OverviewList({ balances }) {
           <div className="text-dark-1000 text-sm font-semibold w-2/12">
             Blockchain
           </div>
-          <div className="flex flex-row items-center text-dark-1000 text-sm font-semibold w-4/12">
-            Active Liquidity
-            <FiInfo size={12} className="ml-1" />
+          <div className="flex flex-row items-center text-dark-1000 text-sm font-semibold w-4/12 space-x-1">
+            <span>Liquidity </span>
+            <IconTooltip
+              size={12}
+              customIconColor="text-dark-1000"
+              content="The max amount available to bridge for a specific token."
+            />
           </div>
           <div className="text-dark-1000 text-sm font-semibold w-4/12">
             Address
