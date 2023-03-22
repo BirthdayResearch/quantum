@@ -39,8 +39,20 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
   {
     name: Network.Ethereum,
     icon: "/tokens/Ethereum.svg",
-    // 4 available tokens to mint from as of now
     tokens: [
+      {
+        tokenA: {
+          name: "DFI",
+          subtitle: "(Ethereum)",
+          symbol: "DFI",
+          icon: "/tokens/DFI.svg",
+        },
+        tokenB: {
+          name: "DFI",
+          symbol: "DFI",
+          icon: "/tokens/DFI.svg",
+        },
+      },
       {
         tokenA: {
           name: "WBTC",
@@ -107,6 +119,19 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
     name: Network.DeFiChain,
     icon: "/tokens/DeFichain.svg",
     tokens: [
+      {
+        tokenA: {
+          name: "DFI",
+          symbol: "DFI",
+          icon: "/tokens/DFI.svg",
+        },
+        tokenB: {
+          name: "DFI",
+          subtitle: "(Ethereum)",
+          symbol: "DFI",
+          icon: "/tokens/DFI.svg",
+        },
+      },
       {
         tokenA: {
           name: "dBTC",

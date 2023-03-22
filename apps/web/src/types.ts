@@ -12,6 +12,7 @@ export enum Network {
 
 export interface TokenDetailI<T> {
   name: T;
+  subtitle?: string;
   symbol: string;
   icon: string;
 }
@@ -87,7 +88,7 @@ export interface TransferData {
   to: RowDataI;
 }
 
-export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH" | "EUROC";
+export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH" | "EUROC" | "DFI";
 
 interface ContractConfigI {
   address: `0x${string}`;
