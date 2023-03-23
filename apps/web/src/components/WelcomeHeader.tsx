@@ -24,6 +24,7 @@ export default function WelcomeHeader() {
             target="_blank"
             rel="noopener noreferrer"
             className="flex flex-row items-center group"
+            data-testid="documentation-link"
           >
             <FiBook
               size={20}
@@ -36,6 +37,7 @@ export default function WelcomeHeader() {
             target="_blank"
             rel="noopener noreferrer"
             className="ml-6 flex flex-row items-center group"
+            data-testid="faqs-link"
           >
             <RiQuestionFill
               size={20}

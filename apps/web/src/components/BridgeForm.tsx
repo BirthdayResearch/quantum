@@ -496,6 +496,7 @@ export default function BridgeForm({
           onAddressInputError={(hasError) => setHasAddressInputErr(hasError)}
           disabled={!isConnected}
           readOnly={hasUnconfirmedTxn}
+          testId="receiver-address"
         />
       </div>
       <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-6 lg:mt-0">
