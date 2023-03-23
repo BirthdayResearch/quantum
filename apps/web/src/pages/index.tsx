@@ -7,12 +7,12 @@ import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
 import Logging from "@api/logging";
+import { getStorageItem } from "@utils/localStorage";
 import {
   CONFIRMATIONS_BLOCK_TOTAL,
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
-import { getStorageItem } from "@utils/localStorage";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
