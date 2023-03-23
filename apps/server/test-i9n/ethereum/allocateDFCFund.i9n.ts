@@ -38,6 +38,27 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
   let transactionCall: ContractTransaction;
   let config: ConfigService;
 
+  // TODO: remove this and fix defichain.generateBlock(). Currently, it is not generating blocks as it is supposed to
+  const generateDfcBlock = async (nblocks: number, timeout: number = 590000): Promise<void> => {
+    const target = (await defichain.whaleClient.stats.get()).count.blocks + nblocks;
+
+    // eslint-disable-next-line no-unsafe-optional-chaining
+    return waitForCondition(
+      async () => {
+        // eslint-disable-next-line no-unsafe-optional-chaining
+        const count = (await defichain.whaleClient?.stats.get()).count.blocks;
+        if (count > target) {
+          return true;
+        }
+        await defichain.generateBlock();
+        return false;
+      },
+      timeout,
+      100,
+      'waitForGenerate',
+    );
+  };
+
   beforeAll(async () => {
     startedPostgresContainer = await new PostgreSqlContainer().start();
     startedHardhatContainer = await new HardhatNetworkContainer().start();
@@ -216,7 +237,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 65, isConfirmed: true });
 
     // Step 6: call allocate DFC fund
-    const sendTransactionDetails = await testing.inject({
+    let sendTransactionDetails = await testing.inject({
       method: 'POST',
       url: `/ethereum/allocateDFCFund`,
       payload: {
@@ -224,7 +245,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       },
     });
     const res = JSON.parse(sendTransactionDetails.body);
-    const transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+    let transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
       where: { transactionHash: transactionCall.hash },
     });
 
@@ -233,9 +254,26 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
 
     expect(transactionDbRecord?.tokenSymbol).toStrictEqual('USDC');
     expect(transactionDbRecord?.amount).toStrictEqual(amountLessFee);
-    expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(res.transactionHash);
+    expect(transactionDbRecord?.unconfirmedSendTransactionHash).toStrictEqual(res.transactionHash);
     expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
-    await defichain.generateBlock();
+
+    // Step 7: Mine 35 blocks before updating sendTransactionHash
+    await generateDfcBlock(35);
+
+    sendTransactionDetails = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/allocateDFCFund`,
+      payload: {
+        transactionHash: transactionCall.hash,
+      },
+    });
+
+    const resDFCConfirmed = JSON.parse(sendTransactionDetails.body);
+    transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: transactionCall.hash },
+    });
+
+    expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(resDFCConfirmed.transactionHash);
 
     // check token gets transferred to the address
     const listToken = await defichain.whaleClient?.address.listToken(address);
@@ -246,6 +284,9 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
   });
 
   it('should fail when fund already allocated', async () => {
+    // Delay to workaround throttler exception
+    await sleep(60000);
+
     const sendTransactionDetails = await testing.inject({
       method: 'POST',
       url: `/ethereum/allocateDFCFund`,
@@ -253,6 +294,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
         transactionHash: transactionCall.hash,
       },
     });
+
     expect(sendTransactionDetails.statusCode).toStrictEqual(500);
     const response = JSON.parse(sendTransactionDetails.body);
     expect(response.error).toContain('Fund already allocated');
@@ -314,7 +356,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     });
     expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 65, isConfirmed: true });
 
-    // Step 6: call allocate DFC fund
+    // Step 6: call allocate DFC fund to update unconfirmedSendTransactionHash (requires 35 DFC confirmations)
     sendTransactionDetails = await testing.inject({
       method: 'POST',
       url: `/ethereum/allocateDFCFund`,
@@ -327,7 +369,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
       where: { transactionHash: invalidTransactionCall.hash },
     });
-    expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(null);
+    expect(transactionDbRecord?.unconfirmedSendTransactionHash).toStrictEqual(null);
   });
 
   it('should allocate ETH DFC fund by txnId to receiving address', async () => {
@@ -389,7 +431,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     });
     expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 65, isConfirmed: true });
 
-    // Step 6: call allocate DFC fund
+    // Step 6: call allocate DFC fund to update unconfirmedSendTransactionHash (requires 35 DFC confirmations)
     sendTransactionDetails = await testing.inject({
       method: 'POST',
       url: `/ethereum/allocateDFCFund`,
@@ -397,13 +439,31 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
         transactionHash: ethTransactionCall.hash,
       },
     });
-    const res = JSON.parse(sendTransactionDetails.body);
+    const resEvmConfirmed = JSON.parse(sendTransactionDetails.body);
     transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
       where: { transactionHash: ethTransactionCall.hash },
     });
-    expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(res.transactionHash);
+    expect(transactionDbRecord?.unconfirmedSendTransactionHash).toStrictEqual(resEvmConfirmed.transactionHash);
     expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
-    await defichain.generateBlock();
+
+    // Step 7: Mine 35 blocks before updating sendTransactionHash
+    await generateDfcBlock(35);
+
+    sendTransactionDetails = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/allocateDFCFund`,
+      payload: {
+        transactionHash: ethTransactionCall.hash,
+      },
+    });
+
+    const resDFCConfirmed = JSON.parse(sendTransactionDetails.body);
+
+    transactionDbRecord = await prismaService.bridgeEventTransactions.findFirst({
+      where: { transactionHash: ethTransactionCall.hash },
+    });
+
+    expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(resDFCConfirmed.transactionHash);
 
     // Deduct fee
     const amountLessFee = deductTransferFee(new BigNumber(1));
@@ -416,3 +476,29 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(token?.symbol).toStrictEqual('ETH');
   });
 });
+
+// eslint-disable-next-line no-unsafe-optional-chaining
+async function waitForCondition(
+  condition: () => Promise<boolean>,
+  timeout: number,
+  interval: number = 200,
+  message: string = 'waitForCondition',
+): Promise<void> {
+  const expiredAt = Date.now() + timeout;
+
+  // eslint-disable-next-line
+  return await new Promise(async (resolve, reject) => {
+    async function checkCondition() {
+      const isReady = await condition().catch(() => false);
+      if (isReady) {
+        resolve();
+      } else if (expiredAt < Date.now()) {
+        reject(new Error(`${message} is not ready within given timeout of ${timeout}ms.`));
+      } else {
+        setTimeout(() => checkCondition(), interval);
+      }
+    }
+
+    await checkCondition();
+  });
+}
