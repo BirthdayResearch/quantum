@@ -1,5 +1,5 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { SemaphoreCache } from '../../libs/caches/SemaphoreCache';
@@ -27,7 +27,7 @@ export class EthereumController {
   }
 
   @Post('allocateDFCFund')
-  @UseGuards(ThrottlerGuard)
+  @Throttle(35, 60)
   async allocateDFCFund(
     @Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
   ): Promise<{ transactionHash: string; isConfirmed: boolean; numberOfConfirmationsDfc: number }> {
