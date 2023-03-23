@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { IconType } from "react-icons";
 import { FiBook, FiHelpCircle } from "react-icons/fi";
+import { DOCUMENTATION_URL, FAQS_URL } from "../constants";
 
 interface MenuListItem {
   id: string;
@@ -14,13 +15,13 @@ export default function MobileBottomMenu() {
     {
       id: "faqs",
       title: "FAQs",
-      href: "https://birthdayresearch.notion.site/FAQs-58af5cc140de432e8c9d1510ead3e3c0",
+      href: FAQS_URL,
       icon: FiHelpCircle,
     },
     {
       id: "documentation",
       title: "Documentation",
-      href: "https://birthdayresearch.notion.site/birthdayresearch/Quantum-Documentation-dc1d9174dd294b06833e7859d437e25e",
+      href: DOCUMENTATION_URL,
       icon: FiBook,
     },
   ];
