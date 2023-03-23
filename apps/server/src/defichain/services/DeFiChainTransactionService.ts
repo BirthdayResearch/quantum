@@ -55,6 +55,30 @@ export class DeFiChainTransactionService {
   }
 
   // Check if the transaction has been confirmed
+  async getTxn(id: string): Promise<{ blockHeight: string; blockHash: string; numberOfConfirmations: number }> {
+    const client = this.whaleClient.getClient();
+    let txn = {
+      blockHeight: '',
+      blockHash: '',
+      numberOfConfirmations: 0,
+    };
+
+    try {
+      const stats = await client.stats.get();
+      const txnData = await client.transactions.get(id);
+      txn = {
+        blockHeight: txnData.block.height.toString(),
+        blockHash: txnData.block.hash,
+        numberOfConfirmations: stats.count.blocks - txnData.block.height,
+      };
+    } catch (err) {
+      return txn;
+    }
+
+    return txn;
+  }
+
+  // Check if the transaction has been confirmed
   async waitForTxConfirmation(id: string): Promise<Transaction> {
     const client = this.whaleClient.getClient();
     const initialTime = isPlayground(this.network) ? 5000 : 30000;

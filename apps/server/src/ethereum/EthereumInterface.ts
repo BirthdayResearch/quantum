@@ -14,29 +14,24 @@ export class StatsDto {
 
   readonly confirmedTransactions: number;
 
-  readonly amountBridged: {
-    USDC: string;
-    USDT: string;
-    WBTC: string;
-    ETH: string;
-    EUROC: string;
-    DFI: string;
-  };
+  readonly amountBridged: Record<SupportedEVMTokenSymbols, string>;
+
+  readonly totalBridgedAmount: Record<SupportedEVMTokenSymbols, string>;
 
   constructor(
     totalTransactions: number,
     confirmedTransactions: number,
     amountBridged: Record<SupportedEVMTokenSymbols, string>,
+    totalBridgedAmount: Record<SupportedEVMTokenSymbols, string>,
   ) {
     this.totalTransactions = totalTransactions;
     this.confirmedTransactions = confirmedTransactions;
-    this.amountBridged = {
-      USDC: amountBridged[SupportedEVMTokenSymbols.USDC]?.toString(),
-      USDT: amountBridged[SupportedEVMTokenSymbols.USDT]?.toString(),
-      WBTC: amountBridged[SupportedEVMTokenSymbols.WBTC]?.toString(),
-      ETH: amountBridged[SupportedEVMTokenSymbols.ETH]?.toString(),
-      EUROC: amountBridged[SupportedEVMTokenSymbols.EUROC]?.toString(),
-      DFI: amountBridged[SupportedEVMTokenSymbols.DFI]?.toString(),
-    };
+    this.amountBridged = amountBridged;
+    this.totalBridgedAmount = totalBridgedAmount;
   }
 }
+
+export type BridgedEVMTokenSum = {
+  tokenSymbol: SupportedEVMTokenSymbols;
+  totalAmount: string;
+};

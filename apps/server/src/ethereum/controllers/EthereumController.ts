@@ -1,10 +1,9 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { SemaphoreCache } from '../../libs/caches/SemaphoreCache';
 import { EthereumTransactionValidationPipe } from '../../pipes/EthereumTransactionValidation.pipe';
-import { StatsDto, StatsQueryDto } from '../EthereumInterface';
 import { EVMTransactionConfirmerService, HandledEVMTransaction } from '../services/EVMTransactionConfirmerService';
 
 @Controller()
@@ -19,36 +18,6 @@ export class EthereumController {
     return this.evmTransactionConfirmerService.getBalance(tokenSymbol);
   }
 
-  @Get('stats/')
-  async getStats(@Query('date') date?: StatsQueryDto): Promise<StatsDto | undefined> {
-    return this.cache.get(
-      `ETH_STATS_${date ?? 'TODAY'}`,
-      async () => {
-        try {
-          // const statsModel = await this.evmTransactionConfirmerService.getStats(date);
-          // return new StatsDto(statsModel);
-          const { totalTransactions, confirmedTransactions, amountBridged } =
-            await this.evmTransactionConfirmerService.getStats(date);
-          return new StatsDto(totalTransactions, confirmedTransactions, amountBridged);
-        } catch (e: any) {
-          throw new HttpException(
-            {
-              status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
-              error: `API call for Ethereum statistics was unsuccessful: ${e.message}`,
-            },
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            {
-              cause: e,
-            },
-          );
-        }
-      },
-      {
-        ttl: 3600_000 * 24, // 1 day
-      },
-    );
-  }
-
   @Post('handleTransaction')
   @Throttle(35, 60)
   async handleTransaction(
@@ -61,7 +30,7 @@ export class EthereumController {
   @UseGuards(ThrottlerGuard)
   async allocateDFCFund(
     @Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
-  ): Promise<any> {
+  ): Promise<{ transactionHash: string; isConfirmed: boolean; numberOfConfirmationsDfc: number }> {
     return this.evmTransactionConfirmerService.allocateDFCFund(transactionHash);
   }
 }
