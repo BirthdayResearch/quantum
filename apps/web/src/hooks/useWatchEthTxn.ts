@@ -22,6 +22,15 @@ export default function useWatchEthTxn() {
     isConfirmed: boolean;
     numberOfConfirmations: string;
   }>({ isConfirmed: false, numberOfConfirmations: "0" });
+
+  const [dfcTxnStatus, setDfcTxnStatus] = useState<{
+    isConfirmed: boolean;
+    numberOfConfirmations: string;
+  }>({
+    isConfirmed: false,
+    numberOfConfirmations: "0",
+  });
+
   let pollInterval;
 
   /* Poll to check if the txn is already confirmed */
@@ -33,30 +42,53 @@ export default function useWatchEthTxn() {
           return;
         }
 
-        const data = await confirmEthTxn({
+        const confirmEthTxnData = await confirmEthTxn({
           txnHash: unconfirmed,
         }).unwrap();
 
-        if (data) {
-          if (data?.isConfirmed) {
-            const fundData = await allocateDfcFund({
-              txnHash: unconfirmed,
-            }).unwrap();
+        if (!confirmEthTxnData) {
+          return;
+        }
 
-            if (fundData?.transactionHash !== undefined) {
-              setStorage("allocationTxnHash", fundData?.transactionHash);
-              setStorage("confirmed", unconfirmed ?? null);
-              setStorage("unconfirmed", null);
-              setStorage("txn-form", null);
-            }
+        setEthTxnStatus({
+          isConfirmed: confirmEthTxnData?.isConfirmed,
+          numberOfConfirmations: confirmEthTxnData?.numberOfConfirmations,
+        });
+
+        if (confirmEthTxnData?.isConfirmed) {
+          const allocateDfcFundData = await allocateDfcFund({
+            txnHash: unconfirmed,
+          }).unwrap();
+          setIsApiSuccess(true);
+          setDfcTxnStatus({
+            isConfirmed: allocateDfcFundData?.isConfirmed,
+            numberOfConfirmations:
+              allocateDfcFundData?.numberOfConfirmationsDfc.toString(),
+          });
+
+          /* Allocating DFC fund requires min number of DFC confirmations */
+          if (
+            allocateDfcFundData?.transactionHash !== undefined &&
+            allocateDfcFundData?.isConfirmed !== true
+          ) {
+            return;
           }
 
-          setEthTxnStatus({
-            isConfirmed: data?.isConfirmed,
-            numberOfConfirmations: data?.numberOfConfirmations,
-          });
-          setIsApiSuccess(true);
+          if (
+            allocateDfcFundData?.transactionHash !== undefined &&
+            allocateDfcFundData?.isConfirmed === true
+          ) {
+            setStorage(
+              "allocationTxnHash",
+              allocateDfcFundData?.transactionHash
+            );
+            setStorage("confirmed", unconfirmed ?? null);
+            setStorage("unconfirmed", null);
+            setStorage("txn-form", null);
+          }
         }
+
+        setIsApiSuccess(true);
       } catch ({ data }) {
         if (data?.error?.includes("Fund already allocated")) {
           setStorage("confirmed", unconfirmed ?? null);
@@ -85,6 +117,15 @@ export default function useWatchEthTxn() {
 
     // Run on load
     if (!isApiSuccess) {
+      setDfcTxnStatus({
+        isConfirmed: false,
+        numberOfConfirmations: "0",
+      });
+      setEthTxnStatus({
+        isConfirmed: false,
+        numberOfConfirmations: "0",
+      });
+
       pollConfirmEthTxn(txnHash.unconfirmed);
     }
 
@@ -99,5 +140,5 @@ export default function useWatchEthTxn() {
     };
   }, [networkEnv, txnHash]);
 
-  return { ethTxnStatus, isApiSuccess };
+  return { ethTxnStatus, dfcTxnStatus, isApiSuccess };
 }

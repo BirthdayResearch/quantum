@@ -10,6 +10,7 @@ import { BridgeV1, BridgeV1__factory, ERC20__factory } from 'smartcontracts';
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { TokenSymbol } from '../../defichain/model/VerifyDto';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
+import { DeFiChainTransactionService } from '../../defichain/services/DeFiChainTransactionService';
 import { SendService } from '../../defichain/services/SendService';
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
@@ -27,12 +28,15 @@ export class EVMTransactionConfirmerService {
 
   private readonly logger: Logger;
 
-  private readonly MIN_REQUIRED_CONFIRMATION = 65;
+  private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
+
+  private readonly MIN_REQUIRED_DFC_CONFIRMATION = 35;
 
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly sendService: SendService,
+    private readonly deFiChainTransactionService: DeFiChainTransactionService,
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
@@ -175,7 +179,7 @@ export class EVMTransactionConfirmerService {
       },
     });
     if (txHashFound === null) {
-      if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
+      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
         await this.prisma.bridgeEventTransactions.create({
           data: {
             transactionHash,
@@ -192,7 +196,7 @@ export class EVMTransactionConfirmerService {
       });
       return { numberOfConfirmations, isConfirmed: true };
     }
-    if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
+    if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
       return { numberOfConfirmations, isConfirmed: false };
     }
     await this.prisma.bridgeEventTransactions.update({
@@ -301,7 +305,9 @@ export class EVMTransactionConfirmerService {
     }
   }
 
-  async allocateDFCFund(transactionHash: string): Promise<{ transactionHash: string }> {
+  async allocateDFCFund(
+    transactionHash: string,
+  ): Promise<{ transactionHash: string; isConfirmed: boolean; numberOfConfirmationsDfc: number }> {
     try {
       this.logger.log(`[AllocateDFCFund] ${transactionHash}`);
 
@@ -319,6 +325,40 @@ export class EVMTransactionConfirmerService {
       // check if fund is already allocated for the given address
       if (txDetails.sendTransactionHash) {
         throw new Error('Fund already allocated');
+      }
+
+      if (txDetails.unconfirmedSendTransactionHash) {
+        const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(
+          txDetails.unconfirmedSendTransactionHash,
+        );
+
+        // wait for min number of confirmations before confirming the txn
+        if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
+          return {
+            transactionHash: txDetails.unconfirmedSendTransactionHash,
+            isConfirmed: false,
+            numberOfConfirmationsDfc: numberOfConfirmations,
+          };
+        }
+
+        await this.prisma.bridgeEventTransactions.update({
+          where: {
+            id: txDetails.id,
+          },
+          data: {
+            sendTransactionHash: txDetails.unconfirmedSendTransactionHash,
+            blockHeight,
+            blockHash,
+          },
+        });
+
+        this.logger.log(`[AllocateDFCFund SUCCESS] ${transactionHash} ${txDetails.unconfirmedSendTransactionHash}`);
+
+        return {
+          transactionHash: txDetails.unconfirmedSendTransactionHash,
+          isConfirmed: true,
+          numberOfConfirmationsDfc: this.MIN_REQUIRED_DFC_CONFIRMATION,
+        };
       }
 
       // check if txn is confirmed or not
@@ -346,7 +386,7 @@ export class EVMTransactionConfirmerService {
       const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
 
       // check if tx is confirmed with min required confirmation
-      if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
+      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
         throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 
@@ -372,7 +412,7 @@ export class EVMTransactionConfirmerService {
         } ${toAddress}`,
       );
 
-      const sendTransactionHash = await this.sendService.send(toAddress, sendTxPayload);
+      const unconfirmedSendTxnHash = await this.sendService.send(toAddress, sendTxPayload);
       // update status in db
       await this.prisma.bridgeEventTransactions.update({
         where: {
@@ -381,12 +421,16 @@ export class EVMTransactionConfirmerService {
         data: {
           amount: amountLessFee.toFixed(8),
           tokenSymbol: sendTxPayload.symbol,
-          sendTransactionHash,
+          unconfirmedSendTransactionHash: unconfirmedSendTxnHash,
         },
       });
 
-      this.logger.log(`[AllocateDFCFund SUCCESS] ${transactionHash} ${sendTransactionHash}`);
-      return { transactionHash: sendTransactionHash };
+      this.logger.log(`[AllocateDFCFund INITIATED] ${transactionHash} ${unconfirmedSendTxnHash}`);
+      return {
+        transactionHash: unconfirmedSendTxnHash,
+        isConfirmed: false,
+        numberOfConfirmationsDfc: 0,
+      };
     } catch (e: any) {
       throw new HttpException(
         {

@@ -61,7 +61,7 @@ export class EthereumController {
   @UseGuards(ThrottlerGuard)
   async allocateDFCFund(
     @Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
-  ): Promise<any> {
+  ): Promise<{ transactionHash: string; isConfirmed: boolean; numberOfConfirmationsDfc: number }> {
     return this.evmTransactionConfirmerService.allocateDFCFund(transactionHash);
   }
 }
