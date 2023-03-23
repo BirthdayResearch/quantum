@@ -66,7 +66,7 @@ export default function useWatchEthTxn() {
               allocateDfcFundData?.numberOfConfirmationsDfc.toString(),
           });
 
-          /* Allocating DFC fund requires 35 DFC confirmations */
+          /* Allocating DFC fund requires min number of DFC confirmations */
           if (
             allocateDfcFundData?.transactionHash !== undefined &&
             allocateDfcFundData?.isConfirmed !== true

@@ -323,12 +323,12 @@ export class EVMTransactionConfirmerService {
         throw new Error('Fund already allocated');
       }
 
-      // wait for 35 confirmations and confirm the txn
       if (txDetails.unconfirmedSendTransactionHash) {
         const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(
           txDetails.unconfirmedSendTransactionHash,
         );
 
+        // wait for min number of confirmations before confirming the txn
         if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
           return {
             transactionHash: txDetails.unconfirmedSendTransactionHash,

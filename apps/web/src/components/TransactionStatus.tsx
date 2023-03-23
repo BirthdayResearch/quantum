@@ -47,7 +47,6 @@ export default function TransactionStatus({
 }) {
   const { ExplorerURL } = useContractContext();
   const { isLg, isMd } = useResponsive();
-  console.log({ ethTxnStatusIsConfirmed, isConfirmed });
 
   const [allocateDfcFund] = useAllocateDfcFundMutation();
   const { setStorage } = useStorageContext();
@@ -57,10 +56,7 @@ export default function TransactionStatus({
   const [description, setDescription] = useState("");
   const [isThrottleLimitReached, setIsThrottleLimitReached] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
-  console.log({
-    numberOfDfcConfirmations,
-    numberOfEvmConfirmations,
-  });
+
   const confirmationBlocksCurrent = BigNumber.min(
     CONFIRMATIONS_BLOCK_TOTAL,
     new BigNumber(numberOfEvmConfirmations).plus(numberOfDfcConfirmations)
