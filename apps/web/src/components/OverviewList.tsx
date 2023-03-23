@@ -119,8 +119,8 @@ function TokenDetails({
   containerClass?: string;
   onClose?: () => void;
 }) {
-  const { BridgeV1, hotWalletAddress } = useContractContext();
-  const address = isDeFiAddress ? hotWalletAddress : BridgeV1.address;
+  const { BridgeV1, HotWalletAddress } = useContractContext();
+  const address = isDeFiAddress ? HotWalletAddress : BridgeV1.address;
   return (
     <div
       className={clsx(
