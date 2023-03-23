@@ -37,12 +37,6 @@ const BirthdayResearchSocialItems = [
     label: "Medium",
     href: "https://medium.com/@birthdayresearch",
   },
-  {
-    icon: FaGithub,
-    testId: "gitHub_br",
-    label: "GitHub",
-    href: "https://github.com/BirthdayResearch/quantum",
-  },
 ];
 
 export default function Footer() {
