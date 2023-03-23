@@ -31,7 +31,8 @@ export default function LiquidityOverview({ defaultBalances }) {
           </h2>
           <div className="mt-1">
             <span className="text-dark-700 text-sm md:test-base">
-              See liquidity of each token in Quantum. For proof of backing,
+              The current liquidity of each token available on Quantum. For
+              proof of backing,
             </span>
             <a
               href={getPOBUrl()}
