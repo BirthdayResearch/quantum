@@ -4,10 +4,13 @@ import BigNumber from 'bignumber.js';
 
 import { SupportedDFCTokenSymbols } from '../../AppConfig';
 import { PrismaService } from '../../PrismaService';
+import { initializeEnumKeys } from '../../utils/EnumUtils';
 import { BridgedDfcToEvm, BridgedDFCTokenSum, DeFiChainStats, DFCStatsDto } from '../DefichainInterface';
 
 @Injectable()
 export class DeFiChainStatsService {
+  private readonly NUMERICAL_PLACEHOLDER = '0.000000';
+
   constructor(private prisma: PrismaService) {}
 
   async getDefiChainStats(date?: DFCStatsDto): Promise<DeFiChainStats> {
@@ -52,10 +55,10 @@ export class DeFiChainStatsService {
         }),
       ]);
 
-      const amountBridged = getAmountBridged(confirmedTransactions);
+      const amountBridged = this.getAmountBridged(confirmedTransactions);
 
       // Get overall total amount of tokens claimed
-      const totalBridgedAmount = { ...amountBridged };
+      const totalBridgedAmount = initializeEnumKeys(SupportedDFCTokenSymbols, this.NUMERICAL_PLACEHOLDER);
       const totalAmounts: BridgedDFCTokenSum[] = await this.prisma.$queryRaw(
         Prisma.sql`
         SELECT SUM("claimAmount"::DECIMAL) AS "totalAmount", "tokenSymbol"
@@ -86,43 +89,28 @@ export class DeFiChainStatsService {
       );
     }
   }
-}
 
-function getAmountBridged(
-  confirmedTransactions: Array<{
-    tokenSymbol: string | null;
-    claimAmount: string | null;
-  }>,
-): BridgedDfcToEvm {
-  const amountBridgedBigN: Record<SupportedDFCTokenSymbols, BigNumber> = {
-    USDC: BigNumber(0),
-    USDT: BigNumber(0),
-    BTC: BigNumber(0),
-    ETH: BigNumber(0),
-    DFI: BigNumber(0),
-    EUROC: BigNumber(0),
-  };
-  for (const transaction of confirmedTransactions) {
-    const { tokenSymbol, claimAmount } = transaction;
-    amountBridgedBigN[tokenSymbol as SupportedDFCTokenSymbols] = amountBridgedBigN[
-      tokenSymbol as SupportedDFCTokenSymbols
-    ].plus(BigNumber(claimAmount as string));
+  getAmountBridged(
+    confirmedTransactions: Array<{
+      tokenSymbol: string | null;
+      claimAmount: string | null;
+    }>,
+  ): BridgedDfcToEvm {
+    const amountBridgedBigN = initializeEnumKeys(SupportedDFCTokenSymbols, BigNumber(0));
+    for (const transaction of confirmedTransactions) {
+      const { tokenSymbol, claimAmount } = transaction;
+      amountBridgedBigN[tokenSymbol as SupportedDFCTokenSymbols] = amountBridgedBigN[
+        tokenSymbol as SupportedDFCTokenSymbols
+      ].plus(BigNumber(claimAmount as string));
+    }
+    const amountBridgedToEVM = initializeEnumKeys(SupportedDFCTokenSymbols, this.NUMERICAL_PLACEHOLDER);
+
+    Object.keys(amountBridgedBigN).forEach((key) => {
+      amountBridgedToEVM[key as SupportedDFCTokenSymbols] = amountBridgedBigN[key as SupportedDFCTokenSymbols]
+        .decimalPlaces(6, BigNumber.ROUND_FLOOR)
+        .toFixed(6);
+    });
+
+    return amountBridgedToEVM;
   }
-  const numericalPlaceholder = '0.000000';
-  const amountBridgedToEVM: BridgedDfcToEvm = {
-    USDC: numericalPlaceholder,
-    USDT: numericalPlaceholder,
-    BTC: numericalPlaceholder,
-    ETH: numericalPlaceholder,
-    DFI: numericalPlaceholder,
-    EUROC: numericalPlaceholder,
-  };
-
-  Object.keys(amountBridgedBigN).forEach((key) => {
-    amountBridgedToEVM[key as SupportedDFCTokenSymbols] = amountBridgedBigN[key as SupportedDFCTokenSymbols]
-      .decimalPlaces(6, BigNumber.ROUND_FLOOR)
-      .toFixed(6);
-  });
-
-  return amountBridgedToEVM;
 }

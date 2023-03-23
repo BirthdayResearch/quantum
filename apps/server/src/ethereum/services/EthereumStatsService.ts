@@ -5,10 +5,13 @@ import BigNumber from 'bignumber.js';
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { TokenSymbol } from '../../defichain/model/VerifyDto';
 import { PrismaService } from '../../PrismaService';
+import { initializeEnumKeys } from '../../utils/EnumUtils';
 import { BridgedEVMTokenSum, StatsDto, StatsQueryDto } from '../EthereumInterface';
 
 @Injectable()
 export class EthereumStatsService {
+  private readonly NUMERICAL_PLACEHOLDER = '0.000000';
+
   constructor(private prisma: PrismaService) {}
 
   async getStats(date?: StatsQueryDto): Promise<StatsDto> {
@@ -54,14 +57,7 @@ export class EthereumStatsService {
       ]);
 
       // First, sum each token with BigNumber for accuracy
-      const amountBridgedBigN: { [k in SupportedEVMTokenSymbols]: BigNumber } = {
-        ETH: BigNumber(0),
-        USDT: BigNumber(0),
-        USDC: BigNumber(0),
-        WBTC: BigNumber(0),
-        EUROC: BigNumber(0),
-        DFI: BigNumber(0),
-      };
+      const amountBridgedBigN = initializeEnumKeys(SupportedEVMTokenSymbols, BigNumber(0));
 
       for (const transaction of confirmedTransactions) {
         let { tokenSymbol } = transaction;
@@ -76,15 +72,7 @@ export class EthereumStatsService {
       }
 
       // Then, convert to string in preparation for response payload
-      const numericalPlaceholder = '0.000000';
-      const amountBridged: { [k in SupportedEVMTokenSymbols]: string } = {
-        ETH: numericalPlaceholder,
-        USDT: numericalPlaceholder,
-        USDC: numericalPlaceholder,
-        WBTC: numericalPlaceholder,
-        EUROC: numericalPlaceholder,
-        DFI: numericalPlaceholder,
-      };
+      const amountBridged = initializeEnumKeys(SupportedEVMTokenSymbols, this.NUMERICAL_PLACEHOLDER);
 
       Object.keys(amountBridged).forEach((token) => {
         amountBridged[token as SupportedEVMTokenSymbols] = amountBridgedBigN[token as SupportedEVMTokenSymbols]
@@ -93,16 +81,18 @@ export class EthereumStatsService {
       });
 
       // Get overall total amount of tokens bridged
-      const totalBridgedAmount = { ...amountBridged };
+      const totalBridgedAmount = initializeEnumKeys(SupportedEVMTokenSymbols, this.NUMERICAL_PLACEHOLDER);
       const totalAmounts: BridgedEVMTokenSum[] = await this.prisma.$queryRaw(
         Prisma.sql`
         SELECT SUM(amount::DECIMAL) AS "totalAmount", "tokenSymbol" 
         FROM "BridgeEventTransactions" WHERE amount IS NOT NULL GROUP BY "tokenSymbol";`,
       );
       for (const total of totalAmounts) {
-        totalBridgedAmount[total.tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalAmount)
-          .decimalPlaces(6, BigNumber.ROUND_FLOOR)
-          .toFixed(6);
+        if (total.tokenSymbol && total.tokenSymbol in SupportedEVMTokenSymbols) {
+          totalBridgedAmount[total.tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalAmount)
+            .decimalPlaces(6, BigNumber.ROUND_FLOOR)
+            .toFixed(6);
+        }
       }
 
       return {

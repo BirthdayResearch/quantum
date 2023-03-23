@@ -13,6 +13,7 @@ describe('Statistics Service Test', () => {
     expect(parsedPayload).toHaveProperty('totalTransactions');
     expect(parsedPayload).toHaveProperty('confirmedTransactions');
     expect(parsedPayload).toHaveProperty('amountBridged');
+    expect(parsedPayload).toHaveProperty('totalBridgedAmount');
 
     expect(parsedPayload.amountBridged).toHaveProperty('ETH');
     expect(parsedPayload.amountBridged).toHaveProperty('WBTC');
@@ -20,6 +21,13 @@ describe('Statistics Service Test', () => {
     expect(parsedPayload.amountBridged).toHaveProperty('USDC');
     expect(parsedPayload.amountBridged).toHaveProperty('EUROC');
     expect(parsedPayload.amountBridged).toHaveProperty('DFI');
+
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('ETH');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('WBTC');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('USDT');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('USDC');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('EUROC');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('DFI');
   }
 
   beforeAll(async () => {
