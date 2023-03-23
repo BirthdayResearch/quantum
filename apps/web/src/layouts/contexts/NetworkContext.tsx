@@ -39,7 +39,6 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
   {
     name: Network.Ethereum,
     icon: "/tokens/Ethereum.svg",
-    // 4 available tokens to mint from as of now
     tokens: [
       {
         tokenA: {
