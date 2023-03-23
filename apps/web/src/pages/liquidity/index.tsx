@@ -52,6 +52,7 @@ export default function LiquidityOverview({ defaultBalances }) {
 
 export async function getServerSideProps({ query }) {
   let isBridgeUp = true;
+  let defaultBalances = {};
   try {
     const res = await fetch(
       `https://wallet.defichain.com/api/v0/bridge/status`
@@ -66,11 +67,13 @@ export async function getServerSideProps({ query }) {
     const baseUrl =
       BASE_URLS[query.network] ?? BASE_URLS[EnvironmentNetwork.MainNet];
     const balancesRes = await fetch(`${baseUrl}/balances`);
-    const [defaultBalances, balancesSC] = await Promise.all([
+    const [balance, balancesSC] = await Promise.all([
       balancesRes.json(),
       balancesRes.status,
     ]);
-    if (balancesSC !== 200) {
+    if (balancesSC === 200) {
+      defaultBalances = balance;
+    } else {
       Logging.error("Get bridge balance API error.");
     }
     return {
@@ -79,7 +82,7 @@ export async function getServerSideProps({ query }) {
   } catch (e) {
     Logging.error(`${e}`);
     return {
-      props: { isBridgeUp, defaultBalances: {} }, // will be passed to the page component as props
+      props: { isBridgeUp, defaultBalances }, // will be passed to the page component as props
     };
   }
 }
