@@ -10,7 +10,11 @@ import { HttpStatusCode } from "axios";
 import useTimeout from "@hooks/useSetTimeout";
 import { useStorageContext } from "@contexts/StorageContext";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
-import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
+import {
+  CONFIRMATIONS_BLOCK_TOTAL,
+  DFC_CONFIRMATIONS_BLOCK_TOTAL,
+  EVM_CONFIRMATIONS_BLOCK_TOTAL,
+} from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
 import { useContractContext } from "../layouts/contexts/ContractContext";
@@ -240,8 +244,7 @@ export default function TransactionStatus({
               "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
             })}
           />
-          {`${BigNumber.min(numberOfEvmConfirmations, 65)} confirmations for
-              EVM`}
+          {EVM_CONFIRMATIONS_BLOCK_TOTAL} confirmations for EVM
         </div>
         <span className="text-dark-300 mx-2.5">•</span>
         <div>
@@ -252,8 +255,7 @@ export default function TransactionStatus({
               "text-dark-300": !(dfcTxnStatusIsConfirmed || isConfirmed),
             })}
           />
-          {`${BigNumber.min(numberOfDfcConfirmations, 35)} confirmations for
-              DFC`}
+          {DFC_CONFIRMATIONS_BLOCK_TOTAL} confirmations for DFC
         </div>
       </div>
     </div>
