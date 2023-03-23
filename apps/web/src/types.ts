@@ -52,6 +52,10 @@ export interface NetworkOptionsI {
   tokens: TokensI[];
 }
 
+export interface TokenBalances {
+  [key: string]: number;
+}
+
 export interface ProgressStepI {
   step: number;
   label: string;
