@@ -29,6 +29,7 @@ interface Props {
   onAddressInputError: (hasError: boolean) => void;
   isPrimary?: boolean;
   customMessage?: string;
+  testId?: string;
 }
 
 /**
@@ -59,6 +60,7 @@ function AddressWithVerifiedBadge({
       onClick={() => onClick()}
       onKeyDown={() => {}}
       tabIndex={0}
+      data-testid="wallet-address-input-verified-badge"
     >
       {value}
     </div>
@@ -75,6 +77,7 @@ export default function WalletAddressInput({
   onAddressInputError,
   isPrimary = true,
   customMessage,
+  testId,
 }: Props): JSX.Element {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -230,6 +233,7 @@ export default function WalletAddressInput({
             "lg:px-5 lg:py-3": isPrimary,
           }
         )}
+        data-testid={testId}
       >
         {/* Paste icon with tooltip */}
         {isPrimary && (
@@ -240,6 +244,7 @@ export default function WalletAddressInput({
                 !disabled,
             })}
             disableTooltip={disabled || isMobile} // Disable tooltip for mobile
+            data-testid={`${testId}-paste-icon`}
           >
             <FiClipboard
               size={24}
@@ -260,7 +265,7 @@ export default function WalletAddressInput({
 
         {/* Textarea input */}
         <textarea
-          data-testid="receiver-address"
+          data-testid={`${testId}-input`}
           ref={textAreaRef}
           className={clsx(
             `max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 focus:outline-none py-0.5`,
