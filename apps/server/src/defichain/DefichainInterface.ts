@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import { IsDateString, IsOptional } from 'class-validator';
 
 import { SupportedDFCTokenSymbols } from '../AppConfig';
@@ -34,6 +33,7 @@ export class DFCStatsDto {
   date?: Iso8601DateOnlyString;
 }
 
-export type BridgedDFCTokenSum = Prisma.PickArray<Prisma.DeFiChainAddressIndexGroupByOutputType, 'tokenSymbol'[]> & {
+export type BridgedDFCTokenSum = {
+  tokenSymbol: SupportedDFCTokenSymbols;
   totalAmount: string;
 };
