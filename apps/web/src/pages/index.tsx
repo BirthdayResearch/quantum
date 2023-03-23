@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import BigNumber from "bignumber.js";
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
 import MobileBottomMenu from "@components/MobileBottomMenu";
@@ -11,8 +12,7 @@ import {
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
-import { getStorageItem } from "../utils/localStorage";
-import BigNumber from "bignumber.js";
+import { getStorageItem } from "@utils/localStorage";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
