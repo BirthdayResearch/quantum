@@ -10,6 +10,7 @@ import { BridgeV1, BridgeV1__factory, ERC20__factory } from 'smartcontracts';
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { TokenSymbol } from '../../defichain/model/VerifyDto';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
+import { DeFiChainTransactionService } from '../../defichain/services/DeFiChainTransactionService';
 import { SendService } from '../../defichain/services/SendService';
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
@@ -20,24 +21,27 @@ import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
 export class EVMTransactionConfirmerService {
   private contract: BridgeV1;
 
+  private contractAddress: string;
+
   private network: EnvironmentNetwork;
 
   private readonly logger: Logger;
 
-  private readonly MIN_REQUIRED_CONFIRMATION = 65;
+  private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
+
+  private readonly MIN_REQUIRED_DFC_CONFIRMATION = 35;
 
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly sendService: SendService,
+    private readonly deFiChainTransactionService: DeFiChainTransactionService,
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
-    this.contract = BridgeV1__factory.connect(
-      this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address'),
-      this.ethersRpcProvider,
-    );
+    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address');
+    this.contract = BridgeV1__factory.connect(this.contractAddress, this.ethersRpcProvider);
     this.logger = new Logger(EVMTransactionConfirmerService.name);
   }
 
@@ -69,6 +73,10 @@ export class EVMTransactionConfirmerService {
     if (txReceipt === null) {
       return { numberOfConfirmations: 0, isConfirmed: false };
     }
+    // check txn is done for valid SC or not
+    if (txReceipt.to !== this.contractAddress) {
+      throw new BadRequestException(`Invalid transaction`);
+    }
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
@@ -83,7 +91,7 @@ export class EVMTransactionConfirmerService {
       },
     });
     if (txHashFound === null) {
-      if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
+      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
         await this.prisma.bridgeEventTransactions.create({
           data: {
             transactionHash,
@@ -100,7 +108,7 @@ export class EVMTransactionConfirmerService {
       });
       return { numberOfConfirmations, isConfirmed: true };
     }
-    if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
+    if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
       return { numberOfConfirmations, isConfirmed: false };
     }
     await this.prisma.bridgeEventTransactions.update({
@@ -124,7 +132,7 @@ export class EVMTransactionConfirmerService {
     try {
       this.logger.log(`[Sign] ${amount} ${tokenAddress} ${uniqueDfcAddress} ${receiverAddress}`);
 
-      // Check and return same claim details if txn is already signed previously
+      // check and return same claim details if txn is already signed previously
       const existingTxn = await this.prisma.deFiChainAddressIndex.findFirst({
         where: { address: uniqueDfcAddress },
       });
@@ -209,7 +217,9 @@ export class EVMTransactionConfirmerService {
     }
   }
 
-  async allocateDFCFund(transactionHash: string): Promise<{ transactionHash: string }> {
+  async allocateDFCFund(
+    transactionHash: string,
+  ): Promise<{ transactionHash: string; isConfirmed: boolean; numberOfConfirmationsDfc: number }> {
     try {
       this.logger.log(`[AllocateDFCFund] ${transactionHash}`);
 
@@ -229,17 +239,58 @@ export class EVMTransactionConfirmerService {
         throw new Error('Fund already allocated');
       }
 
+      if (txDetails.unconfirmedSendTransactionHash) {
+        const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(
+          txDetails.unconfirmedSendTransactionHash,
+        );
+
+        // wait for min number of confirmations before confirming the txn
+        if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
+          return {
+            transactionHash: txDetails.unconfirmedSendTransactionHash,
+            isConfirmed: false,
+            numberOfConfirmationsDfc: numberOfConfirmations,
+          };
+        }
+
+        await this.prisma.bridgeEventTransactions.update({
+          where: {
+            id: txDetails.id,
+          },
+          data: {
+            sendTransactionHash: txDetails.unconfirmedSendTransactionHash,
+            blockHeight,
+            blockHash,
+          },
+        });
+
+        this.logger.log(`[AllocateDFCFund SUCCESS] ${transactionHash} ${txDetails.unconfirmedSendTransactionHash}`);
+
+        return {
+          transactionHash: txDetails.unconfirmedSendTransactionHash,
+          isConfirmed: true,
+          numberOfConfirmationsDfc: this.MIN_REQUIRED_DFC_CONFIRMATION,
+        };
+      }
+
       // check if txn is confirmed or not
       if (txDetails.status !== EthereumTransactionStatus.CONFIRMED) {
         throw new Error('Transaction is not yet confirmed');
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+
       if (!txReceipt) {
         throw new Error('Transaction is not yet available');
       }
-      const isReverted = txReceipt.status === 0;
 
+      // check txn is done for valid SC or not
+      if (txReceipt.to !== this.contractAddress) {
+        throw new BadRequestException(`Invalid transaction`);
+      }
+
+      // if transaction is reverted
+      const isReverted = txReceipt.status === 0;
       if (isReverted === true) {
         throw new BadRequestException(`Transaction Reverted`);
       }
@@ -247,7 +298,7 @@ export class EVMTransactionConfirmerService {
       const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
 
       // check if tx is confirmed with min required confirmation
-      if (numberOfConfirmations < this.MIN_REQUIRED_CONFIRMATION) {
+      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
         throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 
@@ -273,8 +324,8 @@ export class EVMTransactionConfirmerService {
         } ${toAddress}`,
       );
 
-      const sendTransactionHash = await this.sendService.send(toAddress, sendTxPayload);
-      // update status in db for Send
+      const unconfirmedSendTxnHash = await this.sendService.send(toAddress, sendTxPayload);
+      // update status in db
       await this.prisma.bridgeEventTransactions.update({
         where: {
           id: txDetails.id,
@@ -282,12 +333,16 @@ export class EVMTransactionConfirmerService {
         data: {
           amount: amountLessFee.toFixed(8),
           tokenSymbol: sendTxPayload.symbol,
-          sendTransactionHash,
+          unconfirmedSendTransactionHash: unconfirmedSendTxnHash,
         },
       });
 
-      this.logger.log(`[AllocateDFCFund SUCCESS] ${transactionHash} ${sendTransactionHash}`);
-      return { transactionHash: sendTransactionHash };
+      this.logger.log(`[AllocateDFCFund INITIATED] ${transactionHash} ${unconfirmedSendTxnHash}`);
+      return {
+        transactionHash: unconfirmedSendTxnHash,
+        isConfirmed: false,
+        numberOfConfirmationsDfc: 0,
+      };
     } catch (e: any) {
       throw new HttpException(
         {
@@ -334,6 +389,10 @@ export class EVMTransactionConfirmerService {
 const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
   const iface = new ethers.utils.Interface(BridgeV1__factory.abi);
   const decodedData = iface.parseTransaction({ data: txDetail.data, value: txDetail.value });
+  // Sanity check that the decoded function name is correct
+  if (decodedData.name !== 'bridgeToDeFiChain') {
+    throw Error('Invalid transactionHash');
+  }
   const fragment = iface.getFunction(decodedData.name);
   const params = decodedData.args.reduce((res, param, i) => {
     let parsedParam = param;
