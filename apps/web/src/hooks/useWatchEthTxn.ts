@@ -117,7 +117,6 @@ export default function useWatchEthTxn() {
 
     // Run on load
     if (!isApiSuccess) {
-      console.log("on load");
       setDfcTxnStatus({
         isConfirmed: false,
         numberOfConfirmations: "0",
