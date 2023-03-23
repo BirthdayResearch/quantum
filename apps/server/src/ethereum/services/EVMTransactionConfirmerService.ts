@@ -433,6 +433,10 @@ export class EVMTransactionConfirmerService {
 const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
   const iface = new ethers.utils.Interface(BridgeV1__factory.abi);
   const decodedData = iface.parseTransaction({ data: txDetail.data, value: txDetail.value });
+  // Sanity check that the decoded function name is correct
+  if (decodedData.name !== 'bridgeToDeFiChain') {
+    throw Error('Invalid transactionHash');
+  }
   const fragment = iface.getFunction(decodedData.name);
   const params = decodedData.args.reduce((res, param, i) => {
     let parsedParam = param;
