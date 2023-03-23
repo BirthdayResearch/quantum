@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoCloseOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
+import { IoCheckmarkCircle } from "react-icons/io5";
 import clsx from "clsx";
 
 import { useAllocateDfcFundMutation } from "@store/index";
@@ -20,7 +21,10 @@ export default function TransactionStatus({
   isApiSuccess,
   isReverted,
   isUnsentFund,
-  numberOfConfirmations,
+  ethTxnStatusIsConfirmed,
+  dfcTxnStatusIsConfirmed,
+  numberOfEvmConfirmations,
+  numberOfDfcConfirmations,
   allocationTxnHash,
   txnHash,
   onClose,
@@ -29,13 +33,17 @@ export default function TransactionStatus({
   isApiSuccess: boolean;
   isReverted: boolean;
   isUnsentFund: boolean;
-  numberOfConfirmations: string;
+  ethTxnStatusIsConfirmed: boolean;
+  dfcTxnStatusIsConfirmed: boolean;
+  numberOfEvmConfirmations: string;
+  numberOfDfcConfirmations: string;
   allocationTxnHash?: string;
   txnHash: string | undefined;
   onClose: () => void;
 }) {
   const { ExplorerURL } = useContractContext();
   const { isLg, isMd } = useResponsive();
+  console.log({ ethTxnStatusIsConfirmed, isConfirmed });
 
   const [allocateDfcFund] = useAllocateDfcFundMutation();
   const { setStorage } = useStorageContext();
@@ -45,9 +53,13 @@ export default function TransactionStatus({
   const [description, setDescription] = useState("");
   const [isThrottleLimitReached, setIsThrottleLimitReached] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+  console.log({
+    numberOfDfcConfirmations,
+    numberOfEvmConfirmations,
+  });
   const confirmationBlocksCurrent = BigNumber.min(
     CONFIRMATIONS_BLOCK_TOTAL,
-    numberOfConfirmations
+    new BigNumber(numberOfEvmConfirmations).plus(numberOfDfcConfirmations)
   ).toFixed();
 
   const [throttledTimeOut] = useTimeout(() => {
@@ -131,6 +143,7 @@ export default function TransactionStatus({
             isReverted={isReverted}
             isUnsentFund={isUnsentFund}
             isApiSuccess={isApiSuccess}
+            txnType={ethTxnStatusIsConfirmed ? "For DFC" : "For EVM"}
           />
         </div>
       )}
@@ -202,6 +215,7 @@ export default function TransactionStatus({
                 isReverted={isReverted}
                 isUnsentFund={isUnsentFund}
                 isApiSuccess={isApiSuccess}
+                txnType={ethTxnStatusIsConfirmed ? "For DFC" : "For EVM"}
               />
             )}
 
@@ -216,6 +230,31 @@ export default function TransactionStatus({
             )}
           </div>
         )}
+      </div>
+      <div className="flex mt-4 pt-4 border-t border-t-dark-200">
+        <div className="mr-2">
+          <IoCheckmarkCircle
+            size={16}
+            className={clsx("inline-block ml-1 mr-1.5", {
+              "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
+              "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
+            })}
+          />
+          {`${BigNumber.min(numberOfEvmConfirmations, 65)} confirmations for
+              EVM`}
+        </div>
+        <span className="text-dark-300 mx-2.5">•</span>
+        <div>
+          <IoCheckmarkCircle
+            size={16}
+            className={clsx("inline-block ml-1 mr-1.5", {
+              "text-valid": dfcTxnStatusIsConfirmed || isConfirmed,
+              "text-dark-300": !(dfcTxnStatusIsConfirmed || isConfirmed),
+            })}
+          />
+          {`${BigNumber.min(numberOfDfcConfirmations, 35)} confirmations for
+              DFC`}
+        </div>
       </div>
     </div>
   );
