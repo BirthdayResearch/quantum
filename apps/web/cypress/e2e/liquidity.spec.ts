@@ -1,4 +1,4 @@
-const desktopViewPorts = ["macbook-16"]; //, "ipad-2"];
+const desktopViewPorts = ["macbook-16"];
 
 desktopViewPorts.forEach((viewPort) => {
   context(`Liquidity page on ${viewPort}`, () => {
@@ -9,7 +9,7 @@ desktopViewPorts.forEach((viewPort) => {
     const evmAddress = "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef";
 
     beforeEach(() => {
-      cy.visit("http://localhost:3001/liquidity?network=TestNet");
+      cy.visit("http://localhost:3000/liquidity?network=TestNet");
       cy.viewport(<Cypress.ViewportPreset>viewPort);
     });
 
