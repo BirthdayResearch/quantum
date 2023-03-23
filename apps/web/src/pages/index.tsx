@@ -5,7 +5,7 @@ import MobileBottomMenu from "@components/MobileBottomMenu";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
-import Logging from "@api/logging";
+// import Logging from "@api/logging";
 import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 import { getStorageItem } from "../utils/localStorage";
@@ -95,10 +95,10 @@ function Home() {
 }
 
 export async function getServerSideProps() {
-  let isBridgeUp = true;
+  // let isBridgeUp = true;
   // Temporarirly always return true for testing
   return {
-    props: { isBridgeUp }, // will be passed to the page component as props
+    props: { isBridgeUp: true }, // will be passed to the page component as props
   };
 
   // return fetch(`https://wallet.defichain.com/api/v0/bridge/status`)
