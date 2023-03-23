@@ -256,6 +256,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(transactionDbRecord?.tokenSymbol).toStrictEqual('USDC');
     expect(transactionDbRecord?.amount).toStrictEqual(amountLessFee);
     expect(transactionDbRecord?.unconfirmedSendTransactionHash).toStrictEqual(res.transactionHash);
+    expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(null);
     expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
 
     // Step 7: Mine 35 blocks before updating sendTransactionHash
@@ -445,6 +446,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       where: { transactionHash: ethTransactionCall.hash },
     });
     expect(transactionDbRecord?.unconfirmedSendTransactionHash).toStrictEqual(resEvmConfirmed.transactionHash);
+    expect(transactionDbRecord?.sendTransactionHash).toStrictEqual(null);
     expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
 
     // Step 7: Mine 35 blocks before updating sendTransactionHash
