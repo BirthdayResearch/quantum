@@ -38,7 +38,7 @@ function Home() {
   }, [UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY]);
 
   const getNumberOfConfirmations = () => {
-    let numOfConfirmations = BigNumber.max(
+    let numOfConfirmations = BigNumber.min(
       ethTxnStatus?.numberOfConfirmations,
       EVM_CONFIRMATIONS_BLOCK_TOTAL
     ).toString();
