@@ -36,3 +36,13 @@ import "@testing-library/cypress/add-commands";
 //     }
 //   }
 // }
+
+Cypress.Commands.add("getLiquidityValueByIndex", (index) => {
+  cy.get(".space-y-3 div.items-center > span.text-dark-1000.flex-1")
+    .eq(index)
+    .invoke("text")
+    .then((s) => {
+      s = s.substring(0, s.lastIndexOf(" "));
+      return s.replaceAll(",", "");
+    });
+});
