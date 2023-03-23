@@ -43,7 +43,7 @@ importers:
       '@waveshq/walletkit-ui': ^0.40.1
       async-mutex: ^0.4.0
       bignumber.js: ^9.1.1
-      cache-manager: ^5.1.7
+      cache-manager: ^5.2.0
       class-transformer: ^0.5.1
       class-validator: ^0.14.0
       ethers: ^5.7.2
@@ -64,7 +64,7 @@ importers:
     dependencies:
       '@fastify/compress': 6.2.0
       '@fastify/helmet': 10.1.0
-      '@nestjs/common': 9.3.12_nza3ix4qrkhc5teka4arycjvca
+      '@nestjs/common': 9.3.12_5ezc66h7azca7t7jxbenr4bfzy
       '@nestjs/config': 2.3.1_jy37pi22pqa22ux5geb72eebiu
       '@nestjs/core': 9.3.12_jy37pi22pqa22ux5geb72eebiu
       '@nestjs/platform-fastify': 9.3.12_ge4qplnzbmfyi5znl534zhtkn4
@@ -72,10 +72,10 @@ importers:
       '@nestjs/throttler': 4.0.0_bgmtsjzu2jyijhogwtog4e3a6e
       '@prisma/client': 4.11.0_prisma@4.11.0
       '@waveshq/walletkit-core': 0.40.1
-      '@waveshq/walletkit-ui': 0.40.1_nekmkfqvw5iqd3uaymph4xhnce
+      '@waveshq/walletkit-ui': 0.40.1_2rqxnmrga4653ine26uaia36te
       async-mutex: 0.4.0
       bignumber.js: 9.1.1
-      cache-manager: 5.1.7
+      cache-manager: 5.2.0
       class-transformer: 0.5.1
       class-validator: 0.14.0
       ethers: 5.7.2
@@ -3242,7 +3242,7 @@ packages:
       - webpack-cli
     dev: true
 
-  /@nestjs/common/9.3.12_nza3ix4qrkhc5teka4arycjvca:
+  /@nestjs/common/9.3.12_5ezc66h7azca7t7jxbenr4bfzy:
     resolution: {integrity: sha512-NtrUG2VgCbhmZEO1yRt/Utq16uFRV+xeHAOtdYIsfHGG0ssAV2lVLlvFFAQYh0SQ+KuYY1Gsxd3GK2JFoJCNqQ==}
     peerDependencies:
       cache-manager: <=5
@@ -3258,7 +3258,7 @@ packages:
       class-validator:
         optional: true
     dependencies:
-      cache-manager: 5.1.7
+      cache-manager: 5.2.0
       class-transformer: 0.5.1
       class-validator: 0.14.0
       iterare: 1.2.1
@@ -3274,7 +3274,7 @@ packages:
       reflect-metadata: ^0.1.13
       rxjs: ^6.0.0 || ^7.2.0
     dependencies:
-      '@nestjs/common': 9.3.12_nza3ix4qrkhc5teka4arycjvca
+      '@nestjs/common': 9.3.12_5ezc66h7azca7t7jxbenr4bfzy
       dotenv: 16.0.3
       dotenv-expand: 10.0.0
       lodash: 4.17.21
@@ -3301,7 +3301,7 @@ packages:
       '@nestjs/websockets':
         optional: true
     dependencies:
-      '@nestjs/common': 9.3.12_nza3ix4qrkhc5teka4arycjvca
+      '@nestjs/common': 9.3.12_5ezc66h7azca7t7jxbenr4bfzy
       '@nuxtjs/opencollective': 0.3.2
       fast-safe-stringify: 2.1.1
       iterare: 1.2.1
@@ -3329,7 +3329,7 @@ packages:
       '@fastify/cors': 8.2.1
       '@fastify/formbody': 7.4.0
       '@fastify/middie': 8.1.0
-      '@nestjs/common': 9.3.12_nza3ix4qrkhc5teka4arycjvca
+      '@nestjs/common': 9.3.12_5ezc66h7azca7t7jxbenr4bfzy
       '@nestjs/core': 9.3.12_jy37pi22pqa22ux5geb72eebiu
       fastify: 4.15.0
       light-my-request: 5.9.1
@@ -3414,7 +3414,7 @@ packages:
       typeorm:
         optional: true
     dependencies:
-      '@nestjs/common': 9.3.12_nza3ix4qrkhc5teka4arycjvca
+      '@nestjs/common': 9.3.12_5ezc66h7azca7t7jxbenr4bfzy
       '@nestjs/core': 9.3.12_jy37pi22pqa22ux5geb72eebiu
       boxen: 5.1.2
       check-disk-space: 3.3.1
@@ -3435,7 +3435,7 @@ packages:
       '@nestjs/platform-express':
         optional: true
     dependencies:
-      '@nestjs/common': 9.3.12_nza3ix4qrkhc5teka4arycjvca
+      '@nestjs/common': 9.3.12_5ezc66h7azca7t7jxbenr4bfzy
       '@nestjs/core': 9.3.12_jy37pi22pqa22ux5geb72eebiu
       tslib: 2.5.0
     dev: true
@@ -3447,7 +3447,7 @@ packages:
       '@nestjs/core': ^7.0.0 || ^8.0.0 || ^9.0.0
       reflect-metadata: ^0.1.13
     dependencies:
-      '@nestjs/common': 9.3.12_nza3ix4qrkhc5teka4arycjvca
+      '@nestjs/common': 9.3.12_5ezc66h7azca7t7jxbenr4bfzy
       '@nestjs/core': 9.3.12_jy37pi22pqa22ux5geb72eebiu
       md5: 2.3.0
       reflect-metadata: 0.1.13
@@ -5943,7 +5943,7 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web/0.44.5_fvgdpt5imtrg4udij6uhif2riu:
+  /@waveshq/standard-web/0.44.5_kkrdj5zxwfugttiio4xepb7j2q:
     resolution: {integrity: sha512-rG6hcTvwypqFxzoD98JqSehlu/4w34+Fn7iznWYXNLhFiemc2YMlAkNiWXTLpVRMbPwH+6K61yF0nFIP9kALWQ==}
     dependencies:
       '@netlify/ipx': 1.3.3
@@ -5957,7 +5957,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-icons: 4.8.0_react@18.2.0
-      react-redux: 8.0.5_3xleytyzprlgycb2ded54tx72i
+      react-redux: 8.0.5_ctrls2ti7t7iutxbwkm5ipogyy
       react-responsive: 9.0.2_react@18.2.0
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -6013,12 +6013,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui/0.40.1_nekmkfqvw5iqd3uaymph4xhnce:
+  /@waveshq/walletkit-ui/0.40.1_2rqxnmrga4653ine26uaia36te:
     resolution: {integrity: sha512-/E0D6rFgLHfUkYYHeNv8jD2WHFAdK7BaTUVs8vlbaKzrDK8ASRV4v1Y8EMwFDG7OnGiXXSVKiudBq49Zzj7kbw==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.5_d3fempqfaoah23y2vmjehfnule
       '@waveshq/standard-defichain-jellyfishsdk': 0.44.5_@types+tar-fs@2.0.1
-      '@waveshq/standard-web': 0.44.5_fvgdpt5imtrg4udij6uhif2riu
+      '@waveshq/standard-web': 0.44.5_kkrdj5zxwfugttiio4xepb7j2q
       '@waveshq/standard-web-linter': 0.44.5_udakjewriqxpximyrmurdqmh6m
       '@waveshq/walletkit-core': 0.40.1
       bignumber.js: 9.1.1
@@ -7201,8 +7201,8 @@ packages:
     engines: {node: '>= 0.8'}
     dev: true
 
-  /cache-manager/5.1.7:
-    resolution: {integrity: sha512-2W43F4ruaYb7dSiCOqkKtpnmn51/3DqxbKMMTxHfLa6qtj1letd8rr17/P/c7D7wYViqQLa+LetLCoKSVwBN1w==}
+  /cache-manager/5.2.0:
+    resolution: {integrity: sha512-jwXDLtn8tQGS2vGDTKAhee2OhuX/2cgxlh97fqMnWp328VszIn064BFyKZ87dwp9GmlBFuHYfaVQehI85hFwIw==}
     dependencies:
       lodash.clonedeep: 4.5.0
       lru-cache: 7.18.3
@@ -12570,7 +12570,7 @@ packages:
       '@nestjs/common': ^8.0.0 || ^9.0.0
       pino-http: ^6.4.0 || ^7.0.0 || ^8.0.0
     dependencies:
-      '@nestjs/common': 9.3.12_nza3ix4qrkhc5teka4arycjvca
+      '@nestjs/common': 9.3.12_5ezc66h7azca7t7jxbenr4bfzy
       pino-http: 8.3.3
     dev: false
 
@@ -14035,39 +14035,6 @@ packages:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 18.2.0
-    dev: false
-
-  /react-redux/8.0.5_3xleytyzprlgycb2ded54tx72i:
-    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
-    peerDependencies:
-      '@types/react': ^16.8 || ^17.0 || ^18.0
-      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
-      react: ^16.8 || ^17.0 || ^18.0
-      react-dom: ^16.8 || ^17.0 || ^18.0
-      react-native: '>=0.59'
-      redux: ^4
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-      '@types/react-dom':
-        optional: true
-      react-dom:
-        optional: true
-      react-native:
-        optional: true
-      redux:
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.21.0
-      '@types/hoist-non-react-statics': 3.3.1
-      '@types/react': 18.0.28
-      '@types/react-dom': 18.0.11
-      '@types/use-sync-external-store': 0.0.3
-      hoist-non-react-statics: 3.3.2
-      react: 18.2.0
-      react-dom: 18.2.0_react@18.2.0
-      react-is: 18.2.0
-      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /react-redux/8.0.5_ctrls2ti7t7iutxbwkm5ipogyy:
