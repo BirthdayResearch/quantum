@@ -134,6 +134,7 @@ function TokenDetails({
           icon={tokenIcon}
           onClose={onClose}
           nameClass="font-semibold lg:font-normal"
+          iconClass="h-6 w-6 md:h-8 md:w-8"
         />
       </div>
       <div className="w-full flex flex-row items-center justify-between lg:w-2/12">
@@ -147,7 +148,8 @@ function TokenDetails({
           <span className="text-sm">Liquidity</span>
           <IconTooltip
             size={16}
-            customIconColor="text-dark-1000"
+            position="top"
+            customIconColor="text-dark-700"
             content="The max amount available to bridge for a specific token."
           />
         </div>
@@ -189,7 +191,7 @@ export default function OverviewList({ balances }) {
           isDeFiAddress={secondNetwork.name === Network.DeFiChain}
           amount={getAmount(item.tokenA.symbol, secondNetwork.name)}
           onClose={onClose}
-          containerClass="pb-4 md:pb-0 lg:pb-5  md:pr-5 lg:pr-0"
+          containerClass="pb-4 md:pb-0 lg:pb-5 md:pr-5 lg:pr-0"
         />
         <TokenDetails
           name={firstNetwork.name}
@@ -256,9 +258,10 @@ export default function OverviewList({ balances }) {
           <div className="text-dark-1000 text-sm font-semibold w-2/12">
             Blockchain
           </div>
-          <div className="flex flex-row items-center text-dark-1000 text-sm font-semibold w-4/12 space-x-1">
-            <span>Liquidity </span>
+          <div className="flex flex-row items-center text-dark-1000 text-sm w-4/12 space-x-1">
+            <span className="font-semibold">Liquidity </span>
             <IconTooltip
+              position="top"
               size={12}
               customIconColor="text-dark-1000"
               content="The max amount available to bridge for a specific token."
