@@ -8,6 +8,7 @@ import {
   BridgeV1,
   HardhatNetwork,
   HardhatNetworkContainer,
+  ShellBridgeV1__factory,
   StartedHardhatNetworkContainer,
   TestToken,
 } from 'smartcontracts';
@@ -80,7 +81,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       [
         {},
         {
-          [fromWallet]: `10@USDC`,
+          [fromWallet]: `20@USDC`,
         },
       ],
       'number',
@@ -414,5 +415,45 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(token?.id).toStrictEqual('2');
     expect(new BigNumber(token?.amount ?? 0).toFixed(8)).toStrictEqual(amountLessFee);
     expect(token?.symbol).toStrictEqual('ETH');
+  });
+
+  it('transaction handling should check that transaction comes from quantum deployed smart contract', async () => {
+    // Given any random arbitrary EOA
+    const signer = ethers.Wallet.createRandom().connect(hardhatNetwork.ethersRpcProvider);
+    await hardhatNetwork.activateAccount(signer.address);
+    await hardhatNetwork.generate(1);
+
+    // Fund arbitrary EOA to allow it to make transactions. It has no other funds
+    await hardhatNetwork.fundAddress(signer.address, ethers.utils.parseEther('1000'));
+    await hardhatNetwork.generate(1);
+
+    // Deploy shell contract
+    const ShellContractDeployment = await new ShellBridgeV1__factory(signer).deploy();
+    await hardhatNetwork.generate(1);
+    const shellContract = await ShellContractDeployment.deployed();
+
+    // Create shell transaction
+    const tx = await shellContract.bridgeToDeFiChain(
+      ethers.utils.toUtf8Bytes(address),
+      musdcContract.address,
+      new BigNumber(1).multipliedBy(new BigNumber(10).pow(18)).toFixed(0),
+    );
+    await hardhatNetwork.generate(100);
+    const vulnerableTxHash = (await tx.wait(100)).transactionHash;
+
+    // Attempt to kick-start the handling of the transaction
+    const txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/handleTransaction`,
+      payload: {
+        transactionHash: vulnerableTxHash,
+      },
+    });
+
+    expect(JSON.parse(txReceipt.body)).toStrictEqual({
+      error: 'Bad Request',
+      message: 'Invalid transaction',
+      statusCode: 400,
+    });
   });
 });
