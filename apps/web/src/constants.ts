@@ -50,3 +50,8 @@ export const ETHEREUM_SYMBOL = "ETH";
 export const CONFIRMATIONS_BLOCK_TOTAL = 65;
 
 export const ETHEREUM_MAINNET_ID = 1;
+
+export const DOCUMENTATION_URL =
+  "https://birthdayresearch.notion.site/birthdayresearch/Quantum-Documentation-dc1d9174dd294b06833e7859d437e25e";
+export const FAQS_URL =
+  "https://birthdayresearch.notion.site/FAQs-58af5cc140de432e8c9d1510ead3e3c0";
