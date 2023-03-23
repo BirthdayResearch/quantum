@@ -45,7 +45,11 @@ function SwitchButton({
   return (
     <div className="my-4 flex flex-row rounded">
       <div className="mt-5 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-      <Tooltip content="Switch source" containerClass="py-0">
+      <Tooltip
+        content="Switch source"
+        containerClass="py-0"
+        testId="transfer-flow-swap"
+      >
         <button
           title="switch-source-button"
           type="button"
@@ -58,10 +62,18 @@ function SwitchButton({
           data-testid="transfer-flow-swap-btn"
         >
           <div className="hidden group-hover:hidden lg:block">
-            <ArrowDownIcon size={20} className="fill-dark-700" />
+            <ArrowDownIcon
+              size={20}
+              className="fill-dark-700"
+              data-testid="transfer-flow-icon"
+            />
           </div>
           <div className="group-hover:block lg:hidden">
-            <SwitchIcon size={20} className="fill-dark-700" />
+            <SwitchIcon
+              size={20}
+              className="fill-dark-700"
+              data-testid="switch-source-icon"
+            />
           </div>
         </button>
       </Tooltip>

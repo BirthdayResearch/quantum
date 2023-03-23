@@ -82,7 +82,13 @@ function NetworkOptions({
   );
 }
 
-function TokenOptions({ options }: { options: TokensI[] }) {
+function TokenOptions({
+  options,
+  testId,
+}: {
+  options: TokensI[];
+  testId?: string;
+}) {
   return (
     <div>
       {options?.map((option) => (
@@ -90,6 +96,7 @@ function TokenOptions({ options }: { options: TokensI[] }) {
           key={option.tokenA.name}
           className="relative cursor-pointer select-none"
           value={option}
+          data-testid={`${testId}-${option.tokenA.name}`}
         >
           {({ selected, active }) => (
             <>
@@ -269,7 +276,10 @@ export default function InputSelector({
                           testId={`${testId}-dropdown-option`}
                         />
                       ) : (
-                        <TokenOptions options={options as TokensI[]} />
+                        <TokenOptions
+                          options={options as TokensI[]}
+                          testId={`${testId}-dropdown-option`}
+                        />
                       )}
                     </div>
                   </div>
