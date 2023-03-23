@@ -41,7 +41,7 @@ function NetworkOptions({
           key={option.name}
           className="relative select-none cursor-pointer"
           value={option}
-          data-testid={`${testId}_${option.name}`}
+          data-testid={`${testId}-${option.name}`}
         >
           {({ selected, active }) => (
             <>
@@ -60,7 +60,7 @@ function NetworkOptions({
                       className="w-6 h-6"
                       src={option.icon}
                       alt={option.name}
-                      data-testid={`${testId}_${option.name}_logo`}
+                      data-testid={`${testId}-${option.name}-logo`}
                     />
                     <span className="truncate text-dark-1000 ml-2 text-base">
                       {option.name}
@@ -69,7 +69,7 @@ function NetworkOptions({
                   {selected && (
                     <MdCheckCircle
                       className="h-6 w-6 text-[#00AD1D]"
-                      data-testid={`${testId}_${option.name}_checked_marker`}
+                      data-testid={`${testId}-${option.name}-checked-marker`}
                     />
                   )}
                 </div>
@@ -256,7 +256,7 @@ export default function InputSelector({
                     { "right-0": type !== SelectionType.Network },
                     open ? "bg-gradient-2" : "bg-dark-200"
                   )}
-                  data-testid={`${testId}_dropdown_options`}
+                  data-testid={`${testId}-dropdown-options`}
                 >
                   <div className="rounded-lg bg-dark-00 pt-4 pb-2">
                     <span className="px-5 text-xs font-semibold text-dark-700 lg:px-6 lg:text-sm">
@@ -266,7 +266,7 @@ export default function InputSelector({
                       {type === SelectionType.Network ? (
                         <NetworkOptions
                           options={options as NetworkOptionsI[]}
-                          testId={`${testId}_dropdown_option`}
+                          testId={`${testId}-dropdown-option`}
                         />
                       ) : (
                         <TokenOptions options={options as TokensI[]} />
