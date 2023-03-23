@@ -1,8 +1,7 @@
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
-import { IoCloseOutline } from "react-icons/io5";
+import { IoCloseOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { useEffect, useState } from "react";
-import { IoCheckmarkCircle } from "react-icons/io5";
 import clsx from "clsx";
 
 import { useAllocateDfcFundMutation } from "@store/index";
