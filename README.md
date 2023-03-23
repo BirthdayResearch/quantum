@@ -177,6 +177,10 @@ MUSDC Contract address: [0xB200af2b733B831Fbb3d98b13076BC33F605aD58](https://goe
 
 MEUROC Contract address: [0x5ea4bbB3204522f3Ac65137D1E12027D9848231A](https://goerli.etherscan.io/address/0x5ea4bbB3204522f3Ac65137D1E12027D9848231A)
 
+### DFI
+
+DFI Contract address: [0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673](https://goerli.etherscan.io/address/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673)
+
 ### TimeLock
 
 Time lock Contract address: [0x78B29c165d2faFc78b76A029F0014cAd89900DCa](https://goerli.etherscan.io/address/0x78B29c165d2faFc78b76A029F0014cAd89900DCa)

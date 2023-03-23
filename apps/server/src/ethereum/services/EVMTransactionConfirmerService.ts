@@ -26,6 +26,10 @@ export class EVMTransactionConfirmerService {
 
   private readonly logger: Logger;
 
+  private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
+
+  private readonly MIN_REQUIRED_DFC_CONFIRMATION = 35;
+
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private readonly clientProvider: WhaleApiClientProvider,
@@ -112,6 +116,7 @@ export class EVMTransactionConfirmerService {
       USDC: BigNumber(0),
       WBTC: BigNumber(0),
       EUROC: BigNumber(0),
+      DFI: BigNumber(0),
     };
 
     for (const transaction of confirmedTransactions) {
@@ -134,6 +139,7 @@ export class EVMTransactionConfirmerService {
       USDC: numericalPlaceholder,
       WBTC: numericalPlaceholder,
       EUROC: numericalPlaceholder,
+      DFI: numericalPlaceholder,
     };
 
     Object.keys(amountBridged).forEach((token) => {
@@ -169,7 +175,7 @@ export class EVMTransactionConfirmerService {
       },
     });
     if (txHashFound === null) {
-      if (numberOfConfirmations < 3) {
+      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
         await this.prisma.bridgeEventTransactions.create({
           data: {
             transactionHash,
@@ -186,7 +192,7 @@ export class EVMTransactionConfirmerService {
       });
       return { numberOfConfirmations, isConfirmed: true };
     }
-    if (numberOfConfirmations < 3) {
+    if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
       return { numberOfConfirmations, isConfirmed: false };
     }
     await this.prisma.bridgeEventTransactions.update({
@@ -323,7 +329,7 @@ export class EVMTransactionConfirmerService {
           txDetails.unconfirmedSendTransactionHash,
         );
 
-        if (numberOfConfirmations < 30) {
+        if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
           return {
             transactionHash: txDetails.unconfirmedSendTransactionHash,
             isConfirmed: false,
@@ -347,7 +353,7 @@ export class EVMTransactionConfirmerService {
         return {
           transactionHash: txDetails.unconfirmedSendTransactionHash,
           isConfirmed: true,
-          numberOfConfirmationsDfc: 35,
+          numberOfConfirmationsDfc: this.MIN_REQUIRED_DFC_CONFIRMATION,
         };
       }
 
@@ -369,7 +375,7 @@ export class EVMTransactionConfirmerService {
       const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
 
       // check if tx is confirmed with min required confirmation
-      if (numberOfConfirmations < 3) {
+      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
         throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 
