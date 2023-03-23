@@ -20,6 +20,7 @@ export class StatsDto {
     WBTC: string;
     ETH: string;
     EUROC: string;
+    DFI: string;
   };
 
   constructor(
@@ -35,6 +36,7 @@ export class StatsDto {
       WBTC: amountBridged[SupportedEVMTokenSymbols.WBTC]?.toString(),
       ETH: amountBridged[SupportedEVMTokenSymbols.ETH]?.toString(),
       EUROC: amountBridged[SupportedEVMTokenSymbols.EUROC]?.toString(),
+      DFI: amountBridged[SupportedEVMTokenSymbols.DFI]?.toString(),
     };
   }
 }

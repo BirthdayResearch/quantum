@@ -15,12 +15,13 @@ async function main() {
   // Minting 100,000 tokens.
   const amount = ethers.utils.parseEther('100000');
 
-  // [usdtAddress, usdcAddress, mwbtcAddress]
+  // [usdtAddress, usdcAddress, mwbtcAddress, eurocAddress, dfiAddress]
   const tokenAddresses = [
     '0xB200af2b733B831Fbb3d98b13076BC33F605aD58',
     '0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF',
     '0xD723D679d1A3b23d0Aafe4C0812f61DDA84fc043',
     '0x5ea4bbB3204522f3Ac65137D1E12027D9848231A',
+    '0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673',
   ];
 
   for (let i = 0; i < tokenAddresses.length; i += 1) {
