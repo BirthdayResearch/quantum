@@ -274,7 +274,7 @@ export class EVMTransactionConfirmerService {
       );
 
       const sendTransactionHash = await this.sendService.send(toAddress, sendTxPayload);
-      // update status in db
+      // update status in db for Send
       await this.prisma.bridgeEventTransactions.update({
         where: {
           id: txDetails.id,
