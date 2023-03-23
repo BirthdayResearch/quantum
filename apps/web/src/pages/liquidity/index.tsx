@@ -70,9 +70,7 @@ export async function getServerSideProps({ query }) {
       balancesRes.json(),
       balancesRes.status,
     ]);
-    if (balancesSC === 200) {
-      isBridgeUp = data?.isUp;
-    } else {
+    if (balancesSC !== 200) {
       Logging.error("Get bridge balance API error.");
     }
     return {
