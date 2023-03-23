@@ -117,7 +117,7 @@ export default function ConfirmationProgress({
             ) : (
               <SkeletonLoader isDesktop={false} />
             )}
-            {`${txnType} confirmations`}
+            {isConfirmed ? "Confirmed" : txnType}
           </div>
           <div className="h-1.5 w-full bg-dark-200 rounded-md">
             <div
