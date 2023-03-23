@@ -21,6 +21,8 @@ import { StatsDto, StatsQueryDto } from '../EthereumInterface';
 export class EVMTransactionConfirmerService {
   private contract: BridgeV1;
 
+  private contractAddress: string;
+
   private network: EnvironmentNetwork;
 
   private readonly logger: Logger;
@@ -35,10 +37,8 @@ export class EVMTransactionConfirmerService {
     private prisma: PrismaService,
   ) {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
-    this.contract = BridgeV1__factory.connect(
-      this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address'),
-      this.ethersRpcProvider,
-    );
+    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address');
+    this.contract = BridgeV1__factory.connect(this.contractAddress, this.ethersRpcProvider);
     this.logger = new Logger(EVMTransactionConfirmerService.name);
   }
 
@@ -157,6 +157,10 @@ export class EVMTransactionConfirmerService {
     if (txReceipt === null) {
       return { numberOfConfirmations: 0, isConfirmed: false };
     }
+    // check txn is done for valid SC or not
+    if (txReceipt.to !== this.contractAddress) {
+      throw new BadRequestException(`Invalid transaction`);
+    }
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
@@ -212,7 +216,7 @@ export class EVMTransactionConfirmerService {
     try {
       this.logger.log(`[Sign] ${amount} ${tokenAddress} ${uniqueDfcAddress} ${receiverAddress}`);
 
-      // Check and return same claim details if txn is already signed previously
+      // check and return same claim details if txn is already signed previously
       const existingTxn = await this.prisma.deFiChainAddressIndex.findFirst({
         where: { address: uniqueDfcAddress },
       });
@@ -323,11 +327,18 @@ export class EVMTransactionConfirmerService {
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+
       if (!txReceipt) {
         throw new Error('Transaction is not yet available');
       }
-      const isReverted = txReceipt.status === 0;
 
+      // check txn is done for valid SC or not
+      if (txReceipt.to !== this.contractAddress) {
+        throw new BadRequestException(`Invalid transaction`);
+      }
+
+      // if transaction is reverted
+      const isReverted = txReceipt.status === 0;
       if (isReverted === true) {
         throw new BadRequestException(`Transaction Reverted`);
       }
