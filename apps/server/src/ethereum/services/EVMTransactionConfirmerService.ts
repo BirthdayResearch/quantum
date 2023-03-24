@@ -78,7 +78,7 @@ export class EVMTransactionConfirmerService {
 
     // Sanity check that the decoded name is correct and a valid SC
     if (txReceipt.to !== this.contractAddress || !isValidTxn) {
-      throw new BadRequestException(`Invalid transaction`);
+      return { numberOfConfirmations: 0, isConfirmed: false };
     }
 
     // if transaction is reverted
@@ -236,7 +236,11 @@ export class EVMTransactionConfirmerService {
 
       // Sanity check that the decoded name is correct and a valid SC
       if (!isValidTxn || txReceipt.to !== this.contractAddress) {
-        throw new Error('Invalid transaction');
+        return {
+          transactionHash: '',
+          isConfirmed: false,
+          numberOfConfirmationsDfc: 0,
+        };
       }
 
       // if transaction is reverted
@@ -399,7 +403,7 @@ export class EVMTransactionConfirmerService {
     const { parsedTxnData } = await this.parseTxnHash(transactionHash);
     // Sanity check that the decoded function name is correct
     if (
-      parsedTxnData.name !== 'bridgeToDeiChain' ||
+      parsedTxnData.name !== 'bridgeToDeFiChain' ||
       parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
     ) {
       return false;
