@@ -34,6 +34,7 @@ export default function ConfirmationProgress({
   isReverted,
   isUnsentFund,
   isApiSuccess,
+  txnType,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
@@ -42,6 +43,8 @@ export default function ConfirmationProgress({
 
   isUnsentFund: boolean;
   isApiSuccess: boolean;
+
+  txnType: string;
 }) {
   const { isLg } = useResponsive();
   const [valuePercentage, setValuePercentage] = useState<number>(0);
@@ -87,12 +90,14 @@ export default function ConfirmationProgress({
           >
             <div className="text-center">
               {isApiSuccess || isConfirmed ? (
-                <div className="text-lg font-bold text-dark-1000">{`${confirmationBlocksCurrent} of 65`}</div>
+                <div className="text-lg font-bold text-dark-1000">{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
               ) : (
                 <SkeletonLoader isDesktop />
               )}
 
-              <span className="text-xs text-dark-700">Confirmations</span>
+              <span className="text-xs text-dark-700">
+                {isConfirmed ? "Confirmed" : txnType}
+              </span>
             </div>
           </CircularProgressbarWithChildren>
         </div>
@@ -112,7 +117,7 @@ export default function ConfirmationProgress({
             ) : (
               <SkeletonLoader isDesktop={false} />
             )}
-            confirmations
+            {isConfirmed ? "Confirmed" : txnType}
           </div>
           <div className="h-1.5 w-full bg-dark-200 rounded-md">
             <div
