@@ -112,6 +112,7 @@ describe('DeFiChain Stats Testing', () => {
     expect(parsedPayload).toHaveProperty('totalTransactions');
     expect(parsedPayload).toHaveProperty('confirmedTransactions');
     expect(parsedPayload).toHaveProperty('amountBridged');
+    expect(parsedPayload).toHaveProperty('totalBridgedAmount');
 
     expect(parsedPayload.amountBridged).toHaveProperty('USDC');
     expect(parsedPayload.amountBridged).toHaveProperty('USDT');
@@ -119,6 +120,13 @@ describe('DeFiChain Stats Testing', () => {
     expect(parsedPayload.amountBridged).toHaveProperty('ETH');
     expect(parsedPayload.amountBridged).toHaveProperty('DFI');
     expect(parsedPayload.amountBridged).toHaveProperty('EUROC');
+
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('USDC');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('USDT');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('BTC');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('ETH');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('DFI');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('EUROC');
   }
 
   it('should verify fund is displayed accurately in endpoint', async () => {
@@ -180,7 +188,7 @@ describe('DeFiChain Stats Testing', () => {
     });
 
     expect(JSON.parse(initialResponse.payload).confirmedTransactions).toStrictEqual(1);
-    expect(JSON.parse(initialResponse.payload).amountBridged.BTC).toStrictEqual('9.97');
+    expect(JSON.parse(initialResponse.payload).amountBridged.BTC).toStrictEqual('9.970000');
     verifyFormat(JSON.parse(initialResponse.payload));
   });
 

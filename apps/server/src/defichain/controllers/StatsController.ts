@@ -1,8 +1,6 @@
 import { stats } from '@defichain/whale-api-client';
-import { Controller, Get, HttpException, HttpStatus, Query } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Controller, Get, Query } from '@nestjs/common';
 import { SkipThrottle } from '@nestjs/throttler';
-import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 
 import { SemaphoreCache } from '../../libs/caches/SemaphoreCache';
 import { DeFiChainStats, DFCStatsDto } from '../DefichainInterface';
@@ -11,16 +9,11 @@ import { WhaleApiService } from '../services/WhaleApiService';
 
 @Controller()
 export class StatsController {
-  private network: EnvironmentNetwork;
-
   constructor(
     private readonly whaleClient: WhaleApiService,
-    private readonly configService: ConfigService,
     protected readonly cache: SemaphoreCache,
     private defichainStatsService: DeFiChainStatsService,
-  ) {
-    this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
-  }
+  ) {}
 
   @SkipThrottle()
   @Get('/whale/stats')
@@ -29,30 +22,10 @@ export class StatsController {
   }
 
   @Get('/stats')
-  async getDFCStats(@Query('date') date?: DFCStatsDto): Promise<DeFiChainStats | undefined> {
-    return this.cache.get(
-      `DFC_STATS_${date ?? 'TODAY'}`,
-      async () => {
-        try {
-          const { totalTransactions, confirmedTransactions, amountBridged } =
-            await this.defichainStatsService.getDefiChainStats(date);
-          return new DeFiChainStats(totalTransactions, confirmedTransactions, amountBridged);
-        } catch (e: any) {
-          throw new HttpException(
-            {
-              status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
-              error: `API call for DefiChain statistics was unsuccessful: ${e.message}`,
-            },
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            {
-              cause: e,
-            },
-          );
-        }
-      },
-      {
-        ttl: 3600_000 * 24, // 1 day
-      },
-    );
+  async getDFCStats(@Query('date') date?: DFCStatsDto): Promise<DeFiChainStats> {
+    const cacheKey = `DFC_STATS_${date ?? 'TODAY'}`;
+    return (await this.cache.get(cacheKey, async () => this.defichainStatsService.getDefiChainStats(date), {
+      ttl: 3600_000 * 24, // 1 day
+    })) as DeFiChainStats;
   }
 }
