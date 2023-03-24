@@ -160,7 +160,7 @@ export default function BridgeForm({
     const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
     const balance = (refetch ? await getBalanceFn() : tokenBalances)[key];
 
-    if (balance === null || balance <= 0) {
+    if (balance === null || new BigNumber(balance).lte(0)) {
       setIsBalanceSufficient(false);
       return false;
     }
