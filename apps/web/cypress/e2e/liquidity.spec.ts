@@ -1,3 +1,5 @@
+const testNetUrl = "http://localhost:3000/liquidity?network=TestNet";
+
 const desktopViewPorts = ["macbook-16"];
 
 desktopViewPorts.forEach((viewPort) => {
@@ -9,7 +11,7 @@ desktopViewPorts.forEach((viewPort) => {
     const evmAddress = "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef";
 
     beforeEach(() => {
-      cy.visit("http://localhost:3000/liquidity?network=TestNet");
+      cy.visit(testNetUrl);
       cy.viewport(<Cypress.ViewportPreset>viewPort);
     });
 
@@ -92,12 +94,12 @@ desktopViewPorts.forEach((viewPort) => {
   });
 });
 
-const mobileViewPorts = ["iphone-x"];
+const mobileViewPort = "iphone-x";
 
-context(`Liquidity page on ${mobileViewPorts[0]}`, () => {
+context(`Liquidity page on ${mobileViewPort}`, () => {
   beforeEach(() => {
-    cy.visit("http://localhost:3001/liquidity?network=TestNet");
-    cy.viewport(<Cypress.ViewportPreset>mobileViewPorts[0]);
+    cy.visit(testNetUrl);
+    cy.viewport(<Cypress.ViewportPreset>mobileViewPort);
   });
 
   it("Should check responsive design for the Liquidity table elements", () => {
