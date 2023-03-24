@@ -26,7 +26,7 @@ interface NetworkContextI {
   resetNetworkSelection: () => void;
 }
 
-interface NetworkI<T> {
+export interface NetworkI<T> {
   name: Network;
   icon: string;
   tokens: {

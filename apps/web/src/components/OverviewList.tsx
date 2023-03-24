@@ -1,26 +1,24 @@
 import { PropsWithChildren } from "react";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
-import { networks } from "@contexts/NetworkContext";
+import { NetworkI, networks } from "@contexts/NetworkContext";
 import Image from "next/image";
 import NumericFormat from "@components/commons/NumericFormat";
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import { useContractContext } from "@contexts/ContractContext";
-import { Network, TokensI } from "types";
+import { Network, TokenDetailI, TokensI } from "types";
 import clsx from "clsx";
 import useResponsive from "@hooks/useResponsive";
 import { Disclosure } from "@headlessui/react";
 import IconTooltip from "./commons/IconTooltip";
 
-function TokenInfo({
-  name,
-  icon,
+function TokenOrNetworkInfo({
+  token,
   iconClass,
   nameClass,
   onClose,
 }: {
-  name: string;
-  icon: string;
+  token: TokenDetailI<string> | NetworkI<string>;
   iconClass?: string;
   nameClass?: string;
   onClose?: () => void;
@@ -31,18 +29,23 @@ function TokenInfo({
         <Image
           width={100}
           height={100}
-          src={icon}
-          alt={name}
-          data-testid={name}
+          src={token.icon}
+          alt={token.name}
+          data-testid={token.name}
           className={iconClass ?? "h-8 w-8"}
         />
         <span
           className={clsx(
-            "ml-2 lg:ml-3 block truncate text-dark-1000 text-base",
+            "ml-2 lg:ml-3 block truncate text-dark-1000 text-base text-left",
             nameClass
           )}
         >
-          {name}
+          {token.name}
+          {(token as TokenDetailI<string>).subtitle && (
+            <span className="block text-xs text-dark-700">
+              {(token as TokenDetailI<string>).subtitle}
+            </span>
+          )}
         </span>
       </div>
       {onClose !== undefined && (
@@ -101,19 +104,15 @@ function BorderDiv({
 }
 
 function TokenDetails({
-  name,
-  tokenName,
-  icon,
-  tokenIcon,
+  network,
+  token,
   isDeFiAddress,
   amount,
   containerClass,
   onClose,
 }: {
-  name: string;
-  tokenName: string;
-  icon: string;
-  tokenIcon: string;
+  network: NetworkI<string>;
+  token: TokenDetailI<string>;
   isDeFiAddress: boolean;
   amount: BigNumber;
   containerClass?: string;
@@ -129,9 +128,8 @@ function TokenDetails({
       )}
     >
       <div className="w-full lg:w-2/12">
-        <TokenInfo
-          name={tokenName}
-          icon={tokenIcon}
+        <TokenOrNetworkInfo
+          token={token}
           onClose={onClose}
           nameClass="font-semibold lg:font-normal"
           iconClass="h-6 w-6 md:h-8 md:w-8"
@@ -141,7 +139,7 @@ function TokenDetails({
         <span className="lg:hidden text-dark-700 text-sm w-5/12">
           Blockchain
         </span>
-        <TokenInfo name={name} icon={icon} iconClass="h-5 w-5 lg:h-8 lg:w-8" />
+        <TokenOrNetworkInfo token={network} iconClass="h-5 w-5 lg:h-8 lg:w-8" />
       </div>
       <div className="w-full flex flex-row items-center justify-between lg:w-4/12">
         <div className="flex flex-row items-center lg:hidden text-dark-700 w-5/12 space-x-1">
@@ -158,7 +156,7 @@ function TokenDetails({
           value={amount}
           decimalScale={8}
           thousandSeparator
-          suffix={` ${tokenName}`}
+          suffix={` ${token.name}`}
         />
       </div>
       <div className="w-full flex flex-row items-start lg:items-center justify-between lg:w-4/12">
@@ -184,20 +182,16 @@ export default function OverviewList({ balances }) {
     return (
       <>
         <TokenDetails
-          name={secondNetwork.name}
-          tokenName={item.tokenA.name}
-          icon={secondNetwork.icon}
-          tokenIcon={item.tokenA.icon}
+          network={secondNetwork}
+          token={item.tokenA}
           isDeFiAddress={secondNetwork.name === Network.DeFiChain}
           amount={getAmount(item.tokenA.symbol, secondNetwork.name)}
           onClose={onClose}
           containerClass="pb-4 md:pb-0 lg:pb-5 md:pr-5 lg:pr-0"
         />
         <TokenDetails
-          name={firstNetwork.name}
-          tokenName={item.tokenB.name}
-          icon={firstNetwork.icon}
-          tokenIcon={item.tokenB.icon}
+          network={firstNetwork}
+          token={item.tokenB}
           isDeFiAddress={firstNetwork.name === Network.DeFiChain}
           amount={getAmount(item.tokenB.symbol, firstNetwork.name)}
           containerClass={clsx(
@@ -217,19 +211,17 @@ export default function OverviewList({ balances }) {
             {!open && (
               <Disclosure.Button>
                 <div className="flex flex-row justify-between items-center">
-                  <div className="flex flex-row">
+                  <div className="flex flex-row items-center">
                     <div className="mr-3">
-                      <TokenInfo
-                        name={item.tokenA.name}
-                        icon={item.tokenA.icon}
+                      <TokenOrNetworkInfo
+                        token={item.tokenA}
                         iconClass="h-6 w-6"
                         nameClass="font-semibold"
                       />
                     </div>
                     <div className="pl-3 border-l-[0.5px] border-dark-200">
-                      <TokenInfo
-                        name={item.tokenB.name}
-                        icon={item.tokenB.icon}
+                      <TokenOrNetworkInfo
+                        token={item.tokenB}
                         iconClass="h-6 w-6"
                         nameClass="font-semibold"
                       />
