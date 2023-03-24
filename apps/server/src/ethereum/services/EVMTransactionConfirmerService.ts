@@ -431,7 +431,6 @@ export class EVMTransactionConfirmerService {
     etherInterface: ethers.utils.Interface;
     parsedTxnData: ethers.utils.TransactionDescription;
   }) {
-    // Sanity check that the decoded function name is correct
     const fragment = etherInterface.getFunction(parsedTxnData.name);
     const params = parsedTxnData.args.reduce((res, param, i) => {
       let parsedParam = param;
