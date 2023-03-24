@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
-import { IoCloseOutline } from "react-icons/io5";
+import { IoCloseOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
@@ -9,7 +9,11 @@ import { HttpStatusCode } from "axios";
 import useTimeout from "@hooks/useSetTimeout";
 import { useStorageContext } from "@contexts/StorageContext";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
-import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
+import {
+  CONFIRMATIONS_BLOCK_TOTAL,
+  DFC_CONFIRMATIONS_BLOCK_TOTAL,
+  EVM_CONFIRMATIONS_BLOCK_TOTAL,
+} from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
 import { useContractContext } from "../layouts/contexts/ContractContext";
@@ -20,7 +24,10 @@ export default function TransactionStatus({
   isApiSuccess,
   isReverted,
   isUnsentFund,
-  numberOfConfirmations,
+  ethTxnStatusIsConfirmed,
+  dfcTxnStatusIsConfirmed,
+  numberOfEvmConfirmations,
+  numberOfDfcConfirmations,
   allocationTxnHash,
   txnHash,
   onClose,
@@ -29,7 +36,10 @@ export default function TransactionStatus({
   isApiSuccess: boolean;
   isReverted: boolean;
   isUnsentFund: boolean;
-  numberOfConfirmations: string;
+  ethTxnStatusIsConfirmed: boolean;
+  dfcTxnStatusIsConfirmed: boolean;
+  numberOfEvmConfirmations: string;
+  numberOfDfcConfirmations: string;
   allocationTxnHash?: string;
   txnHash: string | undefined;
   onClose: () => void;
@@ -45,9 +55,10 @@ export default function TransactionStatus({
   const [description, setDescription] = useState("");
   const [isThrottleLimitReached, setIsThrottleLimitReached] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+
   const confirmationBlocksCurrent = BigNumber.min(
     CONFIRMATIONS_BLOCK_TOTAL,
-    numberOfConfirmations
+    new BigNumber(numberOfEvmConfirmations).plus(numberOfDfcConfirmations)
   ).toFixed();
 
   const [throttledTimeOut] = useTimeout(() => {
@@ -71,7 +82,7 @@ export default function TransactionStatus({
     } else {
       setTitle("Awaiting confirmation");
       setDescription(
-        "Your transaction is being processed. It is safe to close this tab, we recommend to keep it open to get your transaction ID."
+        "Your transaction is being processed. We recommend keeping your tab open to ensure you receive your funds. Please only close the tab after your DFI transaction ID is displayed."
       );
     }
   }, [isConfirmed, isReverted, isUnsentFund]);
@@ -131,6 +142,7 @@ export default function TransactionStatus({
             isReverted={isReverted}
             isUnsentFund={isUnsentFund}
             isApiSuccess={isApiSuccess}
+            txnType={ethTxnStatusIsConfirmed ? "For DFC" : "For EVM"}
           />
         </div>
       )}
@@ -202,6 +214,7 @@ export default function TransactionStatus({
                 isReverted={isReverted}
                 isUnsentFund={isUnsentFund}
                 isApiSuccess={isApiSuccess}
+                txnType={ethTxnStatusIsConfirmed ? "For DFC" : "For EVM"}
               />
             )}
 
@@ -216,6 +229,29 @@ export default function TransactionStatus({
             )}
           </div>
         )}
+      </div>
+      <div className="flex mt-4 pt-4 border-t border-t-dark-200">
+        <div className="mr-2">
+          <IoCheckmarkCircle
+            size={16}
+            className={clsx("inline-block ml-1 mr-1.5", {
+              "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
+              "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
+            })}
+          />
+          {EVM_CONFIRMATIONS_BLOCK_TOTAL} confirmations for EVM
+        </div>
+        <span className="text-dark-300 mx-2.5">•</span>
+        <div>
+          <IoCheckmarkCircle
+            size={16}
+            className={clsx("inline-block ml-1 mr-1.5", {
+              "text-valid": dfcTxnStatusIsConfirmed || isConfirmed,
+              "text-dark-300": !(dfcTxnStatusIsConfirmed || isConfirmed),
+            })}
+          />
+          {DFC_CONFIRMATIONS_BLOCK_TOTAL} confirmations for DFC
+        </div>
       </div>
     </div>
   );
