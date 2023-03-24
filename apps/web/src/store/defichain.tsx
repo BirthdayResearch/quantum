@@ -127,7 +127,14 @@ export const bridgeApi = createApi({
         method: "GET",
       }),
     }),
-    allocateDfcFund: builder.mutation<{ transactionHash: string }, any>({
+    allocateDfcFund: builder.mutation<
+      {
+        transactionHash: string;
+        isConfirmed: boolean;
+        numberOfConfirmationsDfc: string;
+      },
+      any
+    >({
       query: ({ baseUrl, txnHash }) => ({
         url: `${baseUrl}/${PATH_ETHEREUM}/allocateDFCFund`,
         body: {
