@@ -1,6 +1,6 @@
 const testNetUrl = "http://localhost:3001/liquidity?network=TestNet";
 
-const desktopViewPorts = ["ipad-2"];
+const desktopViewPorts = ["macbook-15", "ipad-2"];
 
 desktopViewPorts.forEach((viewPort) => {
   context(`Liquidity page on ${viewPort}`, () => {
@@ -13,18 +13,6 @@ desktopViewPorts.forEach((viewPort) => {
     beforeEach(() => {
       cy.visit(testNetUrl);
       cy.viewport(<Cypress.ViewportPreset>viewPort);
-    });
-
-    it("Should check navigation between Bridge and Liquidity pages", () => {
-      cy.get(".flex-col  .px-5 > div.p-1 > a")
-        .first()
-        .should("be.visible")
-        .click();
-      cy.url().should("not.contain", "liquidity");
-      cy.get(".flex-col  .px-5 > div.p-1 > a")
-        .last()
-        .should("be.visible")
-        .click();
     });
 
     it("Should check Proof of Baking link", () => {
@@ -107,7 +95,19 @@ context(`Liquidity page on ${mobileViewPort}`, () => {
     cy.viewport(<Cypress.ViewportPreset>mobileViewPort);
   });
 
-  it.skip("Should check responsive design for the Liquidity table elements", () => {
+  it("Should check navigation between Bridge and Liquidity pages", () => {
+    cy.get(".flex-col  .px-5 > div.p-1 > a")
+      .first()
+      .should("be.visible")
+      .click();
+    cy.url().should("not.contain", "liquidity");
+    cy.get(".flex-col  .px-5 > div.p-1 > a")
+      .last()
+      .should("be.visible")
+      .click();
+  });
+
+  it("Should check responsive design for the Liquidity table elements", () => {
     cy.get(".space-y-3 > .border-gradient-6 svg[stroke='currentColor']").should(
       "have.length",
       6
