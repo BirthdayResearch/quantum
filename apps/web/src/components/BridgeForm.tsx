@@ -11,8 +11,8 @@ import {
   Network,
   NetworkOptionsI,
   SelectionType,
-  TokensI,
   TokenBalances,
+  TokensI,
 } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import UtilityModal, {
@@ -160,7 +160,7 @@ export default function BridgeForm({
     const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
     const balance = (refetch ? await getBalanceFn() : tokenBalances)[key];
 
-    if (balance === null) {
+    if (balance === null || new BigNumber(balance).lte(0)) {
       setIsBalanceSufficient(false);
       return false;
     }
