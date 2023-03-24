@@ -486,11 +486,15 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     // Fund arbitrary EOA to allow it to make transactions. It has no other funds
     await hardhatNetwork.fundAddress(signer.address, ethers.utils.parseEther('1000'));
     await hardhatNetwork.generate(1);
+    await musdcContract.mint(signer.address, ethers.utils.parseEther('1000'));
 
     // Deploy shell contract
-    const ShellContractDeployment = await new ShellBridgeV1__factory(signer).deploy();
+    const ShellContractDeployment = await new ShellBridgeV1__factory(signer).deploy(bridgeContract.address);
     await hardhatNetwork.generate(1);
     const shellContract = await ShellContractDeployment.deployed();
+    await hardhatNetwork.generate(1);
+    await musdcContract.connect(signer).approve(shellContract.address, ethers.constants.MaxUint256);
+    await hardhatNetwork.generate(2);
 
     // Create shell transaction
     const tx = await shellContract.bridgeToDeFiChain(

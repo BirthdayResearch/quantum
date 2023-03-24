@@ -73,6 +73,34 @@ describe('EVM --> DeFiChain', () => {
         }),
       ).to.be.revertedWithCustomError(proxyBridge, 'MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20');
     });
+
+    it('Unsuccessful if the contract is arbitrary', async () => {
+      const { proxyBridge, testToken, defaultAdminSigner, arbitrarySigner } = await loadFixture(deployContracts);
+      await initMintAndSupport(proxyBridge, testToken, defaultAdminSigner.address, proxyBridge.address);
+      // Deploying the arbitrary contract
+      const ShellContract = await ethers.getContractFactory('ShellBridgeV1');
+      const shellContract = await ShellContract.deploy(proxyBridge.address);
+      await testToken.mint(arbitrarySigner.address, toWei('2'));
+      await testToken.connect(arbitrarySigner).approve(shellContract.address, ethers.constants.MaxUint256);
+      const ZEROADDRESS = ethers.constants.AddressZero;
+      const arbitraryTx = await shellContract
+        .connect(arbitrarySigner)
+        .bridgeToDeFiChain(ZEROADDRESS, testToken.address, toWei('1'));
+      await arbitraryTx.wait();
+      expect(arbitraryTx.to).to.be.equal(shellContract.address);
+      console.log(arbitraryTx);
+      // Need to add to the timestamp of the previous block to match the next block the tx is mined in
+      const expectedTimestamp = (await time.latest()) + 1;
+      // checking if the emitted events are correct in order
+      await expect(shellContract.connect(arbitrarySigner).bridgeToDeFiChain(ZEROADDRESS, testToken.address, toWei('1')))
+        .to.emit(proxyBridge, 'BRIDGE_TO_DEFI_CHAIN')
+        .withArgs(ZEROADDRESS, testToken.address, toWei('1'), expectedTimestamp) // this amount will be bridged regardless of the arbitrary event below
+        .and.emit(shellContract, 'BRIDGE_TO_DEFI_CHAIN')
+        .withArgs(ZEROADDRESS, testToken.address, toWei('2'), expectedTimestamp);
+
+      // Proxy contract should have 2 `testTokens` now
+      expect(await testToken.balanceOf(proxyBridge.address)).to.be.equal(toWei('2'));
+    });
   });
 
   describe('Bridge ETH', () => {
