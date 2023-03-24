@@ -24,7 +24,10 @@ function TokenOrNetworkInfo({
   onClose?: () => void;
 }) {
   return (
-    <div className="flex flex-row items-center justify-between">
+    <div
+      className="flex flex-row items-center justify-between"
+      {...(onClose && { onClick: onClose })}
+    >
       <div className="flex flex-row items-center">
         <Image
           width={100}
@@ -49,10 +52,7 @@ function TokenOrNetworkInfo({
         </span>
       </div>
       {onClose !== undefined && (
-        <FiChevronUp
-          onClick={onClose}
-          className={clsx("h-6 w-6 text-dark-1000 transition-[transform]")}
-        />
+        <FiChevronUp className="h-6 w-6 text-dark-1000 transition-[transform]" />
       )}
     </div>
   );
