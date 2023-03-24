@@ -401,7 +401,7 @@ export class EVMTransactionConfirmerService {
 
   private async verifyIfValidTxn(transactionHash: string): Promise<boolean> {
     const { parsedTxnData } = await this.parseTxnHash(transactionHash);
-    // Sanity check that the decoded function name is correct
+    // Sanity check that the decoded function name and signature are correct
     if (
       parsedTxnData.name !== 'bridgeToDeiChain' ||
       parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
