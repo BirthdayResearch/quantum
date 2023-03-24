@@ -374,7 +374,7 @@ export class EVMTransactionConfirmerService {
   }> {
     const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
     const parsedTxnData = await this.parseTxnHash(transactionHash);
-    const { params } = decodeTxnData(parsedTxnData);
+    const { params } = this.decodeTxnData(parsedTxnData);
 
     const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
     const toAddress = ethers.utils.toUtf8String(defiAddress);
@@ -396,11 +396,11 @@ export class EVMTransactionConfirmerService {
   }
 
   private async verifyIfValidTxn(transactionHash: string): Promise<boolean> {
-    const { decodedData } = await this.parseTxnHash(transactionHash);
+    const { parsedTxnData } = await this.parseTxnHash(transactionHash);
     // Sanity check that the decoded function name is correct
     if (
-      decodedData.name !== 'bridgeToDeFiChain' ||
-      decodedData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
+      parsedTxnData.name !== 'bridgeToDeFiChain' ||
+      parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
     ) {
       return false;
     }
@@ -412,68 +412,64 @@ export class EVMTransactionConfirmerService {
 
   private async parseTxnHash(transactionHash: string): Promise<{
     etherInterface: ethers.utils.Interface;
-    decodedData: ethers.utils.TransactionDescription;
+    parsedTxnData: ethers.utils.TransactionDescription;
   }> {
     const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
     const etherInterface = new ethers.utils.Interface(BridgeV1__factory.abi);
-    const decodedData = etherInterface.parseTransaction({ data: onChainTxnDetail.data, value: onChainTxnDetail.value });
+    const parsedTxnData = etherInterface.parseTransaction({
+      data: onChainTxnDetail.data,
+      value: onChainTxnDetail.value,
+    });
 
-    return { etherInterface, decodedData };
+    return { etherInterface, parsedTxnData };
+  }
+
+  private decodeTxnData({
+    etherInterface,
+    parsedTxnData,
+  }: {
+    etherInterface: ethers.utils.Interface;
+    parsedTxnData: ethers.utils.TransactionDescription;
+  }) {
+    // Sanity check that the decoded function name is correct
+    const fragment = etherInterface.getFunction(parsedTxnData.name);
+    const params = parsedTxnData.args.reduce((res, param, i) => {
+      let parsedParam = param;
+      const isUint = fragment.inputs[i].type.indexOf('uint') === 0;
+      const isInt = fragment.inputs[i].type.indexOf('int') === 0;
+      const isAddress = fragment.inputs[i].type.indexOf('address') === 0;
+
+      if (isUint || isInt) {
+        const isArray = Array.isArray(param);
+
+        if (isArray) {
+          parsedParam = param.map((val) => EthBigNumber.from(val).toString());
+        } else {
+          parsedParam = EthBigNumber.from(param).toString();
+        }
+      }
+
+      // Addresses returned by web3 are randomly cased so we need to standardize and lowercase all
+      if (isAddress) {
+        const isArray = Array.isArray(param);
+        if (isArray) {
+          parsedParam = param.map((_) => _.toLowerCase());
+        } else {
+          parsedParam = param.toLowerCase();
+        }
+      }
+      return {
+        ...res,
+        [fragment.inputs[i].name]: parsedParam,
+      };
+    }, {});
+
+    return {
+      params,
+      name: parsedTxnData.name,
+    };
   }
 }
-
-const decodeTxnData = ({
-  etherInterface,
-  decodedData,
-}: {
-  etherInterface: ethers.utils.Interface;
-  decodedData: ethers.utils.TransactionDescription;
-}) => {
-  // Sanity check that the decoded function name is correct
-  if (
-    decodedData.name !== 'bridgeToDeFiChain' ||
-    decodedData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
-  ) {
-    throw Error('Invalid transactionHash');
-  }
-
-  const fragment = etherInterface.getFunction(decodedData.name);
-  const params = decodedData.args.reduce((res, param, i) => {
-    let parsedParam = param;
-    const isUint = fragment.inputs[i].type.indexOf('uint') === 0;
-    const isInt = fragment.inputs[i].type.indexOf('int') === 0;
-    const isAddress = fragment.inputs[i].type.indexOf('address') === 0;
-
-    if (isUint || isInt) {
-      const isArray = Array.isArray(param);
-
-      if (isArray) {
-        parsedParam = param.map((val) => EthBigNumber.from(val).toString());
-      } else {
-        parsedParam = EthBigNumber.from(param).toString();
-      }
-    }
-
-    // Addresses returned by web3 are randomly cased so we need to standardize and lowercase all
-    if (isAddress) {
-      const isArray = Array.isArray(param);
-      if (isArray) {
-        parsedParam = param.map((_) => _.toLowerCase());
-      } else {
-        parsedParam = param.toLowerCase();
-      }
-    }
-    return {
-      ...res,
-      [fragment.inputs[i].name]: parsedParam,
-    };
-  }, {});
-
-  return {
-    params,
-    name: decodedData.name,
-  };
-};
 
 interface SignClaim {
   receiverAddress: string;
