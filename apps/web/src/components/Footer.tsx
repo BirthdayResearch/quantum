@@ -37,6 +37,12 @@ const BirthdayResearchSocialItems = [
     label: "Medium",
     href: "https://medium.com/@birthdayresearch",
   },
+  {
+    icon: FaGithub,
+    testId: "gitHub_dfc",
+    label: "GitHub",
+    href: "https://github.com/BirthdayResearch/quantum-app",
+  },
 ];
 
 export default function Footer() {
