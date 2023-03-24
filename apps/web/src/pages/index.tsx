@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import BigNumber from "bignumber.js";
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
 import MobileBottomMenu from "@components/MobileBottomMenu";
@@ -6,9 +7,12 @@ import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
 import Logging from "@api/logging";
-import { CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
+import { getStorageItem } from "@utils/localStorage";
+import {
+  CONFIRMATIONS_BLOCK_TOTAL,
+  EVM_CONFIRMATIONS_BLOCK_TOTAL,
+} from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
-import { getStorageItem } from "../utils/localStorage";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
@@ -34,7 +38,10 @@ function Home() {
   }, [UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY]);
 
   const getNumberOfConfirmations = () => {
-    let numOfConfirmations = ethTxnStatus?.numberOfConfirmations;
+    let numOfConfirmations = BigNumber.min(
+      ethTxnStatus?.numberOfConfirmations,
+      EVM_CONFIRMATIONS_BLOCK_TOTAL
+    ).toString();
 
     if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
       numOfConfirmations = CONFIRMATIONS_BLOCK_TOTAL.toString();

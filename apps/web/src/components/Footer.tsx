@@ -41,7 +41,7 @@ const BirthdayResearchSocialItems = [
     icon: FaGithub,
     testId: "gitHub_br",
     label: "GitHub",
-    href: "https://github.com/BirthdayResearch/quantum",
+    href: "https://github.com/BirthdayResearch/quantum-app",
   },
 ];
 
