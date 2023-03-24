@@ -76,7 +76,7 @@ export class EVMTransactionConfirmerService {
       return { numberOfConfirmations: 0, isConfirmed: false };
     }
 
-    // Sanity check that the decoded name is correct and a valid SC
+    // Sanity check that the contractAddress, decoded name and signature are correct
     if (txReceipt.to !== this.contractAddress || !isValidTxn) {
       return { numberOfConfirmations: 0, isConfirmed: false };
     }
@@ -234,7 +234,7 @@ export class EVMTransactionConfirmerService {
         throw new Error('Transaction is not yet available');
       }
 
-      // Sanity check that the decoded name is correct and a valid SC
+      // Sanity check that the contractAddress, decoded name and signature are correct
       if (!isValidTxn || txReceipt.to !== this.contractAddress) {
         return {
           transactionHash: '',
@@ -403,7 +403,7 @@ export class EVMTransactionConfirmerService {
     const { parsedTxnData } = await this.parseTxnHash(transactionHash);
     // Sanity check that the decoded function name is correct
     if (
-      parsedTxnData.name !== 'bridgeToDeFiChain' ||
+      parsedTxnData.name !== 'bridgeToDeiChain' ||
       parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
     ) {
       return false;
