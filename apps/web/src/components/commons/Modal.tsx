@@ -8,6 +8,7 @@ interface Props {
   isOpen: boolean;
   onClose?: () => void;
   title?: string;
+  testId?: string;
 }
 
 export default function Modal({
@@ -15,6 +16,7 @@ export default function Modal({
   isOpen,
   title,
   onClose,
+  testId,
 }: PropsWithChildren<Props>) {
   const { isMobile } = useResponsive();
 
@@ -41,6 +43,7 @@ export default function Modal({
                 "text-2xl font-bold text-dark-900",
                 "md:font-semibold md:leading-9 md:tracking-wide"
               )}
+              data-testid={`${testId}-modal-title`}
             >
               {title}
             </h3>
@@ -49,6 +52,7 @@ export default function Modal({
                 size={isMobile ? 24 : 28}
                 className="text-dark-900 cursor-pointer hover:opacity-70 text-2xl md:text-[28px]"
                 onClick={onClose}
+                data-testid={`${testId}-modal-close-icon`}
               />
             )}
           </Dialog.Title>
