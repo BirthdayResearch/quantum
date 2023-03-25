@@ -298,6 +298,7 @@ export default function WalletAddressInput({
               onAddressInputChange("");
               handleFocusWithCursor();
             }}
+            data-testid={`${testId}-clear`}
           />
         )}
 
@@ -313,6 +314,7 @@ export default function WalletAddressInput({
               "active:border-dark-500 active:opacity-70",
               "hover:border-dark-500"
             )}
+            data-testid={`${testId}-use-metamask-btn`}
           >
             <MetaMaskIconSmall />
             <span className="ml-1.5">
@@ -324,7 +326,11 @@ export default function WalletAddressInput({
 
         {readOnly && (
           <span className="self-center">
-            <HiLockClosed size={18} className="text-dark-800" />
+            <HiLockClosed
+              size={18}
+              className="text-dark-800"
+              data-testid={`${testId}-lock-icon`}
+            />
           </span>
         )}
       </div>
@@ -335,6 +341,7 @@ export default function WalletAddressInput({
           "block px-4 pt-2 text-xs lg:px-6 lg:text-sm empty:before:content-['*'] empty:before:opacity-0",
           error.isError ? "text-error" : "text-warning"
         )}
+        data-testid={`${testId}-error-msg`}
       >
         {error.message && !disabled ? error.message : ""}
       </span>

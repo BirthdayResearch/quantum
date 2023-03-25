@@ -214,6 +214,7 @@ export default function EvmToDeFiChainTransfer({
               : handleInitiateTransfer()
           }
           onClose={() => onClose(false)}
+          testId="transaction"
         />
       )}
 
@@ -221,21 +222,30 @@ export default function EvmToDeFiChainTransfer({
         BridgeStatus.IsTokenApprovalInProgress,
         BridgeStatus.IsBridgeToDfcInProgress,
       ].includes(bridgeStatus) && (
-        <Modal isOpen>
+        <Modal isOpen testId="bridge-status">
           <div className="flex flex-col items-center mt-6 mb-14">
             <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
-            <span className="font-bold text-2xl text-dark-900 mt-12">
+            <span
+              className="font-bold text-2xl text-dark-900 mt-12"
+              data-testid="bridge-status-title"
+            >
               {statusMessage[bridgeStatus].title}
             </span>
-            <span className="text-dark-900 mt-2">
+            <span
+              className="text-dark-900 mt-2"
+              data-testid="bridge-status-msg"
+            >
               {statusMessage[bridgeStatus].message}
             </span>
           </div>
         </Modal>
       )}
 
-      <AlertInfoMessage containerStyle="px-5 py-4 mt-8">
-        <span className="text-left text-warning text-xs ml-3">
+      <AlertInfoMessage containerStyle="px-5 py-4 mt-8" testId="disclaimer">
+        <span
+          className="text-left text-warning text-xs ml-3"
+          data-testid="disclaimer-msg"
+        >
           {DISCLAIMER_MESSAGE}
         </span>
       </AlertInfoMessage>
