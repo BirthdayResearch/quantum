@@ -132,6 +132,7 @@ importers:
       clsx: ^1.2.1
       connectkit: ^1.2.0
       cypress: ^12.8.1
+      cypress-real-events: ^1.7.6
       dayjs: ^1.11.7
       ethers: ^5.7.2
       postcss: ^8.4.21
@@ -174,6 +175,7 @@ importers:
       babel-plugin-istanbul: 6.1.1
       babel-plugin-jsx-remove-data-test-id: 3.0.0_@babel+core@7.21.0
       cypress: 12.8.1
+      cypress-real-events: 1.7.6_cypress@12.8.1
       postcss: 8.4.21
       tailwindcss: 3.2.7_postcss@8.4.21
 
@@ -9872,6 +9874,14 @@ packages:
 
   /csstype/3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
+
+  /cypress-real-events/1.7.6_cypress@12.8.1:
+    resolution: {integrity: sha512-yP6GnRrbm6HK5q4DH6Nnupz37nOfZu/xn1xFYqsE2o4G73giPWQOdu6375QYpwfU1cvHNCgyD2bQ2hPH9D7NMw==}
+    peerDependencies:
+      cypress: ^4.x || ^5.x || ^6.x || ^7.x || ^8.x || ^9.x || ^10.x || ^11.x || ^12.x
+    dependencies:
+      cypress: 12.8.1
+    dev: true
 
   /cypress-wait-until/1.7.2:
     resolution: {integrity: sha512-uZ+M8/MqRcpf+FII/UZrU7g1qYZ4aVlHcgyVopnladyoBrpoaMJ4PKZDrdOJ05H5RHbr7s9Tid635X3E+ZLU/Q==}
