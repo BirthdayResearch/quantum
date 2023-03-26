@@ -7,19 +7,19 @@ import Socials from "./commons/Socials";
 const DeFiChainSocialItems = [
   {
     icon: FaTwitter,
-    testId: "twitter_dfc",
+    testId: "twitter-dfc",
     label: "Twitter",
     href: "https://twitter.com/defichain",
   },
   {
     icon: FaReddit,
-    testId: "reddit_dfc",
+    testId: "reddit-dfc",
     label: "Reddit",
     href: "https://www.reddit.com/r/defiblockchain",
   },
   {
     icon: FaGithub,
-    testId: "gitHub_dfc",
+    testId: "gitHub-dfc",
     label: "GitHub",
     href: "https://github.com/DeFiCh",
   },
@@ -27,19 +27,19 @@ const DeFiChainSocialItems = [
 const BirthdayResearchSocialItems = [
   {
     icon: FaTwitter,
-    testId: "twitter_br",
+    testId: "twitter-br",
     label: "Twitter",
     href: "https://twitter.com/BirthdayDev/",
   },
   {
     icon: BsMedium,
-    testId: "medium_br",
+    testId: "medium-br",
     label: "Medium",
     href: "https://medium.com/@birthdayresearch",
   },
   {
     icon: FaGithub,
-    testId: "gitHub_br",
+    testId: "gitHub-br",
     label: "GitHub",
     href: "https://github.com/BirthdayResearch/quantum-app",
   },
@@ -53,22 +53,21 @@ export default function Footer() {
       data-testid="footer"
       className="relative z-[1] w-full border-dark-300 pt-6 md:pt-5 lg:pt-8 bg-gradient-to-r from-[#00000066] to-[#00000000]"
     >
-      <section
-        data-testid="footer_web"
-        className="text-dark-900 px-6 md:px-12 lg:px-[120px] pb-12 lg:pb-8 text-sm"
-      >
+      <section className="text-dark-900 px-6 md:px-12 lg:px-[120px] pb-12 lg:pb-8 text-sm">
         <div className="border-t-[0.5px] border-dark-300 py-4 md:py-6 lg:py-8">
           <div className="relative w-[216px] h-6 md:w-[252px] md:h-7 lg:h-9 lg:w-[316px]">
             <Image
               fill
-              data-testid="footer-bridge-logo"
+              data-testid="footer-quantum-logo"
               src="/header-logo.svg"
               alt="Bridge Logo"
             />
           </div>
         </div>
         <div className="pl-1 flex-row justify-between">
-          <div className="font-semibold">Version {data?.v ?? "0.0.0"}</div>
+          <div className="font-semibold" data-testid="footer-quantum-version">
+            Version {data?.v ?? "0.0.0"}
+          </div>
           <div>
             Quantum is a proud development of Birthday Research — the blockchain
             R&D arm of Cake DeFi
