@@ -84,7 +84,18 @@ context("QA-755 Pre-connected wallet - Bridge Form", () => {
       .contains("Connect wallet");
   });
 
-  it("3: Verify swap network functionality", () => {
+  it("3: Verify amount input functionality", () => {
+    cy.findByTestId("quick-input-card").should("be.visible");
+    cy.findByTestId("quick-input-card-set-amount")
+      .type("0.12345678")
+      .should("have.value", "0.12345")
+      .clear()
+      .type("123456789")
+      .should("have.value", "123456789")
+      .clear();
+  });
+
+  it("4: Verify swap network functionality", () => {
     const source = "Ethereum";
     const destination = "DeFiChain";
 

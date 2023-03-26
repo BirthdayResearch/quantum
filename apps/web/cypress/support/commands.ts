@@ -62,15 +62,6 @@ declare global {
         testId: string;
         url: string;
       }) => Chainable<Element>;
-
-      /**
-       * @description Verifies that the input field accepts a maximum of six decimal place
-       * @param {string} input - Input amount
-       * @example cy.verifyAmountInputAcceptsMaxFiveDecimalPlaces("0.123456789");
-       */
-      verifyAmountInputAcceptsMaxFiveDecimalPlaces: (
-        input: string
-      ) => Chainable<Element>;
     }
   }
 }
@@ -96,17 +87,5 @@ Cypress.Commands.add(
       .should("be.visible")
       .should("have.attr", "href")
       .and("contain", extLink.url);
-  }
-);
-
-Cypress.Commands.add(
-  "verifyAmountInputAcceptsMaxFiveDecimalPlaces",
-  (input: string) => {
-    const allowedDecimalPlaces = new BigNumber(input).toFixed(5);
-
-    cy.findByTestId("quick-input-card").should("be.visible");
-    cy.findByTestId("quick-input-card-set-amount")
-      .type(input)
-      .should("have.value", allowedDecimalPlaces);
   }
 );
