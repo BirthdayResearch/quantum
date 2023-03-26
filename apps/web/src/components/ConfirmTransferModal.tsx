@@ -17,16 +17,21 @@ function RowData({
   label,
   networkLabel,
   isSendingToDFC = true,
+  testId,
 }: {
   data: RowDataI;
   label: string;
   networkLabel: string;
   isSendingToDFC?: boolean;
+  testId?: string;
 }) {
   return (
     <div>
       <div className="flex flex-row items-center gap-2">
-        <span className="text-sm font-semibold tracking-wide text-dark-500">
+        <span
+          className="text-sm font-semibold tracking-wide text-dark-500"
+          data-testid={`${testId}-label`}
+        >
           {label}
         </span>
         <Image
@@ -35,6 +40,7 @@ function RowData({
           src={data.networkIcon}
           alt={data.networkName}
           className={clsx("block w-7 h-7", "md:hidden md:w-9 md:h-9")}
+          data-testid={`${testId}-network-icon-mobile`}
         />
         <hr className="w-full border-dark-200" />
       </div>
@@ -48,6 +54,7 @@ function RowData({
             "hidden w-7 h-7 ml-2",
             "md:block md:w-9 md:h-9 md:ml-0"
           )}
+          data-testid={`${testId}-network-icon`}
         />
         <div className={clsx("flex flex-col w-1/2", "md:grow md:w-auto")}>
           <span
@@ -55,11 +62,13 @@ function RowData({
               "text-sm text-dark-900 !leading-5 break-all",
               "md:text-base md:w-5/6"
             )}
+            data-testid={`${testId}-address`}
           >
             {data.address}
           </span>
           <span
             className={clsx("text-xs text-dark-700 mt-1", "md:text-sm md:mt-0")}
+            data-testid={`${testId}-network-name`}
           >
             {networkLabel} {isSendingToDFC ? `(${data.networkName})` : ""}
           </span>
@@ -79,6 +88,7 @@ function RowData({
             value={data.amount.toFixed(6, BigNumber.ROUND_FLOOR)}
             thousandSeparator
             trimTrailingZeros
+            testId={`${testId}-amount`}
           />
           <div className="flex items-center justify-end gap-1">
             <Image
@@ -90,8 +100,12 @@ function RowData({
                 "w-5 h-5 order-last",
                 "md:w-4 md:h-4 md:order-none"
               )}
+              data-testid={`${testId}-token-icon`}
             />
-            <span className="text-sm text-dark-700 mt-0.5 md:mt-0">
+            <span
+              className="text-sm text-dark-700 mt-0.5 md:mt-0"
+              data-testid={`${testId}-token-name`}
+            >
               {data.tokenName}
             </span>
           </div>
@@ -155,12 +169,14 @@ export default function ConfirmTransferModal({
       title="Review transaction"
       isOpen={show}
       onClose={() => onClose(false)}
+      testId="review"
     >
       <RowData
         data={data.from}
         label="FROM"
         networkLabel="Source"
         isSendingToDFC={isSendingToDFC}
+        testId="from-source"
       />
       <RowData
         data={{
@@ -169,6 +185,7 @@ export default function ConfirmTransferModal({
         }}
         label="TO"
         networkLabel="Destination"
+        testId="to-destination"
       />
       <div className="w-full border-t border-t-dark-200 md:mt-3" />
 
@@ -190,6 +207,7 @@ export default function ConfirmTransferModal({
           thousandSeparator
           suffix={` ${feeSymbol}`}
           trimTrailingZeros
+          testId="fees-amount"
         />
       </div>
 

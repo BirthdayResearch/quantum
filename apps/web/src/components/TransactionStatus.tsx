@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
-import { IoCloseOutline, IoCheckmarkCircle } from "react-icons/io5";
+import { IoCheckmarkCircle, IoCloseOutline } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
@@ -132,6 +132,7 @@ export default function TransactionStatus({
           "pr-6": isLg && isConfirmed,
         }
       )}
+      data-testid="txn-status-container"
     >
       {!isLg && !isUnsentFund && (
         <div className="pb-4">
@@ -153,14 +154,25 @@ export default function TransactionStatus({
         })}
       >
         <div className="flex-1 flex-col">
-          <div className="leading-5 lg:text-xl font-semibold">{title}</div>
-          <div className="pt-1 text-sm text-dark-700">{description}</div>
+          <div
+            className="leading-5 lg:text-xl font-semibold"
+            data-testid="txn-status-title"
+          >
+            {title}
+          </div>
+          <div
+            className="pt-1 text-sm text-dark-700"
+            data-testid="txn-status-desc"
+          >
+            {description}
+          </div>
           <div className="flex flex-row items-center mt-3 lg:mt-4 text-dark-900 md:text-sm lg:text-base font-bold">
             <a
               className="flex flex-row items-center hover:opacity-70 mb-1"
               href={`${ExplorerURL}/tx/${txnHash}`}
               target="_blank"
               rel="noreferrer"
+              data-testid="txn-status-view-etherscan"
             >
               <FiArrowUpRight size={20} className="mr-2" />
               {allocationTxnHash ? "Etherscan" : "View on Etherscan"}
@@ -171,6 +183,7 @@ export default function TransactionStatus({
                 href={getTransactionUrl(allocationTxnHash)}
                 target="_blank"
                 rel="noreferrer"
+                data-testid="txn-status-view-defiscan"
               >
                 <FiArrowUpRight size={20} className="mr-2" />
                 DeFiScan
@@ -194,6 +207,7 @@ export default function TransactionStatus({
             disabled={isThrottleLimitReached || isRetrying}
             isRefresh={!isRetrying}
             isLoading={isRetrying}
+            testId="txn-status-retry-btn"
           />
         )}
         {(isConfirmed || isReverted) && !isLg && (
@@ -202,6 +216,7 @@ export default function TransactionStatus({
             variant="secondary"
             customStyle="mt-6 dark-section-bg"
             onClick={onClose}
+            testId="txn-status-close-btn"
           />
         )}
         {isLg && (
@@ -224,6 +239,7 @@ export default function TransactionStatus({
                   onClick={onClose}
                   size={20}
                   className="hover:opacity-70 cursor-pointer"
+                  data-testid="txn-status-close-icon"
                 />
               </div>
             )}
@@ -231,24 +247,26 @@ export default function TransactionStatus({
         )}
       </div>
       <div className="flex mt-4 pt-4 border-t border-t-dark-200">
-        <div className="mr-2">
+        <div className="mr-2" data-testid="txn-status-evm-confirm-block">
           <IoCheckmarkCircle
             size={16}
             className={clsx("inline-block ml-1 mr-1.5", {
               "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
               "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
             })}
+            data-testid="txn-status-evm-confirm-block-icon"
           />
           {EVM_CONFIRMATIONS_BLOCK_TOTAL} confirmations for EVM
         </div>
         <span className="text-dark-300 mx-2.5">•</span>
-        <div>
+        <div data-testid="txn-status-dfc-confirm-block">
           <IoCheckmarkCircle
             size={16}
             className={clsx("inline-block ml-1 mr-1.5", {
               "text-valid": dfcTxnStatusIsConfirmed || isConfirmed,
               "text-dark-300": !(dfcTxnStatusIsConfirmed || isConfirmed),
             })}
+            data-testid="txn-status-dfc-confirm-block-icon"
           />
           {DFC_CONFIRMATIONS_BLOCK_TOTAL} confirmations for DFC
         </div>

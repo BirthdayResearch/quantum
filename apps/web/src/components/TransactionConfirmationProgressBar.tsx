@@ -40,10 +40,8 @@ export default function ConfirmationProgress({
   confirmationBlocksCurrent: string;
   isConfirmed: boolean;
   isReverted: boolean;
-
   isUnsentFund: boolean;
   isApiSuccess: boolean;
-
   txnType: string;
 }) {
   const { isLg } = useResponsive();
@@ -90,12 +88,18 @@ export default function ConfirmationProgress({
           >
             <div className="text-center">
               {isApiSuccess || isConfirmed ? (
-                <div className="text-lg font-bold text-dark-1000">{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
+                <div
+                  className="text-lg font-bold text-dark-1000"
+                  data-testid="txn-progress-blocks"
+                >{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
               ) : (
                 <SkeletonLoader isDesktop />
               )}
 
-              <span className="text-xs text-dark-700">
+              <span
+                className="text-xs text-dark-700"
+                data-testid="txn-progress-status"
+              >
                 {isConfirmed ? "Confirmed" : txnType}
               </span>
             </div>
@@ -103,7 +107,10 @@ export default function ConfirmationProgress({
         </div>
       ) : (
         <div>
-          <div className="flex text-sm text-dark-700">
+          <div
+            className="flex text-sm text-dark-700"
+            data-testid="txn-progress-status-mobile"
+          >
             {isApiSuccess || isConfirmed ? (
               <span
                 className={clsx("font-semibold text-brand-100", {
@@ -111,6 +118,7 @@ export default function ConfirmationProgress({
                   "text-warning": isReverted,
                   "text-error": isUnsentFund,
                 })}
+                data-testid="txn-progress-blocks-mobile"
               >
                 {`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}\u00A0`}
               </span>
@@ -126,6 +134,7 @@ export default function ConfirmationProgress({
                 "h-full rounded-md mt-1",
                 isConfirmed ? "bg-valid" : "bg-brand-100"
               )}
+              data-testid="txn-progress-bar-mobile"
             />
           </div>
         </div>

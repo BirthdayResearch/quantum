@@ -9,6 +9,7 @@ interface Props {
   title?: string;
   position?: "top" | "right";
   customIconColor?: string;
+  testId?: string;
 }
 
 export default function IconTooltip({
@@ -16,6 +17,7 @@ export default function IconTooltip({
   title,
   position = "top",
   customIconColor,
+  testId,
 }: Props): JSX.Element {
   const [tooltipOffset, setTooltipOffset] = useState<string>();
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
@@ -37,6 +39,7 @@ export default function IconTooltip({
         size={16}
         className={clsx(customIconColor ?? "text-dark-700")}
         onClick={() => (!isWeb ? setIsMobileModalOpen(true) : null)}
+        data-testid={`${testId}-tooltip-icon`}
       />
       {isWeb ? (
         /* Display web tooltip */
@@ -49,6 +52,7 @@ export default function IconTooltip({
               ? "left-1/2 -translate-x-1/2"
               : "left-5 top-1/2 -translate-y-1/2"
           )}
+          data-testid={`${testId}-tooltip-content`}
         >
           {content}
         </div>

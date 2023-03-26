@@ -11,8 +11,8 @@ import {
   Network,
   NetworkOptionsI,
   SelectionType,
-  TokensI,
   TokenBalances,
+  TokensI,
 } from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import UtilityModal, {
@@ -134,6 +134,7 @@ export default function BridgeForm({
       }),
   });
 
+  console.log(`evmBalance: ${JSON.stringify(evmBalance)}`);
   const maxAmount = new BigNumber(evmBalance?.formatted ?? 0);
   const [fromAddress, setFromAddress] = useState<string>(address || "");
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
@@ -167,7 +168,7 @@ export default function BridgeForm({
     const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
     const balance = (refetch ? await getBalanceFn() : tokenBalances)[key];
 
-    if (balance === null) {
+    if (balance === null || new BigNumber(balance).lte(0)) {
       setIsBalanceSufficient(false);
       return false;
     }
@@ -339,6 +340,7 @@ export default function BridgeForm({
       // Revalidate entered amount when selected token is changed
       validateAmountInput(amount, maxAmount);
     }
+    console.log(`maxAmount: ${maxAmount}`);
   }, [maxAmount]);
 
   useEffect(() => {
@@ -591,12 +593,16 @@ export default function BridgeForm({
           !addressInput &&
           !hasPendingTxn &&
           !txnHash.confirmed && (
-            <div className="text-xs lg:text-sm leading-4 lg:leading-5 text-dark-700 text-center mt-4">
+            <div
+              className="text-xs lg:text-sm leading-4 lg:leading-5 text-dark-700 text-center mt-4"
+              data-testid="transaction-interrupted-msg"
+            >
               Transaction interrupted?
               <button
                 type="button"
                 className="text-dark-1000 font-bold ml-1"
                 onClick={() => setShowErcToDfcRestoreModal(true)}
+                data-testid="restore-btn"
               >
                 Recover it here
               </button>
@@ -604,13 +610,17 @@ export default function BridgeForm({
           )}
 
         {hasPendingTxn && (
-          <span className={clsx("pt-2", warningTextStyle)}>
+          <span
+            className={clsx("pt-2", warningTextStyle)}
+            data-testid="error-transaction-pending"
+          >
             Unable to edit while transaction is pending
           </span>
         )}
         {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton
+              data-testid="reset-btn"
               label="Reset form"
               onClick={() => {
                 setUtilityModalData(UtilityModalMessage.resetForm);
@@ -621,7 +631,10 @@ export default function BridgeForm({
         )}
 
         {!isBalanceSufficient && !hasPendingTxn && (
-          <div className={clsx("pt-3", warningTextStyle)}>
+          <div
+            className={clsx("pt-3", warningTextStyle)}
+            data-testid="error-insufficient-balance"
+          >
             Unable to process transaction. <div>Please try again later</div>
           </div>
         )}

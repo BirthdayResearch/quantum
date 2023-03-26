@@ -14,7 +14,8 @@
     "types": [
       "cypress",
       "@testing-library/cypress",
-      "@synthetixio/synpress/support"
+      "@synthetixio/synpress/support",
+      "cypress-real-events"
     ]
   },
   "include": [
