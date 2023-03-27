@@ -203,12 +203,15 @@ export default function BridgeForm({
       .then((data) => {
         setLiquidity(data);
       });
-  }, [networkEnv]);
+  }, [networkEnv, selectedNetworkA, selectedTokensA]);
 
   useEffect(() => {
     verifySufficientHWBalance();
-    verifySufficientLiquidity();
   }, [selectedNetworkA, selectedTokensA, networkEnv, tokenBalances, amount]);
+
+  useEffect(() => {
+    verifySufficientLiquidity();
+  }, [liquidity, networkEnv, selectedNetworkA, selectedTokensA]);
 
   useEffect(() => {
     checkBalance();
@@ -631,7 +634,7 @@ export default function BridgeForm({
           </div>
         )}
 
-        {!isBalanceSufficient && !hasPendingTxn && (
+        {!isBalanceSufficient && isLiquiditySufficient && !hasPendingTxn && (
           <div className={clsx("pt-3", warningTextStyle)}>
             Unable to process transaction. <div>Please try again later</div>
           </div>
