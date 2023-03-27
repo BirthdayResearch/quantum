@@ -25,7 +25,10 @@ import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
 import { useStorageContext } from "@contexts/StorageContext";
-import { useGetAddressDetailMutation } from "@store/index";
+import {
+  useBridgeBalancesMutation,
+  useGetAddressDetailMutation,
+} from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
@@ -136,6 +139,11 @@ export default function BridgeForm({
   const { getBalance } = useCheckBalance();
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true);
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | {}>({});
+
+  const [getBridgeBalance] = useBridgeBalancesMutation();
+  const [liquidity, setLiquidity] = useState<any>();
+  const [isLiquiditySufficient, setIsLiquiditySufficient] = useState(true);
+
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
 
   async function getBalanceFn(): Promise<TokenBalances | {}> {
@@ -177,8 +185,30 @@ export default function BridgeForm({
     return undefined;
   }
 
+  function verifySufficientDFILiquidity(): void {
+    if (selectedTokensA.tokenB.symbol !== "DFI") {
+      setIsLiquiditySufficient(true); // does not check for DFI liquidity when bridging non-DFI token
+      return;
+    }
+    const dfiLiquidity = new BigNumber(liquidity?.DFC?.DFI ?? 0);
+    if (dfiLiquidity === null || dfiLiquidity.lte(0)) {
+      setIsLiquiditySufficient(false);
+      return;
+    }
+    setIsLiquiditySufficient(true);
+  }
+
+  useEffect(() => {
+    getBridgeBalance({})
+      .unwrap()
+      .then((data) => {
+        setLiquidity(data);
+      });
+  }, [networkEnv]);
+
   useEffect(() => {
     verifySufficientHWBalance();
+    verifySufficientDFILiquidity();
   }, [selectedNetworkA, selectedTokensA, networkEnv, tokenBalances, amount]);
 
   useEffect(() => {
@@ -560,7 +590,8 @@ export default function BridgeForm({
               disabled={
                 (isConnected && !isFormValid) ||
                 hasPendingTxn ||
-                !isBalanceSufficient
+                !isBalanceSufficient ||
+                !isLiquiditySufficient
               }
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
@@ -604,6 +635,11 @@ export default function BridgeForm({
         {!isBalanceSufficient && !hasPendingTxn && (
           <div className={clsx("pt-3", warningTextStyle)}>
             Unable to process transaction. <div>Please try again later</div>
+          </div>
+        )}
+        {!isLiquiditySufficient && !hasPendingTxn && (
+          <div className={clsx("pt-3", warningTextStyle)}>
+            Insufficient liquidity. <div>Please try again later</div>
           </div>
         )}
       </div>
