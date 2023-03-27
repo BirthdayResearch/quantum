@@ -451,7 +451,7 @@ export default function BridgeForm({
             onSelect={(value: TokensI) => setSelectedTokensA(value)}
             value={selectedTokensA}
             disabled={hasUnconfirmedTxn}
-            testId="tokenA"
+            testId="token-pair"
           />
         </div>
       </div>
@@ -523,7 +523,7 @@ export default function BridgeForm({
             floatingObj={floatingObj}
             type={SelectionType.Token}
             value={selectedTokensB}
-            testId="tokenB"
+            testId="token-to-receive"
           />
         </div>
       </div>
