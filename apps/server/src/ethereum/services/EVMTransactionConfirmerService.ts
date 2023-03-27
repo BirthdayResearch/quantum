@@ -403,7 +403,7 @@ export class EVMTransactionConfirmerService {
     const { parsedTxnData } = await this.parseTxnHash(transactionHash);
     // Sanity check that the decoded function name and signature are correct
     if (
-      parsedTxnData.name !== 'bridgeToDeiChain' ||
+      parsedTxnData.name !== 'bridgeToDeFiChain' ||
       parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
     ) {
       return false;
