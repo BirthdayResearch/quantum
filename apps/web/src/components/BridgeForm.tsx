@@ -25,10 +25,7 @@ import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
 import { useStorageContext } from "@contexts/StorageContext";
-import {
-  useBridgeBalancesMutation,
-  useGetAddressDetailMutation,
-} from "@store/index";
+import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
@@ -139,11 +136,6 @@ export default function BridgeForm({
   const { getBalance } = useCheckBalance();
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true);
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | {}>({});
-
-  const [getBridgeBalance] = useBridgeBalancesMutation();
-  const [liquidity, setLiquidity] = useState<any>();
-  const [isLiquiditySufficient, setIsLiquiditySufficient] = useState(true);
-
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
 
   async function getBalanceFn(): Promise<TokenBalances | {}> {
@@ -185,33 +177,9 @@ export default function BridgeForm({
     return undefined;
   }
 
-  function verifySufficientLiquidity(): void {
-    const liquidityCategory =
-      selectedNetworkB.name === Network.DeFiChain ? "DFC" : "EVM";
-    const tokenLiquidity = new BigNumber(
-      liquidity?.[liquidityCategory]?.[selectedTokensA.tokenB.symbol] ?? 0
-    );
-
-    setIsLiquiditySufficient(
-      !(tokenLiquidity.isNaN() || tokenLiquidity.lte(0))
-    );
-  }
-
-  useEffect(() => {
-    getBridgeBalance({})
-      .unwrap()
-      .then((data) => {
-        setLiquidity(data);
-      });
-  }, [networkEnv, selectedNetworkA, selectedTokensA]);
-
   useEffect(() => {
     verifySufficientHWBalance();
   }, [selectedNetworkA, selectedTokensA, networkEnv, tokenBalances, amount]);
-
-  useEffect(() => {
-    verifySufficientLiquidity();
-  }, [liquidity, networkEnv, selectedNetworkA, selectedTokensA]);
 
   useEffect(() => {
     checkBalance();
@@ -592,8 +560,7 @@ export default function BridgeForm({
               disabled={
                 (isConnected && !isFormValid) ||
                 hasPendingTxn ||
-                !isBalanceSufficient ||
-                !isLiquiditySufficient
+                !isBalanceSufficient
               }
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
@@ -634,12 +601,7 @@ export default function BridgeForm({
           </div>
         )}
 
-        {!isBalanceSufficient && isLiquiditySufficient && !hasPendingTxn && (
-          <div className={clsx("pt-3", warningTextStyle)}>
-            Unable to process transaction. <div>Please try again later</div>
-          </div>
-        )}
-        {!isLiquiditySufficient && !hasPendingTxn && (
+        {!isBalanceSufficient && !hasPendingTxn && (
           <div className={clsx("pt-3", warningTextStyle)}>
             Unable to process due to liquidity cap, please try again in a few
             hours
