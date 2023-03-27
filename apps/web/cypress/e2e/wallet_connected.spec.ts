@@ -1,5 +1,5 @@
 import truncateTextFromMiddle from "../../src/utils/textHelper";
-import { DOCUMENTATION_URL } from "../../src/constants";
+import { DOCUMENTATION_URL, FAQS_URL, FEES_INFO } from "../../src/constants";
 
 beforeEach(() => {
   cy.visit("http://localhost:3000/?network=Local", {
@@ -80,20 +80,16 @@ describe("QA-769-1 Connect wallet - Connect Wallet (auto connected)", () => {
   });
 });
 
-describe.only("QA-769-2 Connected wallet - guides", () => {
+describe("QA-769-2 Connected wallet - guides", () => {
   it("QA-769-2-1 should redirect to documents and faqs", () => {
-    cy.findByTestId("documentation-link")
-      // .invoke("removeAttr", "target")
-      .click();
-    cy.wait(5000);
-    cy.url().then((url) => {
-      expect(url).to.equal(DOCUMENTATION_URL);
-    });
-    // cy.url().should("contain.text", DOCUMENTATION_URL);
-
-    // cy.go("back");
-    // cy.findByTestId("faqs-link").click();
-    // cy.url().should("contain.text", FAQS_URL);
+    // due to having different domain, we cannot use cy.url() or cy.location() to check.
+    // checking "href" is the suggested alternative by cypress.
+    cy.findByTestId("documentation-link").should(
+      "have.attr",
+      "href",
+      DOCUMENTATION_URL
+    );
+    cy.findByTestId("faqs-link").should("have.attr", "href", FAQS_URL);
   });
 
   it("QA-769-2-2 should redirect to home on logo clicked", () => {
@@ -102,7 +98,7 @@ describe.only("QA-769-2 Connected wallet - guides", () => {
   });
 });
 
-describe("QA-769-3 Connected wallet - hover", () => {
+describe.only("QA-769-3 Connected wallet - hover", () => {
   let connectedWalletAddress: string;
 
   beforeEach(() => {
@@ -132,16 +128,22 @@ describe("QA-769-3 Connected wallet - hover", () => {
     );
     cy.findByTestId("tokenB-input").should("contain.text", "dUSDT");
 
-    // verify switch source
+    // verify switch source before hover
     cy.findByTestId("transfer-flow-icon").should("be.visible");
-    cy.findByTestId("switch-source-icon").should("be.hidden");
-    cy.findByTestId("transfer-flow-swap-btn").trigger("mouseover");
-    cy.findByTestId("transfer-flow-icon").should("be.hidden");
+    cy.findByTestId("switch-source-icon").should("not.be.visible");
+
+    // hover
+    cy.findByTestId("transfer-flow-swap-btn").realHover();
+
+    // verify switch source on hover
+    cy.findByTestId("transfer-flow-icon").should("not.be.visible");
     cy.findByTestId("switch-source-icon").should("be.visible");
-    cy.findByTestId("transfer-flow-swap-tooltip")
+    cy.findByTestId("transfer-flow-swap-tooltip-text")
       .should("be.visible")
-      .should("contain.text", "Switch source")
-      .click();
+      .should("contain.text", "Switch source");
+
+    // switch source and destination
+    cy.findByTestId("transfer-flow-swap-btn").click();
 
     // verify source network Defichain and token dUSDT
     cy.findByTestId("source-network-input").should("contain.text", "DeFiChain");
@@ -156,13 +158,54 @@ describe("QA-769-3 Connected wallet - hover", () => {
   });
 
   it("QA-769-3-2 should verify source percentage hover", () => {
-    // 25%
-    cy.findByTestId("quick-input-card-set-amount-25%")
-      .trigger("mouseover")
-      .should("have.css", "color", "rgb(217, 123, 1)");
+    const amountArray = ["25%", "50%", "75%", "Max"];
+    amountArray.forEach((amountType) => {
+      const viewId = `quick-input-card-set-amount-${amountType}`;
+      cy.findByTestId(viewId).realHover();
+      cy.findByTestId(viewId)
+        .should("have.css", "background-image")
+        .and(
+          "contain",
+          "linear-gradient(90deg, rgb(255, 0, 255) 0%, rgb(236, 12, 141) 100.04%)"
+        );
+    });
   });
 
-  it("QA-769-3-3 should verify paste icon hover", () => {});
+  it.only("QA-769-3-3 should verify paste icon hover", () => {
+    cy.findByTestId("receiver-address-tooltip-button").realHover();
+    cy.wait(3000);
+    cy.findByTestId("receiver-address-tooltip-text").should(
+      "contain.text",
+      "Paste from clipboard"
+    );
 
-  it("QA-769-3-3 should verify fees hover", () => {});
+    cy.window().then((win) => {
+      win.navigator.clipboard.writeText("address");
+    });
+
+    // await navigator.clipboard.writeText("address");
+    cy.findByTestId("paste-btn").click();
+    // cy.findByTestId("receiver-address-tooltip-button").click();
+    cy.findByTestId("receiver-address-input").should("contain.text", "address");
+    cy.findByTestId("added-clipboard-toast").should(
+      "contain.text",
+      "Added from clipboard"
+    );
+  });
+
+  it("QA-769-3-4 should verify fees hover", () => {
+    cy.findByTestId("fees-icon-tooltip").realHover();
+    cy.findByTestId("fees-icon-tooltip-text").should(
+      "contain.text",
+      FEES_INFO.content
+    );
+  });
+});
+
+describe("QA-769-5 Connected wallet - ETH > DFC - Restore Lost Session", () => {
+  beforeEach(() => {
+    cy.connectMetaMaskWallet();
+  });
+
+  it("QA-769-5-1 should verify recover transaction invalid input", () => {});
 });
