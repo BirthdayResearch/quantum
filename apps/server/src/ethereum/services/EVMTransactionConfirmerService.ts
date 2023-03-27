@@ -227,36 +227,6 @@ export class EVMTransactionConfirmerService {
     try {
       this.logger.log(`[AllocateDFCFund] ${transactionHash}`);
 
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const isValidTxn = await this.verifyIfValidTxn(transactionHash);
-
-      if (!txReceipt) {
-        throw new Error('Transaction is not yet available');
-      }
-
-      // Sanity check that the contractAddress, decoded name and signature are correct
-      if (!isValidTxn || txReceipt.to !== this.contractAddress) {
-        return {
-          transactionHash: '',
-          isConfirmed: false,
-          numberOfConfirmationsDfc: 0,
-        };
-      }
-
-      // if transaction is reverted
-      const isReverted = txReceipt.status === 0;
-      if (isReverted === true) {
-        throw new BadRequestException(`Transaction Reverted`);
-      }
-
-      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-      const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
-
-      // check if tx is confirmed with min required confirmation
-      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
-        throw new Error('Transaction is not yet confirmed with min block threshold');
-      }
-
       const txDetails = await this.prisma.bridgeEventTransactions.findFirst({
         where: {
           transactionHash,
@@ -312,6 +282,36 @@ export class EVMTransactionConfirmerService {
       // check if txn is confirmed or not
       if (txDetails.status !== EthereumTransactionStatus.CONFIRMED) {
         throw new Error('Transaction is not yet confirmed');
+      }
+
+      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+      const isValidTxn = await this.verifyIfValidTxn(transactionHash);
+
+      if (!txReceipt) {
+        throw new Error('Transaction is not yet available');
+      }
+
+      // Sanity check that the contractAddress, decoded name and signature are correct
+      if (!isValidTxn || txReceipt.to !== this.contractAddress) {
+        return {
+          transactionHash: '',
+          isConfirmed: false,
+          numberOfConfirmationsDfc: 0,
+        };
+      }
+
+      // if transaction is reverted
+      const isReverted = txReceipt.status === 0;
+      if (isReverted === true) {
+        throw new BadRequestException(`Transaction Reverted`);
+      }
+
+      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+      const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
+
+      // check if tx is confirmed with min required confirmation
+      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
+        throw new Error('Transaction is not yet confirmed with min block threshold');
       }
 
       const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);

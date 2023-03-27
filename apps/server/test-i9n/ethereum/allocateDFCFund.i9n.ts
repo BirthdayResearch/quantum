@@ -160,7 +160,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     });
     expect(sendTransactionDetails.statusCode).toStrictEqual(500);
     const response = JSON.parse(sendTransactionDetails.body);
-    expect(response.error).toContain('Transaction is not yet confirmed with min block threshold');
+    expect(response.error).toContain('Transaction detail not available');
   });
 
   it('should fail api request when transaction is not yet confirmed', async () => {
