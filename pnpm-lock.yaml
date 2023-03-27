@@ -17,7 +17,7 @@ importers:
 
   apps/server:
     specifiers:
-      '@birthdayresearch/eslint-config': ^0.5.6
+      '@birthdayresearch/eslint-config': ^0.5.7
       '@birthdayresearch/sticky-prettier': ^0.5.7
       '@birthdayresearch/sticky-testcontainers': ^0.5.7
       '@birthdayresearch/sticky-turbo-jest': ^0.5.7
@@ -83,7 +83,7 @@ importers:
       nestjs-pino: 3.1.2_g2cqd4mgcg63o5mvxc7l66lzja
       pg: 8.10.0
     devDependencies:
-      '@birthdayresearch/eslint-config': 0.5.6_typescript@4.9.5
+      '@birthdayresearch/eslint-config': 0.5.7_typescript@4.9.5
       '@birthdayresearch/sticky-prettier': 0.5.7
       '@birthdayresearch/sticky-testcontainers': 0.5.7
       '@birthdayresearch/sticky-turbo-jest': 0.5.7_d3fempqfaoah23y2vmjehfnule
@@ -177,7 +177,7 @@ importers:
 
   packages/smartcontracts:
     specifiers:
-      '@birthdayresearch/eslint-config': ^0.5.6
+      '@birthdayresearch/eslint-config': ^0.5.7
       '@birthdayresearch/sticky-testcontainers': ^0.5.7
       '@birthdayresearch/sticky-turbo-jest': ^0.5.7
       '@birthdayresearch/sticky-typescript': ^0.5.7
@@ -200,7 +200,7 @@ importers:
       mocha: 10.2.0
       ts-node: 10.9.1
     devDependencies:
-      '@birthdayresearch/eslint-config': 0.5.6_typescript@4.9.5
+      '@birthdayresearch/eslint-config': 0.5.7_typescript@4.9.5
       '@birthdayresearch/sticky-testcontainers': 0.5.7
       '@birthdayresearch/sticky-turbo-jest': 0.5.7_d3fempqfaoah23y2vmjehfnule
       '@birthdayresearch/sticky-typescript': 0.5.7
@@ -1829,8 +1829,8 @@ packages:
   /@bcoe/v8-coverage/0.2.3:
     resolution: {integrity: sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==}
 
-  /@birthdayresearch/eslint-config/0.5.6_typescript@4.9.5:
-    resolution: {integrity: sha512-/VBu/NlgNtyZvdop8E1ywn8s/EjizpDHMYvuihdVkzeLDCLqFT5JC8kdQwVEhY2ivJy1H/+E4gspTAQyHaw/dg==}
+  /@birthdayresearch/eslint-config/0.5.7_typescript@4.9.5:
+    resolution: {integrity: sha512-JqgV+dLRYzBE8YJBQHYWs4ERJL3zyGPXrD4fq6AYG+lMzgO1QzkD+Sd5gY944oSbymdq83b9NYunqDoGT3o0zg==}
     dependencies:
       '@typescript-eslint/eslint-plugin': 5.56.0_iskin7c6dxqunwflhstekcjqmq
       '@typescript-eslint/parser': 5.56.0_vgl77cfdswitgr47lm5swmv43m
