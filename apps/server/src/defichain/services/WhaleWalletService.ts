@@ -240,7 +240,7 @@ export class WhaleWalletService {
 
     if (tokenSymbol === SupportedDFCTokenSymbols.DFI) {
       const balance = await hotWallet.client.address.getBalance(hotWalletAddress);
-      const DFIBalance = new BigNumber(balance).minus(dfcReservedAmt);
+      const DFIBalance = BigNumber.max(0, new BigNumber(balance).minus(dfcReservedAmt));
       return DFIBalance.toString();
     }
 
