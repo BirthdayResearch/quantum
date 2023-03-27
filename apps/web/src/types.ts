@@ -2,7 +2,6 @@ import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 /**
  * Place for common types we want to reuse in entire app
  */
-
 import BigNumber from "bignumber.js";
 
 export enum Network {
@@ -22,6 +21,7 @@ export interface AddressDetails {
   refundAddress: string;
   createdAt: Date;
 }
+
 export interface BridgeVersion {
   v: string;
 }
@@ -46,6 +46,7 @@ export interface TokensI {
   tokenA: TokenDetailI<string>;
   tokenB: TokenDetailI<string>;
 }
+
 export interface NetworkOptionsI {
   name: Network;
   icon: string;
@@ -89,6 +90,7 @@ export interface TransferData {
 }
 
 export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH" | "EUROC" | "DFI";
+export type DToken = "dBTC" | "dUSDT" | "dUSDC" | "dETH" | "dEUROC" | "DFI";
 
 interface ContractConfigI {
   address: `0x${string}`;

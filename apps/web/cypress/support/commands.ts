@@ -1,5 +1,6 @@
 import "@testing-library/cypress/add-commands";
 import BigNumber from "bignumber.js";
+import { DToken, Erc20Token, Network } from "../../src/types";
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -62,6 +63,28 @@ declare global {
         testId: string;
         url: string;
       }) => Chainable<Element>;
+
+      /**
+       * @description Quick setup for bridge form
+       * @param {Network} sourceNetwork to be bridge from, Ethereum or DeFiChain
+       * @param {Erc20Token} DToken|Erc20Token to be bridge from,  Ethereum network > WBTC, USDT, USDC, ETH, EUROC, DFI, DeFiChain network dBTC, dUSDT, dUSDC, dETH, dEUROC, DFI
+       * @param {string} amount to be sent
+       * @param {string} destinationAddress to be sent to
+       * @example cy.setupBridgeForm()
+       */
+      setupBridgeForm: (
+        sourceNetwork: Network,
+        sourceToken: DToken | Erc20Token,
+        amount: string,
+        destinationAddress: string
+      ) => Chainable<Element>;
+
+      /**
+       * @description Set feature flags
+       * @param {string[]} flags to be set
+       * @example cy.setFeatureFlags(['feature_a', 'feature_b'], 'beta')
+       */
+      setFeatureFlags: (flags: string[], stage?: string) => Chainable<Element>;
     }
   }
 }
@@ -87,5 +110,23 @@ Cypress.Commands.add(
       .should("be.visible")
       .should("have.attr", "href")
       .and("contain", extLink.url);
+  }
+);
+
+Cypress.Commands.add(
+  "setupBridgeForm",
+  (
+    sourceNetwork: Network,
+    sourceToken: DToken | Erc20Token,
+    amount: string,
+    destinationAddress: string
+  ) => {
+    cy.findByTestId("source-network-dropdown-btn").click();
+    cy.findByTestId(`source-network-dropdown-option-${sourceNetwork}`).click();
+    cy.findByTestId("tokenA-dropdown-btn").click();
+    cy.findByTestId(`tokenA-dropdown-option-${sourceToken}`).click();
+
+    cy.findByTestId("quick-input-card-set-amount").type(amount);
+    cy.findByTestId("receiver-address-input").type(destinationAddress);
   }
 );
