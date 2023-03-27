@@ -14,11 +14,13 @@ import IconTooltip from "./commons/IconTooltip";
 
 function TokenOrNetworkInfo({
   token,
+  testId,
   iconClass,
   nameClass,
   onClose,
 }: {
   token: TokenDetailI<string> | NetworkI<string>;
+  testId?: string;
   iconClass?: string;
   nameClass?: string;
   onClose?: () => void;
@@ -34,10 +36,11 @@ function TokenOrNetworkInfo({
           height={100}
           src={token.icon}
           alt={token.name}
-          data-testid={token.name}
+          data-testid={`${testId}-icon`}
           className={iconClass ?? "h-8 w-8"}
         />
         <span
+          data-testid={`${testId}-name`}
           className={clsx(
             "ml-2 lg:ml-3 block truncate text-dark-1000 text-base text-left",
             nameClass
@@ -59,9 +62,11 @@ function TokenOrNetworkInfo({
 }
 
 function AddressComponent({
+  testId,
   address,
   isDeFiAddress,
 }: {
+  testId: string;
   address: string;
   isDeFiAddress: boolean;
 }) {
@@ -76,6 +81,7 @@ function AddressComponent({
       href={url}
       target="_blank"
       rel="noreferrer"
+      data-testid={testId}
     >
       {address}
       <div className="flex flex-row justify-between items-center mt-1 lg:mt-0 mb-1 lg:mb-0">
@@ -89,9 +95,11 @@ function AddressComponent({
 function BorderDiv({
   children,
   className,
-}: PropsWithChildren<{ className: string }>) {
+  testId,
+}: PropsWithChildren<{ className: string; testId?: string }>) {
   return (
     <div
+      data-testid={testId}
       className={clsx(
         "border-gradient-6 relative bg-dark-00/50 rounded-[15px]",
         "before:absolute before:content-[''] before:inset-0 before:p-px before:rounded-[15px] before:z-[-1]",
@@ -110,6 +118,7 @@ function TokenDetails({
   amount,
   containerClass,
   onClose,
+  testId,
 }: {
   network: NetworkI<string>;
   token: TokenDetailI<string>;
@@ -117,6 +126,7 @@ function TokenDetails({
   amount: BigNumber;
   containerClass?: string;
   onClose?: () => void;
+  testId?: string;
 }) {
   const { BridgeV1, HotWalletAddress } = useContractContext();
   const address = isDeFiAddress ? HotWalletAddress : BridgeV1.address;
@@ -129,6 +139,7 @@ function TokenDetails({
     >
       <div className="w-full lg:w-2/12">
         <TokenOrNetworkInfo
+          testId={testId}
           token={token}
           onClose={onClose}
           nameClass="font-semibold lg:font-normal"
@@ -139,7 +150,11 @@ function TokenDetails({
         <span className="lg:hidden text-dark-700 text-sm w-5/12">
           Blockchain
         </span>
-        <TokenOrNetworkInfo token={network} iconClass="h-5 w-5 lg:h-8 lg:w-8" />
+        <TokenOrNetworkInfo
+          testId={`${testId}-network`}
+          token={network}
+          iconClass="h-5 w-5 lg:h-8 lg:w-8"
+        />
       </div>
       <div className="w-full flex flex-row items-center justify-between lg:w-4/12">
         <div className="flex flex-row items-center lg:hidden text-dark-700 w-5/12 space-x-1">
@@ -152,6 +167,7 @@ function TokenDetails({
           />
         </div>
         <NumericFormat
+          testId={`${testId}-liquidity`}
           className="text-dark-1000 text-sm lg:text-base text-dark-1000 text-right lg:text-left flex-1"
           value={amount}
           decimalScale={8}
@@ -161,7 +177,11 @@ function TokenDetails({
       </div>
       <div className="w-full flex flex-row items-start lg:items-center justify-between lg:w-4/12">
         <span className="lg:hidden text-dark-700 text-sm w-5/12">Address</span>
-        <AddressComponent address={address} isDeFiAddress={isDeFiAddress} />
+        <AddressComponent
+          testId={`${testId}-address`}
+          address={address}
+          isDeFiAddress={isDeFiAddress}
+        />
       </div>
     </div>
   );
@@ -183,6 +203,7 @@ export default function OverviewList({ balances }) {
       <>
         <TokenDetails
           network={secondNetwork}
+          testId={`${item.tokenA.name}-${secondNetwork.name}`}
           token={item.tokenA}
           isDeFiAddress={secondNetwork.name === Network.DeFiChain}
           amount={getAmount(item.tokenA.symbol, secondNetwork.name)}
@@ -190,6 +211,7 @@ export default function OverviewList({ balances }) {
           containerClass="pb-4 md:pb-0 lg:pb-5 md:pr-5 lg:pr-0"
         />
         <TokenDetails
+          testId={`${item.tokenB.name}-${firstNetwork.name}`}
           network={firstNetwork}
           token={item.tokenB}
           isDeFiAddress={firstNetwork.name === Network.DeFiChain}
@@ -210,7 +232,10 @@ export default function OverviewList({ balances }) {
           <>
             {!open && (
               <Disclosure.Button>
-                <div className="flex flex-row justify-between items-center">
+                <div
+                  className="flex flex-row justify-between items-center"
+                  data-testid={`${item.tokenA}-accordion`}
+                >
                   <div className="flex flex-row items-center">
                     <div className="mr-3">
                       <TokenOrNetworkInfo
@@ -267,6 +292,7 @@ export default function OverviewList({ balances }) {
       <div className="space-y-3 md:space-y-4 px-5 md:px-0">
         {secondNetwork.tokens.map((item) => (
           <BorderDiv
+            testId={`${item.tokenA.name}-row`}
             key={item.tokenA.name}
             className="px-4 md:px-5 lg:px-8 py-5 md:py-6 lg:py-5 flex flex-col md:flex-row lg:flex-col"
           >
