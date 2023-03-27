@@ -185,17 +185,16 @@ export default function BridgeForm({
     return undefined;
   }
 
-  function verifySufficientDFILiquidity(): void {
-    if (selectedTokensA.tokenB.symbol !== "DFI") {
-      setIsLiquiditySufficient(true); // does not check for DFI liquidity when bridging non-DFI token
-      return;
-    }
-    const dfiLiquidity = new BigNumber(liquidity?.DFC?.DFI ?? 0);
-    if (dfiLiquidity === null || dfiLiquidity.lte(0)) {
-      setIsLiquiditySufficient(false);
-      return;
-    }
-    setIsLiquiditySufficient(true);
+  function verifySufficientLiquidity(): void {
+    const liquidityCategory =
+      selectedNetworkB.name === Network.DeFiChain ? "DFC" : "EVM";
+    const tokenLiquidity = new BigNumber(
+      liquidity?.[liquidityCategory]?.[selectedTokensA.tokenB.symbol] ?? 0
+    );
+
+    setIsLiquiditySufficient(
+      !(tokenLiquidity.isNaN() || tokenLiquidity.lte(0))
+    );
   }
 
   useEffect(() => {
@@ -208,7 +207,7 @@ export default function BridgeForm({
 
   useEffect(() => {
     verifySufficientHWBalance();
-    verifySufficientDFILiquidity();
+    verifySufficientLiquidity();
   }, [selectedNetworkA, selectedTokensA, networkEnv, tokenBalances, amount]);
 
   useEffect(() => {
@@ -639,7 +638,8 @@ export default function BridgeForm({
         )}
         {!isLiquiditySufficient && !hasPendingTxn && (
           <div className={clsx("pt-3", warningTextStyle)}>
-            Insufficient liquidity. <div>Please try again later</div>
+            Unable to process due to liquidity cap, please try again in a few
+            hours
           </div>
         )}
       </div>
