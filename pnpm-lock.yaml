@@ -137,7 +137,7 @@ importers:
       react-circular-progressbar: ^2.1.0
       react-content-loader: ^6.2.1
       react-qr-code: ^2.0.11
-      react-secure-storage: ^1.1.0
+      react-secure-storage: ^1.2.0
       sass: ^1.60.0
       tailwindcss: ^3.2.7
       wagmi: ^0.12.1
@@ -157,7 +157,7 @@ importers:
       react-circular-progressbar: 2.1.0_react@18.2.0
       react-content-loader: 6.2.1_react@18.2.0
       react-qr-code: 2.0.11_react@18.2.0
-      react-secure-storage: 1.1.0
+      react-secure-storage: 1.2.0
       sass: 1.60.0
       wagmi: 0.12.1_lkfn2ldbanl4mxtydgl3e66e4y
     devDependencies:
@@ -14382,8 +14382,8 @@ packages:
       shallow-equal: 1.2.1
     dev: false
 
-  /react-secure-storage/1.1.0:
-    resolution: {integrity: sha512-SVetGsvAEr+l8/ZPoA16YEPfuvXWwIOoF5PntWoqqpjTOIyjzNPPgS1dcynFpWv05QzFDrTyg7JWrNuMu+vr6Q==}
+  /react-secure-storage/1.2.0:
+    resolution: {integrity: sha512-ZKRky6jG0B4LpK6PmFcK9rv5gX38BuJDFl2wM4+k3Qlxq8WKQOlkxy3JZ0RhnReYJFzErsLLHAh2+KAGycaVIg==}
     dependencies:
       crypto-js: 4.1.1
       murmurhash-js: 1.0.0
