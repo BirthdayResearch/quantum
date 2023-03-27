@@ -14,7 +14,7 @@ export class BalancesService {
   constructor(
     private readonly evmTransactionConfirmerService: EVMTransactionConfirmerService,
     private readonly whaleWalletService: WhaleWalletService,
-    private configService: ConfigService,
+    private readonly configService: ConfigService,
   ) {
     this.logger = new Logger(BalancesService.name);
   }
@@ -23,7 +23,7 @@ export class BalancesService {
     let EVMBalances: NetworkBalances = <NetworkBalances>{};
     let DFCBalances: NetworkBalances = <NetworkBalances>{};
     const promises: Array<Promise<void>> = [];
-    const dfcReservedAmt = this.configService.getOrThrow('defichain.dfcReservedAmt');
+    const dfcReservedAmt = this.configService.getOrThrow('defichain.dfcReservedAmt', 0);
 
     // Iterate over each `SupportedEVMTokenSymbols` and get balance for each EVM Tokens
     Object.values(SupportedEVMTokenSymbols).forEach((token) => {
@@ -51,7 +51,7 @@ export class BalancesService {
         .getBalance(token)
         .then((tokenBalance) => {
           if (token === 'DFI') {
-            const DFIBalance = BigNumber.max(0, new BigNumber(tokenBalance).minus(dfcReservedAmt));
+            const DFIBalance = new BigNumber(tokenBalance).minus(dfcReservedAmt);
             DFCBalances = {
               ...DFCBalances,
               [token]: DFIBalance.toString(),
