@@ -1,6 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import BigNumber from 'bignumber.js';
 
 import { SupportedDFCTokenSymbols, SupportedEVMTokenSymbols } from '../AppConfig';
 import { WhaleWalletService } from '../defichain/services/WhaleWalletService';
@@ -14,7 +12,6 @@ export class BalancesService {
   constructor(
     private readonly evmTransactionConfirmerService: EVMTransactionConfirmerService,
     private readonly whaleWalletService: WhaleWalletService,
-    private readonly configService: ConfigService,
   ) {
     this.logger = new Logger(BalancesService.name);
   }
@@ -23,7 +20,6 @@ export class BalancesService {
     let EVMBalances: NetworkBalances = <NetworkBalances>{};
     let DFCBalances: NetworkBalances = <NetworkBalances>{};
     const promises: Array<Promise<void>> = [];
-    const dfcReservedAmt = this.configService.getOrThrow('defichain.dfcReservedAmt', 0);
 
     // Iterate over each `SupportedEVMTokenSymbols` and get balance for each EVM Tokens
     Object.values(SupportedEVMTokenSymbols).forEach((token) => {
@@ -50,18 +46,10 @@ export class BalancesService {
       const eachTokenVal = this.whaleWalletService
         .getBalance(token)
         .then((tokenBalance) => {
-          if (token === 'DFI') {
-            const DFIBalance = new BigNumber(tokenBalance).minus(dfcReservedAmt);
-            DFCBalances = {
-              ...DFCBalances,
-              [token]: DFIBalance.toString(),
-            };
-          } else {
-            DFCBalances = {
-              ...DFCBalances,
-              [token]: tokenBalance,
-            };
-          }
+          DFCBalances = {
+            ...DFCBalances,
+            [token]: tokenBalance,
+          };
         })
         .catch((e) => {
           this.logger.error(`[getBalances] get dfi balance error for token ${token}`, e);

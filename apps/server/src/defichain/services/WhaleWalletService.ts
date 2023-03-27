@@ -236,9 +236,12 @@ export class WhaleWalletService {
     }
     const hotWallet = await this.whaleWalletProvider.getHotWallet();
     const hotWalletAddress = await hotWallet.getAddress();
+    const dfcReservedAmt = this.configService.getOrThrow('defichain.dfcReservedAmt', 0);
 
     if (tokenSymbol === SupportedDFCTokenSymbols.DFI) {
-      return hotWallet.client.address.getBalance(hotWalletAddress);
+      const balance = await hotWallet.client.address.getBalance(hotWalletAddress);
+      const DFIBalance = new BigNumber(balance).minus(dfcReservedAmt);
+      return DFIBalance.toString();
     }
 
     const tokens = await hotWallet.client.address.listToken(hotWalletAddress);
