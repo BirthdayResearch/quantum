@@ -96,6 +96,8 @@ function validateTransactionStatus(status: TransactionStatusType) {
       "contain.text",
       progressStatusText
     );
+  } else {
+    cy.findByTestId("txn-progress-status").should("not.exist");
   }
 
   cy.findByTestId("txn-status-view-etherscan").should(
@@ -106,16 +108,23 @@ function validateTransactionStatus(status: TransactionStatusType) {
     cy.findByTestId("txn-status-view-defiscan")
       .should("be.visible")
       .should("contain.text", "DeFiScan");
+  } else {
+    cy.findByTestId("txn-status-view-defiscan").should("not.exist");
   }
 
   if (showRetryButton) {
     cy.findByTestId("txn-status-retry-btn")
-      .should("contain.text", "Try again")
-      .should("be.visible");
+      .should("be.visible")
+      .should("contain.text", "Try again");
+  } else {
+    cy.findByTestId("txn-status-retry-btn").should("not.exist");
   }
 
   if (showCloseButton) {
-    cy.findByTestId("txn-status-close-icon").should("be.visible");
+    cy.findByTestId("txn-status-close-icon").should("be.visible").click();
+    cy.findByTestId("txn-status-close-icon").should("not.exist");
+  } else {
+    cy.findByTestId("txn-status-close-icon").should("not.exist");
   }
 }
 
@@ -271,7 +280,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     validateTransactionStatus(TransactionStatusType.REVERTED);
   });
 
-  it.only("should be able to bridge USDT", () => {
+  it("should be able to bridge USDT", () => {
     initTransaction();
     validateTransactionStatus(TransactionStatusType.INITIAL);
     // verify form is not able to proceed another transaction
