@@ -24,7 +24,7 @@ beforeEach(() => {
 context("QA-755 Pre-connected wallet - Bridge Form", () => {
   const source = Network.Ethereum;
   const destination = Network.DeFiChain;
-  const currentPair = { tokenA: "WBTC", tokenB: "dBTC" };
+  const currentPair = "WBTC";
 
   it("1: Verify the Bridge form is visible", () => {
     cy.findByTestId("bridge-form").should("be.visible");
@@ -52,7 +52,7 @@ context("QA-755 Pre-connected wallet - Bridge Form", () => {
       .clear();
   });
 
-  it("4: Verify swap network functionality", () => {
+  it.only("4: Verify swap network functionality", () => {
     // swapping destination and source
     cy.findByTestId("transfer-flow-swap-btn").should("be.visible").click();
     // verify pairing

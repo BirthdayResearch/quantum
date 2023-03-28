@@ -91,7 +91,7 @@ function TokenOptions({
 }) {
   return (
     <div>
-      {options?.map((option, idx) => (
+      {options?.map((option) => (
         <Listbox.Option
           key={option.tokenA.name}
           className="relative cursor-pointer select-none"
@@ -109,7 +109,7 @@ function TokenOptions({
                     "py-3 lg:py-4": option.tokenA.symbol === "DFI",
                   }
                 )}
-                data-testid={`${testId}-${idx}`}
+                data-testid={`${testId}-${option.tokenA.name}`}
               >
                 <div className="flex flex-row items-center justify-between">
                   <div
@@ -120,7 +120,7 @@ function TokenOptions({
                       width={100}
                       height={100}
                       className="h-6 w-6"
-                      data-testid={`${testId}-to-send-{option.tokenA.name}-logo`}
+                      data-testid={`${testId}-to-send-${option.tokenA.name}-logo`}
                       src={option.tokenA.icon}
                       alt={option.tokenA.name}
                     />

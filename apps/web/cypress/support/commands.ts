@@ -1,5 +1,5 @@
 import "@testing-library/cypress/add-commands";
-import { DToken, Erc20Token, Network } from "../../src/types";
+import { Erc20Token, Network } from "../../src/types";
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -50,16 +50,16 @@ declare global {
       /**
        * @description Quick setup for bridge form
        * @param {Network} sourceNetwork to be bridge from, Ethereum or DeFiChain
-       * @param {Erc20Token} DToken|Erc20Token to be bridge from,  Ethereum network > WBTC, USDT, USDC, ETH, EUROC, DFI, DeFiChain network dBTC, dUSDT, dUSDC, dETH, dEUROC, DFI
+       * @param {Erc20Token} tokenPair to be sent and receive from bridge
        * @param {string} amount to be sent
        * @param {string} destinationAddress to be sent to
-       * @example cy.setupBridgeForm()
+       * @example cy.setupBridgeForm(Network.Ethereum, "WBTC", "0.001")
        */
       setupBridgeForm: (
         sourceNetwork: Network,
-        sourceToken: DToken | Erc20Token,
-        amount: string,
-        destinationAddress: string
+        tokenPair: Erc20Token,
+        amount?: string,
+        destinationAddress?: string
       ) => Chainable<Element>;
 
       /**
@@ -120,14 +120,14 @@ declare global {
        * @description Validates the form pairing of the source and destination networks.
        * @param {Network} source - The source network (e.g., "Ethereum").
        * @param {Network} destination - The destination network (e.g., "DeFiChain").
-       * @param {{ tokenA: string; tokenB: string }} tokenPair - An object containing the token pair (e.g., { tokenA: "USDT", tokenB: "dUSDT" }).
+       * @param {Erc20Token} tokenPair - An object containing the token pair (e.g., { tokenA: "USDT", tokenB: "dUSDT" }).
        * @example
        * validateFormPairing("Ethereum", "DeFiChain");
        */
       validateFormPairing: (
         source: Network,
         destination: Network,
-        tokenPair: { tokenA: string; tokenB: string }
+        tokenPair: Erc20Token
       ) => Chainable<Element>;
     }
   }
@@ -159,17 +159,33 @@ Cypress.Commands.add(
   "setupBridgeForm",
   (
     sourceNetwork: Network,
-    sourceToken: DToken | Erc20Token,
-    amount: string,
-    destinationAddress: string
+    tokenPair: Erc20Token,
+    amount?: string,
+    destinationAddress?: string
   ) => {
+    const pair = getTokenPairs(tokenPair);
+    if (pair === undefined) {
+      return;
+    }
+
+    const erc20ToDfc = sourceNetwork === Network.Ethereum;
+    const sourceToken = erc20ToDfc ? pair.tokenA : pair.tokenB;
     cy.findByTestId("source-network-dropdown-btn").click();
     cy.findByTestId(`source-network-dropdown-option-${sourceNetwork}`).click();
-    cy.findByTestId("tokenA-dropdown-btn").click();
-    cy.findByTestId(`tokenA-dropdown-option-${sourceToken}`).click();
+    cy.findByTestId("token-pair-dropdown-btn").click();
+    cy.findByTestId(`token-pair-${sourceToken}`).click();
 
-    cy.findByTestId("quick-input-card-set-amount").type(amount);
-    cy.findByTestId("receiver-address-input").type(destinationAddress);
+    const destinationNetwork = erc20ToDfc
+      ? Network.DeFiChain
+      : Network.Ethereum;
+    cy.validateFormPairing(sourceNetwork, destinationNetwork, tokenPair);
+    if (amount !== undefined) {
+      cy.findByTestId("quick-input-card-set-amount").type(amount);
+    }
+
+    if (destinationAddress !== undefined) {
+      cy.findByTestId("receiver-address-input").type(destinationAddress);
+    }
   }
 );
 
@@ -244,14 +260,15 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   "validateFormPairing",
-  (
-    source: Network,
-    destination: Network,
-    tokenPair: { tokenA: string; tokenB: string }
-  ) => {
+  (source: Network, destination: Network, tokenPair: Erc20Token) => {
+    const pair = getTokenPairs(tokenPair);
+    if (pair === undefined) {
+      return;
+    }
+
     const erc20ToDfc =
       source === Network.Ethereum && destination === Network.DeFiChain; // double typed check
-    const { tokenA, tokenB } = tokenPair;
+    const { tokenA, tokenB } = pair;
 
     const tokenToSend = erc20ToDfc ? tokenA : tokenB;
     const tokeToReceive = erc20ToDfc ? tokenB : tokenA;
@@ -301,4 +318,15 @@ function swapTokenPositions(
     const { tokenA, tokenB } = pair;
     return { tokenA: tokenB, tokenB: tokenA };
   });
+}
+
+function getTokenPairs(
+  token: Erc20Token
+): { tokenA: string; tokenB: string } | undefined {
+  for (let pair of TokensPair) {
+    if (pair.tokenA === token) {
+      return pair;
+    }
+  }
+  return undefined;
 }
