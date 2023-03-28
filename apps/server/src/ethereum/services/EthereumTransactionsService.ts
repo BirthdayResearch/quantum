@@ -2,21 +2,14 @@ import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nes
 
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { PrismaService } from '../../PrismaService';
-import { TransactionsDto, TransactionsQueryDto } from '../EthereumInterface';
+import { TransactionsDto } from '../EthereumInterface';
 
 @Injectable()
 export class EthereumTransactionsService {
   constructor(private prisma: PrismaService) {}
 
-  async getTransactions(
-    fromDate: TransactionsQueryDto['fromDate'],
-    toDate: TransactionsQueryDto['toDate'],
-  ): Promise<TransactionsDto[]> {
+  async getTransactions(dateFrom: Date, dateTo: Date, today: Date): Promise<TransactionsDto[]> {
     try {
-      const dateFrom = new Date(fromDate);
-      const dateTo = new Date(toDate);
-      const today = new Date();
-
       if (dateFrom > today) {
         throw new BadRequestException(`Cannot query future date`);
       }
@@ -46,8 +39,9 @@ export class EthereumTransactionsService {
     } catch (e: any) {
       throw new HttpException(
         {
-          status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `API call for Ethereum transactions was unsuccessful: ${e.message}`,
+          statusCode: e.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `API call for Ethereum transactions was unsuccessful`,
+          message: e.message,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
         {

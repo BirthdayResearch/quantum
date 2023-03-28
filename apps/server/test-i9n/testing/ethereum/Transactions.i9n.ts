@@ -66,15 +66,29 @@ describe('Transactions Service Test', () => {
     expect(parsedPayload.message).toStrictEqual(['toDate must be a valid ISO 8601 date string']);
   });
 
-  it(`should throw an error if future date is provided`, async () => {
+  it(`should throw an error if fromDate is in the future`, async () => {
     const txReceipt = await testing.inject({
       method: 'GET',
       url: `/ethereum/transactions?fromDate=2033-03-15&toDate=2033-03-16`,
     });
 
-    expect(JSON.parse(txReceipt.payload).status).toStrictEqual(500);
-    expect(JSON.parse(txReceipt.payload).error).toStrictEqual(
-      'API call for Ethereum transactions was unsuccessful: Cannot query future date',
-    );
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.error).toStrictEqual('API call for Ethereum transactions was unsuccessful');
+    expect(parsedPayload.message).toStrictEqual('Cannot query future date');
+  });
+
+  it(`should throw an error fromDate is more recent than toDate`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/transactions?fromDate=2023-03-15&toDate=2023-03-14`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.error).toStrictEqual('API call for Ethereum transactions was unsuccessful');
+    expect(parsedPayload.message).toStrictEqual('fromDate cannot be more recent than toDate');
   });
 });
