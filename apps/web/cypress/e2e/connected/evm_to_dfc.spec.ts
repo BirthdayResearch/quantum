@@ -191,6 +191,11 @@ function initTransaction(confirmTransaction: boolean = true) {
   }
 }
 
+async function startEvmMine() {
+  cy.hardhatRequest("evm_setAutomine", [true]);
+  cy.hardhatRequest("evm_setIntervalMining", [500]);
+}
+
 beforeEach(() => {
   cy.visit("http://localhost:3000/?network=Local", {
     onBeforeLoad: (win) => {
@@ -266,12 +271,24 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     validateTransactionStatus(TransactionStatusType.REVERTED);
   });
 
-  it("should be able to bridge USDT", () => {
+  it.only("should be able to bridge USDT", () => {
     initTransaction();
     validateTransactionStatus(TransactionStatusType.INITIAL);
+    // verify form is not able to proceed another transaction
+    cy.findByTestId("transfer-btn")
+      .should("be.disabled")
+      .should("contain.text", "Pending Transaction");
+    cy.findByTestId("transfer-btn-loader-icon").should("be.visible");
+
+    startEvmMine();
     waitUntilEvmBlocksConfirm();
     cy.findByTestId("txn-progress-status").should("contain.text", "For DFC");
     waitUntilBlocksConfirm();
     validateTransactionStatus(TransactionStatusType.CONFIRM);
+
+    // verify transfer button is enabled
+    cy.findByTestId("transfer-btn")
+      .should("be.enabled")
+      .should("contain.text", "Review transaction");
   });
 });

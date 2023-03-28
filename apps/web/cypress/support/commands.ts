@@ -133,6 +133,15 @@ declare global {
         destination: Network,
         tokenPair: Erc20Token
       ) => Chainable<Element>;
+
+      /**
+       * @description Custom hardhat request
+       * @param {string} method - Method to call in hardhat
+       * @param {any[]} params - Any configurable params to pass
+       * @example
+       * hardhatRequest("evm_mine", [{blocks: 5}]);
+       */
+      hardhatRequest: (method: string, params: any[]) => Chainable<Element>;
     }
   }
 }
@@ -324,6 +333,19 @@ Cypress.Commands.add(
       });
   }
 );
+
+Cypress.Commands.add("hardhatRequest", (method: string, params: any[]) => {
+  cy.request({
+    url: "http://localhost:8545",
+    method: "POST",
+    body: {
+      jsonrpc: "2.0",
+      id: Math.floor(Math.random() * 100000000000000),
+      method,
+      params,
+    },
+  });
+});
 
 // Helper function to swap pairs
 function swapTokenPositions(
