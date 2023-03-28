@@ -280,7 +280,7 @@ describe('DeFiChain Verify fund Testing', () => {
     const hotWalletAddress = await hotWallet.getAddress();
 
     // Send UTXO to Hot Wallet
-    await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 10);
     await defichain.generateBlock();
 
     // Sends token to the address
