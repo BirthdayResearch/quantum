@@ -49,6 +49,7 @@ declare global {
 
       /**
        * @description Quick setup for bridge form
+       * @param {isMetamaskConnected} boolean - Flag to check if metamask acc is connected
        * @param {Network} sourceNetwork to be bridge from, Ethereum or DeFiChain
        * @param {Erc20Token} tokenPair to be sent and receive from bridge
        * @param {string} amount to be sent
@@ -56,6 +57,7 @@ declare global {
        * @example cy.setupBridgeForm(Network.Ethereum, "WBTC", "0.001")
        */
       setupBridgeForm: (
+        isMetamaskConnected: boolean,
         sourceNetwork: Network,
         tokenPair: Erc20Token,
         amount?: string,
@@ -118,6 +120,7 @@ declare global {
 
       /**
        * @description Validates the form pairing of the source and destination networks.
+       * @param {isMetamaskConnected} boolean - Flag to check if metamask acc is connected
        * @param {Network} source - The source network (e.g., "Ethereum").
        * @param {Network} destination - The destination network (e.g., "DeFiChain").
        * @param {Erc20Token} tokenPair - An object containing the token pair (e.g., { tokenA: "USDT", tokenB: "dUSDT" }).
@@ -125,6 +128,7 @@ declare global {
        * validateFormPairing("Ethereum", "DeFiChain");
        */
       validateFormPairing: (
+        isMetamaskConnected: boolean,
         source: Network,
         destination: Network,
         tokenPair: Erc20Token
@@ -158,6 +162,7 @@ Cypress.Commands.add("disconnectMetaMaskWallet", () => {
 Cypress.Commands.add(
   "setupBridgeForm",
   (
+    isMetamaskConnected: boolean,
     sourceNetwork: Network,
     tokenPair: Erc20Token,
     amount?: string,
@@ -178,7 +183,12 @@ Cypress.Commands.add(
     const destinationNetwork = erc20ToDfc
       ? Network.DeFiChain
       : Network.Ethereum;
-    cy.validateFormPairing(sourceNetwork, destinationNetwork, tokenPair);
+    cy.validateFormPairing(
+      isMetamaskConnected,
+      sourceNetwork,
+      destinationNetwork,
+      tokenPair
+    );
     if (amount !== undefined) {
       cy.findByTestId("quick-input-card-set-amount").type(amount);
     }
@@ -260,7 +270,12 @@ Cypress.Commands.add(
 
 Cypress.Commands.add(
   "validateFormPairing",
-  (source: Network, destination: Network, tokenPair: Erc20Token) => {
+  (
+    isMetamaskConnected: boolean,
+    source: Network,
+    destination: Network,
+    tokenPair: Erc20Token
+  ) => {
     const pair = getTokenPairs(tokenPair);
     if (pair === undefined) {
       return;
@@ -302,7 +317,7 @@ Cypress.Commands.add(
     // reciver address
     cy.findByTestId("receiver-address").should("be.visible");
     cy.findByTestId("receiver-address-input")
-      .should("be.disabled")
+      .should(isMetamaskConnected ? "be.enabled" : "be.disabled")
       .invoke("attr", "placeholder")
       .then((actualPlaceholder) => {
         expect(actualPlaceholder).to.equal(`Enter ${destination} address`);
