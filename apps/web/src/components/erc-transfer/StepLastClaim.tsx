@@ -96,7 +96,7 @@ export default function StepLastClaim({
       signedClaim.signature,
     ],
     onError: (err) => Logging.error(err),
-    enabled: false,
+    enabled: isContractFetched,
   });
 
   // Write contract for `claimFund` function
