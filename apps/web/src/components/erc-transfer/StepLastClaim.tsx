@@ -96,7 +96,7 @@ export default function StepLastClaim({
       signedClaim.signature,
     ],
     onError: (err) => Logging.error(err),
-    enabled: isContractFetched,
+    enabled: isContractFetched || isTokenETH,
   });
 
   // Write contract for `claimFund` function
