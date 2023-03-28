@@ -12,6 +12,7 @@ export function appConfig() {
       transferFee: process.env.DFC_FEE_PERCENTAGE,
       dustUTXO: process.env.DEFICHAIN_DUST_UTXO,
       supportedTokens: process.env.SUPPORTED_DFC_TOKENS,
+      dfcReservedAmt: process.env.DEFICHAIN_RESERVED_AMT,
     },
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
