@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
-import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { SemaphoreCache } from '../../libs/caches/SemaphoreCache';
@@ -13,6 +13,7 @@ export class EthereumController {
     protected readonly cache: SemaphoreCache,
   ) {}
 
+  @SkipThrottle()
   @Get('balance/:tokenSymbol')
   async getBalance(@Param('tokenSymbol') tokenSymbol: SupportedEVMTokenSymbols): Promise<string> {
     return this.evmTransactionConfirmerService.getBalance(tokenSymbol);

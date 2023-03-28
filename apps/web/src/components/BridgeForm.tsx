@@ -67,19 +67,17 @@ function SwitchButton({
           )}
           data-testid="transfer-flow-swap-btn"
         >
-          <div className="hidden group-hover:hidden lg:block">
-            <ArrowDownIcon
-              size={20}
-              className="fill-dark-700"
-              data-testid="transfer-flow-icon"
-            />
+          <div
+            className="hidden group-hover:hidden lg:block"
+            data-testid="swap-btn-arrow-down"
+          >
+            <ArrowDownIcon size={20} className="fill-dark-700" />
           </div>
-          <div className="group-hover:block lg:hidden">
-            <SwitchIcon
-              size={20}
-              className="fill-dark-700"
-              data-testid="switch-source-icon"
-            />
+          <div
+            className="group-hover:block lg:hidden"
+            data-testid="swap-btn-switch"
+          >
+            <SwitchIcon size={20} className="fill-dark-700" />
           </div>
         </button>
       </Tooltip>
@@ -457,7 +455,7 @@ export default function BridgeForm({
             onSelect={(value: TokensI) => setSelectedTokensA(value)}
             value={selectedTokensA}
             disabled={hasUnconfirmedTxn}
-            testId="tokenA"
+            testId="token-pair"
           />
         </div>
       </div>
@@ -529,7 +527,7 @@ export default function BridgeForm({
             floatingObj={floatingObj}
             type={SelectionType.Token}
             value={selectedTokensB}
-            testId="tokenB"
+            testId="token-to-receive"
           />
         </div>
       </div>

@@ -96,7 +96,6 @@ function TokenOptions({
           key={option.tokenA.name}
           className="relative cursor-pointer select-none"
           value={option}
-          data-testid={`${testId}-${option.tokenA.name}`}
         >
           {({ selected, active }) => (
             <>
@@ -110,14 +109,18 @@ function TokenOptions({
                     "py-3 lg:py-4": option.tokenA.symbol === "DFI",
                   }
                 )}
+                data-testid={`${testId}-${option.tokenA.name}`}
               >
                 <div className="flex flex-row items-center justify-between">
-                  <div className="flex w-4/12 flex-row items-center">
+                  <div
+                    className="flex w-4/12 flex-row items-center"
+                    data-testid={`${testId}-to-send-${option.tokenA.name}`}
+                  >
                     <Image
                       width={100}
                       height={100}
                       className="h-6 w-6"
-                      data-testid={option.tokenA.name}
+                      data-testid={`${testId}-to-send-${option.tokenA.name}-logo`}
                       src={option.tokenA.icon}
                       alt={option.tokenA.name}
                     />
@@ -133,12 +136,15 @@ function TokenOptions({
                   <div className="flex w-2/12 flex-row items-center justify-center">
                     <FiArrowRight size={15} className="h-4 w-4 text-dark-500" />
                   </div>
-                  <div className="flex w-4/12 flex-row items-center">
+                  <div
+                    className="flex w-4/12 flex-row items-center"
+                    data-testid={`${testId}-to-receive-${option.tokenB.name}`}
+                  >
                     <Image
                       width={100}
                       height={100}
                       className="h-6 w-6"
-                      data-testid={option.tokenB.name}
+                      data-testid={`${testId}-to-receive-${option.tokenB.name}-logo`}
                       src={option.tokenB.icon}
                       alt={option.tokenB.name}
                     />
@@ -189,11 +195,7 @@ export default function InputSelector({
       <span className="text-dark-900 pl-4 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider">
         {label}
       </span>
-      <Listbox
-        value={value}
-        onChange={onSelect}
-        data-testid={`${testId}-dropdown-btn`}
-      >
+      <Listbox value={value} onChange={onSelect}>
         {({ open }) => (
           <div className="relative mt-1 lg:mt-2">
             <Listbox.Button
@@ -210,7 +212,7 @@ export default function InputSelector({
                 roundedBorderStyle,
                 !disabled && "hover:bg-dark-500 hover:pr-px"
               )}
-              data-testid={`selected-${testId}-${name}`}
+              data-testid={`${testId}-dropdown-btn`}
             >
               <div
                 className={clsx(
@@ -278,7 +280,7 @@ export default function InputSelector({
                       ) : (
                         <TokenOptions
                           options={options as TokensI[]}
-                          testId={`${testId}-dropdown-option`}
+                          testId={testId}
                         />
                       )}
                     </div>

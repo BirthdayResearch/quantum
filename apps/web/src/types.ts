@@ -90,7 +90,6 @@ export interface TransferData {
 }
 
 export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH" | "EUROC" | "DFI";
-export type DToken = "dBTC" | "dUSDT" | "dUSDC" | "dETH" | "dEUROC" | "DFI";
 
 interface ContractConfigI {
   address: `0x${string}`;

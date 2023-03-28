@@ -88,8 +88,12 @@ export class EthereumStatsService {
         FROM "BridgeEventTransactions" WHERE amount IS NOT NULL GROUP BY "tokenSymbol";`,
       );
       for (const total of totalAmounts) {
-        if (total.tokenSymbol && total.tokenSymbol in SupportedEVMTokenSymbols) {
-          totalBridgedAmount[total.tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalAmount)
+        let { tokenSymbol } = total;
+        if ((tokenSymbol as string) === TokenSymbol.BTC) {
+          tokenSymbol = SupportedEVMTokenSymbols.WBTC;
+        }
+        if (tokenSymbol && tokenSymbol in SupportedEVMTokenSymbols) {
+          totalBridgedAmount[tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalAmount)
             .decimalPlaces(6, BigNumber.ROUND_FLOOR)
             .toFixed(6);
         }
