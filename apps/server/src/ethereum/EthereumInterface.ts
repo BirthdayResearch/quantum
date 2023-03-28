@@ -35,3 +35,28 @@ export type BridgedEVMTokenSum = {
   tokenSymbol: SupportedEVMTokenSymbols;
   totalAmount: string;
 };
+
+export class TransactionsDto {
+  readonly txHash: string;
+
+  readonly token?: SupportedEVMTokenSymbols;
+
+  readonly amount?: string;
+
+  readonly timestamp: string;
+
+  constructor(txHash: string, token: SupportedEVMTokenSymbols, amount: string, timestamp: string) {
+    this.txHash = txHash;
+    this.token = token;
+    this.amount = amount;
+    this.timestamp = timestamp;
+  }
+}
+
+export class TransactionsQueryDto {
+  @IsDateString()
+  fromDate!: Iso8601DateOnlyString;
+
+  @IsDateString()
+  toDate!: Iso8601DateOnlyString;
+}
