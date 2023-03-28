@@ -511,9 +511,8 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     });
 
     expect(JSON.parse(txReceipt.body)).toStrictEqual({
-      error: 'Bad Request',
-      message: 'Invalid transaction',
-      statusCode: 400,
+      isConfirmed: false,
+      numberOfConfirmations: 0,
     });
   });
 });
