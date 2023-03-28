@@ -1,6 +1,5 @@
 import { TransactionSegWit } from '@defichain/jellyfish-transaction';
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import BigNumber from 'bignumber.js';
 
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
@@ -12,7 +11,6 @@ export class SendService {
 
   constructor(
     private readonly transactionService: DeFiChainTransactionService,
-    private readonly configService: ConfigService,
     private readonly whaleWalletProvider: WhaleWalletProvider,
   ) {
     this.logger = new Logger(SendService.name);
@@ -51,11 +49,8 @@ export class SendService {
   }
 
   private async verifyDFIBalance(amountToSend: BigNumber): Promise<void> {
-    const hotWallet = this.whaleWalletProvider.getHotWallet();
-    const hotWalletAddress = await hotWallet.getAddress();
-    const balance = await hotWallet.client.address.getBalance(hotWalletAddress);
-    const dfcReservedAmt = this.configService.getOrThrow('defichain.dfcReservedAmt', 0);
-    const DFIBalance = BigNumber.max(0, new BigNumber(balance).minus(dfcReservedAmt).minus(amountToSend));
+    const balance = await this.whaleWalletProvider.getHotWalletBalance();
+    const DFIBalance = BigNumber.max(0, new BigNumber(balance).minus(amountToSend));
     if (DFIBalance.isLessThanOrEqualTo(0) || DFIBalance.isNaN()) {
       this.logger.log(`[Sending UTXO] Failed to send because insufficient DFI UTXO in hot wallet`);
       throw new BadRequestException('Insufficient DFI liquidity');
