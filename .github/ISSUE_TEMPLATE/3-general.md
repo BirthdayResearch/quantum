@@ -1,6 +1,6 @@
 ---
 name: General question
-about: General question about using DeFiChain Wallet
+about: General question about using Quantum
 labels: kind/question
 ---
 

@@ -1,4 +1,5 @@
 import { fromAddress } from '@defichain/jellyfish-address';
+import { AddressToken } from '@defichain/whale-api-client/dist/api/address';
 import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DeFiChainAddressIndex } from '@prisma/client';
@@ -9,7 +10,7 @@ import { SupportedDFCTokenSymbols } from '../../AppConfig';
 import { CustomErrorCodes } from '../../CustomErrorCodes';
 import { EVMTransactionConfirmerService } from '../../ethereum/services/EVMTransactionConfirmerService';
 import { PrismaService } from '../../PrismaService';
-import { VerifyObject } from '../model/VerifyDto';
+import { TokenSymbol, VerifyObject } from '../model/VerifyDto';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 import { SendService } from './SendService';
@@ -30,7 +31,7 @@ export class WhaleWalletService {
   }
 
   async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
-    this.logger.log(`[Verify] ${verify.amount} ${verify.symbol} ${verify.address}`);
+    this.logger.log(`[Verify] ${verify.amount} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`);
 
     // Verify if the address is valid
     const { isAddressValid } = this.verifyValidAddress(verify.address, network);
@@ -77,23 +78,38 @@ export class WhaleWalletService {
         return { isValid: false, statusCode: CustomErrorCodes.AddressNotOwned };
       }
 
-      // TODO: Add support for DFI (UTXO)
-      const tokens = await wallet.client.address.listToken(address);
+      let utxo: string = '';
+      let tokens: AddressToken[] = [];
+      if (verify.symbol === TokenSymbol.DFI) {
+        utxo = await wallet.client.address.getBalance(address);
+      } else {
+        tokens = await wallet.client.address.listToken(address);
+      }
       const token = tokens.find((t) => t.symbol === verify.symbol.toString());
 
-      // If no amount has been received yet
-      if (token === undefined || new BigNumber(token?.amount).isZero()) {
+      // If no utxo has been received yet for DFI
+      if (verify.symbol === TokenSymbol.DFI && new BigNumber(utxo).isZero()) {
         return { isValid: false, statusCode: CustomErrorCodes.IsZeroBalance };
       }
 
+      // If no amount has been received yet for other tokens
+      if ((token === undefined || new BigNumber(token?.amount).isZero()) && verify.symbol !== TokenSymbol.DFI) {
+        return { isValid: false, statusCode: CustomErrorCodes.IsZeroBalance };
+      }
+
+      // Verify that the amount === utxo balance
+      if (verify.symbol === TokenSymbol.DFI && !new BigNumber(verify.amount).isEqualTo(utxo)) {
+        return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
+      }
+
       // Verify that the amount === token balance
-      if (!new BigNumber(verify.amount).isEqualTo(token.amount)) {
+      if (token !== undefined && !new BigNumber(verify.amount).isEqualTo(token.amount)) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
       // Successful verification, proceed to sign the claim
       const fee = new BigNumber(verify.amount).multipliedBy(this.configService.getOrThrow('defichain.transferFee'));
-      const amountLessFee = BigNumber.max(verify.amount.minus(fee), 0).toFixed();
+      const amountLessFee = BigNumber.max(verify.amount.minus(fee), 0).toFixed(6, BigNumber.ROUND_FLOOR);
 
       const claim = await this.evmTransactionService.signClaim({
         receiverAddress: verify.ethReceiverAddress,
@@ -121,6 +137,7 @@ export class WhaleWalletService {
         HttpStatus.INTERNAL_SERVER_ERROR,
         {
           cause: error as Error,
+          description: `[Verify ERROR] ${verify.amount} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`,
         },
       );
     }
@@ -164,7 +181,7 @@ export class WhaleWalletService {
         refundAddress: data.refundAddress,
       };
     } catch (e: any) {
-      this.logger.error(e);
+      this.logger.error(`[GA ERROR] ${refundAddress} ${network}`, e);
       if (e instanceof BadRequestException) {
         throw e;
       }
@@ -219,9 +236,12 @@ export class WhaleWalletService {
     }
     const hotWallet = await this.whaleWalletProvider.getHotWallet();
     const hotWalletAddress = await hotWallet.getAddress();
+    const dfcReservedAmt = this.configService.getOrThrow('defichain.dfcReservedAmt', 0);
 
     if (tokenSymbol === SupportedDFCTokenSymbols.DFI) {
-      return hotWallet.client.address.getBalance(hotWalletAddress);
+      const balance = await hotWallet.client.address.getBalance(hotWalletAddress);
+      const DFIBalance = BigNumber.max(0, new BigNumber(balance).minus(dfcReservedAmt));
+      return DFIBalance.toString();
     }
 
     const tokens = await hotWallet.client.address.listToken(hotWalletAddress);

@@ -6,6 +6,8 @@ export enum TokenSymbol {
   'USDT' = 'USDT',
   'USDC' = 'USDC',
   'ETH' = 'ETH',
+  'EUROC' = 'EUROC',
+  'DFI' = 'DFI',
 }
 
 export class VerifyObject {

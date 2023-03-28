@@ -7,6 +7,7 @@ import { StatsController } from './controllers/StatsController';
 import { WhaleWalletController } from './controllers/WhaleWalletController';
 import { WhaleApiClientProvider } from './providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from './providers/WhaleWalletProvider';
+import { DeFiChainStatsService } from './services/DeFiChainStatsService';
 import { DeFiChainTransactionService } from './services/DeFiChainTransactionService';
 import { SendService } from './services/SendService';
 import { WhaleApiService } from './services/WhaleApiService';
@@ -23,6 +24,7 @@ import { WhaleWalletService } from './services/WhaleWalletService';
     SemaphoreCache,
     PrismaService,
     SendService,
+    DeFiChainStatsService,
   ],
   controllers: [StatsController, WhaleWalletController],
   exports: [WhaleWalletService],

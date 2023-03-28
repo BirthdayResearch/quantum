@@ -23,31 +23,34 @@ enum BotStatus {
 }
 
 model DeFiChainAddressIndex {
-  id                   BigInt    @id @default(autoincrement())
-  index                Int
-  address              String    @unique
-  refundAddress        String
-  claimNonce           String?
-  claimDeadline        String?
-  claimSignature       String?
-  claimAmount          String?
-  tokenSymbol          String?
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime? @updatedAt
-  hotWalletAddress     String
-  ethReceiverAddress   String?
-  botStatus            BotStatus?
+  id                 BigInt     @id @default(autoincrement())
+  index              Int
+  address            String     @unique
+  refundAddress      String
+  claimNonce         String?
+  claimDeadline      String?
+  claimSignature     String?
+  claimAmount        String?
+  tokenSymbol        String?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime?  @updatedAt
+  hotWalletAddress   String
+  ethReceiverAddress String?
+  botStatus          BotStatus?
 
   @@unique([hotWalletAddress, index])
 }
 
 model BridgeEventTransactions {
-  id                  BigInt                    @id @default(autoincrement())
-  transactionHash     String                    @unique
-  status              EthereumTransactionStatus
-  sendTransactionHash String?
-  createdAt           DateTime                  @default(now())
-  updatedAt           DateTime?                 @updatedAt
-  amount              String?
-  tokenSymbol         String?
+  id                             BigInt                    @id @default(autoincrement())
+  transactionHash                String                    @unique
+  status                         EthereumTransactionStatus
+  sendTransactionHash            String?
+  unconfirmedSendTransactionHash String?
+  createdAt                      DateTime                  @default(now())
+  updatedAt                      DateTime?                 @updatedAt
+  amount                         String?
+  tokenSymbol                    String?
+  blockHash                      String?
+  blockHeight                    String?
 }

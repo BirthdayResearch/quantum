@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Report a bug encountered with using DeFiChain Wallet
+about: Report a bug encountered with using Quantum
 labels: kind/bug
 ---
 

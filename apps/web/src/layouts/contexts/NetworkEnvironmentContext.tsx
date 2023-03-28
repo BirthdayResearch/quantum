@@ -39,7 +39,9 @@ export function NetworkEnvironmentProvider({
     if (!isEthereumMainNet && env.networks.includes(n)) {
       return n;
     }
-    return EnvironmentNetwork.MainNet;
+    return isEthereumMainNet
+      ? EnvironmentNetwork.MainNet
+      : EnvironmentNetwork.TestNet;
   }
 
   const initialNetwork = getNetwork(networkQuery as EnvironmentNetwork);

@@ -1,6 +1,6 @@
 describe("Maintenance", () => {
   it("should display homepage when bridge is not down", () => {
-    cy.visit("http://localhost:3000/", {
+    cy.visit("http://localhost:3000/?network=Local", {
       onBeforeLoad: (win) => {
         let nextData: any;
         Object.defineProperty(win, "__NEXT_DATA__", {
@@ -21,7 +21,7 @@ describe("Maintenance", () => {
   });
 
   it("should display maintenance page when Quantum Bridge is down", () => {
-    cy.visit("http://localhost:3000/", {
+    cy.visit("http://localhost:3000/?network=Local", {
       onBeforeLoad: (win) => {
         let nextData: any;
         Object.defineProperty(win, "__NEXT_DATA__", {

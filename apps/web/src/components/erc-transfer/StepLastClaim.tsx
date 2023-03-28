@@ -71,7 +71,10 @@ export default function StepLastClaim({
 
   // Prepare write contract for `claimFund` function
   const [fee] = useTransferFee(data.to.amount.toString());
-  const amountLessFee = BigNumber.max(data.to.amount.minus(fee), 0).toFixed();
+  const amountLessFee = BigNumber.max(data.to.amount.minus(fee), 0).toFixed(
+    6,
+    BigNumber.ROUND_DOWN
+  );
   const parsedAmount = isTokenETH
     ? utils.parseEther(amountLessFee)
     : utils.parseUnits(amountLessFee, tokenDecimals);

@@ -15,10 +15,10 @@ jobs:
     name: Lint - Typescript and ESLint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 7.29.0 # renovate: datasource=npm depName=pnpm
+          version: 7.30.3 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18
@@ -32,10 +32,10 @@ jobs:
     name: Lint - Prettier
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 7.29.0 # renovate: datasource=npm depName=pnpm
+          version: 7.30.3 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18
@@ -48,10 +48,10 @@ jobs:
     name: "Build (Apps & Packages)"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 7.29.0 # renovate: datasource=npm depName=pnpm
+          version: 7.30.3 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18
@@ -70,10 +70,10 @@ jobs:
     env:
       GH_INSTANCE_TOTAL: 6
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 7.29.0 # renovate: datasource=npm depName=pnpm
+          version: 7.30.3 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18
@@ -88,10 +88,10 @@ jobs:
     name: "Test (Smart Contracts)"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@ac593985615ec2ede58e132d2e21d2b1cbd6127c # v3.3.0
+      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 7.29.0 # renovate: datasource=npm depName=pnpm
+          version: 7.30.3 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18
@@ -120,4 +120,4 @@ jobs:
           push: false
           build-args: APP=bridge-api
           platforms: ${{ matrix.platform }}
-          tags: ghcr.io/waveshq/bridge-api:latest
+          tags: ghcr.io/birthdayresearch/quantum-api:latest

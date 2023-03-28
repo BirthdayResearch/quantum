@@ -60,7 +60,7 @@ export class HardhatNetwork {
     const amountToFundInHex = ethers.BigNumber.from(amountToFund).toHexString();
     const fundAccountStatus = await this.startedHardhatContainer.call('hardhat_setBalance', [
       address,
-      amountToFundInHex,
+      toZeroStrippedHex(amountToFundInHex), // hardhat expects no leading zeroes
     ]);
 
     if (fundAccountStatus === false) {
