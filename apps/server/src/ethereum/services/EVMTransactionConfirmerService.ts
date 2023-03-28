@@ -389,7 +389,7 @@ export class EVMTransactionConfirmerService {
 const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
   const iface = new ethers.utils.Interface(BridgeV1__factory.abi);
   const decodedData = iface.parseTransaction({ data: txDetail.data, value: txDetail.value });
-  // Sanity check that the decoded function name is correct
+  // Sanity check that the decoded function name and signature is correct
   if (
     decodedData.name !== 'bridgeToDeFiChain' ||
     decodedData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
