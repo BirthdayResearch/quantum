@@ -10,7 +10,7 @@ export class EthereumTransactionsService {
 
   async getTransactions(dateFrom: Date, dateTo: Date, today: Date): Promise<TransactionsDto[]> {
     try {
-      if (dateFrom > today) {
+      if (dateFrom > today || dateTo > today) {
         throw new BadRequestException(`Cannot query future date`);
       }
 

@@ -79,6 +79,19 @@ describe('Transactions Service Test', () => {
     expect(parsedPayload.message).toStrictEqual('Cannot query future date');
   });
 
+  it(`should throw an error if toDate is in the future`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/transactions?fromDate=2023-03-15&toDate=2033-03-16`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.error).toStrictEqual('API call for Ethereum transactions was unsuccessful');
+    expect(parsedPayload.message).toStrictEqual('Cannot query future date');
+  });
+
   it(`should throw an error fromDate is more recent than toDate`, async () => {
     const txReceipt = await testing.inject({
       method: 'GET',
