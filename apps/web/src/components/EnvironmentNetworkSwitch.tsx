@@ -5,9 +5,11 @@ import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 export default function EnvironmentNetworkSwitch({
   onChange,
   disabled = false,
+  testId,
 }: {
   onChange: () => void;
   disabled?: boolean;
+  testId?: string;
 }): JSX.Element {
   const { networkEnv: currentNetworkEnv, updateNetworkEnv } =
     useNetworkEnvironmentContext();
