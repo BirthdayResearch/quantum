@@ -1,6 +1,5 @@
 import "@testing-library/cypress/add-commands";
 import { DToken, Erc20Token, Network } from "../../src/types";
-import BigNumber from "bignumber.js";
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -85,9 +84,62 @@ declare global {
         testId: string;
         url: string;
       }) => Chainable<Element>;
+
+      /**
+       * @description Helper function to validate dropdown tokens selection
+       * @param {boolean} erc20ToDfc - Flag to determine the direction of bridging
+       * @example cy.validateDropdownTokenSelection(true)
+       */
+      validateDropdownTokenSelection: (
+        erc20ToDfc: boolean
+      ) => Chainable<Element>;
+
+      /**
+       * @description Helper function to validate token pair
+       * @param {string} tokenToSend - Token being sent to bridge
+       * @param {string} tokenToReceive - Token to receive from bridge
+       * @example cy.validateTokenPair("WBTC", "dBTC")
+       */
+      validateTokenPair: (
+        tokenToSend: string,
+        tokenToReceive: string
+      ) => Chainable<Element>;
+
+      /**
+       * @description Helper function to validate network
+       * @param {"Source"|"Destination"} networkType - Type of network (e.g., "Source", "Destination")
+       * @param {Network} networkName - Name of network (e.g., "Ethereum", "DeFiChain")
+       * @example cy.validateNetwork("Source", Network.Ethereum")
+       */
+      validateNetwork: (
+        networkType: "Source" | "Destination",
+        networkName: Network
+      ) => Chainable<Element>;
+
+      /**
+       * @description Validates the form pairing of the source and destination networks.
+       * @param {Network} source - The source network (e.g., "Ethereum").
+       * @param {Network} destination - The destination network (e.g., "DeFiChain").
+       * @param {{ tokenA: string; tokenB: string }} tokenPair - An object containing the token pair (e.g., { tokenA: "USDT", tokenB: "dUSDT" }).
+       * @example
+       * validateFormPairing("Ethereum", "DeFiChain");
+       */
+      validateFormPairing: (
+        source: Network,
+        destination: Network,
+        tokenPair: { tokenA: string; tokenB: string }
+      ) => Chainable<Element>;
     }
   }
 }
+
+const TokensPair = [
+  { tokenA: "WBTC", tokenB: "dBTC" },
+  { tokenA: "ETH", tokenB: "dETH" },
+  { tokenA: "USDT", tokenB: "dUSDT" },
+  { tokenA: "USDC", tokenB: "dUSDC" },
+  { tokenA: "EUROC", tokenB: "dEUROC" },
+];
 
 Cypress.Commands.add("connectMetaMaskWallet", () => {
   cy.disconnectMetamaskWalletFromDapp(); // in case it's not fully disconnected, else cy.acceptMetamaskAccess() will throw error
@@ -130,3 +182,123 @@ Cypress.Commands.add(
       .and("contain", extLink.url);
   }
 );
+
+Cypress.Commands.add("validateDropdownTokenSelection", (erc20ToDfc = true) => {
+  const tokensPairing = erc20ToDfc
+    ? TokensPair
+    : swapTokenPositions(TokensPair);
+  // check if all token exist
+  // iterate through the TokensPairing
+  tokensPairing.forEach((pair) => {
+    const { tokenA, tokenB } = pair;
+    cy.findAllByTestId(`token-pair-to-send-${tokenA}`).should("exist");
+    cy.findAllByTestId(`token-pair-to-receive-${tokenB}`).should("exist");
+  });
+  cy.findByTestId("token-pair-dropdown-btn").click(); // to close the dropdown
+});
+
+Cypress.Commands.add(
+  "validateTokenPair",
+  (tokenToSend: string, tokenToReceive: string) => {
+    cy.findByTestId(`token-pair-input`)
+      .should("be.visible")
+      .should("contain.text", "Token");
+    cy.findByTestId("token-pair-dropdown-btn")
+      .should("have.attr", "aria-haspopup", "listbox")
+      .should("have.attr", "aria-expanded", "false")
+      .should("contain.text", tokenToSend);
+    cy.findByTestId(`selected-token-pair-${tokenToSend}-logo`).should(
+      "be.visible"
+    );
+
+    cy.findByTestId("token-to-receive-input")
+      .should("be.visible")
+      .should("contain.text", "Token to Receive");
+    cy.findByTestId("token-to-receive-dropdown-btn").should(
+      "contain.text",
+      tokenToReceive
+    );
+    cy.findByTestId(`selected-token-to-receive-${tokenToReceive}-logo`).should(
+      "be.visible"
+    );
+  }
+);
+
+Cypress.Commands.add(
+  "validateNetwork",
+  (networkType: "Source" | "Destination", networkName: Network) => {
+    const networkTypeLowerCase = networkType.toLowerCase();
+    cy.findByTestId(`${networkTypeLowerCase}-network-input`)
+      .should("be.visible")
+      .should("contain.text", `${networkType} Network`);
+    cy.findByTestId(`${networkTypeLowerCase}-network-dropdown-btn`)
+      .should("be.visible")
+      .should("contain.text", networkName)
+      .should("have.attr", "aria-haspopup", "listbox")
+      .should("have.attr", "aria-expanded", "false");
+    cy.findByTestId(
+      `selected-${networkTypeLowerCase}-network-${networkName}-logo`
+    ).should("be.visible");
+  }
+);
+
+Cypress.Commands.add(
+  "validateFormPairing",
+  (
+    source: Network,
+    destination: Network,
+    tokenPair: { tokenA: string; tokenB: string }
+  ) => {
+    const erc20ToDfc =
+      source === Network.Ethereum && destination === Network.DeFiChain; // double typed check
+    const { tokenA, tokenB } = tokenPair;
+
+    const tokenToSend = erc20ToDfc ? tokenA : tokenB;
+    const tokeToReceive = erc20ToDfc ? tokenB : tokenA;
+
+    // source network validation
+    cy.validateNetwork("Source", source);
+    cy.validateTokenPair(tokenToSend, tokeToReceive);
+
+    // verify token pair dropdown
+    cy.findByTestId("token-pair-dropdown-btn")
+      .click()
+      .should("have.attr", "aria-expanded", "true");
+    cy.findByTestId("token-pair-dropdown-options")
+      .should("be.visible")
+      .should("contain.text", "Select token");
+    cy.validateDropdownTokenSelection(erc20ToDfc);
+
+    // verify network env visibility
+    cy.findByTestId("network-env-switch").should(
+      erc20ToDfc ? "exist" : "not.exist"
+    );
+
+    if (erc20ToDfc) {
+      cy.findByTestId("network-env-switch").contains("Local"); // TODO: dynamic network env
+    }
+
+    // destination network validation
+    cy.validateNetwork("Destination", destination);
+    cy.validateTokenPair(tokenToSend, tokeToReceive);
+
+    // reciver address
+    cy.findByTestId("receiver-address").should("be.visible");
+    cy.findByTestId("receiver-address-input")
+      .should("be.disabled")
+      .invoke("attr", "placeholder")
+      .then((actualPlaceholder) => {
+        expect(actualPlaceholder).to.equal(`Enter ${destination} address`);
+      });
+  }
+);
+
+// Helper function to swap pairs
+function swapTokenPositions(
+  pairs: { tokenA: string; tokenB: string }[]
+): { tokenA: string; tokenB: string }[] {
+  return pairs.map((pair) => {
+    const { tokenA, tokenB } = pair;
+    return { tokenA: tokenB, tokenB: tokenA };
+  });
+}
