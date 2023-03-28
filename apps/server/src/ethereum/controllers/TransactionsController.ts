@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
 
 import { SemaphoreCache } from '../../libs/caches/SemaphoreCache';
 import { TransactionsDto, TransactionsQueryDto } from '../EthereumInterface';
@@ -13,8 +13,7 @@ export class TransactionsController {
 
   @Get('transactions')
   async getTransactions(
-    @Query('fromDate') fromDate: TransactionsQueryDto['fromDate'],
-    @Query('toDate') toDate: TransactionsQueryDto['toDate'],
+    @Query(new ValidationPipe()) { fromDate, toDate }: TransactionsQueryDto,
   ): Promise<TransactionsDto[] | undefined> {
     const cacheKey = `ETH_TX_${fromDate}_${toDate}`;
     return this.cache.get(cacheKey, async () => this.ethereumTransactionsService.getTransactions(fromDate, toDate), {
