@@ -29,19 +29,19 @@ export default function AnnouncementBanner(): JSX.Element {
 
   return announcement ? (
     // TODO: Handle ipad and mobile view
-    <div className="flex flex-row justify-between py-[18px] px-[120px] bg-dark-gradient-4">
-      <div className="flex text-dark-00 text-sm">
+    <div className="flex flex-row justify-between items-center py-[18px] px-6 md:px-10 lg:px-[120px] bg-dark-gradient-4">
+      <div className="flex items-center text-dark-00 text-xs lg:text-sm">
         <span>{announcement.content}</span>
         {announcement.url && (
           <FiArrowUpRight
             size={20}
-            className="cursor-pointer ml-2"
+            className="shrink-0 cursor-pointer ml-2"
             onClick={() => window.open(announcement.url, "_blank")}
           />
         )}
       </div>
       {/* TODO: Add close action */}
-      <IoClose size={20} className="cursor-pointer" />
+      <IoClose size={20} className="shrink-0 cursor-pointer ml-6" />
     </div>
   ) : null;
 }
