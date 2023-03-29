@@ -134,7 +134,6 @@ export default function BridgeForm({
       }),
   });
 
-  console.log(`evmBalance: ${JSON.stringify(evmBalance)}`);
   const maxAmount = new BigNumber(evmBalance?.formatted ?? 0);
   const [fromAddress, setFromAddress] = useState<string>(address || "");
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
@@ -340,7 +339,6 @@ export default function BridgeForm({
       // Revalidate entered amount when selected token is changed
       validateAmountInput(amount, maxAmount);
     }
-    console.log(`maxAmount: ${maxAmount}`);
   }, [maxAmount]);
 
   useEffect(() => {
@@ -622,7 +620,7 @@ export default function BridgeForm({
         {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton
-              data-testid="reset-btn"
+              testId="reset-btn"
               label="Reset form"
               onClick={() => {
                 setUtilityModalData(UtilityModalMessage.resetForm);
@@ -637,7 +635,8 @@ export default function BridgeForm({
             className={clsx("pt-3", warningTextStyle)}
             data-testid="error-insufficient-balance"
           >
-            Unable to process transaction. <div>Please try again later</div>
+            Unable to process due to liquidity cap, please try again in a few
+            hours
           </div>
         )}
       </div>
@@ -666,6 +665,7 @@ export default function BridgeForm({
           title="Recover transaction"
           message="Enter your Ethereum transaction ID to load your transaction again for review"
           onClose={() => setShowErcToDfcRestoreModal(false)}
+          testId="restore-txn"
         />
       )}
     </div>

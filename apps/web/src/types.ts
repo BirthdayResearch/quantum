@@ -90,7 +90,6 @@ export interface TransferData {
 }
 
 export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH" | "EUROC" | "DFI";
-export type DToken = "dBTC" | "dUSDT" | "dUSDC" | "dETH" | "dEUROC" | "DFI";
 
 interface ContractConfigI {
   address: `0x${string}`;
@@ -100,6 +99,7 @@ interface ContractConfigI {
 export interface ContractContextI {
   EthereumRpcUrl: string;
   ExplorerURL: string;
+  HotWalletAddress: string;
   BridgeV1: ContractConfigI;
   Erc20Tokens: Record<Erc20Token, ContractConfigI>;
 }

@@ -1,7 +1,14 @@
 /* eslint-disable cypress/no-unnecessary-waiting */
-
-import { Network } from "../../../src/types";
 import { DfcToErcTransferSteps } from "../../../src/constants";
+import { Erc20Token, Network } from "../../../src/types";
+
+const formData = {
+  sourceNetwork: Network.DeFiChain,
+  destinationNetwork: Network.Ethereum,
+  tokenPair: "USDT" as Erc20Token,
+  amount: "0.4",
+  destinationAddress: "bcrt1qamh07d09mhmym6ce7puftjgmwqqga2es7uzdzs",
+};
 
 before(() => {
   cy.visit("http://localhost:3000/?network=Local", {
@@ -19,7 +26,6 @@ before(() => {
       });
     },
   });
-  cy.connectMetaMaskWallet();
 });
 
 function validateStep(stepNumber: number) {
@@ -48,26 +54,30 @@ function validateStep(stepNumber: number) {
   });
 }
 
-context("QA-770 DeFiChain to Ethereum Virtual Machine transaction", () => {
-  const transferToken = "dUSDT";
-  const destinationToken = "USDT";
-  const transferAmount = "0.4";
+context("QA-770 Connected wallet - DFC > ETH - USDT", () => {
+  let connectedWalletAddress: string;
   const fee = "0.0012";
   const toReceive = "0.3988";
-  const DeFiChainAddress = "bcrt1qamh07d09mhmym6ce7puftjgmwqqga2es7uzdzs";
-  let evmAddressDestination = "";
+  const transferToken = "dUSDT";
+
+  beforeEach(() => {
+    cy.connectMetaMaskWallet();
+    cy.getMetamaskWalletAddress().then((address) => {
+      if (address !== undefined) {
+        connectedWalletAddress = address as string;
+      }
+    });
+  });
 
   it("1: Verify form setup DFC -> ETH", () => {
+    // bridge form setup
     cy.setupBridgeForm(
-      Network.DeFiChain,
-      transferToken,
-      destinationToken,
-      transferAmount,
-      fee,
-      toReceive
-    ).then(({ evmAddress }) => {
-      evmAddressDestination = evmAddress;
-    });
+      true,
+      formData.sourceNetwork,
+      formData.tokenPair,
+      formData.amount,
+      formData.destinationAddress
+    );
 
     // verify review button state
     cy.findByTestId("transfer-btn").click();
@@ -89,7 +99,7 @@ context("QA-770 DeFiChain to Ethereum Virtual Machine transaction", () => {
     // verify source data token to send
     cy.findByTestId("from-source-amount").should(
       "contain.text",
-      transferAmount
+      formData.amount
     );
     cy.findByTestId("from-source-token-icon")
       .should("have.attr", "alt", transferToken)
@@ -105,16 +115,16 @@ context("QA-770 DeFiChain to Ethereum Virtual Machine transaction", () => {
       .should("have.attr", "src", "/tokens/Ethereum.svg");
     cy.findByTestId("to-destination-address").should(
       "contain.text",
-      evmAddressDestination
+      connectedWalletAddress
     );
 
     // verify destination data token to receive
     cy.findByTestId("to-destination-token-icon")
-      .should("have.attr", "alt", destinationToken)
-      .should("have.attr", "src", `/tokens/${destinationToken}.svg`);
+      .should("have.attr", "alt", formData.tokenPair)
+      .should("have.attr", "src", `/tokens/${formData.tokenPair}.svg`);
     cy.findByTestId("to-destination-token-name").should(
       "contain.text",
-      destinationToken
+      formData.tokenPair
     );
 
     cy.findByTestId("to-destination-network-name").should(
@@ -156,7 +166,9 @@ context("QA-770 DeFiChain to Ethereum Virtual Machine transaction", () => {
       .should("contain.text", "Use correct address for DeFiChain Local"); // TODO: to make it dynamic based on env
     cy.findByTestId("go-to-next-step-btn").should("be.disabled");
     cy.findByTestId("defichain-address-clear").click(); // verify clear button functionality
-    cy.findByTestId("defichain-address-input").type(DeFiChainAddress);
+    cy.findByTestId("defichain-address-input").type(
+      formData.destinationAddress
+    );
     cy.findByTestId("wallet-address-input-verified-badge").should("exist"); // verify badge functionality
     cy.findByTestId("go-to-next-step-btn").click();
 
@@ -172,7 +184,7 @@ context("QA-770 DeFiChain to Ethereum Virtual Machine transaction", () => {
 
     cy.findByTestId("transact-token-amount")
       .should("be.visible")
-      .should("contain.text", transferAmount);
+      .should("contain.text", formData.amount);
 
     cy.findByTestId("transact-token-logo")
       .should("be.visible")
@@ -186,7 +198,7 @@ context("QA-770 DeFiChain to Ethereum Virtual Machine transaction", () => {
     cy.findByTestId("temp-defichain-sending-text")
       .invoke("text")
       .then((text) => {
-        cy.sendTokenToWallet(text, transferAmount, destinationToken);
+        cy.sendTokenToWallet(text, formData.amount, formData.tokenPair);
       });
 
     cy.wait(1000); // to give time for the send verification

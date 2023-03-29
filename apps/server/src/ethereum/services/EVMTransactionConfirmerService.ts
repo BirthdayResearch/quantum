@@ -10,6 +10,7 @@ import { BridgeV1, BridgeV1__factory, ERC20__factory } from 'smartcontracts';
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { TokenSymbol } from '../../defichain/model/VerifyDto';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
+import { WhaleWalletProvider } from '../../defichain/providers/WhaleWalletProvider';
 import { DeFiChainTransactionService } from '../../defichain/services/DeFiChainTransactionService';
 import { SendService } from '../../defichain/services/SendService';
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
@@ -36,6 +37,7 @@ export class EVMTransactionConfirmerService {
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly sendService: SendService,
     private readonly deFiChainTransactionService: DeFiChainTransactionService,
+    private readonly whaleWalletProvider: WhaleWalletProvider,
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
@@ -68,15 +70,19 @@ export class EVMTransactionConfirmerService {
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
+    const isValidTxn = await this.verifyIfValidTxn(transactionHash);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+
     // if transaction is still pending
     if (txReceipt === null) {
       return { numberOfConfirmations: 0, isConfirmed: false };
     }
-    // check txn is done for valid SC or not
-    if (txReceipt.to !== this.contractAddress) {
-      throw new BadRequestException(`Invalid transaction`);
+
+    // Sanity check that the contractAddress, decoded name and signature are correct
+    if (txReceipt.to !== this.contractAddress || !isValidTxn) {
+      return { numberOfConfirmations: 0, isConfirmed: false };
     }
+
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
@@ -240,16 +246,18 @@ export class EVMTransactionConfirmerService {
       }
 
       if (txDetails.unconfirmedSendTransactionHash) {
-        const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(
-          txDetails.unconfirmedSendTransactionHash,
-        );
+        const {
+          blockHash,
+          blockHeight,
+          numberOfConfirmations: numberOfConfirmationsDfc,
+        } = await this.deFiChainTransactionService.getTxn(txDetails.unconfirmedSendTransactionHash);
 
         // wait for min number of confirmations before confirming the txn
-        if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
+        if (numberOfConfirmationsDfc < this.MIN_REQUIRED_DFC_CONFIRMATION) {
           return {
             transactionHash: txDetails.unconfirmedSendTransactionHash,
             isConfirmed: false,
-            numberOfConfirmationsDfc: numberOfConfirmations,
+            numberOfConfirmationsDfc,
           };
         }
 
@@ -279,14 +287,19 @@ export class EVMTransactionConfirmerService {
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+      const isValidTxn = await this.verifyIfValidTxn(transactionHash);
 
       if (!txReceipt) {
         throw new Error('Transaction is not yet available');
       }
 
-      // check txn is done for valid SC or not
-      if (txReceipt.to !== this.contractAddress) {
-        throw new BadRequestException(`Invalid transaction`);
+      // Sanity check that the contractAddress, decoded name and signature are correct
+      if (!isValidTxn || txReceipt.to !== this.contractAddress) {
+        return {
+          transactionHash: '',
+          isConfirmed: false,
+          numberOfConfirmationsDfc: 0,
+        };
       }
 
       // if transaction is reverted
@@ -294,6 +307,7 @@ export class EVMTransactionConfirmerService {
       if (isReverted === true) {
         throw new BadRequestException(`Transaction Reverted`);
       }
+
       const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
       const numberOfConfirmations = currentBlockNumber - txReceipt.blockNumber;
 
@@ -312,6 +326,19 @@ export class EVMTransactionConfirmerService {
       const amount = new BigNumber(dTokenDetails.amount);
       const fee = amount.multipliedBy(this.configService.getOrThrow('ethereum.transferFee'));
       const amountLessFee = BigNumber.max(amount.minus(fee), 0);
+
+      // check hot wallet has enough UTXO balance after reserving a configurable amount
+      if (dTokenDetails.symbol === 'DFI') {
+        const hotWalletBalance = await this.whaleWalletProvider.getHotWalletBalance();
+        const dfcReservedAmt = this.configService.getOrThrow('defichain.dfcReservedAmt', 0);
+        const DFIBalance = BigNumber.max(0, new BigNumber(hotWalletBalance).minus(dfcReservedAmt).minus(amountLessFee));
+        if (DFIBalance.isLessThanOrEqualTo(0) || DFIBalance.isNaN()) {
+          this.logger.log(
+            `[Sending UTXO] Failed to send because insufficient DFI UTXO in hot wallet after deducting reserved UTXO`,
+          );
+          throw new BadRequestException('Insufficient DFI liquidity');
+        }
+      }
 
       const sendTxPayload = {
         ...dTokenDetails,
@@ -365,7 +392,9 @@ export class EVMTransactionConfirmerService {
     toAddress: string;
   }> {
     const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-    const { params } = decodeTxnData(onChainTxnDetail);
+    const parsedTxnData = await this.parseTxnHash(transactionHash);
+    const { params } = this.decodeTxnData(parsedTxnData);
+
     const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
     const toAddress = ethers.utils.toUtf8String(defiAddress);
     // eth transfer
@@ -384,52 +413,81 @@ export class EVMTransactionConfirmerService {
 
     return { ...dTokenDetails, amount: transferAmount, toAddress };
   }
-}
 
-const decodeTxnData = (txDetail: ethers.providers.TransactionResponse) => {
-  const iface = new ethers.utils.Interface(BridgeV1__factory.abi);
-  const decodedData = iface.parseTransaction({ data: txDetail.data, value: txDetail.value });
-  // Sanity check that the decoded function name is correct
-  if (decodedData.name !== 'bridgeToDeFiChain') {
-    throw Error('Invalid transactionHash');
+  private async verifyIfValidTxn(transactionHash: string): Promise<boolean> {
+    const { parsedTxnData } = await this.parseTxnHash(transactionHash);
+    // Sanity check that the decoded function name and signature are correct
+    if (
+      parsedTxnData.name !== 'bridgeToDeFiChain' ||
+      parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
+    ) {
+      return false;
+    }
+
+    // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
+
+    return true;
   }
-  const fragment = iface.getFunction(decodedData.name);
-  const params = decodedData.args.reduce((res, param, i) => {
-    let parsedParam = param;
-    const isUint = fragment.inputs[i].type.indexOf('uint') === 0;
-    const isInt = fragment.inputs[i].type.indexOf('int') === 0;
-    const isAddress = fragment.inputs[i].type.indexOf('address') === 0;
 
-    if (isUint || isInt) {
-      const isArray = Array.isArray(param);
+  private async parseTxnHash(transactionHash: string): Promise<{
+    etherInterface: ethers.utils.Interface;
+    parsedTxnData: ethers.utils.TransactionDescription;
+  }> {
+    const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
+    const etherInterface = new ethers.utils.Interface(BridgeV1__factory.abi);
+    const parsedTxnData = etherInterface.parseTransaction({
+      data: onChainTxnDetail.data,
+      value: onChainTxnDetail.value,
+    });
 
-      if (isArray) {
-        parsedParam = param.map((val) => EthBigNumber.from(val).toString());
-      } else {
-        parsedParam = EthBigNumber.from(param).toString();
+    return { etherInterface, parsedTxnData };
+  }
+
+  private decodeTxnData({
+    etherInterface,
+    parsedTxnData,
+  }: {
+    etherInterface: ethers.utils.Interface;
+    parsedTxnData: ethers.utils.TransactionDescription;
+  }) {
+    const fragment = etherInterface.getFunction(parsedTxnData.name);
+    const params = parsedTxnData.args.reduce((res, param, i) => {
+      let parsedParam = param;
+      const isUint = fragment.inputs[i].type.indexOf('uint') === 0;
+      const isInt = fragment.inputs[i].type.indexOf('int') === 0;
+      const isAddress = fragment.inputs[i].type.indexOf('address') === 0;
+
+      if (isUint || isInt) {
+        const isArray = Array.isArray(param);
+
+        if (isArray) {
+          parsedParam = param.map((val) => EthBigNumber.from(val).toString());
+        } else {
+          parsedParam = EthBigNumber.from(param).toString();
+        }
       }
-    }
 
-    // Addresses returned by web3 are randomly cased so we need to standardize and lowercase all
-    if (isAddress) {
-      const isArray = Array.isArray(param);
-      if (isArray) {
-        parsedParam = param.map((_) => _.toLowerCase());
-      } else {
-        parsedParam = param.toLowerCase();
+      // Addresses returned by web3 are randomly cased so we need to standardize and lowercase all
+      if (isAddress) {
+        const isArray = Array.isArray(param);
+        if (isArray) {
+          parsedParam = param.map((_) => _.toLowerCase());
+        } else {
+          parsedParam = param.toLowerCase();
+        }
       }
-    }
+      return {
+        ...res,
+        [fragment.inputs[i].name]: parsedParam,
+      };
+    }, {});
+
     return {
-      ...res,
-      [fragment.inputs[i].name]: parsedParam,
+      params,
+      name: parsedTxnData.name,
     };
-  }, {});
-
-  return {
-    params,
-    name: decodedData.name,
-  };
-};
+  }
+}
 
 interface SignClaim {
   receiverAddress: string;
