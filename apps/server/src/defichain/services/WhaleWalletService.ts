@@ -118,9 +118,11 @@ export class WhaleWalletService {
         amount: amountLessFee,
         uniqueDfcAddress: verify.address,
       });
-
+      // eslint-disable-next-line
+      console.log('before fundutxo');
       await this.fundUTXO(verify.address);
-
+      // eslint-disable-next-line
+      console.log('after fundutxo');
       this.logger.log(
         `[Verify SUCCESS] ${verify.amount} ${fee.toString()} ${amountLessFee} ${verify.symbol} ${verify.address} ${
           verify.ethReceiverAddress

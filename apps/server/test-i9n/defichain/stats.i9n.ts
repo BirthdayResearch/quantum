@@ -141,7 +141,13 @@ describe('DeFiChain Stats Testing', () => {
     const hotWalletAddress = await hotWallet.getAddress();
 
     // Send UTXO to Hot Wallet
-    await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 10);
+    // eslint-disable-next-line
+    console.log('hot wallet address in stats.i9n', hotWalletAddress);
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
+    await defichain.generateBlock();
+
+    // Send dust UTXO to localAddress
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(localAddress, 1);
     await defichain.generateBlock();
 
     // Sends token to the address

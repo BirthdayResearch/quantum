@@ -21,6 +21,10 @@ export class SendService {
       let signed: TransactionSegWit;
       // To be able to send UTXO DFI
       if (token.symbol === 'DFI') {
+        const hotWallet = this.whaleWalletProvider.getHotWallet();
+        const hotWalletAddress = await hotWallet.getAddress();
+        // eslint-disable-next-line
+        console.log('hot wallet address in send service', hotWalletAddress);
         this.verifyDFIBalance(token.amount);
         signed = await builder.utxo.send(token.amount, to, from);
       } else {
