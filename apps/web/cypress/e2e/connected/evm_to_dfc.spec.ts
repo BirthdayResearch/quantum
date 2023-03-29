@@ -238,99 +238,6 @@ async function startEvmMine() {
   cy.hardhatRequest("evm_setIntervalMining", [500]);
 }
 
-function validateLockedForm(
-  sourceNetwork: Network,
-  destinationNetwork: Network,
-  tokenPair: Erc20Token,
-  amount: string,
-  destinationAddress: string
-) {
-  cy.getTokenPairs(tokenPair).then((pair) => {
-    // validate source data still persisted
-    cy.findByTestId("source-network-dropdown-btn").should(
-      "contain.text",
-      sourceNetwork
-    );
-    cy.findByTestId("token-pair-dropdown-btn").should(
-      "contain.text",
-      pair.tokenA
-    );
-    cy.findByTestId("quick-input-card-set-amount").should(
-      "have.attr",
-      "value",
-      amount
-    );
-
-    // validate destination data still persisted
-    cy.findByTestId("destination-network-dropdown-btn").should(
-      "contain.text",
-      destinationNetwork
-    );
-    cy.findByTestId("token-to-receive-dropdown-btn").should(
-      "contain.text",
-      pair.tokenB
-    );
-    cy.findByTestId("wallet-address-input-verified-badge").should(
-      "contain.text",
-      destinationAddress
-    );
-  });
-
-  // source fields
-  cy.findByTestId("source-network-dropdown-btn").click();
-  cy.findByTestId("source-network-dropdown-options").should("not.exist");
-  cy.findByTestId("source-network-dropdown-icon").should("not.exist");
-  cy.findByTestId("token-pair-dropdown-btn").click();
-  cy.findByTestId("token-pair-dropdown-options").should("not.exist");
-  cy.findByTestId("token-pair-dropdown-icon").should("not.exist");
-  cy.findByTestId("quick-input-card-set-amount").should("be.disabled");
-  cy.findByTestId("quick-input-card-set-amount-25%").should("be.disabled");
-  cy.findByTestId("quick-input-card-set-amount-50%").should("be.disabled");
-  cy.findByTestId("quick-input-card-set-amount-75%").should("be.disabled");
-  cy.findByTestId("quick-input-card-set-amount-Max").should("be.disabled");
-  cy.findByTestId("quick-input-card-lock-icon").should("be.visible");
-
-  // swap button
-  cy.findByTestId("transfer-flow-swap-btn").should("be.disabled");
-  cy.findByTestId("swap-btn-arrow-down").should("be.visible");
-  cy.findByTestId("swap-btn-switch").should("be.hidden");
-
-  // destination fields
-  cy.findByTestId("receiver-address-paste-icon-tooltip")
-    .realHover()
-    .then(() => {
-      cy.findByTestId("receiver-address-paste-icon-tooltip-content").should(
-        "not.exist"
-      );
-    });
-  cy.findByTestId("receiver-address-input").should("be.hidden");
-  cy.findByTestId("receiver-address-lock-icon").should("be.visible");
-
-  // action buttons
-  cy.findByTestId("transfer-btn").should("contain.text", "Retry transfer");
-  cy.findByTestId("reset-btn")
-    .should("be.visible")
-    .should("contain.text", "Reset form");
-}
-
-function validateUtilityModal(
-  title: string,
-  message: string,
-  primaryButtonLabel: string,
-  secondaryButtonLabel: string
-) {
-  cy.findByTestId("utility-title").should("contain.text", title);
-  cy.findByTestId("utility-msg").should("contain.text", message);
-  cy.findByTestId("utility-primary-btn").should(
-    "contain.text",
-    primaryButtonLabel
-  );
-  cy.findByTestId("utility-secondary-btn").should(
-    "contain.text",
-    secondaryButtonLabel
-  );
-}
-
 beforeEach(() => {
   cy.visit("http://localhost:3000/?network=Local", {
     onBeforeLoad: (win) => {
@@ -368,18 +275,18 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.findByTestId("review-modal-close-icon").click();
 
     // verify utility modal
-    validateUtilityModal(
+    cy.validateUtilityModal(
       "Are you sure you want to leave your transaction?",
       "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
       "Leave transaction",
       "Go back"
     );
     cy.findByTestId("utility-secondary-btn").click();
-
+    // display utility again, then close
     cy.findByTestId("review-modal-close-icon").click();
     cy.findByTestId("utility-primary-btn").click();
 
-    validateLockedForm(
+    cy.validateLockedForm(
       formData.sourceNetwork,
       formData.destinationNetwork,
       formData.tokenPair,
@@ -393,7 +300,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.findByTestId("review-modal-close-icon").click();
 
     // verify utility modal
-    validateUtilityModal(
+    cy.validateUtilityModal(
       "Are you sure you want to leave your transaction?",
       "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
       "Leave transaction",
@@ -401,7 +308,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     );
     cy.findByTestId("utility-primary-btn").click();
 
-    validateLockedForm(
+    cy.validateLockedForm(
       formData.sourceNetwork,
       formData.destinationNetwork,
       formData.tokenPair,
@@ -409,7 +316,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       formData.destinationAddress
     );
     cy.findByTestId("reset-btn").click();
-    validateUtilityModal(
+    cy.validateUtilityModal(
       "Are you sure you want to reset form?",
       "Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
       "Reset form",
@@ -437,7 +344,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       .should("contain.text", "Close")
       .click();
 
-    validateUtilityModal(
+    cy.validateUtilityModal(
       "Are you sure you want to leave your transaction?",
       "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
       "Leave transaction",
@@ -445,7 +352,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     );
     cy.findByTestId("utility-primary-btn").click();
 
-    validateLockedForm(
+    cy.validateLockedForm(
       formData.sourceNetwork,
       formData.destinationNetwork,
       formData.tokenPair,

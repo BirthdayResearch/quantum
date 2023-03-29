@@ -153,6 +153,40 @@ declare global {
       getTokenPairs: (
         token: Erc20Token
       ) => Chainable<{ tokenA: string; tokenB: string }>;
+
+      /**
+       * @description Helper function to validate utility modal
+       * @param {string} title display on modal
+       * @param {string} message displayed on modal
+       * @param {string} primaryButtonLabel displayed on modal
+       * @param {string} secondaryButtonLabel displayed on modal
+       * @example
+       * validateUtilityModal("Error", "Something went wrong", "Try again", "Close");
+       */
+      validateUtilityModal: (
+        title: string,
+        message: string,
+        primaryButtonLabel: string,
+        secondaryButtonLabel: string
+      ) => Chainable<Element>;
+
+      /**
+       * @description Helper function to validate locked form
+       * @param {Network} sourceNetwork to be bridge from
+       * @param {Network} destinationNetwork to bridge to
+       * @param {Erc20Token} tokenPair to be sent and receive from bridge
+       * @param {string} amount to be sent
+       * @param {string} destinationAddress to receive the token amount
+       * @example
+       * validateLockedForm(Network.Ethereum, Network.DeFiChain, "WBTC", "0.001", "xxxxxxx");
+       */
+      validateLockedForm: (
+        sourceNetwork: Network,
+        destinationNetwork: Network,
+        tokenPair: Erc20Token,
+        amount: string,
+        destinationAddress: string
+      ) => Chainable<Element>;
     }
   }
 }
@@ -366,16 +400,6 @@ Cypress.Commands.add("hardhatRequest", (method: string, params: any[]) => {
   });
 });
 
-// Helper function to swap pairs
-function swapTokenPositions(
-  pairs: { tokenA: string; tokenB: string }[]
-): { tokenA: string; tokenB: string }[] {
-  return pairs.map((pair) => {
-    const { tokenA, tokenB } = pair;
-    return { tokenA: tokenB, tokenB: tokenA };
-  });
-}
-
 Cypress.Commands.add("getTokenPairs", (token: Erc20Token) => {
   for (let pair of TokensPair) {
     if (pair.tokenA === token) {
@@ -387,3 +411,112 @@ Cypress.Commands.add("getTokenPairs", (token: Erc20Token) => {
   cy.contains("Unable to find pair, test failed");
   return cy.wrap(TokensPair[0]);
 });
+
+Cypress.Commands.add(
+  "validateUtilityModal",
+  (
+    title: string,
+    message: string,
+    primaryButtonLabel: string,
+    secondaryButtonLabel: string
+  ) => {
+    cy.findByTestId("utility-title").should("contain.text", title);
+    cy.findByTestId("utility-msg").should("contain.text", message);
+    cy.findByTestId("utility-primary-btn").should(
+      "contain.text",
+      primaryButtonLabel
+    );
+    cy.findByTestId("utility-secondary-btn").should(
+      "contain.text",
+      secondaryButtonLabel
+    );
+  }
+);
+
+Cypress.Commands.add(
+  "validateLockedForm",
+  (
+    sourceNetwork: Network,
+    destinationNetwork: Network,
+    tokenPair: Erc20Token,
+    amount: string,
+    destinationAddress: string
+  ) => {
+    cy.getTokenPairs(tokenPair).then((pair) => {
+      // validate source data still persisted
+      cy.findByTestId("source-network-dropdown-btn").should(
+        "contain.text",
+        sourceNetwork
+      );
+      cy.findByTestId("token-pair-dropdown-btn").should(
+        "contain.text",
+        pair.tokenA
+      );
+      cy.findByTestId("quick-input-card-set-amount").should(
+        "have.attr",
+        "value",
+        amount
+      );
+
+      // validate destination data still persisted
+      cy.findByTestId("destination-network-dropdown-btn").should(
+        "contain.text",
+        destinationNetwork
+      );
+      cy.findByTestId("token-to-receive-dropdown-btn").should(
+        "contain.text",
+        pair.tokenB
+      );
+      cy.findByTestId("wallet-address-input-verified-badge").should(
+        "contain.text",
+        destinationAddress
+      );
+    });
+
+    // source fields
+    cy.findByTestId("source-network-dropdown-btn").click();
+    cy.findByTestId("source-network-dropdown-options").should("not.exist");
+    cy.findByTestId("source-network-dropdown-icon").should("not.exist");
+    cy.findByTestId("token-pair-dropdown-btn").click();
+    cy.findByTestId("token-pair-dropdown-options").should("not.exist");
+    cy.findByTestId("token-pair-dropdown-icon").should("not.exist");
+    cy.findByTestId("quick-input-card-set-amount").should("be.disabled");
+    cy.findByTestId("quick-input-card-set-amount-25%").should("be.disabled");
+    cy.findByTestId("quick-input-card-set-amount-50%").should("be.disabled");
+    cy.findByTestId("quick-input-card-set-amount-75%").should("be.disabled");
+    cy.findByTestId("quick-input-card-set-amount-Max").should("be.disabled");
+    cy.findByTestId("quick-input-card-lock-icon").should("be.visible");
+
+    // swap button
+    cy.findByTestId("transfer-flow-swap-btn").should("be.disabled");
+    cy.findByTestId("swap-btn-arrow-down").should("be.visible");
+    cy.findByTestId("swap-btn-switch").should("be.hidden");
+
+    // destination fields
+    cy.findByTestId("receiver-address-paste-icon-tooltip")
+      .realHover()
+      .then(() => {
+        cy.findByTestId("receiver-address-paste-icon-tooltip-content").should(
+          "not.exist"
+        );
+      });
+    cy.findByTestId("receiver-address-input").should("be.hidden");
+    cy.findByTestId("receiver-address-lock-icon").should("be.visible");
+
+    // action buttons
+    cy.findByTestId("transfer-btn").should("contain.text", "Retry transfer");
+    cy.findByTestId("reset-btn")
+      .should("be.visible")
+      .should("contain.text", "Reset form");
+  }
+);
+
+// Helper function to swap pairs
+function swapTokenPositions(
+  pairs: { tokenA: string; tokenB: string }[]
+): { tokenA: string; tokenB: string }[] {
+  return pairs.map((pair) => {
+    const { tokenA, tokenB } = pair;
+    return { tokenA: tokenB, tokenB: tokenA };
+  });
+}
