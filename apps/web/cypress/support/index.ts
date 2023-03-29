@@ -1,5 +1,5 @@
 declare namespace Cypress {
   interface Chainable {
-    getLiquidityValueByIndex(index: number): Chainable;
+    getLiquidityBySymbolChain(symbol: string, chain: string): Chainable;
   }
 }

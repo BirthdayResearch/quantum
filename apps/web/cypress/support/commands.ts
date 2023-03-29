@@ -37,9 +37,8 @@ import "@testing-library/cypress/add-commands";
 //   }
 // }
 
-Cypress.Commands.add("getLiquidityValueByIndex", (index) => {
-  cy.get(".space-y-3 div.items-center > span.text-dark-1000.flex-1")
-    .eq(index)
+Cypress.Commands.add("getLiquidityBySymbolChain", (symbol, chain) => {
+  cy.findByTestId(`${symbol}-${chain}-liquidity`)
     .invoke("text")
     .then((s) => {
       s = s.substring(0, s.lastIndexOf(" "));

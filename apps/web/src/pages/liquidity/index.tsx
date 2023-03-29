@@ -39,6 +39,7 @@ export default function LiquidityOverview({ defaultBalances }) {
               target="_blank"
               rel="noreferrer"
               className="text-dark-1000 ml-1 font-semibold text-sm md:test-base"
+              data-testid="Desktop.POB.Url"
             >
               view here
             </a>
