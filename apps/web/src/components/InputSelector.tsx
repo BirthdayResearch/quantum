@@ -242,6 +242,7 @@ export default function InputSelector({
                           "rotate-180": open,
                         }
                       )}
+                      data-testid={`${testId}-dropdown-icon`}
                     />
                   </span>
                 )}

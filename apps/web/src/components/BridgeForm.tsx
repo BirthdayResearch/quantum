@@ -663,6 +663,7 @@ export default function BridgeForm({
           title="Recover transaction"
           message="Enter your Ethereum transaction ID to load your transaction again for review"
           onClose={() => setShowErcToDfcRestoreModal(false)}
+          testId="restore-txn"
         />
       )}
     </div>
