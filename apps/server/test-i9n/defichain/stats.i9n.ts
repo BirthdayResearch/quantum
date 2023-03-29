@@ -136,7 +136,7 @@ describe('DeFiChain Stats Testing', () => {
   async function getBalance(tokenSymbol: string) {
     const initialResponse = await testing.inject({
       method: 'GET',
-      url: `${WALLET_ENDPOINT}${tokenSymbol}`,
+      url: `${WALLET_ENDPOINT}balance/${tokenSymbol}`,
     });
     const response = JSON.parse(initialResponse.body);
     return response;
@@ -152,11 +152,9 @@ describe('DeFiChain Stats Testing', () => {
     });
 
     // Send UTXO to Hot Wallet
-    await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 10);
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
     await defichain.generateBlock();
-    const hotWalletBalance = await whaleWalletProvider.getHotWalletBalance();
-    // eslint-disable-next-line
-    console.log('hotwalletbalance without api', { hotWalletBalance });
+
     // eslint-disable-next-line
     console.log('hotwalletbalance with api', await getBalance('DFI'));
     // Sends token to the address

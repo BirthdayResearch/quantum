@@ -21,10 +21,6 @@ export class SendService {
       let signed: TransactionSegWit;
       // To be able to send UTXO DFI
       if (token.symbol === 'DFI') {
-        const hotWallet = this.whaleWalletProvider.getHotWallet();
-        const hotWalletAddress = await hotWallet.getAddress();
-        // eslint-disable-next-line
-        console.log('hot wallet address in send service', hotWalletAddress);
         this.verifyDFIBalance(token.amount);
         signed = await builder.utxo.send(token.amount, to, from);
       } else {
@@ -56,7 +52,9 @@ export class SendService {
     const balance = await this.whaleWalletProvider.getHotWalletBalance();
     const DFIBalance = BigNumber.max(0, new BigNumber(balance).minus(amountToSend));
     if (DFIBalance.isLessThanOrEqualTo(0) || DFIBalance.isNaN()) {
-      this.logger.log(`[Sending UTXO] Failed to send because insufficient DFI UTXO in hot wallet`);
+      this.logger.log(
+        `[Sending UTXO] Failed to send because insufficient DFI UTXO in hot wallet, current balance: ${balance}`,
+      );
       throw new BadRequestException(
         `Insufficient DFI liquidity, hot wallet balance: ${balance}, amount to send: ${amountToSend}`,
       );
