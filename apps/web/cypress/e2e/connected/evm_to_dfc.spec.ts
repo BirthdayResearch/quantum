@@ -370,7 +370,36 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.validateFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
   });
 
-  it("should be able verify transaction status - failed", () => {
+  it("should be able to reject transaction", () => {
+    initTransaction(true, false);
+    // reject metamask
+    cy.rejectMetamaskTransaction();
+
+    // verify transaction error modal
+    cy.findByTestId("transaction-err-title").should(
+      "contain.text",
+      "Transaction error"
+    );
+    cy.findByTestId("transaction-err-action-btn").should(
+      "contain.text",
+      "Try again"
+    );
+    cy.findByTestId("transaction-err-close-btn")
+      .should("contain.text", "Close")
+      .click();
+
+    validateUtilityModal(
+      "Are you sure you want to leave your transaction?",
+      "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      "Leave transaction",
+      "Go back"
+    );
+    cy.findByTestId("utility-primary-btn").click();
+
+    validateLockedForm();
+  });
+
+  it("should be able to verify transaction status - failed", () => {
     initTransaction();
     cy.intercept("POST", "**/ethereum/handleTransaction", {
       statusCode: HttpStatusCode.BadRequest,
@@ -383,7 +412,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     validateTransactionStatus(TransactionStatusType.FAILED);
   });
 
-  it("should be able verify transaction status - reverted", () => {
+  it("should be able to verify transaction status - reverted", () => {
     initTransaction();
     cy.intercept("POST", "**/ethereum/handleTransaction", {
       statusCode: HttpStatusCode.BadRequest,
@@ -410,7 +439,9 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
 
     startEvmMine();
     waitUntilEvmBlocksConfirm();
+    // verify is DFC confirmation now
     cy.findByTestId("txn-progress-status").should("contain.text", "For DFC");
+    // continue verify blocks
     waitUntilBlocksConfirm();
     validateTransactionStatus(TransactionStatusType.CONFIRM);
 
