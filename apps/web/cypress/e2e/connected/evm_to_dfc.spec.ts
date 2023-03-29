@@ -128,7 +128,10 @@ function validateTransactionStatus(status: TransactionStatusType) {
   }
 }
 
-function initTransaction(confirmTransaction: boolean = true) {
+function initTransaction(
+  confirmTransaction: boolean = true,
+  confirmMetamask: boolean = true
+) {
   // setup form
   cy.setupBridgeForm(
     true,
@@ -180,9 +183,15 @@ function initTransaction(confirmTransaction: boolean = true) {
       expect(suffix).to.equal("USDT");
     });
 
-  cy.findByTestId("confirm-transfer-btn")
-    .should("contain.text", "Confirm transfer on wallet")
-    .click();
+  cy.findByTestId("confirm-transfer-btn").should(
+    "contain.text",
+    "Confirm transfer on wallet"
+  );
+
+  if (!confirmTransaction) {
+    return;
+  }
+  cy.findByTestId("confirm-transfer-btn").click();
 
   // check confirmation modal
   cy.findByTestId("bridge-status-title").should(
@@ -194,15 +203,46 @@ function initTransaction(confirmTransaction: boolean = true) {
     "Confirm this transaction in your Wallet."
   );
 
-  if (confirmTransaction) {
-    // approve metamask
-    cy.confirmMetamaskTransaction();
+  if (!confirmMetamask) {
+    return;
   }
+  // approve metamask
+  cy.confirmMetamaskTransaction();
 }
 
 async function startEvmMine() {
   cy.hardhatRequest("evm_setAutomine", [true]);
   cy.hardhatRequest("evm_setIntervalMining", [500]);
+}
+
+function validateLockedForm() {
+  // source fields
+  cy.findByTestId("source-network-dropdown-btn").click();
+  cy.findByTestId("source-network-dropdown-options").should("not.exist");
+  cy.findByTestId("source-network-dropdown-icon").should("not.exist");
+  cy.findByTestId("token-pair-dropdown-btn").click();
+  cy.findByTestId("token-pair-dropdown-options").should("not.exist");
+  cy.findByTestId("token-pair-dropdown-icon").should("not.exist");
+  cy.findByTestId("quick-input-card-set-amount").should("be.disabled");
+  cy.findByTestId("quick-input-card-set-amount-25%").should("be.disabled");
+  cy.findByTestId("quick-input-card-set-amount-50%").should("be.disabled");
+  cy.findByTestId("quick-input-card-set-amount-75%").should("be.disabled");
+  cy.findByTestId("quick-input-card-set-amount-Max").should("be.disabled");
+  cy.findByTestId("quick-input-card-lock-icon").should("be.visible");
+
+  // swap button
+  cy.findByTestId("transfer-flow-swap-btn").should("be.disabled");
+  cy.findByTestId("swap-btn-arrow-down").should("be.visible");
+  cy.findByTestId("swap-btn-switch").should("be.hidden");
+
+  // destination fields
+  cy.findByTestId("receiver-address-lock-icon").should("be.visible");
+
+  // action buttons
+  cy.findByTestId("transfer-btn").should("contain.text", "Retry transfer");
+  cy.findByTestId("reset-btn")
+    .should("be.visible")
+    .should("contain.text", "Reset form");
 }
 
 beforeEach(() => {
@@ -236,23 +276,33 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     });
   });
 
-  // it("should be able to lock form", () => {
-  //   // setup form
-  //   cy.setupBridgeForm(
-  //     Network.Ethereum,
-  //     "USDT",
-  //     "0.001",
-  //     "bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d"
-  //   );
-  //   cy.findByTestId("transfer-btn").click();
-  //   cy.wait(3000);
-  //
-  //   cy.findByTestId("review-modal-close-icon").click();
-  //
-  //   // verify form locked
-  //   cy.findByTestId("transfer-btn").should("contain.text", "Retry transfer");
-  //   cy.findByTestId("reset-btn").should("be.visible");
-  // });
+  it.only("should be able to lock form", () => {
+    initTransaction(false);
+
+    cy.findByTestId("review-modal-close-icon").click();
+
+    // verify utility modal
+    cy.findByTestId("utility-title").should(
+      "contain.text",
+      "Are you sure you want to leave your transaction?"
+    );
+    cy.findByTestId("utility-msg").should(
+      "contain.text",
+      "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution"
+    );
+    cy.findByTestId("utility-primary-btn").should(
+      "contain.text",
+      "Leave transaction"
+    );
+    cy.findByTestId("utility-secondary-btn")
+      .should("contain.text", "Go back")
+      .click();
+
+    cy.findByTestId("review-modal-close-icon").click();
+    cy.findByTestId("utility-primary-btn").click();
+
+    validateLockedForm();
+  });
 
   it("should be able verify transaction status - failed", () => {
     initTransaction();

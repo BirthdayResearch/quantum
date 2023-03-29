@@ -73,7 +73,7 @@ describe("QA-769-1 Connect wallet - Connect Wallet (auto connected)", () => {
       .then((placeholder) => {
         expect(placeholder).to.equal("Enter DeFiChain address");
       });
-    cy.findByTestId("address_error_message").should(
+    cy.findByTestId("receiver-input-error-message").should(
       "contain.text",
       "Make sure to only use Local for testing"
     );

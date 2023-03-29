@@ -48,6 +48,7 @@ export const LOCAL_HARDHAT_CONFIG: ContractContextI = {
     address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
     abi: BridgeV1Testnet,
   },
+  HotWalletAddress: "bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d",
   Erc20Tokens: {
     WBTC: { address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9" },
     USDT: { address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0" },
