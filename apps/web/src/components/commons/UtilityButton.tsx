@@ -12,6 +12,7 @@ export default function UtilityButton({
   variant = "primary",
   withRefreshIcon,
   disabledClass,
+  testId,
   children,
 }: PropsWithChildren<{
   label: string;
@@ -21,6 +22,7 @@ export default function UtilityButton({
   withArrowIcon?: boolean;
   variant?: "primary" | "secondary";
   disabledClass?: string;
+  testId?: string;
   withRefreshIcon?: boolean;
 }>) {
   const isPrimary = variant === "primary";
@@ -44,6 +46,7 @@ export default function UtilityButton({
       )}
       disabled={disabled}
       onClick={onClick}
+      data-testid={testId}
     >
       {label}
       {children}

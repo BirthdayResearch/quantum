@@ -31,23 +31,35 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
     flushReceiveAddress: accounts[4],
   });
   const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
-  const { usdtContract, usdcContract } = await tokenDeployment();
+  const { btcContract, usdtContract, usdcContract, euroContract } = await tokenDeployment();
 
   // Minting 100_000 tokens to accounts[0]
   await usdtContract.mint(eoaAddress, toWei('100000'));
   await usdcContract.mint(eoaAddress, toWei('100000'));
+
+  await btcContract.mint(bridgeProxy.address, toWei('10'));
+  await usdcContract.mint(bridgeProxy.address, toWei('10'));
+  await usdtContract.mint(bridgeProxy.address, toWei('10'));
+  await euroContract.mint(bridgeProxy.address, toWei('10'));
+
   // Approving max token to `bridgeProxyAddress` by accounts[0]
-  await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await btcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await usdcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await euroContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
 
   // Adding mUsdt and mUsdc as supported tokens
-  await bridgeImplementationContract.addSupportedTokens(usdtContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(btcContract.address, ethers.constants.MaxUint256);
   await bridgeImplementationContract.addSupportedTokens(usdcContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(usdtContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(euroContract.address, ethers.constants.MaxUint256);
 
-  return { usdtContract, usdcContract, bridgeImplementationContract };
+  return { btcContract, usdtContract, usdcContract, euroContract, bridgeImplementationContract };
 }
 
 interface ReturnContracts {
+  btcContract: TestToken;
+  euroContract: TestToken;
   usdtContract: TestToken;
   usdcContract: TestToken;
   bridgeImplementationContract: BridgeV1;

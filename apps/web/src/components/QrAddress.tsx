@@ -28,10 +28,12 @@ function SuccessCopy({
 
 interface Props {
   dfcUniqueAddress: string;
+  testId?: string;
 }
 
 export default function QrAddress({
   dfcUniqueAddress,
+  testId,
   children,
 }: PropsWithChildren<Props>) {
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
@@ -54,8 +56,15 @@ export default function QrAddress({
         containerClass="m-auto right-0 left-0 top-2"
         show={showSuccessCopy}
       />
-      <div className="h-[164px] bg-dark-1000 p-0.5 rounded">
-        <QRCode value={dfcUniqueAddress} size={160} />
+      <div
+        className="h-[164px] bg-dark-1000 p-0.5 rounded"
+        data-testid="temp-defichain-sending-address"
+      >
+        <QRCode
+          value={dfcUniqueAddress}
+          size={160}
+          data-testid={`${testId}-qr-address`}
+        />
       </div>
       <div className="flex flex-col">
         <Tooltip
@@ -69,6 +78,7 @@ export default function QrAddress({
               "text-xs cursor-pointer hover:underline"
             )}
             onClick={() => handleOnCopy(dfcUniqueAddress)}
+            data-testid={`${testId}-text`}
           >
             {dfcUniqueAddress}
           </button>

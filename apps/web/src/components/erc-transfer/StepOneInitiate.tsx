@@ -25,7 +25,10 @@ export default function StepOneInitiate({
   const [hasAddressInputErr, setHasAddressInputErr] = useState<boolean>(false);
 
   return (
-    <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-7 md:mt-4")}>
+    <div
+      className={clsx("flex flex-col mt-6", "md:flex-row md:gap-7 md:mt-4")}
+      data-testid="erc-transfer-step-one"
+    >
       <div className="flex flex-col justify-center grow px-8">
         <span className="font-semibold text-dark-900 tracking-[0.01em]">
           Getting started
@@ -57,6 +60,7 @@ export default function StepOneInitiate({
           disabled={!isConnected}
           readOnly={isReadOnly}
           isPrimary={false}
+          testId="defichain-address"
           customMessage={
             isReadOnly
               ? "Refund address is disabled for your transaction's security. If you need to edit it, cancel this transaction and create a new one."
@@ -69,6 +73,7 @@ export default function StepOneInitiate({
             variant="primary"
             disabled={hasAddressInputErr}
             onClick={goToNextStep}
+            testId="go-to-next-step-btn"
           />
           <div className="text-dark-500 text-center text-xs pt-3">
             {hasAddressInputErr ? (

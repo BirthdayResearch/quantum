@@ -1,25 +1,14 @@
 import clsx from "clsx";
 import { useState } from "react";
-import {
-  ProgressStepI,
-  AddressDetails,
-  TransferData,
-  SignedClaim,
-} from "types";
+import { AddressDetails, TransferData, SignedClaim } from "types";
 import useResponsive from "@hooks/useResponsive";
 import ProgressStepIndicator from "@components/commons/ProgressStepIndicator";
 import ProgressStepIndicatorMobile from "@components/commons/ProgressStepIndicatorMobile";
+import { DfcToErcTransferSteps } from "../../constants";
 import StepOneInitiate from "./StepOneInitiate";
 import StepTwoSendConfirmation from "./StepTwoSendConfirmation";
 import StepThreeVerification from "./StepThreeVerification";
 import StepLastClaim from "./StepLastClaim";
-
-const DfcToErcTransferSteps: ProgressStepI[] = [
-  { step: 1, label: "Initiate" },
-  { step: 2, label: "Transact" },
-  { step: 3, label: "Validate" },
-  { step: 4, label: "Claim" },
-];
 
 export default function DeFiChainToERC20Transfer({
   data,
@@ -52,6 +41,7 @@ export default function DeFiChainToERC20Transfer({
         "rounded-md mt-6 pt-4",
         "md:mt-8 md:dark-bg-card-section bg-opacity-100 md:pb-4 md:px-6"
       )}
+      data-testid="erc-transfer-procedure"
     >
       <div className="md:h-[60px]">
         {isMobile ? (

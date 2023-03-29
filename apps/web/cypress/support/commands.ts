@@ -69,15 +69,20 @@ declare global {
        * @param {Network} sourceNetwork to be bridge from, Ethereum or DeFiChain
        * @param {Erc20Token} DToken|Erc20Token to be bridge from,  Ethereum network > WBTC, USDT, USDC, ETH, EUROC, DFI, DeFiChain network dBTC, dUSDT, dUSDC, dETH, dEUROC, DFI
        * @param {string} amount to be sent
+       * @param {string} toReceive amount to be received
+       * @param {string} fee amount to be paid
        * @param {string} destinationAddress to be sent to
        * @example cy.setupBridgeForm()
        */
       setupBridgeForm: (
         sourceNetwork: Network,
         sourceToken: DToken | Erc20Token,
+        destinationToken: DToken | Erc20Token,
         amount: string,
-        destinationAddress: string
-      ) => Chainable<Element>;
+        fee: string,
+        toReceive: string,
+        destinationAddress?: string
+      ) => Chainable<{ evmAddress: string }>;
 
       /**
        * @description Set feature flags
@@ -85,6 +90,24 @@ declare global {
        * @example cy.setFeatureFlags(['feature_a', 'feature_b'], 'beta')
        */
       setFeatureFlags: (flags: string[], stage?: string) => Chainable<Element>;
+
+      /**
+       * @description Sends token to wallet. Accepts a list of token symbols to be sent.
+       * @param {string[]} tokens to be sent
+       * @param {string} amount to be sent
+       * @param {DToken|Erc20Token} token to be sent
+       * @example cy.sendTokenToWallet(['BTC', 'ETH']).wait(4000)
+       */
+      sendTokenToWallet: (
+        params: any,
+        amount: string,
+        token: DToken | Erc20Token
+      ) => Chainable<Element>;
+
+      verifyTokenLogo: (
+        testId: string,
+        token: DToken | Erc20Token
+      ) => Chainable<Element>;
     }
   }
 }
@@ -118,15 +141,57 @@ Cypress.Commands.add(
   (
     sourceNetwork: Network,
     sourceToken: DToken | Erc20Token,
+    destinationToken: DToken | Erc20Token,
     amount: string,
-    destinationAddress: string
+    fee: string,
+    toReceive: string,
+    destinationAddress?: string
   ) => {
+    let evmAddress = "";
+    const isEvmToDfc = sourceNetwork === Network.Ethereum;
+
     cy.findByTestId("source-network-dropdown-btn").click();
     cy.findByTestId(`source-network-dropdown-option-${sourceNetwork}`).click();
-    cy.findByTestId("tokenA-dropdown-btn").click();
-    cy.findByTestId(`tokenA-dropdown-option-${sourceToken}`).click();
+    cy.findByTestId("token-pair-dropdown-btn").click();
+    cy.findByTestId(`token-pair-to-send-${sourceToken}`).click();
 
     cy.findByTestId("quick-input-card-set-amount").type(amount);
-    cy.findByTestId("receiver-address-input").type(destinationAddress);
+
+    cy.findByTestId("fees-amount")
+      .should("exist")
+      .contains(`${fee} ${sourceToken}`);
+    cy.findByTestId("to-receive-amount")
+      .should("exist")
+      .contains(`${toReceive} ${destinationToken}`);
+
+    if (isEvmToDfc && destinationAddress) {
+      cy.findByTestId("receiver-address-input").type(destinationAddress);
+    } else {
+      cy.findByTestId("receiver-address-use-metamask-btn")
+        .click()
+        .then(($element) => {
+          evmAddress = $element.text();
+        });
+    }
+
+    return cy.wrap({ evmAddress });
   }
 );
+
+Cypress.Commands.add("verifyTokenLogo", (testId, token) => {
+  cy.findByTestId(testId)
+    .should("be.visible")
+    .should("have.attr", "alt", "USDT")
+    .should("have.attr", "src", "/tokens/USDT.svg");
+});
+
+Cypress.Commands.add("sendTokenToWallet", (tempAddress, amount, token) => {
+  console.log("Senddding token", tempAddress);
+  cy.request({
+    url: "https://playground.jellyfishsdk.com/v0/playground/rpc/sendtokenstoaddress",
+    method: "POST",
+    body: {
+      params: [{}, { [tempAddress]: `${amount}@${token}` }],
+    },
+  });
+});

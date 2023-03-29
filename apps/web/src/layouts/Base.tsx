@@ -23,6 +23,7 @@ import { ContractProvider } from "@contexts/ContractContext";
 import {
   NetworkProvider as WhaleNetworkProvider,
   WhaleProvider,
+  PlaygroundProvider,
 } from "@waveshq/walletkit-ui";
 import SecuredStoreAPI from "@api/secure-storage";
 import Logging from "@api/logging";
@@ -162,9 +163,11 @@ function Base({
                         <ContractProvider>
                           <ThemeProvider theme={initialTheme}>
                             <StorageProvider>
-                              <ScreenContainer isBridgeUp={isBridgeUp}>
-                                {children}
-                              </ScreenContainer>
+                              <PlaygroundProvider>
+                                <ScreenContainer isBridgeUp={isBridgeUp}>
+                                  {children}
+                                </ScreenContainer>
+                              </PlaygroundProvider>
                             </StorageProvider>
                           </ThemeProvider>
                         </ContractProvider>

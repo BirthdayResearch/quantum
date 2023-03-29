@@ -7,18 +7,14 @@
     "strict": true,
     "moduleResolution": "node",
     "target": "esnext",
-    "lib": [
-      "esnext",
-      "dom"
-    ],
+    "lib": ["esnext", "dom"],
     "types": [
       "cypress",
       "@testing-library/cypress",
       "@synthetixio/synpress/support",
-      "cypress-real-events"
+      "cypress-real-events",
+      "@defichain/playground-api-client"
     ]
   },
-  "include": [
-    "**/*.ts"
-  ]
+  "include": ["**/*.ts"]
 }

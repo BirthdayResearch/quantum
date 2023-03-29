@@ -169,7 +169,7 @@ export default function ConfirmTransferModal({
       title="Review transaction"
       isOpen={show}
       onClose={() => onClose(false)}
-      testId="review"
+      testId="transaction-review"
     >
       <RowData
         data={data.from}
@@ -207,7 +207,7 @@ export default function ConfirmTransferModal({
           thousandSeparator
           suffix={` ${feeSymbol}`}
           trimTrailingZeros
-          testId="fees-amount"
+          testId="transaction-fees-amount"
         />
       </div>
 

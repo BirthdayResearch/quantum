@@ -554,6 +554,7 @@ export default function BridgeForm({
           thousandSeparator
           suffix={` ${feeSymbol}`}
           trimTrailingZeros
+          testId="fees-amount"
         />
       </div>
       <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-4 lg:mt-[18px]">
@@ -569,6 +570,7 @@ export default function BridgeForm({
           thousandSeparator
           suffix={` ${selectedTokensB.tokenA.name}`}
           trimTrailingZeros
+          testId="to-receive-amount"
         />
       </div>
       <div className="mt-8 px-6 md:px-4 lg:mt-12 lg:mb-0 lg:px-0 xl:px-20">

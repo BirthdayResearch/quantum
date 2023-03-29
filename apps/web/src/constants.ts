@@ -1,3 +1,5 @@
+import { ProgressStepI } from "./types";
+
 interface TooltipInfoI {
   title: string;
   content: string;
@@ -57,3 +59,10 @@ export const DOCUMENTATION_URL =
   "https://birthdayresearch.notion.site/birthdayresearch/Quantum-Documentation-dc1d9174dd294b06833e7859d437e25e";
 export const FAQS_URL =
   "https://birthdayresearch.notion.site/FAQs-58af5cc140de432e8c9d1510ead3e3c0";
+
+export const DfcToErcTransferSteps: ProgressStepI[] = [
+  { step: 1, label: "Initiate" },
+  { step: 2, label: "Transact" },
+  { step: 3, label: "Validate" },
+  { step: 4, label: "Claim" },
+];

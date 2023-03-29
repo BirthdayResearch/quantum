@@ -11,7 +11,7 @@ export default function TimeLimitCounter({
   const { timeRemaining } = useTimeCounter(time, onTimeElapsed);
   const durationLeft = getDuration(timeRemaining.dividedBy(1000).toNumber());
   return (
-    <div className="mt-3 text-center">
+    <div className="mt-3 text-center" data-testid="time-counter">
       <span className="text-dark-gradient-3 text-2xs font-bold">
         {durationLeft ? `${durationLeft} LEFT` : ""}
       </span>

@@ -30,7 +30,7 @@ export default function NumericFormat({
   let formattedNumber = new BigNumber(value).toFormat(decimalScale, fmt);
   if (trimTrailingZeros) {
     const num = formattedNumber.split(" ")[0].replace(/\.?0+$/, "");
-    formattedNumber = `${num} ${suffix}`;
+    formattedNumber = `${num}${suffix}`;
   }
 
   return (

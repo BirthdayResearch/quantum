@@ -283,6 +283,7 @@ export default function StepLastClaim({
         />
         {claimStatus === "READY" && (
           <div
+            data-testid="ready-for-claiming-modal"
             className={clsx(
               "text-sm text-center lowercase mt-2",
               timeRemaining.lt(ONE_HOUR) ? "text-error" : "text-warning"
