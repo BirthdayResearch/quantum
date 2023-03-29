@@ -338,7 +338,6 @@ export default function WalletAddressInput({
 
       {/* Error and warning messages */}
       <span
-        data-testid="address_error_message"
         className={clsx(
           "block px-4 pt-2 text-xs lg:px-6 lg:text-sm empty:before:content-['*'] empty:before:opacity-0",
           error.isError ? "text-error" : "text-warning"

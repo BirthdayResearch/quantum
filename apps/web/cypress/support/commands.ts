@@ -142,11 +142,23 @@ declare global {
        * hardhatRequest("evm_mine", [{blocks: 5}]);
        */
       hardhatRequest: (method: string, params: any[]) => Chainable<Element>;
+
+      /**
+       * @description Get token pairs of each source and destination
+       * @param {Erc20Token} token - Token symbol
+       * @return {{tokenA: string, tokenB: string}} - Token pair returned
+       * @example
+       * getTokenPairs("WBTC");
+       */
+      getTokenPairs: (
+        token: Erc20Token
+      ) => Chainable<{ tokenA: string; tokenB: string }>;
     }
   }
 }
 
 const TokensPair = [
+  { tokenA: "DFI", tokenB: "DFI" },
   { tokenA: "WBTC", tokenB: "dBTC" },
   { tokenA: "ETH", tokenB: "dETH" },
   { tokenA: "USDT", tokenB: "dUSDT" },
@@ -177,34 +189,33 @@ Cypress.Commands.add(
     amount?: string,
     destinationAddress?: string
   ) => {
-    const pair = getTokenPairs(tokenPair);
-    if (pair === undefined) {
-      return;
-    }
+    cy.getTokenPairs(tokenPair).then((pair) => {
+      const erc20ToDfc = sourceNetwork === Network.Ethereum;
+      const sourceToken = erc20ToDfc ? pair.tokenA : pair.tokenB;
+      cy.findByTestId("source-network-dropdown-btn").click();
+      cy.findByTestId(
+        `source-network-dropdown-option-${sourceNetwork}`
+      ).click();
+      cy.findByTestId("token-pair-dropdown-btn").click();
+      cy.findByTestId(`token-pair-${sourceToken}`).click();
 
-    const erc20ToDfc = sourceNetwork === Network.Ethereum;
-    const sourceToken = erc20ToDfc ? pair.tokenA : pair.tokenB;
-    cy.findByTestId("source-network-dropdown-btn").click();
-    cy.findByTestId(`source-network-dropdown-option-${sourceNetwork}`).click();
-    cy.findByTestId("token-pair-dropdown-btn").click();
-    cy.findByTestId(`token-pair-${sourceToken}`).click();
+      const destinationNetwork = erc20ToDfc
+        ? Network.DeFiChain
+        : Network.Ethereum;
+      cy.validateFormPairing(
+        isMetamaskConnected,
+        sourceNetwork,
+        destinationNetwork,
+        tokenPair
+      );
+      if (amount !== undefined) {
+        cy.findByTestId("quick-input-card-set-amount").type(amount);
+      }
 
-    const destinationNetwork = erc20ToDfc
-      ? Network.DeFiChain
-      : Network.Ethereum;
-    cy.validateFormPairing(
-      isMetamaskConnected,
-      sourceNetwork,
-      destinationNetwork,
-      tokenPair
-    );
-    if (amount !== undefined) {
-      cy.findByTestId("quick-input-card-set-amount").type(amount);
-    }
-
-    if (destinationAddress !== undefined) {
-      cy.findByTestId("receiver-address-input").type(destinationAddress);
-    }
+      if (destinationAddress !== undefined) {
+        cy.findByTestId("receiver-address-input").type(destinationAddress);
+      }
+    });
   }
 );
 
@@ -285,63 +296,60 @@ Cypress.Commands.add(
     destination: Network,
     tokenPair: Erc20Token
   ) => {
-    const pair = getTokenPairs(tokenPair);
-    if (pair === undefined) {
-      return;
-    }
+    cy.getTokenPairs(tokenPair).then((pair) => {
+      const erc20ToDfc =
+        source === Network.Ethereum && destination === Network.DeFiChain; // double typed check
+      const { tokenA, tokenB } = pair;
 
-    const erc20ToDfc =
-      source === Network.Ethereum && destination === Network.DeFiChain; // double typed check
-    const { tokenA, tokenB } = pair;
+      const tokenToSend = erc20ToDfc ? tokenA : tokenB;
+      const tokeToReceive = erc20ToDfc ? tokenB : tokenA;
 
-    const tokenToSend = erc20ToDfc ? tokenA : tokenB;
-    const tokeToReceive = erc20ToDfc ? tokenB : tokenA;
+      // source network validation
+      cy.validateNetwork("Source", source);
+      cy.validateTokenPair(tokenToSend, tokeToReceive);
 
-    // source network validation
-    cy.validateNetwork("Source", source);
-    cy.validateTokenPair(tokenToSend, tokeToReceive);
+      // verify token pair dropdown
+      cy.findByTestId("token-pair-dropdown-btn")
+        .click()
+        .should("have.attr", "aria-expanded", "true");
+      cy.findByTestId("token-pair-dropdown-options")
+        .should("be.visible")
+        .should("contain.text", "Select token");
+      cy.validateDropdownTokenSelection(erc20ToDfc);
 
-    // verify token pair dropdown
-    cy.findByTestId("token-pair-dropdown-btn")
-      .click()
-      .should("have.attr", "aria-expanded", "true");
-    cy.findByTestId("token-pair-dropdown-options")
-      .should("be.visible")
-      .should("contain.text", "Select token");
-    cy.validateDropdownTokenSelection(erc20ToDfc);
+      // verify network env visibility
+      cy.findByTestId("network-env-switch").should(
+        erc20ToDfc ? "exist" : "not.exist"
+      );
 
-    // verify network env visibility
-    cy.findByTestId("network-env-switch").should(
-      erc20ToDfc ? "exist" : "not.exist"
-    );
+      if (erc20ToDfc) {
+        cy.findByTestId("network-env-switch").contains("Local"); // TODO: dynamic network env
+      }
 
-    if (erc20ToDfc) {
-      cy.findByTestId("network-env-switch").contains("Local"); // TODO: dynamic network env
-    }
+      // destination network validation
+      cy.validateNetwork("Destination", destination);
+      cy.validateTokenPair(tokenToSend, tokeToReceive);
 
-    // destination network validation
-    cy.validateNetwork("Destination", destination);
-    cy.validateTokenPair(tokenToSend, tokeToReceive);
+      // receiver address
+      cy.findByTestId("receiver-address").should("be.visible");
+      cy.findByTestId("receiver-address-input")
+        .should(isMetamaskConnected ? "be.enabled" : "be.disabled")
+        .invoke("attr", "placeholder")
+        .then((actualPlaceholder) => {
+          expect(actualPlaceholder).to.equal(`Enter ${destination} address`);
+        });
 
-    // receiver address
-    cy.findByTestId("receiver-address").should("be.visible");
-    cy.findByTestId("receiver-address-input")
-      .should(isMetamaskConnected ? "be.enabled" : "be.disabled")
-      .invoke("attr", "placeholder")
-      .then((actualPlaceholder) => {
-        expect(actualPlaceholder).to.equal(`Enter ${destination} address`);
-      });
-
-    // transfer button
-    if (isMetamaskConnected) {
-      cy.findByTestId("transfer-btn")
-        .should("contain.text", "Review transaction")
-        .should("be.disabled");
-    } else {
-      cy.findByTestId("transfer-btn")
-        .should("contain.text", "Connect wallet")
-        .should("be.enabled");
-    }
+      // transfer button
+      if (isMetamaskConnected) {
+        cy.findByTestId("transfer-btn")
+          .should("contain.text", "Review transaction")
+          .should("be.disabled");
+      } else {
+        cy.findByTestId("transfer-btn")
+          .should("contain.text", "Connect wallet")
+          .should("be.enabled");
+      }
+    });
   }
 );
 
@@ -368,13 +376,14 @@ function swapTokenPositions(
   });
 }
 
-function getTokenPairs(
-  token: Erc20Token
-): { tokenA: string; tokenB: string } | undefined {
+Cypress.Commands.add("getTokenPairs", (token: Erc20Token) => {
   for (let pair of TokensPair) {
     if (pair.tokenA === token) {
-      return pair;
+      return cy.wrap(pair);
     }
   }
-  return undefined;
-}
+
+  // purposely fail test if no pairs are found
+  cy.contains("Unable to find pair, test failed");
+  return cy.wrap(TokensPair[0]);
+});

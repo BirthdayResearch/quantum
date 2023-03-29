@@ -1,4 +1,4 @@
-import { Network } from "../../../src/types";
+import { Erc20Token, Network } from "../../../src/types";
 import BigNumber from "bignumber.js";
 import {
   CONFIRMATIONS_BLOCK_TOTAL,
@@ -13,6 +13,14 @@ enum TransactionStatusType {
   FAILED,
   REVERTED,
 }
+
+const formData = {
+  sourceNetwork: Network.Ethereum,
+  destinationNetwork: Network.DeFiChain,
+  tokenPair: "USDT" as Erc20Token,
+  amount: "0.001",
+  destinationAddress: "bcrt1qamyk5n7ljrsx37d7hast5t9c7kczjhlx2etysl",
+};
 
 function waitUntilEvmBlocksConfirm(): void {
   cy.findByTestId("txn-progress-blocks")
@@ -128,6 +136,64 @@ function validateTransactionStatus(status: TransactionStatusType) {
   }
 }
 
+function validateConfirmTransferModal(tokenPair: Erc20Token, amount: string) {
+  cy.getTokenPairs(tokenPair).then((pair) => {
+    // check review transaction modal
+    cy.findByTestId("review-modal-title").should(
+      "contain.text",
+      "Review transaction"
+    );
+    cy.findByTestId("from-source-network-name").should(
+      "contain.text",
+      "Source (Ethereum)"
+    );
+    cy.findByTestId("from-source-amount").should("contain.text", `-${amount}`);
+    cy.findByTestId("from-source-token-icon").should(
+      "have.attr",
+      "src",
+      `/tokens/${pair.tokenA}.svg`
+    );
+    cy.findByTestId("from-source-token-name").should(
+      "contain.text",
+      pair.tokenA
+    );
+
+    cy.findByTestId("to-destination-network-name").should(
+      "contain.text",
+      "Destination (DeFiChain)"
+    );
+    cy.findByTestId("to-destination-amount").should("contain.text", amount);
+    cy.findByTestId("to-destination-token-icon").should(
+      "have.attr",
+      "src",
+      `/tokens/${pair.tokenB}.svg`
+    );
+    cy.findByTestId("to-destination-token-name").should(
+      "contain.text",
+      pair.tokenB
+    );
+
+    cy.findByTestId("disclaimer-msg").should(
+      "contain.text",
+      DISCLAIMER_MESSAGE
+    );
+    cy.findByTestId("fees-amount")
+      .invoke("text")
+      .then((text) => {
+        const split = text.split(" ");
+        const value = split[0];
+        const suffix = split[1];
+        expect(value).to.equal("0");
+        expect(suffix).to.equal(pair.tokenA);
+      });
+
+    cy.findByTestId("confirm-transfer-btn").should(
+      "contain.text",
+      "Confirm transfer on wallet"
+    );
+  });
+}
+
 function initTransaction(
   confirmTransaction: boolean = true,
   confirmMetamask: boolean = true
@@ -135,58 +201,15 @@ function initTransaction(
   // setup form
   cy.setupBridgeForm(
     true,
-    Network.Ethereum,
-    "USDT",
-    "0.001",
-    "bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d"
+    formData.sourceNetwork,
+    formData.tokenPair,
+    formData.amount,
+    formData.destinationAddress
   );
   cy.findByTestId("transfer-btn").click();
   cy.wait(3000);
 
-  // check review transaction modal
-  cy.findByTestId("review-modal-title").should(
-    "contain.text",
-    "Review transaction"
-  );
-  cy.findByTestId("from-source-network-name").should(
-    "contain.text",
-    "Source (Ethereum)"
-  );
-  cy.findByTestId("from-source-amount").should("contain.text", "-0.001");
-  cy.findByTestId("from-source-token-icon").should(
-    "have.attr",
-    "src",
-    "/tokens/USDT.svg"
-  );
-  cy.findByTestId("from-source-token-name").should("contain.text", "USDT");
-
-  cy.findByTestId("to-destination-network-name").should(
-    "contain.text",
-    "Destination (DeFiChain)"
-  );
-  cy.findByTestId("to-destination-amount").should("contain.text", "0.001");
-  cy.findByTestId("to-destination-token-icon").should(
-    "have.attr",
-    "src",
-    "/tokens/dUSDT.svg"
-  );
-  cy.findByTestId("to-destination-token-name").should("contain.text", "dUSDT");
-
-  cy.findByTestId("disclaimer-msg").should("contain.text", DISCLAIMER_MESSAGE);
-  cy.findByTestId("fees-amount")
-    .invoke("text")
-    .then((text) => {
-      const split = text.split(" ");
-      const value = split[0];
-      const suffix = split[1];
-      expect(value).to.equal("0");
-      expect(suffix).to.equal("USDT");
-    });
-
-  cy.findByTestId("confirm-transfer-btn").should(
-    "contain.text",
-    "Confirm transfer on wallet"
-  );
+  validateConfirmTransferModal(formData.tokenPair, formData.amount);
 
   if (!confirmTransaction) {
     return;
@@ -236,6 +259,14 @@ function validateLockedForm() {
   cy.findByTestId("swap-btn-switch").should("be.hidden");
 
   // destination fields
+  cy.findByTestId("receiver-address-paste-icon-tooltip")
+    .realHover()
+    .then(() => {
+      cy.findByTestId("receiver-address-paste-icon-tooltip-content").should(
+        "not.exist"
+      );
+    });
+  cy.findByTestId("receiver-address-input").should("be.hidden");
   cy.findByTestId("receiver-address-lock-icon").should("be.visible");
 
   // action buttons
