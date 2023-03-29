@@ -31,12 +31,6 @@ export class WhaleWalletService {
   }
 
   async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
-    // eslint-disable-next-line
-    console.log('hotwallet address from test', verify.address);
-    const hotWallet = await this.whaleWalletProvider.getHotWallet();
-    const hotWalletAddress = await hotWallet.getAddress();
-    // eslint-disable-next-line
-    console.log('hotwallet address from service', hotWalletAddress);
     this.logger.log(`[Verify] ${verify.amount} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`);
 
     // Verify if the address is valid
