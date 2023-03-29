@@ -618,7 +618,7 @@ export default function BridgeForm({
         {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton
-              data-testid="reset-btn"
+              testId="reset-btn"
               label="Reset form"
               onClick={() => {
                 setUtilityModalData(UtilityModalMessage.resetForm);
