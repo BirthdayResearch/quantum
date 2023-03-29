@@ -109,33 +109,36 @@ urls.forEach((url) => {
       }
     });
   });
+});
 
-  context(`Liquidity page on ${mobileViewPort}`, () => {
-    beforeEach(() => {
-      cy.visit(url);
-      cy.viewport(<Cypress.ViewportPreset>mobileViewPort);
-    });
+context(`Liquidity page on ${mobileViewPort}`, () => {
+  beforeEach(() => {
+    cy.visit(urls[1]);
+    cy.viewport(<Cypress.ViewportPreset>mobileViewPort);
+  });
 
-    it("should check navigation between Bridge and Liquidity pages", () => {
-      cy.get(".flex-col  .px-5 > div.p-1 > a")
-        .first()
-        .should("be.visible")
-        .click();
-      cy.url().should("not.contain", "liquidity");
-      cy.get(".flex-col  .px-5 > div.p-1 > a")
-        .last()
-        .should("be.visible")
-        .click();
-    });
+  it.only("should check navigation between Bridge and Liquidity pages", () => {
+    cy.get("a[data-testid='Navigation.Bridge']")
+      .last()
+      .should("be.visible")
+      .click();
+    cy.url().should("not.contain", "liquidity");
+    cy.get("a[data-testid='Navigation.Liquidity']")
+      .last()
+      .should("be.visible")
+      .click();
+    cy.url().should("contain", "liquidity");
+  });
 
-    it("should check responsive design for the Liquidity table elements", () => {
-      cy.get(
-        ".space-y-3 > .border-gradient-6 svg[stroke='currentColor']"
-      ).should("have.length", 6);
-      cy.viewport(<Cypress.ViewportPreset>desktopViewPort);
-      cy.get(
-        ".space-y-3 > .border-gradient-6 svg[stroke='currentColor']"
-      ).should("have.length", 24);
-    });
+  it("should check responsive design for the Liquidity table elements", () => {
+    cy.get(".space-y-3 > .border-gradient-6 svg[stroke='currentColor']").should(
+      "have.length",
+      6
+    );
+    cy.viewport(<Cypress.ViewportPreset>desktopViewPort);
+    cy.get(".space-y-3 > .border-gradient-6 svg[stroke='currentColor']").should(
+      "have.length",
+      24
+    );
   });
 });

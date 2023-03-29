@@ -14,6 +14,7 @@ export default function Navigation() {
             "w-1/2 text-xs md:text-sm py-3 min-w-[136px] text-center font-semibold rounded-[40px]",
             isRoot ? "bg-dark-1000 text-dark-00" : "text-dark-1000"
           )}
+          data-testid="Navigation.Bridge"
         >
           Bridge
         </a>
@@ -24,6 +25,7 @@ export default function Navigation() {
             "w-1/2 text-xs md:text-sm py-3 min-w-[136px] text-center font-semibold rounded-[40px]",
             !isRoot ? "bg-dark-1000 text-dark-00" : "text-dark-1000"
           )}
+          data-testid="Navigation.Liquidity"
         >
           Liquidity
         </a>
