@@ -238,7 +238,44 @@ async function startEvmMine() {
   cy.hardhatRequest("evm_setIntervalMining", [500]);
 }
 
-function validateLockedForm() {
+function validateLockedForm(
+  sourceNetwork: Network,
+  destinationNetwork: Network,
+  tokenPair: Erc20Token,
+  amount: string,
+  destinationAddress: string
+) {
+  cy.getTokenPairs(tokenPair).then((pair) => {
+    // validate source data still persisted
+    cy.findByTestId("source-network-dropdown-btn").should(
+      "contain.text",
+      sourceNetwork
+    );
+    cy.findByTestId("token-pair-dropdown-btn").should(
+      "contain.text",
+      pair.tokenA
+    );
+    cy.findByTestId("quick-input-card-set-amount").should(
+      "have.attr",
+      "value",
+      amount
+    );
+
+    // validate destination data still persisted
+    cy.findByTestId("destination-network-dropdown-btn").should(
+      "contain.text",
+      destinationNetwork
+    );
+    cy.findByTestId("token-to-receive-dropdown-btn").should(
+      "contain.text",
+      pair.tokenB
+    );
+    cy.findByTestId("wallet-address-input-verified-badge").should(
+      "contain.text",
+      destinationAddress
+    );
+  });
+
   // source fields
   cy.findByTestId("source-network-dropdown-btn").click();
   cy.findByTestId("source-network-dropdown-options").should("not.exist");
@@ -325,7 +362,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     });
   });
 
-  it("should be able to lock form", () => {
+  it("should be able to verify locked form", () => {
     initTransaction(false);
 
     cy.findByTestId("review-modal-close-icon").click();
@@ -342,7 +379,13 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.findByTestId("review-modal-close-icon").click();
     cy.findByTestId("utility-primary-btn").click();
 
-    validateLockedForm();
+    validateLockedForm(
+      formData.sourceNetwork,
+      formData.destinationNetwork,
+      formData.tokenPair,
+      formData.amount,
+      formData.destinationAddress
+    );
   });
 
   it("should be able to reset form", () => {
@@ -358,7 +401,13 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     );
     cy.findByTestId("utility-primary-btn").click();
 
-    validateLockedForm();
+    validateLockedForm(
+      formData.sourceNetwork,
+      formData.destinationNetwork,
+      formData.tokenPair,
+      formData.amount,
+      formData.destinationAddress
+    );
     cy.findByTestId("reset-btn").click();
     validateUtilityModal(
       "Are you sure you want to reset form?",
@@ -396,7 +445,13 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     );
     cy.findByTestId("utility-primary-btn").click();
 
-    validateLockedForm();
+    validateLockedForm(
+      formData.sourceNetwork,
+      formData.destinationNetwork,
+      formData.tokenPair,
+      formData.amount,
+      formData.destinationAddress
+    );
   });
 
   it("should be able to verify transaction status - failed", () => {
