@@ -145,10 +145,9 @@ describe('DeFiChain Stats Testing', () => {
     console.log('hot wallet address in stats.i9n', hotWalletAddress);
     await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
     await defichain.generateBlock();
-
-    // Send dust UTXO to localAddress
-    await defichain.playgroundRpcClient?.wallet.sendToAddress(localAddress, 1);
-    await defichain.generateBlock();
+    const hotWalletBalance = await whaleWalletProvider.getHotWalletBalance();
+    // eslint-disable-next-line
+    console.log({ hotWalletBalance });
 
     // Sends token to the address
     await defichain.playgroundClient?.rpc.call(
@@ -166,7 +165,7 @@ describe('DeFiChain Stats Testing', () => {
     const response = await verify({
       amount: '10',
       symbol: 'BTC',
-      address: localAddress,
+      address: hotWalletAddress,
       ethReceiverAddress: ethWalletAddress,
       tokenAddress: mwbtcContract.address,
     });

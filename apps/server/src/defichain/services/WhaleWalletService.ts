@@ -31,6 +31,12 @@ export class WhaleWalletService {
   }
 
   async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
+    // eslint-disable-next-line
+    console.log('hotwallet address from test', verify.address);
+    const hotWallet = await this.whaleWalletProvider.getHotWallet();
+    const hotWalletAddress = await hotWallet.getAddress();
+    // eslint-disable-next-line
+    console.log('hotwallet address from service', hotWalletAddress);
     this.logger.log(`[Verify] ${verify.amount} ${verify.symbol} ${verify.address} ${verify.ethReceiverAddress}`);
 
     // Verify if the address is valid
@@ -118,11 +124,9 @@ export class WhaleWalletService {
         amount: amountLessFee,
         uniqueDfcAddress: verify.address,
       });
-      // eslint-disable-next-line
-      console.log('before fundutxo');
+
       await this.fundUTXO(verify.address);
-      // eslint-disable-next-line
-      console.log('after fundutxo');
+
       this.logger.log(
         `[Verify SUCCESS] ${verify.amount} ${fee.toString()} ${amountLessFee} ${verify.symbol} ${verify.address} ${
           verify.ethReceiverAddress
