@@ -117,7 +117,7 @@ context(`Liquidity page on ${mobileViewPort}`, () => {
     cy.viewport(<Cypress.ViewportPreset>mobileViewPort);
   });
 
-  it.only("should check navigation between Bridge and Liquidity pages", () => {
+  it("should check navigation between Bridge and Liquidity pages", () => {
     cy.get("a[data-testid='Navigation.Bridge']")
       .last()
       .should("be.visible")
@@ -131,14 +131,15 @@ context(`Liquidity page on ${mobileViewPort}`, () => {
   });
 
   it("should check responsive design for the Liquidity table elements", () => {
-    cy.get(".space-y-3 > .border-gradient-6 svg[stroke='currentColor']").should(
+    cy.get("svg[data-testid='Mobile.Card.DropdownArrow']").should(
       "have.length",
       6
     );
+
     cy.viewport(<Cypress.ViewportPreset>desktopViewPort);
-    cy.get(".space-y-3 > .border-gradient-6 svg[stroke='currentColor']").should(
+    cy.get("svg[data-testid='Mobile.Card.DropdownArrow']").should(
       "have.length",
-      24
+      0
     );
   });
 });
