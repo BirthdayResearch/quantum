@@ -331,6 +331,17 @@ Cypress.Commands.add(
       .then((actualPlaceholder) => {
         expect(actualPlaceholder).to.equal(`Enter ${destination} address`);
       });
+
+    // transfer button
+    if (isMetamaskConnected) {
+      cy.findByTestId("transfer-btn")
+        .should("contain.text", "Review transaction")
+        .should("be.disabled");
+    } else {
+      cy.findByTestId("transfer-btn")
+        .should("contain.text", "Connect wallet")
+        .should("be.enabled");
+    }
   }
 );
 

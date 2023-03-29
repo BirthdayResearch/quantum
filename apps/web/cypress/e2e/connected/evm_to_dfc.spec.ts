@@ -245,6 +245,24 @@ function validateLockedForm() {
     .should("contain.text", "Reset form");
 }
 
+function validateUtilityModal(
+  title: string,
+  message: string,
+  primaryButtonLabel: string,
+  secondaryButtonLabel: string
+) {
+  cy.findByTestId("utility-title").should("contain.text", title);
+  cy.findByTestId("utility-msg").should("contain.text", message);
+  cy.findByTestId("utility-primary-btn").should(
+    "contain.text",
+    primaryButtonLabel
+  );
+  cy.findByTestId("utility-secondary-btn").should(
+    "contain.text",
+    secondaryButtonLabel
+  );
+}
+
 beforeEach(() => {
   cy.visit("http://localhost:3000/?network=Local", {
     onBeforeLoad: (win) => {
@@ -276,32 +294,49 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     });
   });
 
-  it.only("should be able to lock form", () => {
+  it("should be able to lock form", () => {
     initTransaction(false);
 
     cy.findByTestId("review-modal-close-icon").click();
 
     // verify utility modal
-    cy.findByTestId("utility-title").should(
-      "contain.text",
-      "Are you sure you want to leave your transaction?"
+    validateUtilityModal(
+      "Are you sure you want to leave your transaction?",
+      "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      "Leave transaction",
+      "Go back"
     );
-    cy.findByTestId("utility-msg").should(
-      "contain.text",
-      "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution"
-    );
-    cy.findByTestId("utility-primary-btn").should(
-      "contain.text",
-      "Leave transaction"
-    );
-    cy.findByTestId("utility-secondary-btn")
-      .should("contain.text", "Go back")
-      .click();
+    cy.findByTestId("utility-secondary-btn").click();
 
     cy.findByTestId("review-modal-close-icon").click();
     cy.findByTestId("utility-primary-btn").click();
 
     validateLockedForm();
+  });
+
+  it("should be able to reset form", () => {
+    initTransaction(false);
+    cy.findByTestId("review-modal-close-icon").click();
+
+    // verify utility modal
+    validateUtilityModal(
+      "Are you sure you want to leave your transaction?",
+      "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      "Leave transaction",
+      "Go back"
+    );
+    cy.findByTestId("utility-primary-btn").click();
+
+    validateLockedForm();
+    cy.findByTestId("reset-btn").click();
+    validateUtilityModal(
+      "Are you sure you want to reset form?",
+      "Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      "Reset form",
+      "Go back"
+    );
+    cy.findByTestId("utility-primary-btn").click();
+    cy.validateFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
   });
 
   it("should be able verify transaction status - failed", () => {
@@ -338,6 +373,9 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       .should("be.disabled")
       .should("contain.text", "Pending Transaction");
     cy.findByTestId("transfer-btn-loader-icon").should("be.visible");
+    cy.findByTestId("error-transaction-pending")
+      .should("be.visible")
+      .should("have.text", "Unable to edit while transaction is pending");
 
     startEvmMine();
     waitUntilEvmBlocksConfirm();
