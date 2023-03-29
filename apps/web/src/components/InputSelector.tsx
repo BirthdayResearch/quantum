@@ -159,7 +159,10 @@ function TokenOptions({
                   </div>
                   <div className="flex w-2/12 flex-row items-center justify-end">
                     {selected && (
-                      <MdCheckCircle className="h-6 w-6 text-[#00AD1D]" />
+                      <MdCheckCircle
+                        className="h-6 w-6 text-[#00AD1D]"
+                        data-testid={`${testId}-${option.tokenA.name}-checked-marker`}
+                      />
                     )}
                   </div>
                 </div>
