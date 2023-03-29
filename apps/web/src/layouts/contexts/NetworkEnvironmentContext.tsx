@@ -51,7 +51,7 @@ export function NetworkEnvironmentProvider({
   const updateRoute = (value: EnvironmentNetwork) => {
     router.replace(
       {
-        pathname: "/",
+        pathname: router.pathname,
         query: value === defaultNetwork ? {} : { network: value },
       },
       undefined,
