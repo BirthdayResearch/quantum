@@ -115,6 +115,12 @@ export const bridgeApi = createApi({
         method: "GET",
       }),
     }),
+    bridgeBalances: builder.mutation<BridgeVersion, any>({
+      query: ({ baseUrl }) => ({
+        url: `${baseUrl}/balances`,
+        method: "GET",
+      }),
+    }),
     bridgeSettings: builder.query<BridgeSettings, any>({
       query: ({ baseUrl }) => ({
         url: `${baseUrl}/settings`,
