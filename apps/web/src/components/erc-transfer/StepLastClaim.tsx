@@ -22,6 +22,7 @@ import UtilityButton from "@components/commons/UtilityButton";
 import useCheckBalance from "@hooks/useCheckBalance";
 import useTransferFee from "@hooks/useTransferFee";
 import useTimeCounter from "@hooks/useTimeCounter";
+import Logging from "@api/logging";
 import { getDuration } from "@utils/durationHelper";
 import { ETHEREUM_SYMBOL } from "../../constants";
 
@@ -77,32 +78,32 @@ export default function StepLastClaim({
   const parsedAmount = isTokenETH
     ? utils.parseEther(amountLessFee)
     : utils.parseUnits(amountLessFee, tokenDecimals);
-  const { config: bridgeConfig, refetch: refetchClaimConfig } =
-    usePrepareContractWrite({
-      address: BridgeV1.address,
-      abi: BridgeV1.abi,
-      functionName: "claimFund",
-      args: [
-        data.to.address,
-        parsedAmount,
-        signedClaim.nonce,
-        signedClaim.deadline,
-        tokenAddress,
-        signedClaim.signature,
-      ],
-      onError: () => {
-        if (!isClaimExpired && isContractFetched) {
-          setError(CLAIM_INPUT_ERROR);
-        }
-      },
-      enabled: !isContractFetched,
-    });
+
+  const {
+    config: bridgeConfig,
+    refetch: refetchClaimConfig,
+    isFetched: isTxnConfigFetched,
+  } = usePrepareContractWrite({
+    address: BridgeV1.address,
+    abi: BridgeV1.abi,
+    functionName: "claimFund",
+    args: [
+      data.to.address,
+      parsedAmount,
+      signedClaim.nonce,
+      signedClaim.deadline,
+      tokenAddress,
+      signedClaim.signature,
+    ],
+    onError: (err) => Logging.error(err),
+    enabled: isContractFetched || isTokenETH,
+  });
 
   // Write contract for `claimFund` function
   const {
     data: claimFundData,
     error: writeClaimTxnError,
-    write,
+    write: writeClaimTxn,
   } = useContractWrite(bridgeConfig);
 
   // Wait and get result from write contract for `claimFund` function
@@ -116,43 +117,37 @@ export default function StepLastClaim({
   });
 
   const { getBalance } = useCheckBalance();
-  const isSufficientBalance = (balance): boolean =>
-    new BigNumber(balance).isGreaterThanOrEqualTo(data.to.amount);
-  const [isBalanceSufficient, setIsBalanceSufficient] = useState(false);
 
-  async function checkBalance() {
-    const balance = await getBalance(data.to.tokenSymbol);
-    const isSufficient = balance !== null && isSufficientBalance(balance);
-    if (!isSufficient) {
-      setError(INSUFFICIENT_FUND_ERROR);
+  useEffect(() => {
+    if (isContractFetched) {
+      // Fetch write txn config for the first time
+      refetchClaimConfig();
     }
-    setIsBalanceSufficient(isSufficient);
-  }
-
-  useEffect(() => {
-    checkBalance();
-    refetchClaimConfig();
-  }, []);
-
-  useEffect(() => {
-    refetchClaimConfig();
   }, [isContractFetched]);
 
   const handleOnClaim = async () => {
     setError(undefined);
     setShowLoader(true);
-    if (!write) {
-      refetchClaimConfig();
-      checkBalance();
-      setTimeout(async () => {
-        if (isBalanceSufficient) {
-          setError(CLAIM_INPUT_ERROR);
-        }
-        setShowLoader(false);
-      }, 500);
+
+    const { isSuccess: isSuccessRefetch } = await refetchClaimConfig();
+    if (isSuccessRefetch && writeClaimTxn) {
+      writeClaimTxn();
       return;
     }
-    write?.();
+
+    /* Error handling starts here (Metamask won't open) */
+    let errorMessage: string = CLAIM_INPUT_ERROR;
+    // Check if claim is already expired
+    if (isClaimExpired) {
+      errorMessage = CLAIM_EXPIRED_ERROR;
+    }
+    // Check if Quantum funds is enough
+    const balance = await getBalance(data.to.tokenSymbol);
+    const isInsufficientFund = balance && data.to.amount.isGreaterThan(balance);
+    if (isInsufficientFund) {
+      errorMessage = INSUFFICIENT_FUND_ERROR;
+    }
+    setError(errorMessage);
   };
 
   const clearUnconfirmedTxn = () => {
@@ -168,6 +163,7 @@ export default function StepLastClaim({
   }, [isSuccess, isClaimExpired]);
 
   useEffect(() => {
+    /* Handles displayed error AFTER Metamask confirmation */
     let err = writeClaimTxnError?.message ?? claimTxnError?.message;
     if (claimTxnError && claimTxnError.name && !claimTxnError.message) {
       // Txn Error can sometimes occur but have empty message
@@ -181,7 +177,7 @@ export default function StepLastClaim({
     setError(err);
   }, [writeClaimTxnError, claimTxnError]);
 
-  const statusMessage = {
+  const modalStatusMessage = {
     title: isClaimInProgress ? "Processing" : "Waiting for confirmation",
     message: isClaimInProgress
       ? "Do not close or refresh the browser while processing. This will only take a few seconds."
@@ -218,10 +214,10 @@ export default function StepLastClaim({
           <div className="flex flex-col items-center mt-6 mb-14">
             <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
             <span className="font-bold text-2xl text-dark-900 mt-12">
-              {statusMessage.title}
+              {modalStatusMessage.title}
             </span>
             <span className="text-dark-900 text-center mt-2">
-              {statusMessage.message}
+              {modalStatusMessage.message}
             </span>
           </div>
         </Modal>
@@ -280,6 +276,7 @@ export default function StepLastClaim({
         <ActionButton
           label={StatusMessage[claimStatus].btnLabel}
           onClick={StatusMessage[claimStatus].btnAction}
+          disabled={!isTxnConfigFetched}
         />
         {claimStatus === "READY" && (
           <div
