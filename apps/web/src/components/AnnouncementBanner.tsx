@@ -53,10 +53,9 @@ export default function AnnouncementBanner() {
     setHiddenAnnouncements(updatedHiddenAnnouncements);
   };
 
-  console.log({ hiddenAnnouncements, announcement });
-
   const showAnnouncement =
     announcement && !hiddenAnnouncements.includes(announcement.id);
+
   return showAnnouncement ? (
     <div className="flex flex-row justify-between items-center py-[18px] px-6 md:px-10 lg:px-[120px] bg-dark-gradient-4">
       <div className="flex items-center text-dark-00 text-xs lg:text-sm">
