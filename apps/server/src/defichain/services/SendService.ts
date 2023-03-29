@@ -53,7 +53,9 @@ export class SendService {
     const DFIBalance = BigNumber.max(0, new BigNumber(balance).minus(amountToSend));
     if (DFIBalance.isLessThanOrEqualTo(0) || DFIBalance.isNaN()) {
       this.logger.log(`[Sending UTXO] Failed to send because insufficient DFI UTXO in hot wallet`);
-      throw new BadRequestException('Insufficient DFI liquidity');
+      throw new BadRequestException(
+        `Insufficient DFI liquidity, hot wallet balance: ${balance}, amount to send: ${amountToSend}`,
+      );
     }
   }
 }
