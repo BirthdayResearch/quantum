@@ -42,6 +42,8 @@ describe('DeFiChain Verify fund Testing', () => {
   let whaleWalletProvider: WhaleWalletProvider;
   let localAddress: string;
   let wallet: WhaleWalletAccount;
+  let hotWallet: WhaleWalletAccount;
+  let hotWalletAddress: string;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
   const VERIFY_ENDPOINT = `${WALLET_ENDPOINT}verify`;
 
@@ -87,6 +89,8 @@ describe('DeFiChain Verify fund Testing', () => {
     whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
     wallet = whaleWalletProvider.createWallet(2);
     localAddress = await wallet.getAddress();
+    hotWallet = whaleWalletProvider.getHotWallet();
+    hotWalletAddress = await hotWallet.getAddress();
   });
 
   afterAll(async () => {
@@ -276,9 +280,6 @@ describe('DeFiChain Verify fund Testing', () => {
   });
 
   it('should verify fund in the wallet address and top up UTXO', async () => {
-    const hotWallet = whaleWalletProvider.getHotWallet();
-    const hotWalletAddress = await hotWallet.getAddress();
-
     // Send UTXO to Hot Wallet
     await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
     await defichain.generateBlock();

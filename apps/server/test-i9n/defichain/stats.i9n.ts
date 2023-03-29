@@ -34,8 +34,8 @@ describe('DeFiChain Stats Testing', () => {
   let whaleWalletProvider: WhaleWalletProvider;
   let localAddress: string;
   let wallet: WhaleWalletAccount;
-  let hotWalletAddress: string;
   let hotWallet: WhaleWalletAccount;
+  let hotWalletAddress: string;
   const WALLET_ENDPOINT = `/defichain/wallet/`;
   const VERIFY_ENDPOINT = `${WALLET_ENDPOINT}verify`;
 
@@ -81,7 +81,7 @@ describe('DeFiChain Stats Testing', () => {
     whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
     wallet = whaleWalletProvider.createWallet(2);
     localAddress = await wallet.getAddress();
-    hotWallet = await whaleWalletProvider.getHotWallet();
+    hotWallet = whaleWalletProvider.getHotWallet();
     hotWalletAddress = await hotWallet.getAddress();
   });
 
@@ -133,15 +133,6 @@ describe('DeFiChain Stats Testing', () => {
     expect(parsedPayload.totalBridgedAmount).toHaveProperty('EUROC');
   }
 
-  async function getBalance(tokenSymbol: string) {
-    const initialResponse = await testing.inject({
-      method: 'GET',
-      url: `${WALLET_ENDPOINT}balance/${tokenSymbol}`,
-    });
-    const response = JSON.parse(initialResponse.body);
-    return response;
-  }
-
   it('should verify fund is displayed accurately in endpoint', async () => {
     await testing.inject({
       method: 'GET',
@@ -155,8 +146,6 @@ describe('DeFiChain Stats Testing', () => {
     await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
     await defichain.generateBlock();
 
-    // eslint-disable-next-line
-    console.log('hotwalletbalance with api', await getBalance('DFI'));
     // Sends token to the address
     await defichain.playgroundClient?.rpc.call(
       'sendtokenstoaddress',
