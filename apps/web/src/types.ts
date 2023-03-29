@@ -116,3 +116,11 @@ export interface SignedClaim {
   nonce: number;
   deadline: number;
 }
+
+export interface BridgeAnnouncement {
+  lang: {
+    en: string;
+  };
+  version: string;
+  url?: string;
+}

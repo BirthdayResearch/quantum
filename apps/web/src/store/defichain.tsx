@@ -1,6 +1,11 @@
 import { createApi, fetchBaseQuery, retry } from "@reduxjs/toolkit/query/react";
 import { FetchArgs } from "@reduxjs/toolkit/dist/query/fetchBaseQuery";
-import { AddressDetails, BridgeSettings, BridgeVersion } from "types";
+import {
+  AddressDetails,
+  AnnouncementData,
+  BridgeSettings,
+  BridgeVersion,
+} from "types";
 import { HttpStatusCode } from "axios";
 import type { RootState } from "@store/reducers/rootReducer";
 
@@ -155,6 +160,11 @@ export const bridgeApi = createApi({
         method: "GET",
       }),
       extraOptions: { maxRetries: 1 },
+    }),
+    bridgeAnnouncements: builder.query<AnnouncementData[], any>({
+      query: ({ baseUrl }) => ({
+        url: `${baseUrl}/bridge/announcements`,
+      }),
     }),
   }),
 });
