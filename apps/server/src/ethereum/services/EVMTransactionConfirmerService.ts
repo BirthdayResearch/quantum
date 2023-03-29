@@ -10,6 +10,7 @@ import { BridgeV1, BridgeV1__factory, ERC20__factory } from 'smartcontracts';
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { TokenSymbol } from '../../defichain/model/VerifyDto';
 import { WhaleApiClientProvider } from '../../defichain/providers/WhaleApiClientProvider';
+import { WhaleWalletProvider } from '../../defichain/providers/WhaleWalletProvider';
 import { DeFiChainTransactionService } from '../../defichain/services/DeFiChainTransactionService';
 import { SendService } from '../../defichain/services/SendService';
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
@@ -36,6 +37,7 @@ export class EVMTransactionConfirmerService {
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly sendService: SendService,
     private readonly deFiChainTransactionService: DeFiChainTransactionService,
+    private readonly whaleWalletProvider: WhaleWalletProvider,
     private configService: ConfigService,
     private prisma: PrismaService,
   ) {
@@ -324,6 +326,19 @@ export class EVMTransactionConfirmerService {
       const amount = new BigNumber(dTokenDetails.amount);
       const fee = amount.multipliedBy(this.configService.getOrThrow('ethereum.transferFee'));
       const amountLessFee = BigNumber.max(amount.minus(fee), 0);
+
+      // check hot wallet has enough UTXO balance after reserving a configurable amount
+      if (dTokenDetails.symbol === 'DFI') {
+        const hotWalletBalance = await this.whaleWalletProvider.getHotWalletBalance();
+        const dfcReservedAmt = this.configService.getOrThrow('defichain.dfcReservedAmt', 0);
+        const DFIBalance = BigNumber.max(0, new BigNumber(hotWalletBalance).minus(dfcReservedAmt).minus(amountLessFee));
+        if (DFIBalance.isLessThanOrEqualTo(0) || DFIBalance.isNaN()) {
+          this.logger.log(
+            `[Sending UTXO] Failed to send because insufficient DFI UTXO in hot wallet after deducting reserved UTXO`,
+          );
+          throw new BadRequestException('Insufficient DFI liquidity');
+        }
+      }
 
       const sendTxPayload = {
         ...dTokenDetails,
