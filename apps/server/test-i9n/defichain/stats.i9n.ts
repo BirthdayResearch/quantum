@@ -81,7 +81,7 @@ describe('DeFiChain Stats Testing', () => {
     whaleWalletProvider = app.get<WhaleWalletProvider>(WhaleWalletProvider);
     wallet = whaleWalletProvider.createWallet(2);
     localAddress = await wallet.getAddress();
-    hotWallet = whaleWalletProvider.getHotWallet();
+    hotWallet = await whaleWalletProvider.getHotWallet();
     hotWalletAddress = await hotWallet.getAddress();
   });
 
