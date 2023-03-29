@@ -7,22 +7,33 @@ import { RootState } from "@store/reducers/rootReducer";
 import { selectVersion } from "@store/slices/versionSlice";
 import { useLazyBridgeAnnouncements } from "@store/index";
 import { AnnouncementData } from "types";
+import { getStorageItem, setStorageItem } from "@utils/localStorage";
 
-export default function AnnouncementBanner(): JSX.Element {
+const HIDDEN_ANNOUNCEMENTS_KEY = "hidden-announcements";
+
+export default function AnnouncementBanner() {
   const appVersion = useSelector((state: RootState) => selectVersion(state));
   const [trigger] = useLazyBridgeAnnouncements();
   const [announcement, setAnnouncement] = useState<{
+    id: string;
     content: string;
     url?: string;
   }>();
+  const [hiddenAnnouncements, setHiddenAnnouncements] = useState<string[]>(
+    getStorageItem(HIDDEN_ANNOUNCEMENTS_KEY) ?? []
+  );
 
   async function getAnnouncements() {
     const { data } = await trigger({});
-    const announce: AnnouncementData = data.find(({ version }) =>
+    const announcementData: AnnouncementData = data?.find(({ version }) =>
       satisfies(appVersion, version)
     );
-    if (announce) {
-      setAnnouncement({ content: announce.lang.en, url: announce.url });
+    if (announcementData) {
+      setAnnouncement({
+        id: announcementData.id,
+        content: announcementData.lang.en,
+        url: announcementData.url,
+      });
     }
   }
 
@@ -30,7 +41,23 @@ export default function AnnouncementBanner(): JSX.Element {
     getAnnouncements();
   }, []);
 
-  return announcement ? (
+  const onHideAnnouncement = () => {
+    if (announcement === undefined || announcement.id === undefined) {
+      return;
+    }
+    const updatedHiddenAnnouncements = [
+      ...hiddenAnnouncements,
+      announcement.id,
+    ];
+    setStorageItem(HIDDEN_ANNOUNCEMENTS_KEY, updatedHiddenAnnouncements);
+    setHiddenAnnouncements(updatedHiddenAnnouncements);
+  };
+
+  console.log({ hiddenAnnouncements, announcement });
+
+  const showAnnouncement =
+    announcement && !hiddenAnnouncements.includes(announcement.id);
+  return showAnnouncement ? (
     <div className="flex flex-row justify-between items-center py-[18px] px-6 md:px-10 lg:px-[120px] bg-dark-gradient-4">
       <div className="flex items-center text-dark-00 text-xs lg:text-sm">
         <span>{announcement.content}</span>
@@ -42,8 +69,11 @@ export default function AnnouncementBanner(): JSX.Element {
           />
         )}
       </div>
-      {/* TODO: Add close action */}
-      <IoClose size={20} className="shrink-0 cursor-pointer ml-6" />
+      <IoClose
+        size={20}
+        className="shrink-0 cursor-pointer ml-6"
+        onClick={() => onHideAnnouncement()}
+      />
     </div>
   ) : null;
 }

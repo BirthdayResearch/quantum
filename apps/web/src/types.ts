@@ -119,6 +119,7 @@ export interface SignedClaim {
 }
 
 export interface BridgeAnnouncement {
+  id: string;
   lang: {
     en: string;
   };
