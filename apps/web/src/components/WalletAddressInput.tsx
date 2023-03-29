@@ -210,6 +210,7 @@ export default function WalletAddressInput({
             "absolute right-0 rounded bg-valid px-2 py-1 text-2xs text-dark-00  transition duration-300 lg:text-xs",
             copiedFromClipboard ? "opacity-100" : "opacity-0"
           )}
+          data-testid="added-from-clipboard-prompt"
         >
           Added from clipboard
         </div>
@@ -244,7 +245,7 @@ export default function WalletAddressInput({
                 !disabled,
             })}
             disableTooltip={disabled || isMobile} // Disable tooltip for mobile
-            data-testid={`${testId}-paste-icon`}
+            testId={`${testId}-paste-icon`}
           >
             <FiClipboard
               size={24}

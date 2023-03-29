@@ -42,6 +42,7 @@ export default function Tooltip({
       onMouseDown={hideTooltip}
       onKeyDown={() => {}}
       tabIndex={0}
+      data-testid={`${testId}-tooltip`}
     >
       {children}
       {!disableTooltip && active && (
@@ -49,7 +50,7 @@ export default function Tooltip({
           className={`absolute left-1/2 -top-8 z-[100] -translate-x-1/2 whitespace-nowrap rounded-lg bg-dark-1000 px-3 py-1 text-sm text-dark-00
           before:absolute before:left-1/2 before:top-[20%] before:-z-[1] before:-ml-2.5 before:h-0 before:w-0 before:rotate-45 before:rounded-[1px]
           before:border-[10.5px] before:border-transparent before:border-t-dark-1000 before:bg-dark-1000`}
-          data-testid={`${testId}-tooltip`}
+          data-testid={`${testId}-tooltip-content`}
         >
           {content}
         </div>

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ethers } from "ethers";
 import ActionButton from "@components/commons/ActionButton";
@@ -15,12 +15,14 @@ export interface ModalConfigType {
   title: string;
   message: string;
   onClose: () => void;
+  testId?: string;
 }
 
 export default function RestoreTransactionModal({
   title,
   message,
   onClose,
+  testId,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
@@ -91,12 +93,18 @@ export default function RestoreTransactionModal({
   }, [copiedFromClipboard]);
 
   return (
-    <Modal isOpen onClose={onClose}>
+    <Modal isOpen onClose={onClose} testId={testId}>
       <div className="flex flex-col mt-6 mb-14 w-full px-6">
-        <div className="font-bold text-xl lg:text-2xl text-dark-900">
+        <div
+          className="font-bold text-xl lg:text-2xl text-dark-900"
+          data-testid={`${testId}-title`}
+        >
           {title}
         </div>
-        <div className="text-sm lg:text-base lg:leading-5 w-full text-dark-700 mt-2">
+        <div
+          className="text-sm lg:text-base lg:leading-5 w-full text-dark-700 mt-2"
+          data-testid={`${testId}-msg`}
+        >
           {message}
         </div>
 
@@ -109,6 +117,7 @@ export default function RestoreTransactionModal({
               "absolute right-0 rounded bg-valid px-2 py-1 text-2xs text-dark-00 transition duration-300 lg:text-xs",
               copiedFromClipboard ? "opacity-100" : "opacity-0"
             )}
+            data-testid={`${testId}-added-from-clipboard-prompt`}
           >
             Added from clipboard
           </div>
@@ -126,12 +135,14 @@ export default function RestoreTransactionModal({
               ),
             }
           )}
+          data-testid={`${testId}-input-container`}
         >
           {/* Paste icon with tooltip */}
           <Tooltip
             content="Paste from clipboard"
             containerClass="mr-3 lg:mr-6 shrink-0 cursor-pointer hover:bg-dark-200 active:dark-btn-pressed"
             disableTooltip={isMobile}
+            testId={testId}
           >
             <FiClipboard
               size={20}
@@ -142,6 +153,7 @@ export default function RestoreTransactionModal({
 
           {/* Textarea input */}
           <textarea
+            data-testid={`${testId}-input`}
             ref={textAreaRef}
             className={clsx(
               `w-full h-6 grow resize-none bg-transparent text-sm lg:text-base leading-5 tracking-[0.01em] text-dark-1000 focus:outline-none`,
@@ -170,13 +182,17 @@ export default function RestoreTransactionModal({
                 setIsNotValidTxn(false);
                 handleFocusWithCursor();
               }}
+              data-testid={`${testId}-clear-icon`}
             />
           )}
         </div>
 
         {/* Error messages */}
         {invalidTxnHash && (
-          <span className="block px-4 pt-2 text-xs lg:px-6 lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
+          <span
+            className="block px-4 pt-2 text-xs lg:px-6 lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error"
+            data-testid={`${testId}-input-error-msg`}
+          >
             Enter a valid Ethereum txid performed on Quantum
           </span>
         )}
@@ -187,6 +203,7 @@ export default function RestoreTransactionModal({
             customStyle="bg-dark-1000 md:px-6 text-lg lg:!py-3 lg:px-8 xl:px-14"
             disabled={txnAddress === ""}
             onClick={checkTXnHash}
+            testId={`${testId}-btn`}
           />
         </div>
       </div>
