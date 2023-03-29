@@ -42,7 +42,7 @@ describe('Transactions Service Test', () => {
     ]);
   });
 
-  it(`should throw an error if both dates are invalid`, async () => {
+  it(`should throw an error if fromDate invalid`, async () => {
     const txReceipt = await testing.inject({
       method: 'GET',
       url: `/ethereum/transactions?fromDate=abc&toDate=2023-03-27`,
