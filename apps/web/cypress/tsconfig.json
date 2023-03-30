@@ -12,8 +12,7 @@
       "cypress",
       "@testing-library/cypress",
       "@synthetixio/synpress/support",
-      "cypress-real-events",
-      "@defichain/playground-api-client"
+      "cypress-real-events"
     ]
   },
   "include": ["**/*.ts"]

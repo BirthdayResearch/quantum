@@ -47,6 +47,7 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
   await usdcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await euroContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await euroContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
 
   // Adding mUsdt and mUsdc as supported tokens
   await bridgeImplementationContract.addSupportedTokens(btcContract.address, ethers.constants.MaxUint256);

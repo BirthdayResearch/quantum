@@ -24,7 +24,7 @@ beforeEach(() => {
 context("QA-755 Pre-connected wallet - Bridge Form", () => {
   const source = Network.Ethereum;
   const destination = Network.DeFiChain;
-  const currentPair = "WBTC";
+  const currentPair = "DFI";
 
   it("1: Verify the Bridge form is visible", () => {
     cy.findByTestId("bridge-form").should("be.visible");

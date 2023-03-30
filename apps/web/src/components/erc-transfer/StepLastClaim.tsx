@@ -267,20 +267,27 @@ export default function StepLastClaim({
             <FiAlertCircle size={64} className="text-error" />
           </div>
         )}
-        <span className="font-bold block text-center text-dark-900 tracking-[0.01em] md:tracking-wider text-lg">
+        <span
+          className="font-bold block text-center text-dark-900 tracking-[0.01em] md:tracking-wider text-lg"
+          data-testid="claim-title"
+        >
           {StatusMessage[claimStatus].title}
         </span>
-        <span className="block text-center text-sm text-dark-900 antialiased mt-1 pb-6">
+        <span
+          className="block text-center text-sm text-dark-900 antialiased mt-1 pb-6"
+          data-testid="claim-content"
+        >
           {StatusMessage[claimStatus].message}
         </span>
         <ActionButton
           label={StatusMessage[claimStatus].btnLabel}
           onClick={StatusMessage[claimStatus].btnAction}
           disabled={!isTxnConfigFetched}
+          testId="claim-action-btn"
         />
         {claimStatus === "READY" && (
           <div
-            data-testid="ready-for-claiming-modal"
+            data-testid="ready-for-claiming-timing"
             className={clsx(
               "text-sm text-center lowercase mt-2",
               timeRemaining.lt(ONE_HOUR) ? "text-error" : "text-warning"
