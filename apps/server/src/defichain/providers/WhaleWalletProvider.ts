@@ -34,6 +34,12 @@ export class WhaleWalletProvider {
     return this.createWallet(0);
   }
 
+  async getHotWalletBalance(): Promise<string> {
+    const hotWallet = this.getHotWallet();
+    const hotWalletAddress = await hotWallet.getAddress();
+    return hotWallet.client.address.getBalance(hotWalletAddress);
+  }
+
   private initProvider(
     data: WalletPersistenceDataI<MnemonicProviderData>,
     network: EnvironmentNetwork,

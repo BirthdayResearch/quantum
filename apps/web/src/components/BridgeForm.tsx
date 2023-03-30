@@ -603,7 +603,8 @@ export default function BridgeForm({
 
         {!isBalanceSufficient && !hasPendingTxn && (
           <div className={clsx("pt-3", warningTextStyle)}>
-            Unable to process transaction. <div>Please try again later</div>
+            Unable to process due to liquidity cap, please try again in a few
+            hours
           </div>
         )}
       </div>
