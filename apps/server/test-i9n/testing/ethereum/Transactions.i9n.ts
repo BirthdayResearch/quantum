@@ -104,4 +104,14 @@ describe('Transactions Service Test', () => {
     expect(parsedPayload.error).toStrictEqual('API call for Ethereum transactions was unsuccessful');
     expect(parsedPayload.message).toStrictEqual('fromDate cannot be more recent than toDate');
   });
+
+  it(`should accept a valid fromDate & toDate pair`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/transactions?fromDate=2023-03-15&toDate=2023-03-16`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+    expect(parsedPayload).toBeTruthy();
+  });
 });

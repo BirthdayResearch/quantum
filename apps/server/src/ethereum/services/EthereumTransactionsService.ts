@@ -32,6 +32,8 @@ export class EthereumTransactionsService {
           new TransactionsDto(
             t.transactionHash,
             t.tokenSymbol as SupportedEVMTokenSymbols,
+            t.blockHash,
+            t.blockHeight,
             t.amount ?? '',
             t.createdAt.toISOString(),
           ),

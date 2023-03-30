@@ -41,13 +41,26 @@ export class TransactionsDto {
 
   readonly token?: SupportedEVMTokenSymbols;
 
+  readonly blockHash: string | null;
+
+  readonly blockHeight: string | null;
+
   readonly amount?: string;
 
   readonly timestamp: string;
 
-  constructor(txHash: string, token: SupportedEVMTokenSymbols, amount: string, timestamp: string) {
+  constructor(
+    txHash: string,
+    token: SupportedEVMTokenSymbols,
+    blockHash: string | null,
+    blockHeight: string | null,
+    amount: string,
+    timestamp: string,
+  ) {
     this.txHash = txHash;
     this.token = token;
+    this.blockHash = blockHash;
+    this.blockHeight = blockHeight;
     this.amount = amount;
     this.timestamp = timestamp;
   }
