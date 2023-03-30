@@ -547,7 +547,11 @@ export default function BridgeForm({
             Fees
           </span>
           <div className="ml-2">
-            <IconTooltip title={FEES_INFO.title} content={FEES_INFO.content} />
+            <IconTooltip
+              title={FEES_INFO.title}
+              content={FEES_INFO.content}
+              testId="fees"
+            />
           </div>
         </div>
         <NumericFormat

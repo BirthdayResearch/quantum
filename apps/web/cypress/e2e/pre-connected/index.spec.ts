@@ -40,18 +40,18 @@ beforeEach(() => {
 });
 
 context("QA-755 Pre-connected - Navigational", () => {
-  it("1: Verify Documentation and FAQs links", () => {
+  it("QA-755-2-1: Verify Documentation and FAQs links", () => {
     QuantumHelperLinks.forEach((QuantumHelperLink) => {
       cy.verifyExternalLinks(QuantumHelperLink);
     });
   });
 
-  it("2: Verify Quantum logo redirection", () => {
-    // TODO:: after #807 is merged due to internal link component
-    // cy.findByTestId("quantum-logo-header").should("be.visible").click();
+  it("QA-755-2-2: Verify Quantum logo redirection", () => {
+    cy.findByTestId("quantum-logo-header").should("be.visible").click();
+    cy.url().should("equal", "http://localhost:3000/");
   });
 
-  it("3: Verify Banner functionality", () => {
+  it("QA-755-4-1: Verify Banner functionality", () => {
     cy.findByTestId("header-banner")
       .should("be.visible")
       .contains(
@@ -63,7 +63,7 @@ context("QA-755 Pre-connected - Navigational", () => {
       .and("include", "https://quantumbridge.app");
   });
 
-  it("4: Verify Footer functionality", () => {
+  it("QA-755-4-2~4: Verify Footer functionality", () => {
     cy.findByTestId("footer").should("be.visible");
     cy.findByTestId("footer-quantum-logo").should("be.visible");
 
@@ -80,7 +80,7 @@ context("QA-755 Pre-connected - Navigational", () => {
     });
   });
 
-  it("5: Verify navigate to 404 page when random url is accessed", () => {
+  it("Verify navigate to 404 page when random url is accessed", () => {
     cy.request({ url: "/random-url", failOnStatusCode: false })
       .its("status")
       .should("equal", 404);
