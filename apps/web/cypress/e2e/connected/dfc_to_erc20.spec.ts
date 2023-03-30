@@ -299,7 +299,7 @@ describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
       // validating progress step
       validateStep(2);
 
-      cy.wait(600); // to wait for QR code to load
+      cy.wait(1000); // to wait for QR code to load
       cy.findByTestId("temp-defichain-sending-qr-address").should("be.visible");
       cy.findByTestId("temp-defichain-sending-address").should("be.visible");
 
