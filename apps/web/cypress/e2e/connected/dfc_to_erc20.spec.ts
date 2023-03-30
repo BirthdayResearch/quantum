@@ -2,21 +2,14 @@
 import { DfcToErcTransferSteps } from "../../../src/constants";
 import { Erc20Token, Network } from "../../../src/types";
 
-const formData = {
-  sourceNetwork: Network.DeFiChain,
-  destinationNetwork: Network.Ethereum,
-  tokenPair: "USDT" as Erc20Token,
-  amount: "0.4",
-  destinationAddress: "bcrt1qamh07d09mhmym6ce7puftjgmwqqga2es7uzdzs",
-};
-
-before(() => {
+beforeEach(() => {
   cy.visit("http://localhost:3000/?network=Local", {
     onBeforeLoad: (win) => {
       let nextData: any;
       Object.defineProperty(win, "__NEXT_DATA__", {
         set(o) {
-          // Modify the injected parsed data
+          console.log("setting __NEXT_DATA__", o.props.pageProps);
+          // here is our change to modify the injected parsed data
           o.props.pageProps.isBridgeUp = true;
           nextData = o;
         },
@@ -27,6 +20,14 @@ before(() => {
     },
   });
 });
+
+const formData = {
+  sourceNetwork: Network.DeFiChain,
+  destinationNetwork: Network.Ethereum,
+  tokenPair: "USDT" as Erc20Token,
+  amount: "0.4",
+  destinationAddress: "bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d",
+};
 
 function validateStep(stepNumber: number) {
   DfcToErcTransferSteps.forEach(({ step, label }, idx) => {
@@ -54,7 +55,7 @@ function validateStep(stepNumber: number) {
   });
 }
 
-context("QA-770 Connected wallet - DFC > ETH - USDT", () => {
+describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
   let connectedWalletAddress: string;
   const fee = "0.0012";
   const toReceive = "0.3988";
@@ -69,7 +70,21 @@ context("QA-770 Connected wallet - DFC > ETH - USDT", () => {
     });
   });
 
-  it("1: Verify form setup DFC -> ETH", () => {
+  it("1. Verify reset form functionality : DFC -> ETH", () => {
+    // bridge form setup
+    cy.setupBridgeForm(
+      true,
+      formData.sourceNetwork,
+      formData.tokenPair,
+      formData.amount,
+      formData.destinationAddress
+    );
+
+    // test reset form
+    cy.verifyResetFormFunctionality();
+  });
+
+  it("2. Verify form setup DFC -> ETH", () => {
     // bridge form setup
     cy.setupBridgeForm(
       true,
@@ -87,55 +102,13 @@ context("QA-770 Connected wallet - DFC > ETH - USDT", () => {
       "Review transaction"
     );
 
-    // verify source network
-    cy.findByTestId("from-source-network-icon")
-      .should("be.visible")
-      .should("have.attr", "alt", "DeFiChain")
-      .should("have.attr", "src", "/tokens/DeFichain.svg");
-    cy.findByTestId("from-source-address").should(
-      "contain.text",
-      "DeFiChain address"
-    );
-    // verify source data token to send
-    cy.findByTestId("from-source-amount").should(
-      "contain.text",
-      formData.amount
-    );
-    cy.findByTestId("from-source-token-icon")
-      .should("have.attr", "alt", transferToken)
-      .should("have.attr", "src", `/tokens/${transferToken}.svg`);
-    cy.findByTestId("from-source-token-name").should(
-      "contain.text",
-      transferToken
-    );
-
-    // verify destination network
-    cy.findByTestId("to-destination-network-icon")
-      .should("have.attr", "alt", "Ethereum")
-      .should("have.attr", "src", "/tokens/Ethereum.svg");
-    cy.findByTestId("to-destination-address").should(
-      "contain.text",
+    cy.validateConfirmTransferModal(
+      formData.sourceNetwork,
+      formData.tokenPair,
+      formData.amount,
+      toReceive,
+      fee,
       connectedWalletAddress
-    );
-
-    // verify destination data token to receive
-    cy.findByTestId("to-destination-token-icon")
-      .should("have.attr", "alt", formData.tokenPair)
-      .should("have.attr", "src", `/tokens/${formData.tokenPair}.svg`);
-    cy.findByTestId("to-destination-token-name").should(
-      "contain.text",
-      formData.tokenPair
-    );
-
-    cy.findByTestId("to-destination-network-name").should(
-      "contain.text",
-      "Destination (Ethereum)"
-    );
-    cy.findByTestId("to-destination-amount").should("contain.text", toReceive);
-
-    cy.findByTestId("transaction-fees-amount").should(
-      "contain.text",
-      `${fee} ${transferToken}`
     );
 
     // verify erc-transfer-step-one

@@ -40,14 +40,14 @@ export default function UtilityModal({
             label={primaryButtonLabel}
             customStyle="bg-error md:px-6 text-xg lg:!py-3 lg:px-8 xl:px-14"
             onClick={onPrimaryButtonClick}
-            testId="utility-primary-btn"
+            testId="utility-modal-primary-btn"
           />
           <ActionButton
             label={secondaryButtonLabel}
             variant="secondary"
             customStyle="mt-2 md:px-2.5 lg:!py-3 lg:px-8 xl:px-14 border-[0.5px] border-dark-500"
             onClick={onSecondaryButtonClick}
-            testId="utility-secondary-btn"
+            testId="utility-modal-secondary-btn"
           />
         </span>
       </div>

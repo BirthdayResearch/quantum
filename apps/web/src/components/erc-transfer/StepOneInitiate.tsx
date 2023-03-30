@@ -33,7 +33,10 @@ export default function StepOneInitiate({
         <span className="font-semibold text-dark-900 tracking-[0.01em]">
           Getting started
         </span>
-        <p className={clsx("text-sm text-dark-900 mt-1", "md:mt-2")}>
+        <p
+          className={clsx("text-sm text-dark-900 mt-1", "md:mt-2")}
+          data-testid="disclaimer-msg-dfc"
+        >
           Transactions on-chain are irreversible. Ensure your transaction
           details are correct and funds are sent in a single transaction, with a
           stable network connection.

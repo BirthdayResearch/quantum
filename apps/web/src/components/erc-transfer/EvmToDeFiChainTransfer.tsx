@@ -244,7 +244,7 @@ export default function EvmToDeFiChainTransfer({
       <AlertInfoMessage containerStyle="px-5 py-4 mt-8" testId="disclaimer">
         <span
           className="text-left text-warning text-xs ml-3"
-          data-testid="disclaimer-msg"
+          data-testid="disclaimer-msg-evm"
         >
           {DISCLAIMER_MESSAGE}
         </span>
