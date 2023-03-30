@@ -31,24 +31,27 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
     flushReceiveAddress: accounts[4],
   });
   const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
-  const { usdtContract, usdcContract, wbtcContract, eurocContract } = await tokenDeployment();
+  const { usdtContract, usdcContract, wbtcContract, eurocContract, dfiContract } = await tokenDeployment();
 
   // Minting 100_000 tokens to accounts[0]
   await usdtContract.mint(eoaAddress, toWei('100000'));
   await usdcContract.mint(eoaAddress, toWei('100000'));
   await wbtcContract.mint(eoaAddress, toWei('100000'));
   await eurocContract.mint(eoaAddress, toWei('100000'));
+  await dfiContract.mint(eoaAddress, toWei('100000'));
   // Approving max token to `bridgeProxyAddress` by accounts[0]
   await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await usdcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await wbtcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await eurocContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await dfiContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
 
   // Adding mUsdt and mUsdc as supported tokens
   await bridgeImplementationContract.addSupportedTokens(usdtContract.address, ethers.constants.MaxUint256);
   await bridgeImplementationContract.addSupportedTokens(usdcContract.address, ethers.constants.MaxUint256);
   await bridgeImplementationContract.addSupportedTokens(wbtcContract.address, ethers.constants.MaxUint256);
   await bridgeImplementationContract.addSupportedTokens(eurocContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(dfiContract.address, ethers.constants.MaxUint256);
 
   return { usdtContract, usdcContract, bridgeImplementationContract };
 }

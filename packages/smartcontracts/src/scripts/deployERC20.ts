@@ -38,11 +38,20 @@ export async function tokenDeployment(): Promise<TestTokens> {
       `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/TestToken.sol:TestToken ${mockTokenEUROC.address} MockEURO MEUROC`,
     );
   }
+  const tokenDFI = await ERC20.deploy('DFI', 'DFI');
+  await tokenDFI.deployed();
+  console.log('Test DFI token is deployed to ', tokenDFI.address);
+  if (chainId !== 1337) {
+    console.log(
+      `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/TestToken.sol:TestToken ${tokenDFI.address} DFI DFI`,
+    );
+  }
   return {
     usdtContract: mockTokenUSDT,
     usdcContract: mockTokenUSDC,
     wbtcContract: mockTokenWBTC,
     eurocContract: mockTokenEUROC,
+    dfiContract: tokenDFI,
   };
 }
 
@@ -51,4 +60,5 @@ interface TestTokens {
   usdcContract: TestToken;
   wbtcContract: TestToken;
   eurocContract: TestToken;
+  dfiContract: TestToken;
 }
