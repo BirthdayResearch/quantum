@@ -59,14 +59,16 @@ export default function AnnouncementBanner() {
   return showAnnouncement ? (
     <div className="flex flex-row justify-between items-center py-[18px] px-6 md:px-10 lg:px-[120px] bg-dark-gradient-4">
       <div className="flex items-center text-dark-00 text-xs lg:text-sm">
-        <span>{announcement.content}</span>
-        {announcement.url && (
-          <FiArrowUpRight
-            size={20}
-            className="shrink-0 cursor-pointer ml-2"
-            onClick={() => window.open(announcement.url, "_blank")}
-          />
-        )}
+        <span>
+          {announcement.content}
+          {announcement.url && (
+            <FiArrowUpRight
+              size={20}
+              className="inline shrink-0 cursor-pointer ml-2"
+              onClick={() => window.open(announcement.url, "_blank")}
+            />
+          )}
+        </span>
       </div>
       <IoClose
         size={20}
