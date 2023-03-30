@@ -22,6 +22,14 @@ const formData = {
   destinationAddress: "bcrt1qamyk5n7ljrsx37d7hast5t9c7kczjhlx2etysl",
 };
 
+const utilityDisplay = {
+  title: "Are you sure you want to leave your transaction?",
+  message:
+    "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+  primaryButtonLabel: "Leave transaction",
+  secondaryButtonLabel: "Go back",
+};
+
 function waitUntilEvmBlocksConfirm(): void {
   cy.findByTestId("txn-progress-blocks")
     .invoke("text")
@@ -207,6 +215,7 @@ function initTransaction(
     formData.destinationAddress
   );
   cy.findByTestId("transfer-btn").click();
+  // wait for contract
   cy.wait(3000);
 
   validateConfirmTransferModal(formData.tokenPair, formData.amount);
@@ -269,42 +278,16 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     });
   });
 
-  it("should be able to verify locked form", () => {
-    initTransaction(false);
-
-    cy.findByTestId("review-modal-close-icon").click();
-
-    // verify utility modal
-    cy.validateUtilityModal(
-      "Are you sure you want to leave your transaction?",
-      "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
-      "Leave transaction",
-      "Go back"
-    );
-    cy.findByTestId("utility-secondary-btn").click();
-    // display utility again, then close
-    cy.findByTestId("review-modal-close-icon").click();
-    cy.findByTestId("utility-primary-btn").click();
-
-    cy.validateLockedForm(
-      formData.sourceNetwork,
-      formData.destinationNetwork,
-      formData.tokenPair,
-      formData.amount,
-      formData.destinationAddress
-    );
-  });
-
-  it("should be able to reset form", () => {
+  it("should be able to verify locked form and reset form", () => {
     initTransaction(false);
     cy.findByTestId("review-modal-close-icon").click();
 
     // verify utility modal
     cy.validateUtilityModal(
-      "Are you sure you want to leave your transaction?",
-      "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
-      "Leave transaction",
-      "Go back"
+      utilityDisplay.title,
+      utilityDisplay.message,
+      utilityDisplay.primaryButtonLabel,
+      utilityDisplay.secondaryButtonLabel
     );
     cy.findByTestId("utility-primary-btn").click();
 
@@ -326,7 +309,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.validateFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
   });
 
-  it("should be able to reject transaction", () => {
+  it("should be able to reject transaction and retry", () => {
     initTransaction(true, false);
     // reject metamask
     cy.rejectMetamaskTransaction();
@@ -340,15 +323,25 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       "contain.text",
       "Try again"
     );
+    // close using btn
     cy.findByTestId("transaction-err-close-btn")
       .should("contain.text", "Close")
       .click();
 
     cy.validateUtilityModal(
-      "Are you sure you want to leave your transaction?",
-      "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
-      "Leave transaction",
-      "Go back"
+      utilityDisplay.title,
+      utilityDisplay.message,
+      utilityDisplay.primaryButtonLabel,
+      utilityDisplay.secondaryButtonLabel
+    );
+    // close utility modal and try close using icon
+    cy.findByTestId("utility-secondary-btn").click();
+    cy.findByTestId("transaction-err-modal-close-icon").click();
+    cy.validateUtilityModal(
+      utilityDisplay.title,
+      utilityDisplay.message,
+      utilityDisplay.primaryButtonLabel,
+      utilityDisplay.secondaryButtonLabel
     );
     cy.findByTestId("utility-primary-btn").click();
 
@@ -359,6 +352,26 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       formData.amount,
       formData.destinationAddress
     );
+
+    // retry transaction
+    cy.findByTestId("transfer-btn").click();
+    // wait for contract
+    cy.wait(3000);
+    validateConfirmTransferModal(formData.tokenPair, formData.amount);
+    cy.findByTestId("confirm-transfer-btn").click();
+
+    // check confirmation modal
+    cy.findByTestId("bridge-status-title").should(
+      "contain.text",
+      "Waiting for confirmation"
+    );
+    cy.findByTestId("bridge-status-msg").should(
+      "contain.text",
+      "Confirm this transaction in your Wallet."
+    );
+
+    // still able to accept metamask transaction
+    cy.confirmMetamaskTransaction();
   });
 
   it("should be able to verify transaction status - failed", () => {
