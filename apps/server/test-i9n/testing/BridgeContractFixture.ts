@@ -167,7 +167,7 @@ export class BridgeContractFixture {
     const meuroc = await this.contractManager.deployContract<TestToken>({
       deploymentName: BridgeContractFixture.Contracts.MockEUROC.deploymentName,
       contractName: BridgeContractFixture.Contracts.MockEUROC.contractName,
-      deployArgs: ['MockWEUROC', 'MEUROC'],
+      deployArgs: ['MockWEUROC', 'MEURC'],
       abi: TestToken__factory.abi,
     });
 
@@ -198,7 +198,7 @@ export class BridgeContractFixture {
   }
 
   /**
-   * Mints MUSDC, MUSDT, MWBTC And MEUROC tokens to an EOA
+   * Mints MUSDC, MUSDT, MWBTC And MEURC tokens to an EOA
    */
   async mintTokensToEOA(address: string, amount: BigNumberish = constants.MaxInt256): Promise<void> {
     const { musdc, musdt, mwbtc, meuroc, dfi } = this.getContractsWithSigner(this.adminAndOperationalSigner);
