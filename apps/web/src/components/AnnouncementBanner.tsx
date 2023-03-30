@@ -6,7 +6,7 @@ import { satisfies } from "semver";
 import { RootState } from "@store/reducers/rootReducer";
 import { selectVersion } from "@store/slices/versionSlice";
 import { useLazyBridgeAnnouncements } from "@store/index";
-import { AnnouncementData } from "types";
+import { BridgeAnnouncement } from "types";
 import { getStorageItem, setStorageItem } from "@utils/localStorage";
 
 const HIDDEN_ANNOUNCEMENTS_KEY = "hidden-announcements";
@@ -25,8 +25,8 @@ export default function AnnouncementBanner() {
 
   async function getAnnouncements() {
     const { data } = await trigger({});
-    const announcementData: AnnouncementData = data?.find(({ version }) =>
-      satisfies(appVersion, version)
+    const announcementData: BridgeAnnouncement | undefined = data?.find(
+      ({ version }) => satisfies(appVersion, version)
     );
     if (announcementData) {
       setAnnouncement({
