@@ -164,7 +164,7 @@ export default function WalletAddressInput({
           EnvironmentNetwork.LocalPlayground,
         ].includes(networkEnv);
       message = isTestnet
-        ? `Make sure to only use ${networkEnv} for testing`
+        ? `You are on a ${networkEnv} network. Make sure to only use a ${networkEnv} address`
         : "";
     }
     setError({ message, isError: hasInvalidInput });
