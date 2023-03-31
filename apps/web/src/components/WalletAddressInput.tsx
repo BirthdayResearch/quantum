@@ -203,6 +203,7 @@ export default function WalletAddressInput({
           isPrimary && (
             <EnvironmentNetworkSwitch
               onChange={() => onAddressInputChange("")}
+              disabled={chain !== undefined}
             />
           )}
         <div

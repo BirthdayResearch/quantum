@@ -34,7 +34,7 @@ export const getDTokenDetailsByWToken = (
           id: '5',
           symbol: 'USDC',
         },
-        MEUROC: {
+        MEURC: {
           id: '12',
           symbol: 'EUROC',
         },
@@ -62,7 +62,7 @@ export const getDTokenDetailsByWToken = (
           id: '5',
           symbol: 'USDC',
         },
-        MEUROC: {
+        MEURC: {
           id: '12',
           symbol: 'EUROC',
         },
@@ -91,8 +91,8 @@ export const getDTokenDetailsByWToken = (
           id: '22',
           symbol: 'USDC',
         },
-        MEUROC: {
-          id: '216',
+        MEURC: {
+          id: '25',
           symbol: 'EUROC',
         },
       };
