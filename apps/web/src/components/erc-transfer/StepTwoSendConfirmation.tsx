@@ -28,9 +28,11 @@ function getTimeDifference(createdAt?: Date): number {
 function VerifyButton({
   onVerify,
   disabled = false,
+  testId,
 }: {
   onVerify: () => void;
   disabled?: boolean;
+  testId?: string;
 }) {
   return (
     <UtilityButton
@@ -38,6 +40,7 @@ function VerifyButton({
       onClick={onVerify}
       disabled={disabled}
       withArrowIcon
+      testId={testId}
     />
   );
 }
@@ -131,6 +134,7 @@ export default function StepTwoSendConfirmation({
     <div>
       <div
         className={clsx("flex flex-col mt-6", "md:flex-row md:gap-7 md:mt-4")}
+        data-testid="erc-transfer-step-two"
       >
         <div
           className={clsx(
@@ -168,7 +172,10 @@ export default function StepTwoSendConfirmation({
                       />
                     ) : (
                       dfcUniqueAddress && (
-                        <QrAddress dfcUniqueAddress={dfcUniqueAddress}>
+                        <QrAddress
+                          dfcUniqueAddress={dfcUniqueAddress}
+                          testId="temp-defichain-sending"
+                        >
                           {createdBeforeInMSec > 0 && (
                             <div className="text-center">
                               <TimeLimitCounter
@@ -205,7 +212,10 @@ export default function StepTwoSendConfirmation({
           </p>
           <div className="pt-6">
             <div className="flex items-center justify-center md:justify-start">
-              <div className="text-lg md:text-2xl text-dark-1000 mr-2">
+              <div
+                className="text-lg md:text-2xl text-dark-1000 mr-2"
+                data-testid="transact-token-amount"
+              >
                 {destinationDetail.amount.toFixed()}
               </div>
               <Image
@@ -214,8 +224,12 @@ export default function StepTwoSendConfirmation({
                 src={sourceDetail.tokenIcon}
                 alt={sourceDetail.tokenName}
                 className="w-4 md:h-4"
+                data-testid="transact-token-logo"
               />
-              <div className="ml-1 text-sm md:text-sm text-dark-700">
+              <div
+                className="ml-1 text-sm md:text-sm text-dark-700"
+                data-testid="transact-token-name"
+              >
                 {sourceDetail.tokenName}
               </div>
             </div>
@@ -234,6 +248,7 @@ export default function StepTwoSendConfirmation({
                 disabled={
                   addressGenerationError !== "" || dfcUniqueAddress === ""
                 }
+                testId="verify-hot-wallet-transfer"
               />
             </div>
           </div>
@@ -252,6 +267,7 @@ export default function StepTwoSendConfirmation({
               disabled={
                 addressGenerationError !== "" || dfcUniqueAddress === ""
               }
+              testId="verify-hot-wallet-transfer-mobile"
             />
           </div>
         </div>

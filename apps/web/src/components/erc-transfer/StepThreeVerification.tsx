@@ -73,6 +73,7 @@ function ValidationStatus({
             disabled={isValidating || validationSuccess || isThrottled}
             withRefreshIcon={!validationSuccess && !isValidating}
             onClick={onClick}
+            testId="revalidate-transaction"
           />
         )}
       </div>
@@ -210,7 +211,10 @@ export default function StepThreeVerification({
   };
 
   return (
-    <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-6 md:mt-4")}>
+    <div
+      className={clsx("flex flex-col mt-6", "md:flex-row md:gap-6 md:mt-4")}
+      data-testid="erc-transfer-step-three"
+    >
       {dfcAddress && (
         <div
           className={clsx(
@@ -238,10 +242,18 @@ export default function StepThreeVerification({
           "md:text-left md:mt-4"
         )}
       >
-        <span className="font-semibold text-dark-900 tracking-[0.01em] md:tracking-wider">
+        <span
+          className="font-semibold text-dark-900 tracking-[0.01em] md:tracking-wider"
+          data-testid="verification-title"
+        >
           {title}
         </span>
-        <p className="text-sm text-dark-700 mt-2">{content}</p>
+        <p
+          className="text-sm text-dark-700 mt-2"
+          data-testid="verification-content"
+        >
+          {content}
+        </p>
       </div>
     </div>
   );
