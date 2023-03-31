@@ -37,33 +37,14 @@ export type BridgedEVMTokenSum = {
 };
 
 export class TransactionsDto {
-  readonly txHash: string;
-
-  readonly token?: SupportedEVMTokenSymbols;
-
-  readonly blockHash: string | null;
-
-  readonly blockHeight: string | null;
-
-  readonly amount?: string;
-
-  readonly timestamp: string;
-
   constructor(
-    txHash: string,
-    token: SupportedEVMTokenSymbols,
-    blockHash: string | null,
-    blockHeight: string | null,
-    amount: string,
-    timestamp: string,
-  ) {
-    this.txHash = txHash;
-    this.token = token;
-    this.blockHash = blockHash;
-    this.blockHeight = blockHeight;
-    this.amount = amount;
-    this.timestamp = timestamp;
-  }
+    readonly txHash: string,
+    readonly token: SupportedEVMTokenSymbols | null,
+    readonly blockHash: string | null,
+    readonly blockHeight: string | null,
+    readonly amount: string | null,
+    readonly timestamp: string,
+  ) {}
 }
 
 export class TransactionsQueryDto {
