@@ -21,7 +21,7 @@ urls.forEach((url) => {
     });
 
     it("should check Proof of Backing link", () => {
-      cy.findByTestId("Desktop.POB.Url")
+      cy.findByTestId("POB.Url")
         .should("have.attr", "href")
         .and("include", "https://defiscan.live/proof-of-backing"); //TODO: add check for the mainnet by default after fix
     });
@@ -114,7 +114,7 @@ urls.forEach((url) => {
 context(`Liquidity page on ${mobileViewPort}`, () => {
   beforeEach(() => {
     cy.visit(urls[1]);
-    cy.viewport(<Cypress.ViewportPreset>mobileViewPort);
+    cy.viewport(mobileViewPort);
   });
 
   it("should check navigation between Bridge and Liquidity pages", () => {
@@ -136,7 +136,7 @@ context(`Liquidity page on ${mobileViewPort}`, () => {
       6
     );
 
-    cy.viewport(<Cypress.ViewportPreset>desktopViewPort);
+    cy.viewport(desktopViewPort);
     cy.get("svg[data-testid='Mobile.Card.DropdownArrow']").should(
       "have.length",
       0
