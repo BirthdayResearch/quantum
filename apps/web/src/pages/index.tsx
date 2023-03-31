@@ -105,19 +105,17 @@ function Home() {
 export async function getServerSideProps() {
   const props = { isBridgeUp: true };
 
-  fetch(`${DEFICHAIN_WALLET_URL}/bridge/status`)
-    .then((res) => Promise.all([res.json(), res.status]))
-    .then(([data, statusCode]) => {
-      if (statusCode === 200) {
-        console.log(data);
-        props.isBridgeUp = data?.isUp;
-      } else {
-        Logging.error("Get bridge status API error.");
-      }
-    })
-    .catch((e) => {
-      Logging.error(`${e}`);
-    });
+  try {
+    const res = await fetch(`${DEFICHAIN_WALLET_URL}/bridge/status`);
+    const data = await res.json();
+    if (res.status === 200) {
+      props.isBridgeUp = data?.isUp;
+    } else {
+      Logging.error("Get bridge status API error.");
+    }
+  } catch (e) {
+    Logging.error(`${e}`);
+  }
 
   return { props };
 }
