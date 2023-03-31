@@ -69,20 +69,20 @@ function validateTransactionStatus(status: TransactionStatusType) {
   let showDefiscan = false;
 
   if (status === TransactionStatusType.FAILED) {
-    borderColor = "rgb(229, 69, 69)";
+    borderColor = "border-error";
     title = "Transaction failed";
     description =
       "We encountered an error while processing your transaction. Please try again after a few minutes.";
     showRetryButton = true;
   } else if (status === TransactionStatusType.REVERTED) {
-    borderColor = "rgb(217, 123, 1)";
+    borderColor = "border-warning";
     title = "Transaction reverted";
     description =
       "Something went wrong as the transaction was being processed. Please wait for the required confirmations to proceed with your transaction.";
     progressStatusText = "For EVM";
     showCloseButton = true;
   } else if (status === TransactionStatusType.CONFIRM) {
-    borderColor = "rgba(51, 51, 51, 0.5)";
+    borderColor = "border-dark-card-stroke";
     title = "Transaction confirmed";
     description = "Expect to receive your tokens in your wallet shortly.";
     progressStatusText = "Confirmed";
@@ -91,20 +91,14 @@ function validateTransactionStatus(status: TransactionStatusType) {
     showDefiscan = true;
   } else {
     // INITIAL
+    borderColor = "border-transparent";
     title = "Awaiting confirmation";
     description =
       "Your transaction is being processed. We recommend keeping your tab open to ensure you receive your funds. Please only close the tab after your DFI transaction ID is displayed.";
     progressStatusText = "For EVM";
   }
 
-  if (borderColor !== undefined) {
-    cy.findByTestId("txn-status-container").should(
-      "have.css",
-      "border-color",
-      borderColor
-    );
-  }
-
+  cy.findByTestId("txn-status-container").should("have.class", borderColor);
   cy.findByTestId("txn-status-title").should("contain.text", title);
   cy.findByTestId("txn-status-desc").should("contain.text", description);
   if (progressStatusText !== undefined) {
