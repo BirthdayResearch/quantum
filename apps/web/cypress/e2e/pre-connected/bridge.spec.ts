@@ -3,22 +3,7 @@
 import { Network } from "../../../src/types";
 
 beforeEach(() => {
-  cy.visit("http://localhost:3000/?network=Local", {
-    onBeforeLoad: (win) => {
-      let nextData: any;
-      Object.defineProperty(win, "__NEXT_DATA__", {
-        set(o) {
-          console.log("setting __NEXT_DATA__", o.props.pageProps);
-          // here is our change to modify the injected parsed data
-          o.props.pageProps.isBridgeUp = true;
-          nextData = o;
-        },
-        get() {
-          return nextData;
-        },
-      });
-    },
-  });
+  cy.visitBridgeHomePage();
 });
 
 context("QA-755 Pre-connected wallet - Bridge Form", () => {

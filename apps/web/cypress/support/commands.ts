@@ -37,6 +37,13 @@ declare global {
       getByTestID: (value: string, opts?: any) => Chainable<Element>;
 
       /**
+       * @description Visit default Bridge home page
+       * @param {isBridgeUp} boolean - Intercept bridge status for testing
+       * @example cy.connectMetaMaskWallet(true)
+       */
+      visitBridgeHomePage: (isBridgeUp?: boolean) => Chainable<Element>;
+
+      /**
        * @description Connect to MetaMask Wallet
        * @example cy.connectMetaMaskWallet()
        */
@@ -261,6 +268,25 @@ export interface UtilityDataI {
   secondaryButtonLabel?: string;
   clickButton?: UtilityButtonType;
 }
+
+Cypress.Commands.add("visitBridgeHomePage", (isBridgeUp: boolean = true) => {
+  cy.visit("http://localhost:3000/?network=Local", {
+    onBeforeLoad: (win) => {
+      let nextData: any;
+      Object.defineProperty(win, "__NEXT_DATA__", {
+        set(o) {
+          console.log("setting __NEXT_DATA__", o.props.pageProps);
+          // here is our change to modify the injected parsed data
+          o.props.pageProps.isBridgeUp = isBridgeUp;
+          nextData = o;
+        },
+        get() {
+          return nextData;
+        },
+      });
+    },
+  });
+});
 
 Cypress.Commands.add("connectMetaMaskWallet", () => {
   cy.disconnectMetamaskWalletFromDapp(); // in case it's not fully disconnected, else cy.acceptMetamaskAccess() will throw error
