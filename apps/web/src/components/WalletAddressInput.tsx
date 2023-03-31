@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import * as ethers from "ethers";
-import { useAccount, useNetwork } from "wagmi";
+import { useAccount } from "wagmi";
 import { FiClipboard } from "react-icons/fi";
 import { IoCloseCircle } from "react-icons/io5";
 import { HiLockClosed } from "react-icons/hi";
@@ -82,7 +82,6 @@ export default function WalletAddressInput({
   const [copiedFromClipboard, setCopiedFromClipboard] = useState(false);
 
   const { isConnected, address } = useAccount();
-  const { chain } = useNetwork();
   const { networkEnv } = useNetworkEnvironmentContext();
   const { isMobile } = useResponsive();
   useAutoResizeTextArea(textAreaRef.current, [addressInput, placeholder]);
