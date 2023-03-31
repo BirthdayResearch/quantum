@@ -92,8 +92,15 @@ describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
       formData.destinationAddress
     );
 
-    // test reset form
-    cy.verifyResetFormFunctionality();
+    // verify locked and test reset form
+    cy.verifyLockedAndResetForm(
+      formData.sourceNetwork,
+      formData.destinationNetwork,
+      formData.tokenPair,
+      formData.amount,
+      // formData.destinationAddress
+      connectedWalletAddress
+    );
   });
 
   it("2. Verify form setup DFC -> ETH - Transfer not verified (not sending any token)", () => {
@@ -232,7 +239,7 @@ describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
     });
   });
 
-  it("2. Verify form setup DFC -> ETH - Success", () => {
+  it("3. Verify form setup DFC -> ETH - Success", () => {
     // bridge form setup
     cy.setupBridgeForm(
       true,

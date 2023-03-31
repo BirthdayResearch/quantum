@@ -1,8 +1,7 @@
-import { Erc20Token, Network } from "../../../src/types";
+import { Erc20Token, Network, UtilityButtonType } from "../../../src/types";
 import BigNumber from "bignumber.js";
 import {
   CONFIRMATIONS_BLOCK_TOTAL,
-  DISCLAIMER_MESSAGE,
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../../../src/constants";
 import { HttpStatusCode } from "axios";
@@ -20,14 +19,6 @@ const formData = {
   tokenPair: "USDT" as Erc20Token,
   amount: "0.001",
   destinationAddress: "bcrt1qamyk5n7ljrsx37d7hast5t9c7kczjhlx2etysl",
-};
-
-const utilityDisplay = {
-  title: "Are you sure you want to leave your transaction?",
-  message:
-    "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
-  primaryButtonLabel: "Leave transaction",
-  secondaryButtonLabel: "Go back",
 };
 
 function waitUntilEvmBlocksConfirm(): void {
@@ -59,7 +50,7 @@ function waitUntilBlocksConfirm(): void {
 function validateTransactionStatus(status: TransactionStatusType) {
   cy.findByTestId("txn-status-container").should("be.visible");
 
-  let borderColor = undefined;
+  let borderColor;
   let title;
   let description;
   let progressStatusText = undefined;
@@ -138,65 +129,8 @@ function validateTransactionStatus(status: TransactionStatusType) {
   }
 }
 
-function validateConfirmTransferModal(tokenPair: Erc20Token, amount: string) {
-  cy.getTokenPairs(tokenPair).then((pair) => {
-    // check review transaction modal
-    cy.findByTestId("review-modal-title").should(
-      "contain.text",
-      "Review transaction"
-    );
-    cy.findByTestId("from-source-network-name").should(
-      "contain.text",
-      "Source (Ethereum)"
-    );
-    cy.findByTestId("from-source-amount").should("contain.text", `-${amount}`);
-    cy.findByTestId("from-source-token-icon").should(
-      "have.attr",
-      "src",
-      `/tokens/${pair.tokenA}.svg`
-    );
-    cy.findByTestId("from-source-token-name").should(
-      "contain.text",
-      pair.tokenA
-    );
-
-    cy.findByTestId("to-destination-network-name").should(
-      "contain.text",
-      "Destination (DeFiChain)"
-    );
-    cy.findByTestId("to-destination-amount").should("contain.text", amount);
-    cy.findByTestId("to-destination-token-icon").should(
-      "have.attr",
-      "src",
-      `/tokens/${pair.tokenB}.svg`
-    );
-    cy.findByTestId("to-destination-token-name").should(
-      "contain.text",
-      pair.tokenB
-    );
-
-    cy.findByTestId("disclaimer-msg").should(
-      "contain.text",
-      DISCLAIMER_MESSAGE
-    );
-    cy.findByTestId("fees-amount")
-      .invoke("text")
-      .then((text) => {
-        const split = text.split(" ");
-        const value = split[0];
-        const suffix = split[1];
-        expect(value).to.equal("0");
-        expect(suffix).to.equal(pair.tokenA);
-      });
-
-    cy.findByTestId("confirm-transfer-btn").should(
-      "contain.text",
-      "Confirm transfer on wallet"
-    );
-  });
-}
-
 function initTransaction(
+  connectedWalletAddress: string,
   confirmTransaction: boolean = true,
   confirmMetamask: boolean = true
 ) {
@@ -212,7 +146,15 @@ function initTransaction(
   // wait for contract
   cy.wait(3000);
 
-  validateConfirmTransferModal(formData.tokenPair, formData.amount);
+  cy.validateConfirmTransferModal(
+    formData.sourceNetwork,
+    formData.tokenPair,
+    formData.amount,
+    formData.amount,
+    "0",
+    connectedWalletAddress,
+    formData.destinationAddress
+  );
 
   if (!confirmTransaction) {
     return;
@@ -273,38 +215,26 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
   });
 
   it("should be able to verify locked form and reset form", () => {
-    initTransaction(false);
-    cy.findByTestId("review-modal-close-icon").click();
-
-    // verify utility modal
-    cy.validateUtilityModal(
-      utilityDisplay.title,
-      utilityDisplay.message,
-      utilityDisplay.primaryButtonLabel,
-      utilityDisplay.secondaryButtonLabel
+    // setup form
+    cy.setupBridgeForm(
+      true,
+      formData.sourceNetwork,
+      formData.tokenPair,
+      formData.amount,
+      formData.destinationAddress
     );
-    cy.findByTestId("utility-primary-btn").click();
-
-    cy.validateLockedForm(
+    // verify locked and test reset form
+    cy.verifyLockedAndResetForm(
       formData.sourceNetwork,
       formData.destinationNetwork,
       formData.tokenPair,
       formData.amount,
       formData.destinationAddress
     );
-    cy.findByTestId("reset-btn").click();
-    cy.validateUtilityModal(
-      "Are you sure you want to reset form?",
-      "Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
-      "Reset form",
-      "Go back"
-    );
-    cy.findByTestId("utility-primary-btn").click();
-    cy.validateFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
   });
 
   it("should be able to reject transaction and retry", () => {
-    initTransaction(true, false);
+    initTransaction(connectedWalletAddress, true, false);
     // reject metamask
     cy.rejectMetamaskTransaction();
 
@@ -322,22 +252,14 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       .should("contain.text", "Close")
       .click();
 
-    cy.validateUtilityModal(
-      utilityDisplay.title,
-      utilityDisplay.message,
-      utilityDisplay.primaryButtonLabel,
-      utilityDisplay.secondaryButtonLabel
-    );
-    // close utility modal and try close using icon
-    cy.findByTestId("utility-secondary-btn").click();
-    cy.findByTestId("transaction-err-modal-close-icon").click();
-    cy.validateUtilityModal(
-      utilityDisplay.title,
-      utilityDisplay.message,
-      utilityDisplay.primaryButtonLabel,
-      utilityDisplay.secondaryButtonLabel
-    );
-    cy.findByTestId("utility-primary-btn").click();
+    cy.validateUtilityModal({
+      title: "Are you sure you want to leave your transaction?",
+      message:
+        "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      primaryButtonLabel: "Leave transaction",
+      secondaryButtonLabel: "Go back",
+      clickButton: UtilityButtonType.PRIMARY,
+    });
 
     cy.validateLockedForm(
       formData.sourceNetwork,
@@ -351,7 +273,15 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.findByTestId("transfer-btn").click();
     // wait for contract
     cy.wait(3000);
-    validateConfirmTransferModal(formData.tokenPair, formData.amount);
+    cy.validateConfirmTransferModal(
+      formData.sourceNetwork,
+      formData.tokenPair,
+      formData.amount,
+      formData.amount,
+      "0",
+      connectedWalletAddress,
+      formData.destinationAddress
+    );
     cy.findByTestId("confirm-transfer-btn").click();
 
     // check confirmation modal
@@ -369,7 +299,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
   });
 
   it("should be able to verify transaction status - failed", () => {
-    initTransaction();
+    initTransaction(connectedWalletAddress);
     cy.intercept("POST", "**/ethereum/handleTransaction", {
       statusCode: HttpStatusCode.BadRequest,
       body: {
@@ -382,7 +312,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
   });
 
   it("should be able to verify transaction status - reverted", () => {
-    initTransaction();
+    initTransaction(connectedWalletAddress);
     cy.intercept("POST", "**/ethereum/handleTransaction", {
       statusCode: HttpStatusCode.BadRequest,
       body: {
@@ -395,7 +325,7 @@ describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
   });
 
   it("should be able to bridge USDT", () => {
-    initTransaction();
+    initTransaction(connectedWalletAddress);
     validateTransactionStatus(TransactionStatusType.INITIAL);
     // verify form is not able to proceed another transaction
     cy.findByTestId("transfer-btn")
