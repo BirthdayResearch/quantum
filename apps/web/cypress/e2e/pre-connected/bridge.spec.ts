@@ -14,28 +14,13 @@ function interceptHotWalletBalance(
 }
 
 beforeEach(() => {
-  cy.visit("http://localhost:3000/?network=Local", {
-    onBeforeLoad: (win) => {
-      let nextData: any;
-      Object.defineProperty(win, "__NEXT_DATA__", {
-        set(o) {
-          console.log("setting __NEXT_DATA__", o.props.pageProps);
-          // here is our change to modify the injected parsed data
-          o.props.pageProps.isBridgeUp = true;
-          nextData = o;
-        },
-        get() {
-          return nextData;
-        },
-      });
-    },
-  });
+  cy.visitBridgeHomePage();
 });
 
 context("QA-755-5~16 Pre-connected wallet - Bridge Form", () => {
   const source = Network.Ethereum;
   const destination = Network.DeFiChain;
-  const currentPair = "WBTC";
+  const currentPair = "DFI";
 
   it("1: Verify the Bridge form is visible", () => {
     cy.findByTestId("bridge-form").should("be.visible");

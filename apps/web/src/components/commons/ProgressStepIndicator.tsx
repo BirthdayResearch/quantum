@@ -29,9 +29,14 @@ export default function ProgressStepIndicator({
         "after:absolute after:bg-valid after:h-[1px] after:w-1/5 after:top-1/2 after:-translate-y(1/2) after:left-0 after:ease-in after:duration-300",
         getProgressWidth()
       )}
+      data-testid="erc-transfer-progress"
     >
-      {steps.map(({ step, label }) => (
-        <div key={step} className="relative z-[1]">
+      {steps.map(({ step, label }, idx) => (
+        <div
+          key={step}
+          className="relative z-[1]"
+          data-testid={`erc-transfer-step-${idx}`}
+        >
           {/* Step node */}
           <div
             className={clsx(
@@ -39,8 +44,10 @@ export default function ProgressStepIndicator({
               activeStep > step ? "bg-valid" : "bg-dark-100",
               activeStep >= step ? "border-valid" : "border-dark-500"
             )}
+            data-testid="step-node"
           >
             <span
+              data-testid="step-number"
               className={clsx(
                 "font-bold tracking-wide",
                 activeStep > step ? "text-dark-00" : "text-valid"
@@ -53,6 +60,7 @@ export default function ProgressStepIndicator({
           {/* Step label */}
           <div className="absolute top-7 left-1/2 -translate-x-1/2">
             <span
+              data-testid="step-label"
               className={clsx(
                 "text-xs",
                 activeStep === step ? "text-dark-1000" : "text-dark-500"

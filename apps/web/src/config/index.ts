@@ -50,11 +50,11 @@ export const LOCAL_HARDHAT_CONFIG: ContractContextI = {
   },
   HotWalletAddress: "bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d",
   Erc20Tokens: {
-    WBTC: { address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9" },
-    USDT: { address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0" },
-    USDC: { address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9" },
+    WBTC: { address: "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9" },
+    USDT: { address: "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9" },
+    USDC: { address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707" },
     ETH: { address: "0x0000000000000000000000000000000000000000" },
-    EUROC: { address: "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707" },
-    DFI: { address: "0x0165878A594ca255338adfa4d48449f69242Eb8F" },
+    EUROC: { address: "0x0165878A594ca255338adfa4d48449f69242Eb8F" },
+    DFI: { address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0" },
   },
 };

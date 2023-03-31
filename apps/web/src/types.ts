@@ -118,3 +118,8 @@ export interface SignedClaim {
   nonce: number;
   deadline: number;
 }
+
+export enum UtilityButtonType {
+  PRIMARY = "primary",
+  SECONDARY = "secondary",
+}
