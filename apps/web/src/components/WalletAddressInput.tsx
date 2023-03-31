@@ -15,8 +15,6 @@ import {
 } from "@waveshq/walletkit-core";
 import { Network } from "types";
 import Tooltip from "./commons/Tooltip";
-import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
-import { ETHEREUM_MAINNET_ID } from "../constants";
 import MetaMaskIconSmall from "./icons/MetaMaskIconSmall";
 
 interface Props {
@@ -195,14 +193,6 @@ export default function WalletAddressInput({
         </span>
         {/*  Network environment */}
 
-        {chain?.id !== ETHEREUM_MAINNET_ID &&
-          blockchain === Network.DeFiChain &&
-          isPrimary && (
-            <EnvironmentNetworkSwitch
-              onChange={() => onAddressInputChange("")}
-              disabled={chain !== undefined}
-            />
-          )}
         <div
           className={clsx(
             "absolute right-0 rounded bg-valid px-2 py-1 text-2xs text-dark-00  transition duration-300 lg:text-xs",
