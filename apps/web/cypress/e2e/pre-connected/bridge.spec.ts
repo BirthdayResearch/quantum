@@ -49,6 +49,8 @@ context("QA-755-5~16 Pre-connected wallet - Bridge Form", () => {
     cy.findByTestId("transfer-btn")
       .should("be.visible")
       .contains("Connect wallet");
+
+    cy.findByTestId("transaction-interrupted-msg").should("not.exist");
   });
 
   it("3: Verify amount input functionality", () => {

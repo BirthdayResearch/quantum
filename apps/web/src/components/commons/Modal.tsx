@@ -33,6 +33,7 @@ export default function Modal({
             "relative w-full h-full dark-card-bg-image border-dark-card-stroke backdrop-blur-[18px] m-auto px-6 pt-8 pb-12",
             "md:w-[626px] md:h-auto md:top-[calc(50%+30px)] md:-translate-y-1/2 md:rounded-xl md:border md:p-8 overflow-auto"
           )}
+          data-testid={`${testId}-modal`}
         >
           <Dialog.Title
             as="div"
