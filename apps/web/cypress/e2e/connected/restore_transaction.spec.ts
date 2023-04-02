@@ -1,22 +1,7 @@
 // TODO: Mock wallet data
 
 beforeEach(() => {
-  cy.visit("http://localhost:3000/?network=Local", {
-    onBeforeLoad: (win) => {
-      let nextData: any;
-      Object.defineProperty(win, "__NEXT_DATA__", {
-        set(o) {
-          console.log("setting __NEXT_DATA__", o.props.pageProps);
-          // here is our change to modify the injected parsed data
-          o.props.pageProps.isBridgeUp = true;
-          nextData = o;
-        },
-        get() {
-          return nextData;
-        },
-      });
-    },
-  });
+  cy.visitBridgeHomePage();
   cy.connectMetaMaskWallet();
 });
 
@@ -64,7 +49,7 @@ context("QA-769-5 Connected wallet - Restore Lost Session", () => {
     // hidden when amount is input
     cy.findByTestId("quick-input-card-set-amount").type("0.001");
     cy.findByTestId("transaction-interrupted-msg").should("not.exist");
-    cy.findByTestId("quick-input-card-set-amount").clear();
+    cy.findByTestId("quick-input-card-clear-icon").click();
     cy.findByTestId("transaction-interrupted-msg").should("be.visible");
 
     // hidden when is DFC > EVM

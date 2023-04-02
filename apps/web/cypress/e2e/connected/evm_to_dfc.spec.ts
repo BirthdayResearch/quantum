@@ -1,10 +1,11 @@
-import { Erc20Token, Network, UtilityButtonType } from "../../../src/types";
+import { Erc20Token, Network } from "../../../src/types";
 import BigNumber from "bignumber.js";
 import {
   CONFIRMATIONS_BLOCK_TOTAL,
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../../../src/constants";
 import { HttpStatusCode } from "axios";
+import { UtilityButtonType } from "../../support/utils";
 
 enum TransactionStatusType {
   INITIAL,

@@ -27,10 +27,7 @@ export default function Modal({
       open={isOpen}
       onClose={onClose ?? (() => {})}
     >
-      <Dialog.Panel
-        className="transform transition-all fixed inset-0 bg-dark-00 bg-opacity-70 backdrop-blur-[18px] overflow-auto"
-        data-testid={`${testId}-modal`}
-      >
+      <Dialog.Panel className="transform transition-all fixed inset-0 bg-dark-00 bg-opacity-70 backdrop-blur-[18px] overflow-auto">
         <div
           className={clsx(
             "relative w-full h-full dark-card-bg-image border-dark-card-stroke backdrop-blur-[18px] m-auto px-6 pt-8 pb-12",

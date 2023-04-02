@@ -1,6 +1,11 @@
 import "@testing-library/cypress/add-commands";
-import { Erc20Token, Network, UtilityButtonType } from "../../src/types";
+import { Erc20Token, Network } from "../../src/types";
 import { DISCLAIMER_MESSAGE } from "../../src/constants";
+import {
+  LOCAL_BASE_URL,
+  MaintenanceSocialLinks,
+  UtilityButtonType,
+} from "./utils";
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -248,6 +253,42 @@ declare global {
         connectedWalletAddress?: string,
         dfcAddress?: string
       ) => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify switch source button on hover
+       * @param {boolean} isMetamaskConnected - Is Metamask wallet connected
+       * @example
+       * cy.verifyFormHover(true);
+       */
+      verifyFormHover: (isMetamaskConnected: boolean) => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify social links
+       * @example
+       * cy.verifySocialLinks();
+       */
+      verifySocialLinks: () => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify error 404 page when invalid url is entered
+       * @example
+       * cy.verify404Page();
+       */
+      verify404Page: () => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify maintenance page
+       * @example
+       * cy.verifyMaintenancePage();
+       */
+      verifyMaintenancePage: () => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify hot wallet balance
+       * @example
+       * cy.verifyHotWalletBalance();
+       */
+      verifyHotWalletBalance: () => Chainable<Element>;
     }
   }
 }
@@ -270,7 +311,7 @@ export interface UtilityDataI {
 }
 
 Cypress.Commands.add("visitBridgeHomePage", (isBridgeUp: boolean = true) => {
-  cy.visit("http://localhost:3000/?network=Local", {
+  cy.visit(`${LOCAL_BASE_URL}?network=Local`, {
     onBeforeLoad: (win) => {
       let nextData: any;
       Object.defineProperty(win, "__NEXT_DATA__", {
@@ -672,6 +713,7 @@ Cypress.Commands.add(
   ) => {
     // Open the review transaction modal and verify its visibility
     cy.findByTestId("transfer-btn").click();
+    cy.wait(2000);
     cy.findByTestId("transaction-review-modal").should("exist");
 
     // Close the review transaction modal and open the utility modal
@@ -880,6 +922,206 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add("verifyFormHover", (isMetamaskConnected: boolean) => {
+  // verify switch source before hover
+  cy.findByTestId("swap-btn-arrow-down").should("be.visible");
+  cy.findByTestId("swap-btn-switch").should("be.hidden");
+
+  // hover switch source
+  cy.findByTestId("transfer-flow-swap-btn").realHover();
+
+  // verify switch source on hover
+  cy.findByTestId("swap-btn-arrow-down").should("be.hidden");
+  cy.findByTestId("swap-btn-switch").should("be.visible");
+  cy.findByTestId("transfer-flow-swap-tooltip-content")
+    .should("be.visible")
+    .should("contain.text", "Switch source");
+
+  // hover fees
+  cy.findByTestId("fees-tooltip-icon").realHover();
+  cy.findByTestId("fees-tooltip-content")
+    .should("be.visible")
+    .should(
+      "contain.text",
+      "Fees to cover the cost of transactions on DeFiChain and Ethereum networks. For more information, visit our user guide."
+    );
+
+  // hover paste icon
+  cy.findByTestId("receiver-address-paste-icon-tooltip").realHover();
+  if (isMetamaskConnected) {
+    cy.findByTestId("receiver-address-paste-icon-tooltip-content")
+      .should("be.visible")
+      .should("contain.text", "Paste from clipboard");
+  } else {
+    // disabled, should not show anything
+    cy.findByTestId("receiver-address-paste-icon-tooltip-content").should(
+      "not.exist"
+    );
+  }
+
+  // hover amount input percentage card
+  const amountArray = ["25%", "50%", "75%", "Max"];
+  amountArray.forEach((amountType) => {
+    const viewId = `quick-input-card-set-amount-${amountType}`;
+    cy.findByTestId(viewId).realHover();
+    cy.findByTestId(viewId)
+      .should("have.css", "background-image")
+      .and(
+        "contain",
+        "linear-gradient(90deg, rgb(255, 0, 255) 0%, rgb(236, 12, 141) 100.04%)"
+      );
+  });
+});
+
+Cypress.Commands.add("verifySocialLinks", () => {
+  const BirthdayResearchSocialLinks = [
+    { testId: "twitter-br", url: "https://twitter.com/BirthdayDev" },
+    { testId: "medium-br", url: "https://medium.com/@birthdayresearch" },
+    {
+      testId: "gitHub-br",
+      url: "https://github.com/BirthdayResearch/quantum-app",
+    },
+  ];
+
+  const DeFiChainSocialLinks = [
+    { testId: "twitter-dfc", url: "https://twitter.com/defichain" },
+    { testId: "reddit-dfc", url: "https://www.reddit.com/r/defiblockchain" },
+    {
+      testId: "gitHub-dfc",
+      url: "https://github.com/DeFiCh",
+    },
+  ];
+
+  const QuantumVersionQuery = "http://localhost:5741/version";
+
+  // header banner
+  cy.findByTestId("header-banner")
+    .should("be.visible")
+    .contains(
+      "Make sure you are visiting https://quantumbridge.app – check the URL correctly."
+    );
+
+  // header banner link
+  cy.findByTestId("header-banner-content-link")
+    .should("have.attr", "href")
+    .and("include", "https://quantumbridge.app");
+
+  // footer logo
+  cy.findByTestId("footer").should("be.visible");
+  cy.findByTestId("footer-quantum-logo").should("be.visible");
+
+  // verify the quantum version
+  cy.request(QuantumVersionQuery).then((response) => {
+    cy.findByTestId("footer-quantum-version")
+      .should("be.visible")
+      .contains(`Version ${response.body.v}`);
+  });
+
+  // verify footer BR socials links
+  BirthdayResearchSocialLinks.forEach((BirthdayResearchSocialLink) => {
+    cy.verifyExternalLinks(BirthdayResearchSocialLink);
+  });
+
+  // verify footer DeFiChain socials link
+  DeFiChainSocialLinks.forEach((link) => {
+    cy.verifyExternalLinks(link);
+  });
+});
+
+Cypress.Commands.add("verify404Page", () => {
+  cy.request({ url: "/2", failOnStatusCode: false })
+    .its("status")
+    .should("equal", 404);
+  cy.visit("/random-url", { failOnStatusCode: false });
+  cy.contains("h1", "Page Not Found");
+  cy.findByTestId("return-home-btn")
+    .should("be.visible")
+    .contains("Return to home")
+    .click();
+  cy.url().should("equal", LOCAL_BASE_URL);
+});
+
+Cypress.Commands.add("verifyMaintenancePage", () => {
+  cy.visitBridgeHomePage(false);
+  cy.findByTestId("bridge-form").should("not.exist");
+  cy.findByTestId("maintenance").should("exist");
+  cy.findByTestId("maintenance-status").contains("SCHEDULED MAINTENANCE");
+  cy.findByTestId("maintenance-title").contains("Bridge is currently closed");
+
+  // verify socials link
+  MaintenanceSocialLinks.forEach((link) => {
+    cy.findByTestId(link.testId).should("contain.text", link.label);
+    cy.verifyExternalLinks({
+      testId: link.testId,
+      url: link.href,
+    });
+  });
+});
+
+Cypress.Commands.add("verifyHotWalletBalance", () => {
+  function interceptHotWalletBalance(
+    destinationNetwork: Network,
+    token: Erc20Token,
+    amount: number
+  ) {
+    const isEthereumDestination = destinationNetwork === Network.Ethereum;
+    const tokenSymbol =
+      isEthereumDestination && token === "WBTC" ? "BTC" : token;
+    const endpoint = isEthereumDestination ? "ethereum" : "defichain/wallet";
+    cy.intercept(`**/${endpoint}/balance/${tokenSymbol}`, [amount]);
+  }
+
+  function verifyBalanceSufficient(isSufficient: boolean) {
+    if (isSufficient) {
+      cy.findByTestId("transfer-btn").should("be.enabled");
+      cy.findByTestId("error-insufficient-balance").should("not.exist");
+    } else {
+      cy.findByTestId("transfer-btn").should("be.disabled");
+      cy.findByTestId("error-insufficient-balance")
+        .should("be.visible")
+        .should(
+          "contain.text",
+          "Unable to process due to liquidity cap, please try again in a few hours"
+        );
+    }
+  }
+
+  // DFC HW - empty
+  interceptHotWalletBalance(Network.DeFiChain, "DFI", 0);
+  verifyBalanceSufficient(false);
+
+  // DFC HW - 10 balance
+  cy.findByTestId("token-pair-dropdown-btn").click();
+  cy.findByTestId(`token-pair-ETH`).click();
+  interceptHotWalletBalance(Network.DeFiChain, "ETH", 10);
+  verifyBalanceSufficient(true);
+
+  // Amount input 20
+  cy.findByTestId("quick-input-card-set-amount").type("20");
+  verifyBalanceSufficient(false);
+  // Clear input
+  cy.findByTestId("quick-input-card-clear-icon").click();
+  verifyBalanceSufficient(true);
+
+  // EVM HW - empty
+  cy.findByTestId("transfer-flow-swap-btn").click();
+  interceptHotWalletBalance(Network.Ethereum, "ETH", 0);
+  verifyBalanceSufficient(false);
+
+  // EVM HW - 50 balance
+  cy.findByTestId("token-pair-dropdown-btn").click();
+  cy.findByTestId(`token-pair-dUSDT`).click();
+  interceptHotWalletBalance(Network.Ethereum, "USDT", 50);
+  verifyBalanceSufficient(true);
+
+  // Amount input 51
+  cy.findByTestId("quick-input-card-set-amount").type("51");
+  verifyBalanceSufficient(false);
+  // Clear input
+  cy.findByTestId("quick-input-card-clear-icon").click();
+  verifyBalanceSufficient(true);
+});
 
 // Helper function to swap pairs
 function swapTokenPositions(

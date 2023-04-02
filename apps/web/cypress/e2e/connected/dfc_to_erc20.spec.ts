@@ -254,7 +254,6 @@ describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
     cy.getTokenPairs(formData.tokenPair).then((pair) => {
       // verify erc-transfer-step-one
       cy.findByTestId("erc-transfer-procedure").should("be.visible");
-      cy.findByTestId("erc-transfer-procedure").should("be.visible");
       cy.findByTestId("erc-transfer-progress").should("be.visible");
 
       // verify step 1
