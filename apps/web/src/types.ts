@@ -98,6 +98,7 @@ interface ContractConfigI {
 export interface ContractContextI {
   EthereumRpcUrl: string;
   ExplorerURL: string;
+  HotWalletAddress: string;
   BridgeV1: ContractConfigI;
   Erc20Tokens: Record<Erc20Token, ContractConfigI>;
 }
@@ -115,4 +116,13 @@ export interface SignedClaim {
   signature: string;
   nonce: number;
   deadline: number;
+}
+
+export interface BridgeAnnouncement {
+  id: string;
+  lang: {
+    en: string;
+  };
+  version: string;
+  url?: string;
 }
