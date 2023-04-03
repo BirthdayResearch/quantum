@@ -12,6 +12,7 @@ export function appConfig() {
       transferFee: process.env.DFC_FEE_PERCENTAGE,
       dustUTXO: process.env.DEFICHAIN_DUST_UTXO,
       supportedTokens: process.env.SUPPORTED_DFC_TOKENS,
+      dfcReservedAmt: process.env.DEFICHAIN_RESERVED_AMT,
     },
     ethereum: {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
@@ -29,6 +30,12 @@ export function appConfig() {
         },
         [SupportedEVMTokenSymbols.WBTC]: {
           address: process.env.WBTC_ADDRESS,
+        },
+        [SupportedEVMTokenSymbols.EUROC]: {
+          address: process.env.EUROC_ADDRESS,
+        },
+        [SupportedEVMTokenSymbols.DFI]: {
+          address: process.env.DFI_ADDRESS,
         },
       },
       ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
@@ -61,6 +68,8 @@ export enum SupportedEVMTokenSymbols {
   USDT = 'USDT',
   WBTC = 'WBTC',
   ETH = 'ETH',
+  EUROC = 'EUROC',
+  DFI = 'DFI',
 }
 export enum SupportedDFCTokenSymbols {
   USDC = 'USDC',
@@ -68,4 +77,5 @@ export enum SupportedDFCTokenSymbols {
   BTC = 'BTC',
   ETH = 'ETH',
   DFI = 'DFI',
+  EUROC = 'EUROC',
 }

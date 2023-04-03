@@ -8,7 +8,13 @@ import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
 import { useNetworkContext } from "@contexts/NetworkContext";
 import { useTokensContext } from "@contexts/TokensContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import { Network, NetworkOptionsI, SelectionType, TokensI } from "types";
+import {
+  Network,
+  NetworkOptionsI,
+  SelectionType,
+  TokenBalances,
+  TokensI,
+} from "types";
 import SwitchIcon from "@components/icons/SwitchIcon";
 import UtilityModal, {
   ModalConfigType,
@@ -138,29 +144,50 @@ export default function BridgeForm({
 
   const { getBalance } = useCheckBalance();
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true);
-  const [tokenBalances, setTokenBalances] = useState({});
+  const [tokenBalances, setTokenBalances] = useState<TokenBalances | {}>({});
+  const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
 
-  const checkBalance = debounce(async () => {
+  async function getBalanceFn(): Promise<TokenBalances | {}> {
     const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
     const balance = await getBalance(selectedTokensA.tokenB.symbol);
-    setTokenBalances({
+    const updatedBalances = {
       ...tokenBalances,
       [key]: balance,
-    });
+    };
+
+    setTokenBalances(updatedBalances);
+    return updatedBalances;
+  }
+
+  const checkBalance = debounce(async () => {
+    await getBalanceFn();
   }, 200);
 
-  useEffect(() => {
+  async function verifySufficientHWBalance(
+    refetch?: boolean
+  ): Promise<boolean | undefined> {
     const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
-    const balance = tokenBalances[key];
-    if (balance === null) {
+    const balance = (refetch ? await getBalanceFn() : tokenBalances)[key];
+
+    if (balance === null || new BigNumber(balance).lte(0)) {
       setIsBalanceSufficient(false);
+      return false;
     }
+
     if (balance) {
       const isSufficientBalance = new BigNumber(balance).isGreaterThanOrEqualTo(
         amount !== "" ? amount : 0
       );
+
       setIsBalanceSufficient(isSufficientBalance);
+      return isSufficientBalance;
     }
+
+    return undefined;
+  }
+
+  useEffect(() => {
+    verifySufficientHWBalance();
   }, [selectedNetworkA, selectedTokensA, networkEnv, tokenBalances, amount]);
 
   useEffect(() => {
@@ -207,33 +234,38 @@ export default function BridgeForm({
   };
 
   const onTransferTokens = async (): Promise<void> => {
-    if (isSendingFromEthNetwork) {
-      // Revalidate entered amount after refetching EVM balance
-      const refetchedEvmBalance = await refetchEvmBalance();
-      if (
-        validateAmountInput(
-          amount,
-          new BigNumber(refetchedEvmBalance.data?.formatted ?? 0)
-        )
-      ) {
-        return;
+    setIsVerifyingTransaction(true);
+    const isBalanceSufficientVerified = await verifySufficientHWBalance(true);
+    if (isBalanceSufficientVerified) {
+      if (isSendingFromEthNetwork) {
+        // Revalidate entered amount after refetching EVM balance
+        const refetchedEvmBalance = await refetchEvmBalance();
+        if (
+          validateAmountInput(
+            amount,
+            new BigNumber(refetchedEvmBalance.data?.formatted ?? 0)
+          )
+        ) {
+          setIsVerifyingTransaction(false);
+          return;
+        }
       }
+      if (!hasUnconfirmedTxn) {
+        const newTxn = {
+          selectedNetworkA,
+          selectedTokensA,
+          selectedNetworkB,
+          selectedTokensB,
+          networkEnv,
+          amount,
+          fromAddress,
+          toAddress: addressInput,
+        };
+        setStorage("txn-form", JSON.stringify(newTxn));
+      }
+      setShowConfirmModal(true);
     }
-
-    if (!hasUnconfirmedTxn) {
-      const newTxn = {
-        selectedNetworkA,
-        selectedTokensA,
-        selectedNetworkB,
-        selectedTokensB,
-        networkEnv,
-        amount,
-        fromAddress,
-        toAddress: addressInput,
-      };
-      setStorage("txn-form", JSON.stringify(newTxn));
-    }
-    setShowConfirmModal(true);
+    setIsVerifyingTransaction(false);
   };
 
   const onResetTransferForm = () => {
@@ -518,7 +550,10 @@ export default function BridgeForm({
         </span>
         <NumericFormat
           className="max-w-[70%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-lg lg:leading-6 font-bold"
-          value={BigNumber(new BigNumber(amount || 0).minus(fee))}
+          value={BigNumber.max(
+            new BigNumber(amount || 0).minus(fee),
+            0
+          ).toFixed(6, BigNumber.ROUND_FLOOR)}
           thousandSeparator
           suffix={` ${selectedTokensB.tokenA.name}`}
           trimTrailingZeros
@@ -530,7 +565,7 @@ export default function BridgeForm({
             <ActionButton
               testId="transfer-btn"
               label={getActionBtnLabel()}
-              isLoading={hasPendingTxn}
+              isLoading={hasPendingTxn || isVerifyingTransaction}
               disabled={
                 (isConnected && !isFormValid) ||
                 hasPendingTxn ||
@@ -577,7 +612,8 @@ export default function BridgeForm({
 
         {!isBalanceSufficient && !hasPendingTxn && (
           <div className={clsx("pt-3", warningTextStyle)}>
-            Unable to process transaction. <div>Please try again later</div>
+            Unable to process due to liquidity cap, please try again in a few
+            hours
           </div>
         )}
       </div>

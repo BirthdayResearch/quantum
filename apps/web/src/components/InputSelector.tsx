@@ -118,8 +118,12 @@ function TokenOptions({ options }: { options: TokensI[] }) {
               <Divider />
               <div
                 className={clsx(
-                  "my-1 px-5 py-3 lg:my-2 lg:px-6 lg:py-3",
-                  active && "bg-dark-gradient-1"
+                  "px-5 lg:px-6",
+                  active && "bg-dark-gradient-1",
+                  {
+                    "py-4 lg:py-5": option.tokenA.symbol !== "DFI",
+                    "py-3 lg:py-4": option.tokenA.symbol === "DFI",
+                  }
                 )}
               >
                 {!options ? (
@@ -135,8 +139,13 @@ function TokenOptions({ options }: { options: TokensI[] }) {
                         src={option.tokenA.icon}
                         alt={option.tokenA.name}
                       />
-                      <span className="ml-2 truncate text-base text-dark-1000">
+                      <span className="ml-2 text-base text-dark-1000">
                         {option.tokenA.name}
+                        {option.tokenA.subtitle !== undefined && (
+                          <span className="block text-xs text-dark-700">
+                            {option.tokenA.subtitle}
+                          </span>
+                        )}
                       </span>
                     </div>
                     <div className="flex w-2/12 flex-row items-center justify-center">
@@ -154,8 +163,13 @@ function TokenOptions({ options }: { options: TokensI[] }) {
                         src={option.tokenB.icon}
                         alt={option.tokenB.name}
                       />
-                      <span className="ml-2 truncate text-base text-dark-900">
+                      <span className="ml-2 text-base text-dark-900">
                         {option.tokenB.name}
+                        {option.tokenB.subtitle !== undefined && (
+                          <span className="block text-xs text-dark-700">
+                            {option.tokenB.subtitle}
+                          </span>
+                        )}
                       </span>
                     </div>
                     <div className="flex w-2/12 flex-row items-center justify-end">

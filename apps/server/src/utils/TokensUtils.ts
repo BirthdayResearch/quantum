@@ -14,6 +14,10 @@ export const getDTokenDetailsByWToken = (
   switch (network) {
     case EnvironmentNetwork.RemotePlayground:
       wTokenToDTokenMap = {
+        DFI: {
+          id: '0',
+          symbol: 'DFI',
+        },
         ETH: {
           id: '2',
           symbol: 'ETH',
@@ -29,11 +33,19 @@ export const getDTokenDetailsByWToken = (
         MUSDC: {
           id: '5',
           symbol: 'USDC',
+        },
+        MEURC: {
+          id: '12',
+          symbol: 'EUROC',
         },
       };
       break;
     case EnvironmentNetwork.LocalPlayground:
       wTokenToDTokenMap = {
+        DFI: {
+          id: '0',
+          symbol: 'DFI',
+        },
         ETH: {
           id: '2',
           symbol: 'ETH',
@@ -49,12 +61,20 @@ export const getDTokenDetailsByWToken = (
         MUSDC: {
           id: '5',
           symbol: 'USDC',
+        },
+        MEURC: {
+          id: '12',
+          symbol: 'EUROC',
         },
       };
       break;
     case EnvironmentNetwork.DevNet:
     case EnvironmentNetwork.TestNet:
       wTokenToDTokenMap = {
+        DFI: {
+          id: '0',
+          symbol: 'DFI',
+        },
         ETH: {
           id: '2',
           symbol: 'ETH',
@@ -71,11 +91,19 @@ export const getDTokenDetailsByWToken = (
           id: '22',
           symbol: 'USDC',
         },
+        MEURC: {
+          id: '25',
+          symbol: 'EUROC',
+        },
       };
       break;
     case EnvironmentNetwork.MainNet:
     default:
       wTokenToDTokenMap = {
+        DFI: {
+          id: '0',
+          symbol: 'DFI',
+        },
         ETH: {
           id: '1',
           symbol: 'ETH',
@@ -91,6 +119,10 @@ export const getDTokenDetailsByWToken = (
         USDC: {
           id: '13',
           symbol: 'USDC',
+        },
+        EUROC: {
+          id: '216',
+          symbol: 'EUROC',
         },
       };
       break;

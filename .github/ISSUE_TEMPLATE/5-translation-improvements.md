@@ -1,13 +1,13 @@
 ---
 name: Translation improvements
-about: Suggest a translation improvement for DeFiChain Wallet
+about: Suggest a translation improvement for Quantum
 labels: "kind/chore,area/translations"
 ---
 
 <!--
 Please only use this template for submitting translation improvements
 
-If you can create a pull request, I opt you to create it instead.
+If you can create a pull request, we opt you to create it instead.
 -->
 
 #### What translation improvements would you like to be implemented:

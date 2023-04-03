@@ -5,9 +5,9 @@
 /.github/                                       @thedoublejay
 
 public                                          @thedoublejay
-apps/web                                        @thedoublejay @kyleleow @fullstackninja864 @lykalabrada @greggtan @pierregee
-apps/server                                     @thedoublejay @weiyuan95 @fullstackninja864 @lykalabrada @greggtan @pierregee
-packages                                        @thedoublejay @weiyuan95 @lykalabrada @pierregee @Abhishekkochar
+apps/web                                        @thedoublejay @kyleleow @fullstackninja864 @lykalabrada @pierregee
+apps/server                                     @thedoublejay @fullstackninja864 @lykalabrada @pierregee
+packages                                        @thedoublejay @lykalabrada @pierregee
 
 .codeclimate.yml                                @thedoublejay
 .editorconfig                                   @thedoublejay

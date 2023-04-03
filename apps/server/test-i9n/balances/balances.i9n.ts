@@ -35,6 +35,7 @@ describe('DeFiChain Send Transaction Testing', () => {
   let musdcContract: TestToken;
   let musdtContract: TestToken;
   let mwbtcContract: TestToken;
+  let meurocContract: TestToken;
 
   beforeAll(async () => {
     startedPostgresContainer = await new PostgreSqlContainer().start();
@@ -50,6 +51,7 @@ describe('DeFiChain Send Transaction Testing', () => {
       musdc: musdcContract,
       musdt: musdtContract,
       mwbtc: mwbtcContract,
+      meuroc: meurocContract,
     } = bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
     defichain = await new DeFiChainStubContainer().start();
@@ -65,6 +67,7 @@ describe('DeFiChain Send Transaction Testing', () => {
         usdcAddress: musdcContract.address,
         usdtAddress: musdtContract.address,
         wbtcAddress: mwbtcContract.address,
+        eurocAddress: meurocContract.address,
         defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
       }),
     );
@@ -99,10 +102,12 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(new BigNumber(response.DFC.USDT)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.DFC.ETH)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.DFC.DFI)).toStrictEqual(new BigNumber(0));
+    expect(new BigNumber(response.DFC.EUROC)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.ETH)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.USDC)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.USDT)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.WBTC)).toStrictEqual(new BigNumber(0));
+    expect(new BigNumber(response.EVM.EUROC)).toStrictEqual(new BigNumber(0));
   });
 
   it('When adding funds to DFC wallet Should return updated balances of DFC hot wallets ', async () => {
@@ -162,6 +167,19 @@ describe('DeFiChain Send Transaction Testing', () => {
     await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 6);
     await defichain.generateBlock();
 
+    // Send 5 ETH to hotwallet
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [hotWalletAddress]: `5@EUROC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock();
+
     const initialResponse = await testing.inject({
       method: 'GET',
       url: `/balances`,
@@ -173,6 +191,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(new BigNumber(response.DFC.USDT)).toStrictEqual(new BigNumber(8));
     expect(new BigNumber(response.DFC.ETH)).toStrictEqual(new BigNumber(7));
     expect(new BigNumber(response.DFC.DFI)).toStrictEqual(new BigNumber(6));
+    expect(new BigNumber(response.DFC.EUROC)).toStrictEqual(new BigNumber(5));
   });
 
   it('When adding funds to EVM wallet Should return updated balances of EVM hot wallets ', async () => {
@@ -182,6 +201,8 @@ describe('DeFiChain Send Transaction Testing', () => {
     await musdtContract.mint(bridgeContract.address, ethers.utils.parseEther('9'));
     // Mint 8 WBTC to hotwallet
     await mwbtcContract.mint(bridgeContract.address, ethers.utils.parseEther('8'));
+    // Mint 7 EUROC to hotwallet
+    await meurocContract.mint(bridgeContract.address, ethers.utils.parseEther('7'));
     await hardhatNetwork.generate(1);
 
     const initialResponse = await testing.inject({
@@ -193,5 +214,6 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(new BigNumber(response.EVM.USDC)).toStrictEqual(new BigNumber(10));
     expect(new BigNumber(response.EVM.USDT)).toStrictEqual(new BigNumber(9));
     expect(new BigNumber(response.EVM.WBTC)).toStrictEqual(new BigNumber(8));
+    expect(new BigNumber(response.EVM.EUROC)).toStrictEqual(new BigNumber(7));
   });
 });

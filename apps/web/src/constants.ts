@@ -47,6 +47,8 @@ export enum BridgeStatus {
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
 export const STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details";
 export const ETHEREUM_SYMBOL = "ETH";
-export const CONFIRMATIONS_BLOCK_TOTAL = 65;
+export const CONFIRMATIONS_BLOCK_TOTAL = 100; // 65 in EVM, 35 in DFC
+export const EVM_CONFIRMATIONS_BLOCK_TOTAL = 65;
+export const DFC_CONFIRMATIONS_BLOCK_TOTAL = 35;
 
 export const ETHEREUM_MAINNET_ID = 1;

@@ -2,8 +2,13 @@ import Image from "next/image";
 import Link from "next/link";
 import ConnectButton from "./ConnectButton";
 import Banner from "./Banner";
+import Navigation from "./Navigation";
 
-export default function Header(): JSX.Element {
+export default function Header({
+  isBridgeUp,
+}: {
+  isBridgeUp: boolean;
+}): JSX.Element {
   return (
     <div className="relative z-[1] flex flex-col">
       <Banner />
@@ -18,10 +23,20 @@ export default function Header(): JSX.Element {
             />
           </div>
         </Link>
+        {isBridgeUp && (
+          <div className="hidden lg:block">
+            <Navigation />
+          </div>
+        )}
         <div className="flex h-9 items-center md:h-10 lg:h-12">
           <ConnectButton />
         </div>
       </div>
+      {isBridgeUp && (
+        <div className="lg:hidden px-5 md:px-10 mb-6 md:mb-12">
+          <Navigation />
+        </div>
+      )}
     </div>
   );
 }

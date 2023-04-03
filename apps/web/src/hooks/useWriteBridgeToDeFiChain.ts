@@ -48,7 +48,8 @@ export default function useWriteBridgeToDeFiChain({
     const errorMsg = err.message?.toLowerCase() ?? "";
     const testnetAllowanceErr = errorMsg.includes("insufficient allowance");
     const mainnetAllowanceErr =
-      errorMsg.includes("safeerc20: low-level call failed") &&
+      (errorMsg.includes("safeerc20: low-level call failed") ||
+        errorMsg.includes("transfer amount exceeds allowance")) && // EUROC token throws different error message on mainnet
       !hasEnoughAllowance &&
       !sendingFromETH;
     if (testnetAllowanceErr || mainnetAllowanceErr) {

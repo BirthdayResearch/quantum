@@ -203,20 +203,27 @@ export default function StepTwoSendConfirmation({
             Use a DeFiChain wallet to send your funds for verification before
             you can complete your transaction.
           </p>
-          <div className="flex items-center pt-6">
-            <div className="text-lg md:text-2xl text-dark-1000 mr-2">
-              {destinationDetail.amount.toFixed()}
+          <div className="pt-6">
+            <div className="flex items-center justify-center md:justify-start">
+              <div className="text-lg md:text-2xl text-dark-1000 mr-2">
+                {destinationDetail.amount.toFixed()}
+              </div>
+              <Image
+                width={100}
+                height={100}
+                src={sourceDetail.tokenIcon}
+                alt={sourceDetail.tokenName}
+                className="w-4 md:h-4"
+              />
+              <div className="ml-1 text-sm md:text-sm text-dark-700">
+                {sourceDetail.tokenName}
+              </div>
             </div>
-            <Image
-              width={100}
-              height={100}
-              src={sourceDetail.tokenIcon}
-              alt={sourceDetail.tokenName}
-              className="w-4 md:h-4"
-            />
-            <div className="ml-1 text-sm md:text-sm text-dark-700">
-              {sourceDetail.tokenName}
-            </div>
+            {sourceDetail.tokenName === "DFI" && (
+              <div className="text-xs text-warning pt-1 md:pt-0">
+                Please only send DFI (UTXO) tokens.
+              </div>
+            )}
           </div>
 
           <div className={clsx("hidden self-end", "md:block")}>

@@ -76,7 +76,7 @@ function RowData({
               "md:text-lg md:font-semibold",
               data.amount.isPositive() ? "text-valid" : "text-error"
             )}
-            value={data.amount}
+            value={data.amount.toFixed(6, BigNumber.ROUND_FLOOR)}
             thousandSeparator
             trimTrailingZeros
           />

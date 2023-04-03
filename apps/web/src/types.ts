@@ -10,11 +10,11 @@ export enum Network {
   DeFiChain = "DeFiChain",
 }
 
-export interface TokenDetailI {
-  name: string;
+export interface TokenDetailI<T> {
+  name: T;
+  subtitle?: string;
   symbol: string;
   icon: string;
-  supply: string;
 }
 
 export interface AddressDetails {
@@ -43,13 +43,17 @@ export enum SelectionType {
 }
 
 export interface TokensI {
-  tokenA: TokenDetailI;
-  tokenB: TokenDetailI;
+  tokenA: TokenDetailI<string>;
+  tokenB: TokenDetailI<string>;
 }
 export interface NetworkOptionsI {
   name: Network;
   icon: string;
   tokens: TokensI[];
+}
+
+export interface TokenBalances {
+  [key: string]: number;
 }
 
 export interface ProgressStepI {
@@ -84,7 +88,7 @@ export interface TransferData {
   to: RowDataI;
 }
 
-export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH";
+export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH" | "EUROC" | "DFI";
 
 interface ContractConfigI {
   address: `0x${string}`;
@@ -94,6 +98,7 @@ interface ContractConfigI {
 export interface ContractContextI {
   EthereumRpcUrl: string;
   ExplorerURL: string;
+  HotWalletAddress: string;
   BridgeV1: ContractConfigI;
   Erc20Tokens: Record<Erc20Token, ContractConfigI>;
 }
