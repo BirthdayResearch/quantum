@@ -252,7 +252,10 @@ export default function OverviewList({ balances }) {
                       />
                     </div>
                   </div>
-                  <FiChevronDown className="h-6 w-6 text-dark-1000 transition-[transform]" />
+                  <FiChevronDown
+                    className="h-6 w-6 text-dark-1000 transition-[transform]"
+                    data-testid="liquidity-mobile-dropdownArrow"
+                  />
                 </div>
               </Disclosure.Button>
             )}
