@@ -6,7 +6,7 @@ beforeEach(() => {
   cy.visitBridgeHomePage();
 });
 
-context("QA-755 Pre-connected wallet - Bridge Form", () => {
+context("QA-755-5~16 Pre-connected wallet - Bridge Form", () => {
   const source = Network.Ethereum;
   const destination = Network.DeFiChain;
   const currentPair = "DFI";
@@ -22,8 +22,9 @@ context("QA-755 Pre-connected wallet - Bridge Form", () => {
     // action button
     cy.findByTestId("transfer-btn")
       .should("be.visible")
-      .should("be.disabled")
       .contains("Connect wallet");
+
+    cy.findByTestId("transaction-interrupted-msg").should("not.exist");
   });
 
   it("3: Verify amount input functionality", () => {
@@ -37,35 +38,20 @@ context("QA-755 Pre-connected wallet - Bridge Form", () => {
       .clear();
   });
 
-  it.only("4: Verify swap network functionality", () => {
+  it("4: Verify swap network functionality", () => {
     // swapping destination and source
     cy.findByTestId("transfer-flow-swap-btn").should("be.visible").click();
     // verify pairing
     cy.validateFormPairing(false, destination, source, currentPair);
   });
+
+  it("5: Verify HW balance", () => {
+    cy.verifyHotWalletBalance();
+  });
 });
 
-// describe("Bridge from Ethereum to DeFiChain", () => {
-//   it("should be able to connect to metamask wallet", () => {
-//     cy.findByTestId("connect-button").should("be.visible");
-//     cy.connectMetaMaskWallet();
-//     cy.findByTestId("wallet-button").should("be.visible");
-//   });
-
-//   it("should be able to bridge funds from Ethereum to DeFiChain", () => {
-//     cy.connectMetaMaskWallet();
-//     cy.findByTestId("amount").type("0.01").blur();
-//     // Temp remove for Testnet testing
-//     // cy.findByTestId("network-env-switch").click().contains("Playground"); // TODO: Replace `Playground` with `TestNet` once MainNet is ready
-//     cy.findByTestId("receiver-address").should("exist");
-//     cy.findByTestId("transfer-btn").should("exist");
-//     // TODO: Check confirm form fields
-//   });
-
-//   it("should be able to disconnect from metamask wallet", () => {
-//     cy.connectMetaMaskWallet();
-//     cy.findByTestId("wallet-button").should("be.visible");
-//     cy.disconnectMetaMaskWallet();
-//     cy.findByTestId("connect-button").should("be.visible");
-//   });
-// });
+context("QA-755-3 Pre-connected wallet - Hover", () => {
+  it("QA-755-3: Form icons hover", () => {
+    cy.verifyFormHover(false);
+  });
+});

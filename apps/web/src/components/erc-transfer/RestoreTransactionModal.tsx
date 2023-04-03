@@ -109,7 +109,10 @@ export default function RestoreTransactionModal({
         </div>
 
         <div className="md:h-5 lg:h-7 group relative flex items-center mt-8">
-          <span className="text-xs font-semibold xl:tracking-wider lg:text-base text-dark-900">
+          <span
+            className="text-xs font-semibold xl:tracking-wider lg:text-base text-dark-900"
+            data-testid={`${testId}-input-label`}
+          >
             Transaction ID
           </span>
           <div

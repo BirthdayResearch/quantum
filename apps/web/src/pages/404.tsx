@@ -33,7 +33,11 @@ function Page404() {
         sure the URL that you entered is correct.
       </p>
       <div className={clsx("pt-6 w-8/12", "md:pt-12 md:w-8/12 lg:w-[300px]")}>
-        <ActionButton label="Return to home" onClick={() => router.push("/")} />
+        <ActionButton
+          label="Return to home"
+          onClick={() => router.push("/")}
+          testId="return-home-btn"
+        />
       </div>
     </section>
   );
