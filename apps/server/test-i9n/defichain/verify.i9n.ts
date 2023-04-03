@@ -187,7 +187,7 @@ describe('DeFiChain Verify fund Testing', () => {
 
   it('should throw error if balance did not match with the amount', async () => {
     // Generate address (index = 3)
-    await testing.inject({
+    const newWallet = await testing.inject({
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/generate`,
       query: {
@@ -195,8 +195,7 @@ describe('DeFiChain Verify fund Testing', () => {
       },
     });
 
-    const newWallet = whaleWalletProvider.createWallet(3);
-    const newLocalAddress = await newWallet.getAddress();
+    const newLocalAddress = JSON.parse(newWallet.body);
 
     // Sends token to the address
     await defichain.playgroundClient?.rpc.call(
@@ -204,7 +203,7 @@ describe('DeFiChain Verify fund Testing', () => {
       [
         {},
         {
-          [newLocalAddress]: `3@BTC`,
+          [newLocalAddress.address]: `3@BTC`,
         },
       ],
       'number',
@@ -214,7 +213,7 @@ describe('DeFiChain Verify fund Testing', () => {
     const response = await verify({
       amount: '10',
       symbol: 'BTC',
-      address: newLocalAddress,
+      address: newLocalAddress.address,
       ethReceiverAddress: ethWalletAddress,
       tokenAddress: mwbtcContract.address,
     });
@@ -228,9 +227,17 @@ describe('DeFiChain Verify fund Testing', () => {
     const data = {
       address: randomAddress,
     };
-    const newWallet = whaleWalletProvider.createWallet(3);
-    const newLocalAddress = await newWallet.getAddress();
-    await prismaService.deFiChainAddressIndex.update({ where: { address: newLocalAddress }, data });
+    // Generate address (index = 4)
+    const newWallet = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    const newLocalAddress = JSON.parse(newWallet.body);
+    await prismaService.deFiChainAddressIndex.update({ where: { address: newLocalAddress.address }, data });
 
     const response = await verify({
       amount: '3',
