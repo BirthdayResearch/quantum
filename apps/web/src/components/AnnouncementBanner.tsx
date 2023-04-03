@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { FiArrowUpRight } from "react-icons/fi";
@@ -65,11 +66,9 @@ export default function AnnouncementBanner() {
         <span>
           {announcement.content}
           {announcement.url && (
-            <FiArrowUpRight
-              size={20}
-              className="inline shrink-0 cursor-pointer ml-2"
-              onClick={() => window.open(announcement.url, "_blank")}
-            />
+            <Link href={announcement.url} target="_blank">
+              <FiArrowUpRight size={20} className="inline shrink-0 ml-2" />
+            </Link>
           )}
         </span>
       </div>
