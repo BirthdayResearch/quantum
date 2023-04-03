@@ -72,8 +72,8 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
       joi:
-        specifier: ^17.8.1
-        version: 17.8.3
+        specifier: ^17.9.1
+        version: 17.9.1
       nestjs-pino:
         specifier: ^3.1.2
         version: 3.1.2(@nestjs/common@9.3.12)(pino-http@8.3.3)
@@ -11314,8 +11314,8 @@ packages:
       - supports-color
       - ts-node
 
-  /joi@17.8.3:
-    resolution: {integrity: sha512-q5Fn6Tj/jR8PfrLrx4fpGH4v9qM6o+vDUfD4/3vxxyg34OmKcNqYZ1qn2mpLza96S8tL0p0rIw2gOZX+/cTg9w==}
+  /joi@17.9.1:
+    resolution: {integrity: sha512-FariIi9j6QODKATGBrEX7HZcja8Bsh3rfdGYy/Sb65sGlZWK/QWesU1ghk7aJWDj95knjXlQfSmzFSPPkLVsfw==}
     dependencies:
       '@hapi/hoek': 9.3.0
       '@hapi/topo': 5.1.0
