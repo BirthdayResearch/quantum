@@ -44,6 +44,10 @@ context("QA-769-7~12 Connected wallet - Bridge Form", () => {
   const destination = Network.DeFiChain;
   const currentPair = "DFI";
 
+  beforeEach(() => {
+    cy.connectMetaMaskWallet();
+  });
+
   it("1: Verify the Bridge form is visible", () => {
     cy.findByTestId("bridge-form").should("be.visible");
   });
@@ -80,6 +84,37 @@ context("QA-769-7~12 Connected wallet - Bridge Form", () => {
 
   it("5: Verify HW balance", () => {
     cy.verifyHotWalletBalance();
+  });
+
+  it("6: Verify input error state", () => {
+    // amount input error
+    cy.findByTestId("quick-input-card-set-amount").type("9999999999");
+    cy.findByTestId("amount-err")
+      .should("be.visible")
+      .should("contain.text", "Insufficient Funds");
+    cy.findByTestId("quick-input-card").should("have.class", "border-error");
+    cy.findByTestId("quick-input-card-clear-icon").click();
+    cy.findByTestId("amount-err").should("not.exist");
+    cy.findByTestId("quick-input-card-clear-icon").should("not.exist");
+
+    // DFC destination address error
+    cy.findByTestId("receiver-address-input").type("123456789");
+    cy.findByTestId("receiver-address-error-msg")
+      .should("be.visible")
+      .should("contain.text", "Use correct address for DeFiChain Local");
+    cy.findByTestId("receiver-address").should("have.class", "border-error");
+
+    // switch source
+    cy.findByTestId("transfer-flow-swap-btn").should("be.visible").click();
+
+    // EVM destination address error
+    cy.findByTestId("receiver-address-error-msg")
+      .should("be.visible")
+      .should("contain.text", "Use correct address for Ethereum");
+    cy.findByTestId("receiver-address").should("have.class", "border-error");
+    cy.findByTestId("receiver-address-clear").click();
+    cy.findByTestId("receiver-address-error-msg").should("contain.text", "");
+    cy.findByTestId("receiver-address-clear").should("not.exist");
   });
 });
 

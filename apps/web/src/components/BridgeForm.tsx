@@ -476,7 +476,12 @@ export default function BridgeForm({
             data-testid="available-liquidity"
           >
             {amountErr ? (
-              <span className="text-xs lg:text-sm text-error">{amountErr}</span>
+              <span
+                className="text-xs lg:text-sm text-error"
+                data-testid="amount-err"
+              >
+                {amountErr}
+              </span>
             ) : (
               selectedNetworkA.name === Network.Ethereum && (
                 <>
