@@ -120,7 +120,6 @@ export default function BridgeForm({
   useEffect(() => {
     setIsSendingFromEthNetwork(selectedNetworkA.name === Network.Ethereum);
   }, [selectedNetworkA]);
-  // const isSendingFromEthNetwork = selectedNetworkA.name === Network.Ethereum;
 
   const {
     data: evmBalance,
