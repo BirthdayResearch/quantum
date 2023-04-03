@@ -8,10 +8,7 @@ import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
 import Logging from "@api/logging";
 import { getStorageItem } from "@utils/localStorage";
-import {
-  CONFIRMATIONS_BLOCK_TOTAL,
-  EVM_CONFIRMATIONS_BLOCK_TOTAL,
-} from "../constants";
+import { EVM_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 
 function Home() {
@@ -44,7 +41,7 @@ function Home() {
     ).toString();
 
     if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
-      numOfConfirmations = CONFIRMATIONS_BLOCK_TOTAL.toString();
+      numOfConfirmations = EVM_CONFIRMATIONS_BLOCK_TOTAL.toString();
     } else if (txnHash.reverted !== undefined) {
       numOfConfirmations = "0";
     }
@@ -77,10 +74,16 @@ function Home() {
               }
               allocationTxnHash={txnHash.allocationTxn}
               isReverted={txnHash.reverted !== undefined}
-              isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both EVM and DFC
-              isUnsentFund={txnHash.unsentFund !== undefined}
-              ethTxnStatusIsConfirmed={ethTxnStatus.isConfirmed}
-              dfcTxnStatusIsConfirmed={dfcTxnStatus.isConfirmed}
+              isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both ETH and DFC network
+              isUnsentFund={txnHash.unsentFund !== undefined} // Funds not sent to DFC but confirmed in ETH network
+              ethTxnStatusIsConfirmed={
+                ethTxnStatus.isConfirmed ||
+                txnHash.confirmed !== undefined ||
+                txnHash.unsentFund !== undefined
+              }
+              dfcTxnStatusIsConfirmed={
+                dfcTxnStatus.isConfirmed || txnHash.confirmed !== undefined
+              }
               numberOfEvmConfirmations={getNumberOfConfirmations()}
               numberOfDfcConfirmations={dfcTxnStatus.numberOfConfirmations}
               isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}

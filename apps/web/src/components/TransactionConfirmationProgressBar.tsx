@@ -34,7 +34,7 @@ export default function ConfirmationProgress({
   isReverted,
   isUnsentFund,
   isApiSuccess,
-  txnType,
+  networkUnderConfirmation,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
@@ -44,7 +44,7 @@ export default function ConfirmationProgress({
   isUnsentFund: boolean;
   isApiSuccess: boolean;
 
-  txnType: string;
+  networkUnderConfirmation: "Ethereum" | "DeFiChain";
 }) {
   const { isLg } = useResponsive();
   const [valuePercentage, setValuePercentage] = useState<number>(0);
@@ -95,9 +95,7 @@ export default function ConfirmationProgress({
                 <SkeletonLoader isDesktop />
               )}
 
-              <span className="text-xs text-dark-700">
-                {isConfirmed ? "Confirmed" : txnType}
-              </span>
+              <span className="text-xs text-dark-700">confirmations</span>
             </div>
           </CircularProgressbarWithChildren>
         </div>
@@ -117,7 +115,7 @@ export default function ConfirmationProgress({
             ) : (
               <SkeletonLoader isDesktop={false} />
             )}
-            {isConfirmed ? "Confirmed" : txnType}
+            {isConfirmed ? "Confirmed" : networkUnderConfirmation}
           </div>
           <div className="h-1.5 w-full bg-dark-200 rounded-md">
             <div

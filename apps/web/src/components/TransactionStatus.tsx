@@ -1,6 +1,10 @@
 import BigNumber from "bignumber.js";
-import { FiArrowUpRight } from "react-icons/fi";
-import { IoCloseOutline, IoCheckmarkCircle } from "react-icons/io5";
+import {
+  IoCloseOutline,
+  IoCheckmarkCircle,
+  IoAlertCircleOutline,
+} from "react-icons/io5";
+import { FiLoader } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
@@ -137,45 +141,31 @@ export default function TransactionStatus({
         <div className="pb-4">
           <ConfirmationProgress
             confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
-            confirmationBlocksCurrent={confirmationBlocksCurrent}
+            confirmationBlocksCurrent={
+              isConfirmed
+                ? CONFIRMATIONS_BLOCK_TOTAL.toString()
+                : confirmationBlocksCurrent
+            }
             isConfirmed={isConfirmed}
             isReverted={isReverted}
             isUnsentFund={isUnsentFund}
             isApiSuccess={isApiSuccess}
-            txnType={ethTxnStatusIsConfirmed ? "For DFC" : "For EVM"}
+            networkUnderConfirmation={
+              ethTxnStatusIsConfirmed ? "DeFiChain" : "Ethereum"
+            }
           />
         </div>
       )}
 
       <div
         className={clsx("flex flex-col lg:flex-row", {
-          "items-center": !isUnsentFund,
+          "lg:items-center": !isUnsentFund,
         })}
       >
         <div className="flex-1 flex-col">
           <div className="leading-5 lg:text-xl font-semibold">{title}</div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
           <div className="flex flex-row items-center mt-3 lg:mt-4 text-dark-900 md:text-sm lg:text-base font-bold">
-            <a
-              className="flex flex-row items-center hover:opacity-70 mb-1"
-              href={`${ExplorerURL}/tx/${txnHash}`}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <FiArrowUpRight size={20} className="mr-2" />
-              {allocationTxnHash ? "Etherscan" : "View on Etherscan"}
-            </a>
-            {allocationTxnHash && (
-              <a
-                className="flex flex-row items-center hover:opacity-70 mb-1 ml-4"
-                href={getTransactionUrl(allocationTxnHash)}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <FiArrowUpRight size={20} className="mr-2" />
-                DeFiScan
-              </a>
-            )}
             {/*
              {ethTxnStatus.isConfirmed && (
               <a className="flex flex-row items-center hover:opacity-70 ml-5">
@@ -209,12 +199,18 @@ export default function TransactionStatus({
             {!isUnsentFund && (
               <ConfirmationProgress
                 confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
-                confirmationBlocksCurrent={confirmationBlocksCurrent}
+                confirmationBlocksCurrent={
+                  isConfirmed
+                    ? CONFIRMATIONS_BLOCK_TOTAL.toString()
+                    : confirmationBlocksCurrent
+                }
                 isConfirmed={isConfirmed}
                 isReverted={isReverted}
                 isUnsentFund={isUnsentFund}
                 isApiSuccess={isApiSuccess}
-                txnType={ethTxnStatusIsConfirmed ? "For DFC" : "For EVM"}
+                networkUnderConfirmation={
+                  ethTxnStatusIsConfirmed ? "DeFiChain" : "Ethereum"
+                }
               />
             )}
 
@@ -230,29 +226,76 @@ export default function TransactionStatus({
           </div>
         )}
       </div>
+
+      {/* Transaction confirmation status */}
       <div className="flex mt-4 pt-4 border-t border-t-dark-200">
-        <div className="mr-2">
-          <IoCheckmarkCircle
-            size={16}
-            className={clsx("inline-block ml-1 mr-1.5", {
-              "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
-              "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
-            })}
-          />
-          {EVM_CONFIRMATIONS_BLOCK_TOTAL} confirmations for EVM
+        <div className="flex items-center mr-2">
+          {ethTxnStatusIsConfirmed && txnHash && (
+            <ExplorerView
+              url={`${ExplorerURL}/tx/${txnHash}`}
+              text={isLg ? "View Etherscan" : "Etherscan"}
+            />
+          )}
+          {(!ethTxnStatusIsConfirmed || isReverted) && (
+            <>
+              {isReverted ? (
+                <IoAlertCircleOutline size={16} className="mr-1" />
+              ) : (
+                <FiLoader size={16} className="animate-spin mr-1" />
+              )}
+
+              <span className="flex items-center text-dark-1000">
+                {`Ethereum (${numberOfEvmConfirmations}/${EVM_CONFIRMATIONS_BLOCK_TOTAL})`}
+              </span>
+            </>
+          )}
         </div>
         <span className="text-dark-300 mx-2.5">•</span>
-        <div>
-          <IoCheckmarkCircle
-            size={16}
-            className={clsx("inline-block ml-1 mr-1.5", {
-              "text-valid": dfcTxnStatusIsConfirmed || isConfirmed,
-              "text-dark-300": !(dfcTxnStatusIsConfirmed || isConfirmed),
-            })}
-          />
-          {DFC_CONFIRMATIONS_BLOCK_TOTAL} confirmations for DFC
+        <div className={clsx("flex items-center mr-2")}>
+          {dfcTxnStatusIsConfirmed && allocationTxnHash && (
+            <ExplorerView
+              url={getTransactionUrl(allocationTxnHash)}
+              text={isLg ? "View DeFiScan" : "DeFiScan"}
+            />
+          )}
+          {isUnsentFund && <IoAlertCircleOutline size={16} className="mr-1" />}
+          {!isUnsentFund &&
+            ethTxnStatusIsConfirmed &&
+            !dfcTxnStatusIsConfirmed && (
+              <FiLoader size={16} className="animate-spin" />
+            )}
+
+          {!dfcTxnStatusIsConfirmed && (
+            <span
+              className={clsx("ml-1", {
+                "text-dark-700": !ethTxnStatusIsConfirmed,
+              })}
+            >{`DeFiChain (${numberOfDfcConfirmations}/${DFC_CONFIRMATIONS_BLOCK_TOTAL})`}</span>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+const ExplorerView = ({
+  url,
+  text,
+}: {
+  url: string;
+  text: string;
+}): JSX.Element => {
+  return (
+    <>
+      <IoCheckmarkCircle size={16} className="ml-1 mr-1.5 text-valid" />
+      <a
+        className="flex items-center hover:opacity-70"
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {text}
+      </a>
+    </>
+  );
+};
