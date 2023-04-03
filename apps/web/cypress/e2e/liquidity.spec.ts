@@ -75,12 +75,12 @@ networkConfigs.forEach((networkItem) => {
         });
 
         it("should check responsive design for the Liquidity table elements", () => {
-          cy.get("svg[data-testid='mobile-card-dropdownArrow']").should(
+          cy.get("svg[data-testid='liquidity-mobile-dropdownArrow']").should(
             "have.length",
             6
           );
           cy.viewport(desktopViewPort);
-          cy.get("svg[data-testid='mobile-card-dropdownArrow']").should(
+          cy.get("svg[data-testid='liquidity-mobile-dropdownArrow']").should(
             "have.length",
             0
           );
