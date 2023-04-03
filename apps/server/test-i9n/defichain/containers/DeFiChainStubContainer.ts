@@ -54,7 +54,7 @@ export class StartedDeFiChainStubContainer {
 
   async generateBlock(): Promise<void> {
     await this.playgroundClient.rpc.call('generatetoaddress', [10, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
-    await sleep(3000);
+    await sleep(1000);
   }
 
   async getWhaleURL(): Promise<string> {
