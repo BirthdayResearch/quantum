@@ -23,6 +23,28 @@ import useResponsive from "../hooks/useResponsive";
 import { useContractContext } from "../layouts/contexts/ContractContext";
 import ActionButton from "./commons/ActionButton";
 
+function ExplorerView({
+  url,
+  text,
+}: {
+  url: string;
+  text: string;
+}): JSX.Element {
+  return (
+    <>
+      <IoCheckmarkCircle size={16} className="ml-1 mr-1.5 text-valid" />
+      <a
+        className="flex items-center hover:opacity-70"
+        href={url}
+        target="_blank"
+        rel="noreferrer"
+      >
+        {text}
+      </a>
+    </>
+  );
+}
+
 export default function TransactionStatus({
   isConfirmed,
   isApiSuccess,
@@ -277,25 +299,3 @@ export default function TransactionStatus({
     </div>
   );
 }
-
-const ExplorerView = ({
-  url,
-  text,
-}: {
-  url: string;
-  text: string;
-}): JSX.Element => {
-  return (
-    <>
-      <IoCheckmarkCircle size={16} className="ml-1 mr-1.5 text-valid" />
-      <a
-        className="flex items-center hover:opacity-70"
-        href={url}
-        target="_blank"
-        rel="noreferrer"
-      >
-        {text}
-      </a>
-    </>
-  );
-};
