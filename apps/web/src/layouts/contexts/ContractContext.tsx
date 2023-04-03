@@ -1,14 +1,14 @@
 import React, {
   createContext,
+  PropsWithChildren,
   useContext,
   useEffect,
   useState,
-  PropsWithChildren,
 } from "react";
 import { ContractContextI } from "types";
 import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 import { useNetworkEnvironmentContext } from "./NetworkEnvironmentContext";
-import { MAINNET_CONFIG, TESTNET_CONFIG } from "../../config";
+import { LOCAL_HARDHAT_CONFIG, MAINNET_CONFIG } from "../../config";
 
 const ContractContext = createContext<ContractContextI>(undefined as any);
 
@@ -26,7 +26,8 @@ export function ContractProvider({
     const contractConfig =
       networkEnv === EnvironmentNetwork.MainNet
         ? MAINNET_CONFIG
-        : TESTNET_CONFIG;
+        : LOCAL_HARDHAT_CONFIG;
+    // : TESTNET_CONFIG;
     setConfig(contractConfig);
   }, [networkEnv]);
 

@@ -3,22 +3,7 @@ import { DfcToErcTransferSteps } from "../../../src/constants";
 import { Erc20Token, Network } from "../../../src/types";
 
 beforeEach(() => {
-  cy.visit("http://localhost:3000/?network=Local", {
-    onBeforeLoad: (win) => {
-      let nextData: any;
-      Object.defineProperty(win, "__NEXT_DATA__", {
-        set(o) {
-          console.log("setting __NEXT_DATA__", o.props.pageProps);
-          // here is our change to modify the injected parsed data
-          o.props.pageProps.isBridgeUp = true;
-          nextData = o;
-        },
-        get() {
-          return nextData;
-        },
-      });
-    },
-  });
+  cy.visitBridgeHomePage();
 });
 
 const formData = {
@@ -68,7 +53,7 @@ function validateStep(stepNumber: number) {
   });
 }
 
-describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
+context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
   let connectedWalletAddress: string;
   const fee = "0.0012";
   const toReceive = "0.3988";
@@ -92,8 +77,15 @@ describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
       formData.destinationAddress
     );
 
-    // test reset form
-    cy.verifyResetFormFunctionality();
+    // verify locked and test reset form
+    cy.verifyLockedAndResetForm(
+      formData.sourceNetwork,
+      formData.destinationNetwork,
+      formData.tokenPair,
+      formData.amount,
+      // formData.destinationAddress
+      connectedWalletAddress
+    );
   });
 
   it("2. Verify form setup DFC -> ETH - Transfer not verified (not sending any token)", () => {
@@ -232,7 +224,7 @@ describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
     });
   });
 
-  it("2. Verify form setup DFC -> ETH - Success", () => {
+  it("3. Verify form setup DFC -> ETH - Success", () => {
     // bridge form setup
     cy.setupBridgeForm(
       true,
@@ -261,7 +253,6 @@ describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
 
     cy.getTokenPairs(formData.tokenPair).then((pair) => {
       // verify erc-transfer-step-one
-      cy.findByTestId("erc-transfer-procedure").should("be.visible");
       cy.findByTestId("erc-transfer-procedure").should("be.visible");
       cy.findByTestId("erc-transfer-progress").should("be.visible");
 

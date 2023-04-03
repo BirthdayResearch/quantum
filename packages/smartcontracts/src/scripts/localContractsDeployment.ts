@@ -31,38 +31,45 @@ export async function mintAndApproveTestTokensLocal(): Promise<ReturnContracts> 
     flushReceiveAddress: accounts[4],
   });
   const bridgeImplementationContract = bridgeV1.attach(bridgeProxy.address);
-  const { btcContract, usdtContract, usdcContract, euroContract } = await tokenDeployment();
+  const { dfiContract, wbtcContract, usdtContract, usdcContract, eurocContract } = await tokenDeployment();
 
   // Minting 100_000 tokens to accounts[0]
+  await dfiContract.mint(eoaAddress, toWei('100000'));
+  await wbtcContract.mint(eoaAddress, toWei('100000'));
   await usdtContract.mint(eoaAddress, toWei('100000'));
   await usdcContract.mint(eoaAddress, toWei('100000'));
+  await eurocContract.mint(eoaAddress, toWei('100000'));
 
-  await btcContract.mint(bridgeProxy.address, toWei('10'));
-  await usdcContract.mint(bridgeProxy.address, toWei('10'));
-  await usdtContract.mint(bridgeProxy.address, toWei('10'));
-  await euroContract.mint(bridgeProxy.address, toWei('10'));
+  // Minting 100_000 tokens to hotwallet
+  await dfiContract.mint('0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512', toWei('100000'));
+  await wbtcContract.mint('0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512', toWei('100000'));
+  await usdtContract.mint('0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512', toWei('100000'));
+  await usdcContract.mint('0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512', toWei('100000'));
+  await eurocContract.mint('0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512', toWei('100000'));
 
   // Approving max token to `bridgeProxyAddress` by accounts[0]
-  await btcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
-  await usdcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await dfiContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await wbtcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
   await usdtContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
-  await euroContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
-  await euroContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await usdcContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
+  await eurocContract.approve(bridgeProxy.address, ethers.constants.MaxUint256);
 
   // Adding mUsdt and mUsdc as supported tokens
-  await bridgeImplementationContract.addSupportedTokens(btcContract.address, ethers.constants.MaxUint256);
-  await bridgeImplementationContract.addSupportedTokens(usdcContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(dfiContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(wbtcContract.address, ethers.constants.MaxUint256);
   await bridgeImplementationContract.addSupportedTokens(usdtContract.address, ethers.constants.MaxUint256);
-  await bridgeImplementationContract.addSupportedTokens(euroContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(usdcContract.address, ethers.constants.MaxUint256);
+  await bridgeImplementationContract.addSupportedTokens(eurocContract.address, ethers.constants.MaxUint256);
 
-  return { btcContract, usdtContract, usdcContract, euroContract, bridgeImplementationContract };
+  return { dfiContract, wbtcContract, usdtContract, usdcContract, eurocContract, bridgeImplementationContract };
 }
 
 interface ReturnContracts {
-  btcContract: TestToken;
-  euroContract: TestToken;
+  dfiContract: TestToken;
+  wbtcContract: TestToken;
   usdtContract: TestToken;
   usdcContract: TestToken;
+  eurocContract: TestToken;
   bridgeImplementationContract: BridgeV1;
 }
 

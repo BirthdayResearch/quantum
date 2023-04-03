@@ -7,12 +7,21 @@ export async function tokenDeployment(): Promise<TestTokens> {
   const { chainId } = network.config;
   const ERC20 = await ethers.getContractFactory('TestToken');
 
-  const mockTokenBTC = await ERC20.deploy('MockBTC', 'MBTC'); // use {nonce:} if tx stuck
-  await mockTokenBTC.deployed();
-  console.log('Test MBTC token is deployed to ', mockTokenBTC.address);
+  const tokenDFI = await ERC20.deploy('DFI', 'DFI');
+  await tokenDFI.deployed();
+  console.log('Test DFI token is deployed to ', tokenDFI.address);
   if (chainId !== 1337) {
     console.log(
-      `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/TestToken.sol:TestToken ${mockTokenBTC.address} MockBTC MBTC`,
+      `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/TestToken.sol:TestToken ${tokenDFI.address} DFI DFI`,
+    );
+  }
+
+  const mockTokenWBTC = await ERC20.deploy('MockWBTC', 'MWBTC'); // use {nonce:} if tx stuck
+  await mockTokenWBTC.deployed();
+  console.log('Test WMBTC token is deployed to ', mockTokenWBTC.address);
+  if (chainId !== 1337) {
+    console.log(
+      `To verify on Etherscan: npx hardhat verify --network goerli --contract contracts/TestToken.sol:TestToken ${mockTokenWBTC.address} MockWBTC WMBTC`,
     );
   }
 
@@ -42,16 +51,18 @@ export async function tokenDeployment(): Promise<TestTokens> {
     );
   }
   return {
-    btcContract: mockTokenBTC,
+    dfiContract: tokenDFI,
+    wbtcContract: mockTokenWBTC,
     usdtContract: mockTokenUSDT,
     usdcContract: mockTokenUSDC,
-    euroContract: mockTokenEUROC,
+    eurocContract: mockTokenEUROC,
   };
 }
 
 interface TestTokens {
-  btcContract: TestToken;
+  dfiContract: TestToken;
+  wbtcContract: TestToken;
   usdtContract: TestToken;
   usdcContract: TestToken;
-  euroContract: TestToken;
+  eurocContract: TestToken;
 }

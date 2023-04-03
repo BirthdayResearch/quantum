@@ -54,6 +54,7 @@ export default function ActionButton({
         <RiLoader2Line
           size={24}
           className="inline-block animate-spin text-dark-100 ml-2"
+          data-testid={`${testId}-loader-icon`}
         />
       )}
       {isRefresh && (

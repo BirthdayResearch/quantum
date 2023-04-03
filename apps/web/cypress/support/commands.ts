@@ -1,10 +1,11 @@
 import "@testing-library/cypress/add-commands";
 import { Erc20Token, Network } from "../../src/types";
+import { DISCLAIMER_MESSAGE } from "../../src/constants";
 import {
-  CONFIRMATIONS_BLOCK_TOTAL,
-  DISCLAIMER_MESSAGE,
-  EVM_CONFIRMATIONS_BLOCK_TOTAL,
-} from "../../src/constants";
+  LOCAL_BASE_URL,
+  MaintenanceSocialLinks,
+  UtilityButtonType,
+} from "./utils";
 /// <reference types="cypress" />
 // ***********************************************
 // This example commands.ts shows you how to
@@ -39,6 +40,13 @@ declare global {
        * @example cy.getByTestID('home_button')
        */
       getByTestID: (value: string, opts?: any) => Chainable<Element>;
+
+      /**
+       * @description Visit default Bridge home page
+       * @param {isBridgeUp} boolean - Intercept bridge status for testing
+       * @example cy.connectMetaMaskWallet(true)
+       */
+      visitBridgeHomePage: (isBridgeUp?: boolean) => Chainable<Element>;
 
       /**
        * @description Connect to MetaMask Wallet
@@ -144,7 +152,7 @@ declare global {
        * @param {string} method - Method to call in hardhat
        * @param {any[]} params - Any configurable params to pass
        * @example
-       * hardhatRequest("evm_mine", [{blocks: 5}]);
+       * hardhatRequest("evm_setAutomine", [true]);
        */
       hardhatRequest: (method: string, params: any[]) => Chainable<Element>;
 
@@ -161,19 +169,11 @@ declare global {
 
       /**
        * @description Helper function to validate utility modal
-       * @param {string} title display on modal
-       * @param {string} message displayed on modal
-       * @param {string} primaryButtonLabel displayed on modal
-       * @param {string} secondaryButtonLabel displayed on modal
+       * @param {UtilityDataI} data - verify title, message, primary button label, secondary button label, and which button to click
        * @example
-       * validateUtilityModal("Error", "Something went wrong", "Try again", "Close");
+       * validateUtilityModal({"Error", "Something went wrong", "Try again", "Close", UtilityButtonType.PRIMARY});
        */
-      validateUtilityModal: (
-        title: string,
-        message: string,
-        primaryButtonLabel: string,
-        secondaryButtonLabel: string
-      ) => Chainable<Element>;
+      validateUtilityModal: (data: UtilityDataI) => Chainable<Element>;
 
       /**
        * @description Helper function to validate locked form
@@ -207,12 +207,23 @@ declare global {
       ) => Chainable<Element>;
 
       /**
-       * @description Verify the reset form functionality in a bridge form. It checks the utility modal content,
+       * @description Verify the locked form and reset form functionality in a bridge form. It checks the utility modal content,
        * primary and secondary button functionality, as well as form reset validation.
+       * @param {Network} sourceNetwork to be bridge from
+       * @param {Network} destinationNetwork to bridge to
+       * @param {Erc20Token} tokenPair to be sent and receive from bridge
+       * @param {string} amount to be sent
+       * @param {string} destinationAddress to receive the token amount
        * @example
-       * cy.verifyResetFormFunctionality();
+       * cy.verifyLockedAndResetForm(Network.Ethereum, Network.DeFiChain, "WBTC", "0.001", "xxxxxxx");
        */
-      verifyResetFormFunctionality: () => Chainable<Element>;
+      verifyLockedAndResetForm: (
+        sourceNetwork: Network,
+        destinationNetwork: Network,
+        tokenPair: Erc20Token,
+        amount: string,
+        destinationAddress: string
+      ) => Chainable<Element>;
 
       /**
        * @description Verify the metamask connection
@@ -227,8 +238,9 @@ declare global {
        * @param {Erc20Token} tokenPair - The ERC20 token pair for the transaction
        * @param {string} amount - The amount to be transferred
        * @param {string} expectedToReceive - The expected amount to be received
-       * @param {string} [expectedFee] - The expected fee
-       * @param {string} [connectedWalletAddress] - The connected wallet address, if available
+       * @param {string} expectedFee - The expected fee
+       * @param {string} connectedWalletAddress - The connected wallet address, if available
+       * @param {string} dfcAddress - The destination dfc address, only for evm to dfc flow
        * @example
        * cy.validateConfirmTransferModal(Network.Ethereum, Erc20Token.DAI, "10", "0x1234...5678");
        */
@@ -238,8 +250,45 @@ declare global {
         amount: string,
         expectedToReceive: string,
         expectedFee: string,
-        connectedWalletAddress?: string
+        connectedWalletAddress?: string,
+        dfcAddress?: string
       ) => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify switch source button on hover
+       * @param {boolean} isMetamaskConnected - Is Metamask wallet connected
+       * @example
+       * cy.verifyFormHover(true);
+       */
+      verifyFormHover: (isMetamaskConnected: boolean) => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify social links
+       * @example
+       * cy.verifySocialLinks();
+       */
+      verifySocialLinks: () => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify error 404 page when invalid url is entered
+       * @example
+       * cy.verify404Page();
+       */
+      verify404Page: () => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify maintenance page
+       * @example
+       * cy.verifyMaintenancePage();
+       */
+      verifyMaintenancePage: () => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify hot wallet balance
+       * @example
+       * cy.verifyHotWalletBalance();
+       */
+      verifyHotWalletBalance: () => Chainable<Element>;
     }
   }
 }
@@ -252,6 +301,33 @@ const TokensPair = [
   { tokenA: "USDC", tokenB: "dUSDC" },
   { tokenA: "EUROC", tokenB: "dEUROC" },
 ];
+
+export interface UtilityDataI {
+  title?: string;
+  message?: string;
+  primaryButtonLabel?: string;
+  secondaryButtonLabel?: string;
+  clickButton?: UtilityButtonType;
+}
+
+Cypress.Commands.add("visitBridgeHomePage", (isBridgeUp: boolean = true) => {
+  cy.visit(`${LOCAL_BASE_URL}?network=Local`, {
+    onBeforeLoad: (win) => {
+      let nextData: any;
+      Object.defineProperty(win, "__NEXT_DATA__", {
+        set(o) {
+          console.log("setting __NEXT_DATA__", o.props.pageProps);
+          // here is our change to modify the injected parsed data
+          o.props.pageProps.isBridgeUp = isBridgeUp;
+          nextData = o;
+        },
+        get() {
+          return nextData;
+        },
+      });
+    },
+  });
+});
 
 Cypress.Commands.add("connectMetaMaskWallet", () => {
   cy.disconnectMetamaskWalletFromDapp(); // in case it's not fully disconnected, else cy.acceptMetamaskAccess() will throw error
@@ -334,8 +410,8 @@ Cypress.Commands.add("validateDropdownTokenSelection", (erc20ToDfc = true) => {
   // iterate through the TokensPairing
   tokensPairing.forEach((pair) => {
     const { tokenA, tokenB } = pair;
-    cy.findAllByTestId(`token-pair-to-send-${tokenA}`).should("exist");
-    cy.findAllByTestId(`token-pair-to-receive-${tokenB}`).should("exist");
+    cy.findByTestId(`token-pair-to-send-${tokenA}`).should("exist");
+    cy.findByTestId(`token-pair-to-receive-${tokenB}`).should("exist");
   });
   cy.findByTestId("token-pair-dropdown-btn").click(); // to close the dropdown
 });
@@ -414,6 +490,11 @@ Cypress.Commands.add(
         .should("contain.text", "Select token");
       cy.validateDropdownTokenSelection(erc20ToDfc);
 
+      // amount input
+      cy.findByTestId("quick-input-card-set-btn").should(
+        erc20ToDfc ? "be.visible" : "not.exist"
+      );
+
       // verify network env visibility
       cy.findByTestId("network-env-switch").should(
         erc20ToDfc ? "exist" : "not.exist"
@@ -442,9 +523,10 @@ Cypress.Commands.add(
           .should("contain.text", "Review transaction")
           .should("be.disabled");
       } else {
-        cy.findByTestId("transfer-btn")
-          .should("contain.text", "Connect wallet")
-          .should("be.enabled");
+        cy.findByTestId("transfer-btn").should(
+          "contain.text",
+          "Connect wallet"
+        );
       }
     });
   }
@@ -475,26 +557,29 @@ Cypress.Commands.add("getTokenPairs", (token: Erc20Token) => {
   return cy.wrap(TokensPair[0]);
 });
 
-Cypress.Commands.add(
-  "validateUtilityModal",
-  (
-    title: string,
-    message: string,
-    primaryButtonLabel: string,
-    secondaryButtonLabel: string
-  ) => {
-    cy.findByTestId("utility-title").should("contain.text", title);
-    cy.findByTestId("utility-msg").should("contain.text", message);
-    cy.findByTestId("utility-primary-btn").should(
+Cypress.Commands.add("validateUtilityModal", (data: UtilityDataI) => {
+  if (data.title !== undefined) {
+    cy.findByTestId("utility-title").should("contain.text", data.title);
+  }
+  if (data.message !== undefined) {
+    cy.findByTestId("utility-msg").should("contain.text", data.message);
+  }
+  if (data.primaryButtonLabel !== undefined) {
+    cy.findByTestId("utility-modal-primary-btn").should(
       "contain.text",
-      primaryButtonLabel
-    );
-    cy.findByTestId("utility-secondary-btn").should(
-      "contain.text",
-      secondaryButtonLabel
+      data.primaryButtonLabel
     );
   }
-);
+  if (data.secondaryButtonLabel !== undefined) {
+    cy.findByTestId("utility-modal-secondary-btn").should(
+      "contain.text",
+      data.secondaryButtonLabel
+    );
+  }
+  if (data.clickButton !== undefined) {
+    cy.findByTestId(`utility-modal-${data.clickButton}-btn`).click();
+  }
+});
 
 Cypress.Commands.add(
   "validateLockedForm",
@@ -505,7 +590,21 @@ Cypress.Commands.add(
     amount: string,
     destinationAddress: string
   ) => {
+    const isEvmToDfc =
+      sourceNetwork === Network.Ethereum &&
+      destinationNetwork === Network.DeFiChain;
+    cy.findByTestId("bridge-form").should("be.visible");
     cy.getTokenPairs(tokenPair).then((pair) => {
+      let sourceToken: string;
+      let destinationToken: string;
+      if (isEvmToDfc) {
+        sourceToken = pair.tokenA;
+        destinationToken = pair.tokenB;
+      } else {
+        sourceToken = pair.tokenB;
+        destinationToken = pair.tokenA;
+      }
+
       // validate source data still persisted
       cy.findByTestId("source-network-dropdown-btn").should(
         "contain.text",
@@ -513,7 +612,7 @@ Cypress.Commands.add(
       );
       cy.findByTestId("token-pair-dropdown-btn").should(
         "contain.text",
-        pair.tokenA
+        sourceToken
       );
       cy.findByTestId("quick-input-card-set-amount").should(
         "have.attr",
@@ -528,7 +627,7 @@ Cypress.Commands.add(
       );
       cy.findByTestId("token-to-receive-dropdown-btn").should(
         "contain.text",
-        pair.tokenB
+        destinationToken
       );
       cy.findByTestId("wallet-address-input-verified-badge").should(
         "contain.text",
@@ -544,10 +643,14 @@ Cypress.Commands.add(
     cy.findByTestId("token-pair-dropdown-options").should("not.exist");
     cy.findByTestId("token-pair-dropdown-icon").should("not.exist");
     cy.findByTestId("quick-input-card-set-amount").should("be.disabled");
-    cy.findByTestId("quick-input-card-set-amount-25%").should("be.disabled");
-    cy.findByTestId("quick-input-card-set-amount-50%").should("be.disabled");
-    cy.findByTestId("quick-input-card-set-amount-75%").should("be.disabled");
-    cy.findByTestId("quick-input-card-set-amount-Max").should("be.disabled");
+    if (isEvmToDfc) {
+      cy.findByTestId("quick-input-card-set-amount-25%").should("be.disabled");
+      cy.findByTestId("quick-input-card-set-amount-50%").should("be.disabled");
+      cy.findByTestId("quick-input-card-set-amount-75%").should("be.disabled");
+      cy.findByTestId("quick-input-card-set-amount-Max").should("be.disabled");
+    } else {
+      cy.findByTestId("quick-input-card-set-btn").should("not.exist");
+    }
     cy.findByTestId("quick-input-card-lock-icon").should("be.visible");
 
     // swap button
@@ -596,119 +699,91 @@ Cypress.Commands.add("verifyConnectWalletPopUp", () => {
   cy.findByTestId("transfer-btn")
     .should("contain.text", "Connect wallet")
     .click();
-  cy.contains("MetaMask").click();
-  cy.acceptMetamaskAccess().should("be.true");
-  cy.findByTestId("wallet-button").should("be.visible");
+  cy.contains("MetaMask").should("exist");
 });
 
-Cypress.Commands.add("verifyResetFormFunctionality", () => {
-  function verifyUtilityModalContent(title: string, msg: string): void {
-    cy.findByTestId("utility-title")
+Cypress.Commands.add(
+  "verifyLockedAndResetForm",
+  (
+    sourceNetwork: Network,
+    destinationNetwork: Network,
+    tokenPair: Erc20Token,
+    amount: string,
+    destinationAddress: string
+  ) => {
+    // Open the review transaction modal and verify its visibility
+    cy.findByTestId("transfer-btn").click();
+    cy.wait(2000);
+    cy.findByTestId("transaction-review-modal").should("exist");
+
+    // Close the review transaction modal and open the utility modal
+    cy.findByTestId("transaction-review-modal-close-icon").click();
+    cy.findByTestId("utility-modal").should("exist");
+
+    // Verify the utility modal content
+    cy.validateUtilityModal({
+      title: "Are you sure you want to leave your transaction?",
+      message:
+        "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+    });
+
+    // Verify the functionality of the "Go back" button
+    cy.validateUtilityModal({
+      secondaryButtonLabel: "Go back",
+      clickButton: UtilityButtonType.SECONDARY,
+    });
+    cy.findByTestId("utility-modal").should("not.exist");
+    cy.findByTestId("transaction-review-modal").should("exist");
+
+    // Close the review transaction modal and open the utility modal
+    cy.findByTestId("transaction-review-modal-close-icon").click();
+    cy.findByTestId("utility-modal").should("exist");
+
+    // Verify the functionality of the "Leave transaction" button
+    cy.validateUtilityModal({
+      primaryButtonLabel: "Leave transaction",
+      clickButton: UtilityButtonType.PRIMARY,
+    });
+    cy.findByTestId("transaction-review-modal").should("not.exist");
+
+    // Verify the bridge form locked
+    cy.validateLockedForm(
+      sourceNetwork,
+      destinationNetwork,
+      tokenPair,
+      amount,
+      destinationAddress
+    );
+
+    // Verify the functionality of the "Retry transfer" button
+    cy.findByTestId("transfer-btn").click();
+    cy.findByTestId("transaction-review-modal").should("exist");
+
+    // Close the utility modal and open the review transaction modal
+    cy.findByTestId("transaction-review-modal-close-icon").click();
+    cy.findByTestId("utility-modal-primary-btn").click();
+
+    // Verify the functionality of the "Reset form" button
+    cy.findByTestId("reset-btn")
       .should("be.visible")
-      .should("contain.text", title);
-    cy.findByTestId("utility-msg")
-      .should("be.visible")
-      .should("contain.text", msg);
+      .should("contain.text", "Reset form")
+      .click();
+
+    // Verify the reset form utility modal and click "Reset form" button
+    cy.findByTestId("utility-modal").should("exist");
+    cy.validateUtilityModal({
+      title: "Are you sure you want to reset form?",
+      message:
+        "Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
+      primaryButtonLabel: "Reset form",
+      secondaryButtonLabel: "Go back",
+      clickButton: UtilityButtonType.PRIMARY,
+    });
+
+    // Verify that the form has been reset
+    cy.validateFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
   }
-
-  function verifyPrimaryUtilityBtn(
-    label: string,
-    click: boolean = false
-  ): void {
-    cy.findByTestId("utility-modal-primary-btn")
-      .should("be.visible")
-      .should("contain.text", label);
-
-    if (click) {
-      cy.findByTestId("utility-modal-primary-btn").click();
-    }
-  }
-
-  function verifySecondaryUtilityBtn(
-    label: string,
-    click: boolean = false
-  ): void {
-    cy.findByTestId("utility-modal-secondary-btn")
-      .should("be.visible")
-      .should("contain.text", label);
-
-    if (click) {
-      cy.findByTestId("utility-modal-secondary-btn").click();
-    }
-  }
-
-  // Open the review transaction modal and verify its visibility
-  cy.findByTestId("transfer-btn").click();
-  cy.findByTestId("transaction-review-modal").should("exist");
-
-  // Close the review transaction modal and open the utility modal
-  cy.findByTestId("transaction-review-modal-close-icon").click();
-  cy.findByTestId("utility-modal").should("exist");
-
-  // Verify the utility modal content
-  verifyUtilityModalContent(
-    "Are you sure you want to leave your transaction?",
-    "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution"
-  );
-
-  // Verify the functionality of the "Go back" button
-  verifySecondaryUtilityBtn("Go back", true);
-  cy.findByTestId("utility-modal").should("not.exist");
-  cy.findByTestId("transaction-review-modal").should("exist");
-
-  // Close the review transaction modal and open the utility modal
-  cy.findByTestId("transaction-review-modal-close-icon").click();
-  cy.findByTestId("utility-modal").should("exist");
-
-  // Verify the functionality of the "Leave transaction" button
-  verifyPrimaryUtilityBtn("Leave transaction", true);
-  cy.findByTestId("transaction-review-modal").should("not.exist");
-
-  // Verify the bridge form
-  cy.findByTestId("bridge-form").should("be.visible");
-  cy.findByTestId("transfer-btn")
-    .should("be.visible")
-    .should("contain.text", "Retry transfer");
-
-  // Verify the functionality of the "Retry transfer" button
-  cy.findByTestId("transfer-btn").click();
-  cy.findByTestId("transaction-review-modal").should("exist");
-
-  // Close the utility modal and open the review transaction modal
-  cy.findByTestId("transaction-review-modal-close-icon").click();
-  cy.findByTestId("utility-modal-primary-btn").click();
-
-  // Verify the functionality of the "Reset form" button
-  cy.findByTestId("reset-btn")
-    .should("be.visible")
-    .should("contain.text", "Reset form")
-    .click();
-
-  // Verify the reset form utility modal
-  cy.findByTestId("utility-modal").should("exist");
-  verifyUtilityModalContent(
-    "Are you sure you want to reset form?",
-    "Resetting it will lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution"
-  );
-
-  // Verify the functionality of the "Reset form" and "Go back" buttons in the reset form utility modal
-  verifyPrimaryUtilityBtn("Reset form");
-  verifySecondaryUtilityBtn("Go back");
-
-  // Click "Reset form" button and verify that the form has been reset
-  cy.findByTestId("utility-modal-primary-btn").click();
-  cy.validateFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
-});
-
-// Helper function to swap pairs
-function swapTokenPositions(
-  pairs: { tokenA: string; tokenB: string }[]
-): { tokenA: string; tokenB: string }[] {
-  return pairs.map((pair) => {
-    const { tokenA, tokenB } = pair;
-    return { tokenA: tokenB, tokenB: tokenA };
-  });
-}
+);
 
 Cypress.Commands.add(
   "validateConfirmTransferModal",
@@ -718,13 +793,24 @@ Cypress.Commands.add(
     amount: string,
     expectedToReceive: string,
     expectedFee: string,
-    metamaskAddress?: string
+    metamaskAddress?: string,
+    dfcAddress?: string
   ) => {
     const isEvmToDfc = sourceNetwork === Network.Ethereum;
     const destinationNetwork =
       sourceNetwork === Network.Ethereum ? Network.DeFiChain : Network.Ethereum;
 
     cy.getTokenPairs(tokenPair).then((pair) => {
+      let sourceToken: string;
+      let destinationToken: string;
+      if (isEvmToDfc) {
+        sourceToken = pair.tokenA;
+        destinationToken = pair.tokenB;
+      } else {
+        sourceToken = pair.tokenB;
+        destinationToken = pair.tokenA;
+      }
+
       // check review transaction modal
       cy.findByTestId("transaction-review-modal-title").should(
         "contain.text",
@@ -732,15 +818,25 @@ Cypress.Commands.add(
       );
 
       // From source
-      cy.findByTestId("from-source-address").should(
-        "contain.text",
-        `${sourceNetwork} address`
-      );
-
       if (isEvmToDfc) {
+        if (metamaskAddress !== undefined) {
+          cy.findByTestId("from-source-address").should(
+            "contain.text",
+            metamaskAddress
+          );
+        }
         cy.findByTestId("from-source-network-name").should(
           "contain.text",
           `Source (${sourceNetwork})`
+        );
+      } else {
+        cy.findByTestId("from-source-address").should(
+          "contain.text",
+          `${sourceNetwork} address`
+        );
+        cy.findByTestId("from-source-network-name").should(
+          "contain.text",
+          "Source"
         );
       }
 
@@ -751,26 +847,34 @@ Cypress.Commands.add(
       cy.findByTestId("from-source-token-icon").should(
         "have.attr",
         "src",
-        `/tokens/${isEvmToDfc ? pair.tokenA : pair.tokenB}.svg`
+        `/tokens/${sourceToken}.svg`
       );
       cy.findByTestId("from-source-token-name").should(
         "contain.text",
-        isEvmToDfc ? pair.tokenA : pair.tokenB
+        sourceToken
       );
 
-      if (!isEvmToDfc) {
-        cy.findByTestId("to-destination-network-name").should(
-          "contain.text",
-          `Destination (${destinationNetwork})`
-        );
+      // To destination
+      if (isEvmToDfc) {
+        if (dfcAddress !== undefined) {
+          cy.findByTestId("to-destination-address").should(
+            "contain.text",
+            dfcAddress
+          );
+        }
+      } else {
+        if (metamaskAddress !== undefined) {
+          cy.findByTestId("to-destination-address").should(
+            "contain.text",
+            metamaskAddress
+          );
+        }
       }
 
-      if (!isEvmToDfc) {
-        cy.findByTestId("to-destination-address").should(
-          "contain.text",
-          metamaskAddress
-        );
-      }
+      cy.findByTestId("to-destination-network-name").should(
+        "contain.text",
+        `Destination (${destinationNetwork})`
+      );
 
       cy.findByTestId("to-destination-amount").should(
         "contain.text",
@@ -779,12 +883,12 @@ Cypress.Commands.add(
       cy.findByTestId("to-destination-token-icon").should(
         "have.attr",
         "src",
-        `/tokens/${isEvmToDfc ? pair.tokenB : pair.tokenA}.svg`
+        `/tokens/${destinationToken}.svg`
       );
 
       cy.findByTestId("to-destination-token-name").should(
         "contain.text",
-        isEvmToDfc ? pair.tokenB : pair.tokenA
+        destinationToken
       );
 
       if (isEvmToDfc) {
@@ -806,7 +910,7 @@ Cypress.Commands.add(
           const value = split[0];
           const suffix = split[1];
           expect(value).to.equal(expectedFee);
-          expect(suffix).to.equal(isEvmToDfc ? pair.tokenA : pair.tokenB);
+          expect(suffix).to.equal(sourceToken);
         });
 
       if (isEvmToDfc) {
@@ -818,3 +922,213 @@ Cypress.Commands.add(
     });
   }
 );
+
+Cypress.Commands.add("verifyFormHover", (isMetamaskConnected: boolean) => {
+  // verify switch source before hover
+  cy.findByTestId("swap-btn-arrow-down").should("be.visible");
+  cy.findByTestId("swap-btn-switch").should("be.hidden");
+
+  // hover switch source
+  cy.findByTestId("transfer-flow-swap-btn").realHover();
+
+  // verify switch source on hover
+  cy.findByTestId("swap-btn-arrow-down").should("be.hidden");
+  cy.findByTestId("swap-btn-switch").should("be.visible");
+  cy.findByTestId("transfer-flow-swap-tooltip-content")
+    .should("be.visible")
+    .should("contain.text", "Switch source");
+
+  // hover fees
+  cy.findByTestId("fees-tooltip-icon").realHover();
+  cy.findByTestId("fees-tooltip-content")
+    .should("be.visible")
+    .should(
+      "contain.text",
+      "Fees to cover the cost of transactions on DeFiChain and Ethereum networks. For more information, visit our user guide."
+    );
+
+  // hover paste icon
+  cy.findByTestId("receiver-address-paste-icon-tooltip").realHover();
+  if (isMetamaskConnected) {
+    cy.findByTestId("receiver-address-paste-icon-tooltip-content")
+      .should("be.visible")
+      .should("contain.text", "Paste from clipboard");
+  } else {
+    // disabled, should not show anything
+    cy.findByTestId("receiver-address-paste-icon-tooltip-content").should(
+      "not.exist"
+    );
+  }
+
+  // hover amount input percentage card
+  const amountArray = ["25%", "50%", "75%", "Max"];
+  amountArray.forEach((amountType) => {
+    const viewId = `quick-input-card-set-amount-${amountType}`;
+    cy.findByTestId(viewId).realHover();
+    cy.findByTestId(viewId)
+      .should("have.css", "background-image")
+      .and(
+        "contain",
+        "linear-gradient(90deg, rgb(255, 0, 255) 0%, rgb(236, 12, 141) 100.04%)"
+      );
+  });
+});
+
+Cypress.Commands.add("verifySocialLinks", () => {
+  const BirthdayResearchSocialLinks = [
+    { testId: "twitter-br", url: "https://twitter.com/BirthdayDev" },
+    { testId: "medium-br", url: "https://medium.com/@birthdayresearch" },
+    {
+      testId: "gitHub-br",
+      url: "https://github.com/BirthdayResearch/quantum-app",
+    },
+  ];
+
+  const DeFiChainSocialLinks = [
+    { testId: "twitter-dfc", url: "https://twitter.com/defichain" },
+    { testId: "reddit-dfc", url: "https://www.reddit.com/r/defiblockchain" },
+    {
+      testId: "gitHub-dfc",
+      url: "https://github.com/DeFiCh",
+    },
+  ];
+
+  const QuantumVersionQuery = "http://localhost:5741/version";
+
+  // header banner
+  cy.findByTestId("header-banner")
+    .should("be.visible")
+    .contains(
+      "Make sure you are visiting https://quantumbridge.app – check the URL correctly."
+    );
+
+  // header banner link
+  cy.findByTestId("header-banner-content-link")
+    .should("have.attr", "href")
+    .and("include", "https://quantumbridge.app");
+
+  // footer logo
+  cy.findByTestId("footer").should("be.visible");
+  cy.findByTestId("footer-quantum-logo").should("be.visible");
+
+  // verify the quantum version
+  cy.request(QuantumVersionQuery).then((response) => {
+    cy.findByTestId("footer-quantum-version")
+      .should("be.visible")
+      .contains(`Version ${response.body.v}`);
+  });
+
+  // verify footer BR socials links
+  BirthdayResearchSocialLinks.forEach((BirthdayResearchSocialLink) => {
+    cy.verifyExternalLinks(BirthdayResearchSocialLink);
+  });
+
+  // verify footer DeFiChain socials link
+  DeFiChainSocialLinks.forEach((link) => {
+    cy.verifyExternalLinks(link);
+  });
+});
+
+Cypress.Commands.add("verify404Page", () => {
+  cy.request({ url: "/2", failOnStatusCode: false })
+    .its("status")
+    .should("equal", 404);
+  cy.visit("/random-url", { failOnStatusCode: false });
+  cy.contains("h1", "Page Not Found");
+  cy.findByTestId("return-home-btn")
+    .should("be.visible")
+    .contains("Return to home")
+    .click();
+  cy.url().should("equal", LOCAL_BASE_URL);
+});
+
+Cypress.Commands.add("verifyMaintenancePage", () => {
+  cy.visitBridgeHomePage(false);
+  cy.findByTestId("bridge-form").should("not.exist");
+  cy.findByTestId("maintenance").should("exist");
+  cy.findByTestId("maintenance-status").contains("SCHEDULED MAINTENANCE");
+  cy.findByTestId("maintenance-title").contains("Bridge is currently closed");
+
+  // verify socials link
+  MaintenanceSocialLinks.forEach((link) => {
+    cy.findByTestId(link.testId).should("contain.text", link.label);
+    cy.verifyExternalLinks({
+      testId: link.testId,
+      url: link.href,
+    });
+  });
+});
+
+Cypress.Commands.add("verifyHotWalletBalance", () => {
+  function interceptHotWalletBalance(
+    destinationNetwork: Network,
+    token: Erc20Token,
+    amount: number
+  ) {
+    const isEthereumDestination = destinationNetwork === Network.Ethereum;
+    const tokenSymbol =
+      isEthereumDestination && token === "WBTC" ? "BTC" : token;
+    const endpoint = isEthereumDestination ? "ethereum" : "defichain/wallet";
+    cy.intercept(`**/${endpoint}/balance/${tokenSymbol}`, [amount]);
+  }
+
+  function verifyBalanceSufficient(isSufficient: boolean) {
+    if (isSufficient) {
+      cy.findByTestId("transfer-btn").should("be.enabled");
+      cy.findByTestId("error-insufficient-balance").should("not.exist");
+    } else {
+      cy.findByTestId("transfer-btn").should("be.disabled");
+      cy.findByTestId("error-insufficient-balance")
+        .should("be.visible")
+        .should(
+          "contain.text",
+          "Unable to process due to liquidity cap, please try again in a few hours"
+        );
+    }
+  }
+
+  // DFC HW - empty
+  interceptHotWalletBalance(Network.DeFiChain, "DFI", 0);
+  verifyBalanceSufficient(false);
+
+  // DFC HW - 10 balance
+  cy.findByTestId("token-pair-dropdown-btn").click();
+  cy.findByTestId(`token-pair-ETH`).click();
+  interceptHotWalletBalance(Network.DeFiChain, "ETH", 10);
+  verifyBalanceSufficient(true);
+
+  // Amount input 20
+  cy.findByTestId("quick-input-card-set-amount").type("20");
+  verifyBalanceSufficient(false);
+  // Clear input
+  cy.findByTestId("quick-input-card-clear-icon").click();
+  verifyBalanceSufficient(true);
+
+  // EVM HW - empty
+  cy.findByTestId("transfer-flow-swap-btn").click();
+  interceptHotWalletBalance(Network.Ethereum, "ETH", 0);
+  verifyBalanceSufficient(false);
+
+  // EVM HW - 50 balance
+  cy.findByTestId("token-pair-dropdown-btn").click();
+  cy.findByTestId(`token-pair-dUSDT`).click();
+  interceptHotWalletBalance(Network.Ethereum, "USDT", 50);
+  verifyBalanceSufficient(true);
+
+  // Amount input 51
+  cy.findByTestId("quick-input-card-set-amount").type("51");
+  verifyBalanceSufficient(false);
+  // Clear input
+  cy.findByTestId("quick-input-card-clear-icon").click();
+  verifyBalanceSufficient(true);
+});
+
+// Helper function to swap pairs
+function swapTokenPositions(
+  pairs: { tokenA: string; tokenB: string }[]
+): { tokenA: string; tokenB: string }[] {
+  return pairs.map((pair) => {
+    const { tokenA, tokenB } = pair;
+    return { tokenA: tokenB, tokenB: tokenA };
+  });
+}

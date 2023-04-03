@@ -55,9 +55,16 @@ function ConnectedButton({
       <div className="hidden md:flex items-center">
         <MetaMaskIcon />
         <div className="ml-2 text-left">
-          <span className="block text-sm text-dark-1000">{walletText}</span>
+          <span
+            className="block text-sm text-dark-1000"
+            data-testid="connected_wallet_add"
+          >
+            {walletText}
+          </span>
           <div className="flex items-center">
-            <span className="text-xs text-dark-700">{chain}</span>
+            <span className="text-xs text-dark-700" data-testid="connected_env">
+              {chain}
+            </span>
             <div className="ml-1 h-2 w-2 rounded-full bg-valid" />
           </div>
         </div>

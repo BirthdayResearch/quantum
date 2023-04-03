@@ -51,7 +51,11 @@ function SwitchButton({
   return (
     <div className="my-4 flex flex-row rounded">
       <div className="mt-5 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-      <Tooltip content="Switch source" containerClass="py-0">
+      <Tooltip
+        content="Switch source"
+        containerClass="py-0"
+        testId="transfer-flow-swap"
+      >
         <button
           title="switch-source-button"
           type="button"
@@ -472,7 +476,12 @@ export default function BridgeForm({
             data-testid="available-liquidity"
           >
             {amountErr ? (
-              <span className="text-xs lg:text-sm text-error">{amountErr}</span>
+              <span
+                className="text-xs lg:text-sm text-error"
+                data-testid="amount-err"
+              >
+                {amountErr}
+              </span>
             ) : (
               selectedNetworkA.name === Network.Ethereum && (
                 <>
@@ -543,7 +552,11 @@ export default function BridgeForm({
             Fees
           </span>
           <div className="ml-2">
-            <IconTooltip title={FEES_INFO.title} content={FEES_INFO.content} />
+            <IconTooltip
+              title={FEES_INFO.title}
+              content={FEES_INFO.content}
+              testId="fees"
+            />
           </div>
         </div>
         <NumericFormat

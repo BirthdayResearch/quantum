@@ -1,10 +1,10 @@
 import React, {
   createContext,
+  PropsWithChildren,
   useContext,
   useEffect,
   useMemo,
   useState,
-  PropsWithChildren,
 } from "react";
 import { useRouter } from "next/router";
 import { useNetwork } from "wagmi";
@@ -38,6 +38,10 @@ export function NetworkEnvironmentProvider({
   function getNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
     if (chain === undefined) {
       return env.networks.includes(n) ? n : defaultNetwork;
+    }
+    // temporary workaround for local playground to work
+    if (chain?.id === 1337) {
+      return EnvironmentNetwork.LocalPlayground;
     }
     return isEthereumMainNet
       ? EnvironmentNetwork.MainNet
