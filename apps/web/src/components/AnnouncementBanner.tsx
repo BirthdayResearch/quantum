@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoClose } from "react-icons/io5";
 import { satisfies } from "semver";
-import { RootState } from "@store/reducers/rootReducer";
-import { selectVersion } from "@store/slices/versionSlice";
+// import { RootState } from "@store/reducers/rootReducer";
+// import { selectVersion } from "@store/slices/versionSlice";
 import { useLazyBridgeAnnouncements } from "@store/index";
 import { BridgeAnnouncement } from "types";
 import { getStorageItem, setStorageItem } from "@utils/localStorage";
@@ -12,7 +12,8 @@ import { getStorageItem, setStorageItem } from "@utils/localStorage";
 const HIDDEN_ANNOUNCEMENTS_KEY = "hidden-announcements";
 
 export default function AnnouncementBanner() {
-  const appVersion = useSelector((state: RootState) => selectVersion(state));
+  // TODO: Revert after testing preview
+  const appVersion = "1.6.1"; // useSelector((state: RootState) => selectVersion(state));
   const [trigger] = useLazyBridgeAnnouncements();
   const [announcement, setAnnouncement] = useState<{
     id: string;
