@@ -280,6 +280,15 @@ describe('DeFiChain Verify fund Testing', () => {
   });
 
   it('should verify fund in the wallet address and top up UTXO', async () => {
+    // Generate address (index = 4)
+    const res = await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+    const sendAddress = JSON.parse(res.body);
     // Send UTXO to Hot Wallet
     await defichain.playgroundRpcClient?.wallet.sendToAddress(hotWalletAddress, 1);
     await defichain.generateBlock();
@@ -290,7 +299,7 @@ describe('DeFiChain Verify fund Testing', () => {
       [
         {},
         {
-          [localAddress]: `10@BTC`,
+          [sendAddress.address]: `10@BTC`,
         },
       ],
       'number',
@@ -300,7 +309,7 @@ describe('DeFiChain Verify fund Testing', () => {
     const response = await verify({
       amount: '10',
       symbol: 'BTC',
-      address: localAddress,
+      address: sendAddress.address,
       ethReceiverAddress: ethWalletAddress,
       tokenAddress: mwbtcContract.address,
     });

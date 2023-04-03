@@ -21,7 +21,7 @@ export class SendService {
       let signed: TransactionSegWit;
       // To be able to send UTXO DFI
       if (token.symbol === 'DFI') {
-        // this.verifyDFIBalance(token.amount);
+        this.verifyDFIBalance(token.amount);
         signed = await builder.utxo.send(token.amount, to, from);
       } else {
         // Rest of dTokens to use this tx type
