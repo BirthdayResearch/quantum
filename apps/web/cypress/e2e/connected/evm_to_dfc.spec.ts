@@ -184,15 +184,144 @@ async function startEvmMine() {
   cy.hardhatRequest("evm_setIntervalMining", [500]);
 }
 
+function validateRestoreModalInitialState() {
+  // verify restore modal
+  cy.findByTestId("restore-txn-modal").should("be.visible");
+  cy.findByTestId("restore-txn-title").should(
+    "contain.text",
+    "Recover transaction"
+  );
+  cy.findByTestId("restore-txn-msg").should(
+    "contain.text",
+    "Enter your Ethereum transaction ID to load your transaction again for review"
+  );
+  cy.findByTestId("restore-txn-input-label").should(
+    "contain.text",
+    "Transaction ID"
+  );
+  cy.findByTestId("restore-txn-tooltip").realHover();
+  cy.findByTestId("restore-txn-input-container").should(
+    "have.class",
+    "border-dark-300"
+  );
+  cy.findByTestId("restore-txn-tooltip-content")
+    .should("be.visible")
+    .should("contain.text", "Paste from clipboard");
+  cy.findByTestId("restore-txn-input")
+    .invoke("attr", "placeholder")
+    .then((placeholder) => {
+      expect(placeholder).to.equal("Enter Transaction ID");
+    });
+  cy.findByTestId("restore-txn-input-error-msg").should("not.exist");
+  cy.findByTestId("restore-txn-btn")
+    .should("be.disabled")
+    .should("contain.text", "Restore transaction");
+}
+
 beforeEach(() => {
   cy.visitBridgeHomePage();
+  cy.connectMetaMaskWallet();
+});
+
+context("QA-769-5 Connected wallet - Restore Lost Session", () => {
+  it("1: Verify restore button visibility", () => {
+    // shown default
+    cy.findByTestId("transaction-interrupted-msg")
+      .should("be.visible")
+      .should("contain.text", "Transaction interrupted?");
+
+    // hidden when amount is input
+    cy.findByTestId("quick-input-card-set-amount").type("0.001");
+    cy.findByTestId("transaction-interrupted-msg").should("not.exist");
+    cy.findByTestId("quick-input-card-clear-icon").click();
+    cy.findByTestId("transaction-interrupted-msg").should("be.visible");
+
+    // hidden when is DFC > EVM
+    cy.findByTestId("transfer-flow-swap-btn").click();
+    cy.findByTestId("transaction-interrupted-msg").should("not.exist");
+    cy.findByTestId("transfer-flow-swap-btn").click();
+    cy.findByTestId("transaction-interrupted-msg").should("be.visible");
+  });
+
+  it("2: Verify restore modal", () => {
+    cy.findByTestId("restore-btn").click();
+    validateRestoreModalInitialState();
+
+    // verify input error
+    cy.findByTestId("restore-txn-input").type("qwerty123$%");
+    cy.findByTestId("restore-txn-btn").should("be.enabled").click();
+    cy.findByTestId("restore-txn-input-error-msg")
+      .should("be.visible")
+      .should(
+        "contain.text",
+        "Enter a valid Ethereum txid performed on Quantum"
+      );
+    cy.findByTestId("restore-txn-input-container").should(
+      "have.class",
+      "border-error"
+    );
+
+    // verify input cleared
+    cy.findByTestId("restore-txn-clear-icon").click();
+    cy.findByTestId("restore-txn-input").should("contain.text", "");
+    cy.findByTestId("restore-txn-input-error-msg").should("not.exist");
+    cy.findByTestId("restore-txn-input-container").should(
+      "have.class",
+      "border-transparent"
+    );
+    cy.findByTestId("restore-txn-btn").should("be.disabled");
+
+    // close modal
+    cy.findByTestId("restore-txn-modal-close-icon").click();
+    cy.findByTestId("restore-txn-modal").should("not.exist");
+    cy.findByTestId("bridge-form").should("be.visible");
+  });
+});
+
+context("QA-799-6 Restore Lost Session", () => {
+  it("1: Should be able to restore lost session", () => {
+    cy.getMetamaskWalletAddress().then((address) => {
+      if (address !== undefined) {
+        initTransaction(address);
+      }
+    });
+
+    // get unconfirmed txn stored and clear local storage
+    cy.wait(2000);
+    const TXN_HASH_STORAGE_KEY = "bridge.Local.unconfirmed-txn-hash";
+    cy.getLocalStorage(TXN_HASH_STORAGE_KEY).then((value) => {
+      // native way has an issue, that's why library is used to retrieved
+      const unconfirmedTxnHashKeyStorage = value;
+      if (unconfirmedTxnHashKeyStorage === null) {
+        // purposely fail test if no local unconfirmed txn hash in storage
+        cy.contains("Unable to find local unconfirmed txn hash in storage");
+        return;
+      }
+
+      // remove unconfirmed txn has from local storage and refresh page
+      cy.removeLocalStorage(TXN_HASH_STORAGE_KEY);
+      cy.reload();
+      // no more transaction status on going
+      cy.findByTestId("txn-status-container").should("not.exist");
+
+      // open restore modal and use key in unconfirmed txn
+      cy.findByTestId("restore-btn").click();
+      validateRestoreModalInitialState();
+      cy.findByTestId("restore-txn-input").type(
+        JSON.parse(unconfirmedTxnHashKeyStorage)
+      ); // parsing this, so it wouldn't have extra "" surrounding it
+      cy.findByTestId("restore-txn-btn").click();
+
+      // verify transaction status is displayed again
+      validateTransactionStatus(TransactionStatusType.INITIAL);
+    });
+  });
 });
 
 context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
   let connectedWalletAddress: string;
 
   beforeEach(() => {
-    cy.connectMetaMaskWallet();
     cy.getMetamaskWalletAddress().then((address) => {
       if (address !== undefined) {
         connectedWalletAddress = address as string;
@@ -200,7 +329,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     });
   });
 
-  it("should be able to verify locked form and reset form", () => {
+  it("1: should be able to verify locked form and reset form", () => {
     // setup form
     cy.setupBridgeForm(
       true,
@@ -219,7 +348,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     );
   });
 
-  it("should be able to reject transaction and retry", () => {
+  it("2: should be able to reject transaction and retry", () => {
     initTransaction(connectedWalletAddress, true, false);
     // reject metamask
     cy.rejectMetamaskTransaction();
@@ -284,7 +413,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.confirmMetamaskTransaction();
   });
 
-  it("should be able to verify transaction status - failed", () => {
+  it("3: should be able to verify transaction status - failed", () => {
     initTransaction(connectedWalletAddress);
     cy.intercept("POST", "**/ethereum/handleTransaction", {
       statusCode: HttpStatusCode.BadRequest,
@@ -297,7 +426,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     validateTransactionStatus(TransactionStatusType.FAILED);
   });
 
-  it("should be able to verify transaction status - reverted", () => {
+  it("4: should be able to verify transaction status - reverted", () => {
     initTransaction(connectedWalletAddress);
     cy.intercept("POST", "**/ethereum/handleTransaction", {
       statusCode: HttpStatusCode.BadRequest,
@@ -310,7 +439,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     validateTransactionStatus(TransactionStatusType.REVERTED);
   });
 
-  it("should be able to bridge USDT", () => {
+  it("5: should be able to bridge USDT", () => {
     initTransaction(connectedWalletAddress);
     validateTransactionStatus(TransactionStatusType.INITIAL);
     // verify form is not able to proceed another transaction

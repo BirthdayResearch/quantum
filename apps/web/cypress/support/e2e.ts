@@ -16,6 +16,7 @@
 import "@cypress/code-coverage/support";
 import "./commands";
 import "@synthetixio/synpress/support";
+import "cypress-localstorage-commands";
 
 Cypress.on("uncaught:exception", (err) => {
   if (
