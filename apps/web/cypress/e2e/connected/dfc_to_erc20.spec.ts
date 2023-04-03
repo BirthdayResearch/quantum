@@ -53,7 +53,7 @@ function validateStep(stepNumber: number) {
   });
 }
 
-describe("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
+context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
   let connectedWalletAddress: string;
   const fee = "0.0012";
   const toReceive = "0.3988";

@@ -188,7 +188,7 @@ beforeEach(() => {
   cy.visitBridgeHomePage();
 });
 
-describe("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
+context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
   let connectedWalletAddress: string;
 
   beforeEach(() => {

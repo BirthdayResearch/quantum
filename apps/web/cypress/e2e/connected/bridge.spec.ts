@@ -5,7 +5,7 @@ beforeEach(() => {
   cy.visitBridgeHomePage();
 });
 
-describe("QA-769-1 Connected wallet - Connect wallet", () => {
+context("QA-769-1 Connected wallet - Connect wallet", () => {
   it("QA-769-1-1 should show connect wallet popup", () => {
     cy.verifyConnectWalletPopUp();
   });
