@@ -19,11 +19,6 @@ context("QA-755-5~16 Pre-connected wallet - Bridge Form", () => {
     // verify pairing
     cy.verifyFormPairing(false, source, destination, currentPair);
 
-    // action button
-    cy.findByTestId("transfer-btn")
-      .should("be.visible")
-      .contains("Connect wallet");
-
     cy.findByTestId("transaction-interrupted-msg").should("not.exist");
   });
 

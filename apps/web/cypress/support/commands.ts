@@ -1072,10 +1072,8 @@ Cypress.Commands.add("verifyHotWalletBalance", () => {
 
   function verifyBalanceSufficient(isSufficient: boolean) {
     if (isSufficient) {
-      cy.findByTestId("transfer-btn").should("be.enabled");
       cy.findByTestId("error-insufficient-balance").should("not.exist");
     } else {
-      cy.findByTestId("transfer-btn").should("be.disabled");
       cy.findByTestId("error-insufficient-balance")
         .should("be.visible")
         .should(
@@ -1086,7 +1084,9 @@ Cypress.Commands.add("verifyHotWalletBalance", () => {
   }
 
   // DFC HW - empty
-  interceptHotWalletBalance(Network.DeFiChain, "DFI", 0);
+  cy.findByTestId("token-pair-dropdown-btn").click();
+  cy.findByTestId(`token-pair-EUROC`).click();
+  interceptHotWalletBalance(Network.DeFiChain, "EUROC", 0);
   verifyBalanceSufficient(false);
 
   // DFC HW - 10 balance

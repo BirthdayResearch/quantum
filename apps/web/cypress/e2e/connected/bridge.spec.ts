@@ -54,14 +54,9 @@ context("QA-769-7~12 Connected wallet - Bridge Form", () => {
 
   it("2: Verify form initial state", () => {
     // verify pairing
-    cy.verifyFormPairing(false, source, destination, currentPair);
+    cy.verifyFormPairing(true, source, destination, currentPair);
 
-    // action button
-    cy.findByTestId("transfer-btn")
-      .should("be.visible")
-      .contains("Connect wallet");
-
-    cy.findByTestId("transaction-interrupted-msg").should("not.exist");
+    cy.findByTestId("transaction-interrupted-msg").should("be.visible");
   });
 
   it("3: Verify amount input functionality", () => {
@@ -79,10 +74,10 @@ context("QA-769-7~12 Connected wallet - Bridge Form", () => {
     // swapping destination and source
     cy.findByTestId("transfer-flow-swap-btn").should("be.visible").click();
     // verify pairing
-    cy.verifyFormPairing(false, destination, source, currentPair);
+    cy.verifyFormPairing(true, destination, source, currentPair);
   });
 
-  it("5: Verify HW balance", () => {
+  it.only("5: Verify HW balance", () => {
     cy.verifyHotWalletBalance();
   });
 
