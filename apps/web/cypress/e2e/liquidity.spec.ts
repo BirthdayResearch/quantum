@@ -21,7 +21,7 @@ networkConfigs.forEach((networkItem) => {
       it("should check Proof of Backing link", () => {
         cy.findByTestId("POB.Url")
           .should("have.attr", "href")
-          .and("include", "https://defiscan.live/proof-of-backing"); //TODO: add check for the mainnet by default after fix
+          .and("include", "https://defiscan.live/proof-of-backing");
       });
 
       it("should check that Addresses links are correct", () => {
