@@ -254,7 +254,7 @@ export default function OverviewList({ balances }) {
                   </div>
                   <FiChevronDown
                     className="h-6 w-6 text-dark-1000 transition-[transform]"
-                    data-testid={"Mobile.Card.DropdownArrow"}
+                    data-testid="mobile-card-dropdownArrow"
                   />
                 </div>
               </Disclosure.Button>

@@ -62,12 +62,12 @@ networkConfigs.forEach((networkItem) => {
         });
 
         it("should check navigation between Bridge and Liquidity pages", () => {
-          cy.get("a[data-testid='Navigation.Bridge']")
+          cy.get("a[data-testid='navigation-bridge']")
             .last()
             .should("be.visible")
             .click();
           cy.url().should("not.contain", "liquidity");
-          cy.get("a[data-testid='Navigation.Liquidity']")
+          cy.get("a[data-testid='navigation-liquidity']")
             .last()
             .should("be.visible")
             .click();
@@ -75,12 +75,12 @@ networkConfigs.forEach((networkItem) => {
         });
 
         it("should check responsive design for the Liquidity table elements", () => {
-          cy.get("svg[data-testid='Mobile.Card.DropdownArrow']").should(
+          cy.get("svg[data-testid='mobile-card-dropdownArrow']").should(
             "have.length",
             6
           );
           cy.viewport(desktopViewPort);
-          cy.get("svg[data-testid='Mobile.Card.DropdownArrow']").should(
+          cy.get("svg[data-testid='mobile-card-dropdownArrow']").should(
             "have.length",
             0
           );
