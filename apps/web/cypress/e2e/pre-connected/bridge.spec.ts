@@ -17,7 +17,7 @@ context("QA-755-5~16 Pre-connected wallet - Bridge Form", () => {
 
   it("2: Verify form initial state", () => {
     // verify pairing
-    cy.validateFormPairing(false, source, destination, currentPair);
+    cy.verifyFormPairing(false, source, destination, currentPair);
 
     // action button
     cy.findByTestId("transfer-btn")
@@ -42,7 +42,7 @@ context("QA-755-5~16 Pre-connected wallet - Bridge Form", () => {
     // swapping destination and source
     cy.findByTestId("transfer-flow-swap-btn").should("be.visible").click();
     // verify pairing
-    cy.validateFormPairing(false, destination, source, currentPair);
+    cy.verifyFormPairing(false, destination, source, currentPair);
   });
 
   it("5: Verify HW balance", () => {

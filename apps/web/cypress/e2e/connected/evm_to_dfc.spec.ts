@@ -48,7 +48,7 @@ function waitUntilBlocksConfirm(): void {
     });
 }
 
-function validateTransactionStatus(status: TransactionStatusType) {
+function verifyTransactionStatus(status: TransactionStatusType) {
   cy.findByTestId("txn-status-container").should("be.visible");
 
   let borderColor;
@@ -147,7 +147,7 @@ function initTransaction(
   // wait for contract
   cy.wait(3000);
 
-  cy.validateConfirmTransferModal(
+  cy.verifyConfirmTransferModal(
     formData.sourceNetwork,
     formData.tokenPair,
     formData.amount,
@@ -184,7 +184,7 @@ async function startEvmMine() {
   cy.hardhatRequest("evm_setIntervalMining", [500]);
 }
 
-function validateRestoreModalInitialState() {
+function verifyRestoreModalInitialState() {
   // verify restore modal
   cy.findByTestId("restore-txn-modal").should("be.visible");
   cy.findByTestId("restore-txn-title").should(
@@ -245,7 +245,7 @@ context("QA-769-5 Connected wallet - Restore Lost Session", () => {
 
   it("2: Verify restore modal", () => {
     cy.findByTestId("restore-btn").click();
-    validateRestoreModalInitialState();
+    verifyRestoreModalInitialState();
 
     // verify input error
     cy.findByTestId("restore-txn-input").type("qwerty123$%");
@@ -306,14 +306,14 @@ context("QA-799-6 Restore Lost Session", () => {
 
       // open restore modal and use key in unconfirmed txn
       cy.findByTestId("restore-btn").click();
-      validateRestoreModalInitialState();
+      verifyRestoreModalInitialState();
       cy.findByTestId("restore-txn-input").type(
         JSON.parse(unconfirmedTxnHashKeyStorage)
       ); // parsing this, so it wouldn't have extra "" surrounding it
       cy.findByTestId("restore-txn-btn").click();
 
       // verify transaction status is displayed again
-      validateTransactionStatus(TransactionStatusType.INITIAL);
+      verifyTransactionStatus(TransactionStatusType.INITIAL);
     });
   });
 });
@@ -367,7 +367,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       .should("contain.text", "Close")
       .click();
 
-    cy.validateUtilityModal({
+    cy.verifyUtilityModal({
       title: "Are you sure you want to leave your transaction?",
       message:
         "You may lose any pending transaction and funds related to it. This is irrecoverable, proceed with caution",
@@ -376,7 +376,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       clickButton: UtilityButtonType.PRIMARY,
     });
 
-    cy.validateLockedForm(
+    cy.verifyLockedForm(
       formData.sourceNetwork,
       formData.destinationNetwork,
       formData.tokenPair,
@@ -388,7 +388,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.findByTestId("transfer-btn").click();
     // wait for contract
     cy.wait(3000);
-    cy.validateConfirmTransferModal(
+    cy.verifyConfirmTransferModal(
       formData.sourceNetwork,
       formData.tokenPair,
       formData.amount,
@@ -423,7 +423,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       },
     });
 
-    validateTransactionStatus(TransactionStatusType.FAILED);
+    verifyTransactionStatus(TransactionStatusType.FAILED);
   });
 
   it("4: should be able to verify transaction status - reverted", () => {
@@ -436,12 +436,12 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
       },
     });
 
-    validateTransactionStatus(TransactionStatusType.REVERTED);
+    verifyTransactionStatus(TransactionStatusType.REVERTED);
   });
 
   it("5: should be able to bridge USDT", () => {
     initTransaction(connectedWalletAddress);
-    validateTransactionStatus(TransactionStatusType.INITIAL);
+    verifyTransactionStatus(TransactionStatusType.INITIAL);
     // verify form is not able to proceed another transaction
     cy.findByTestId("transfer-btn")
       .should("be.disabled")
@@ -457,7 +457,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.findByTestId("txn-progress-status").should("contain.text", "For DFC");
     // continue verify blocks
     waitUntilBlocksConfirm();
-    validateTransactionStatus(TransactionStatusType.CONFIRM);
+    verifyTransactionStatus(TransactionStatusType.CONFIRM);
 
     // verify transfer button is enabled
     cy.findByTestId("transfer-btn")

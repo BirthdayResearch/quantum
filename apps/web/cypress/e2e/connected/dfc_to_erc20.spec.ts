@@ -27,7 +27,7 @@ enum ContentLabel {
   ThrottleLimit = "Please wait for a minute and try again.",
 }
 
-function validateStep(stepNumber: number) {
+function verifyStep(stepNumber: number) {
   DfcToErcTransferSteps.forEach(({ step, label }, idx) => {
     cy.findByTestId(`erc-transfer-step-${idx}`).within(() => {
       // Verify step node
@@ -106,7 +106,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
       "Review transaction"
     );
 
-    cy.validateConfirmTransferModal(
+    cy.verifyConfirmTransferModal(
       formData.sourceNetwork,
       formData.tokenPair,
       formData.amount,
@@ -123,7 +123,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
 
       // verify step 1
       // validating progress step
-      validateStep(1);
+      verifyStep(1);
 
       cy.findByTestId("erc-transfer-step-one").should("be.visible");
 
@@ -153,7 +153,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
 
       // verify Step 2
       // validating progress step
-      validateStep(2);
+      verifyStep(2);
 
       cy.wait(600); // to wait for QR code to load
       cy.findByTestId("temp-defichain-sending-qr-address").should("be.visible");
@@ -176,7 +176,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
         .should("be.visible")
         .click();
 
-      validateStep(3);
+      verifyStep(3);
 
       cy.findByTestId("erc-transfer-step-three").should("be.visible");
 
@@ -242,7 +242,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
       "Review transaction"
     );
 
-    cy.validateConfirmTransferModal(
+    cy.verifyConfirmTransferModal(
       formData.sourceNetwork,
       formData.tokenPair,
       formData.amount,
@@ -258,7 +258,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
 
       // verify step 1
       // validating progress step
-      validateStep(1);
+      verifyStep(1);
 
       cy.findByTestId("erc-transfer-step-one").should("be.visible");
 
@@ -288,7 +288,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
 
       // verify Step 2
       // validating progress step
-      validateStep(2);
+      verifyStep(2);
 
       cy.wait(1000); // to wait for QR code to load
       cy.findByTestId("temp-defichain-sending-qr-address").should("be.visible");

@@ -28,7 +28,7 @@ context("QA-769-1 Connected wallet - Connect wallet", () => {
       .should("contain.text", "Local");
 
     // verify pairing
-    cy.validateFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
+    cy.verifyFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
   });
 });
 
@@ -54,7 +54,7 @@ context("QA-769-7~12 Connected wallet - Bridge Form", () => {
 
   it("2: Verify form initial state", () => {
     // verify pairing
-    cy.validateFormPairing(false, source, destination, currentPair);
+    cy.verifyFormPairing(false, source, destination, currentPair);
 
     // action button
     cy.findByTestId("transfer-btn")
@@ -79,7 +79,7 @@ context("QA-769-7~12 Connected wallet - Bridge Form", () => {
     // swapping destination and source
     cy.findByTestId("transfer-flow-swap-btn").should("be.visible").click();
     // verify pairing
-    cy.validateFormPairing(false, destination, source, currentPair);
+    cy.verifyFormPairing(false, destination, source, currentPair);
   });
 
   it("5: Verify HW balance", () => {
@@ -123,6 +123,6 @@ context("QA-799-1 Disconnect wallet", () => {
     cy.connectMetaMaskWallet();
     cy.findByTestId("wallet-button").should("be.visible");
     cy.disconnectMetaMaskWallet();
-    cy.validateFormPairing(false, Network.Ethereum, Network.DeFiChain, "DFI");
+    cy.verifyFormPairing(false, Network.Ethereum, Network.DeFiChain, "DFI");
   });
 });
