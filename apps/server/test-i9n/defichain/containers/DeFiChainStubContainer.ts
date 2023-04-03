@@ -10,6 +10,8 @@ import {
 import { WhaleApiClient } from '@defichain/whale-api-client';
 import { Network } from 'testcontainers';
 
+import { sleep } from '../../helper/sleep';
+
 /**
  * DeFiChain Container that runs all necessary containers (Playground, Whale, Ain).
  *
@@ -52,6 +54,7 @@ export class StartedDeFiChainStubContainer {
 
   async generateBlock(): Promise<void> {
     await this.playgroundClient.rpc.call('generatetoaddress', [10, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
+    await sleep(3000);
   }
 
   async getWhaleURL(): Promise<string> {
