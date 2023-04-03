@@ -132,7 +132,7 @@ export default function BridgeForm({
     watch: false,
     ...(isSendingFromEthNetwork &&
       selectedTokensA.tokenA.name !== ETHEREUM_SYMBOL && {
-        token: Erc20Tokens[selectedTokensA.tokenA.name].address,
+        token: Erc20Tokens[selectedTokensA.tokenA.name]?.address ?? "",
       }),
   });
 

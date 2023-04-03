@@ -30,8 +30,6 @@ export function useTokensContext(): TokenContextI {
 export function TokensProvider({ children }: PropsWithChildren<{}>) {
   const { filteredNetwork } = useNetworkContext();
 
-  // if network dint change then dont update the filteredNetwork
-
   const [defaultNetworkA, defaultNetworkB] = filteredNetwork;
   const [selectedNetworkA, setSelectedNetworkA] =
     useState<NetworkOptionsI>(defaultNetworkA);
@@ -76,7 +74,12 @@ export function TokensProvider({ children }: PropsWithChildren<{}>) {
   };
 
   const handleFilteredNetworkChange = () => {
-    resetNetworkSelection();
+    if (
+      defaultNetworkA.name !== selectedNetworkA.name ||
+      defaultNetworkB.name !== selectedNetworkB.name
+    ) {
+      resetNetworkSelection();
+    }
   };
 
   useMemo(() => handleFilteredNetworkChange(), [filteredNetwork]);

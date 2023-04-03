@@ -91,18 +91,18 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/dUSDC.svg",
         },
       },
-      {
-        tokenA: {
-          name: "EUROC",
-          symbol: "EUROC",
-          icon: "/tokens/EUROC.svg",
-        },
-        tokenB: {
-          name: "dEUROC",
-          symbol: "EUROC",
-          icon: "/tokens/dEUROC.svg",
-        },
-      },
+      // {
+      //   tokenA: {
+      //     name: "EUROC",
+      //     symbol: "EUROC",
+      //     icon: "/tokens/EUROC.svg",
+      //   },
+      //   tokenB: {
+      //     name: "dEUROC",
+      //     symbol: "EUROC",
+      //     icon: "/tokens/dEUROC.svg",
+      //   },
+      // },
     ],
   },
   {
@@ -170,18 +170,18 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/USDC.svg",
         },
       },
-      {
-        tokenA: {
-          name: "dEUROC",
-          symbol: "EUROC",
-          icon: "/tokens/dEUROC.svg",
-        },
-        tokenB: {
-          name: "EUROC",
-          symbol: "EUROC",
-          icon: "/tokens/EUROC.svg",
-        },
-      },
+      // {
+      //   tokenA: {
+      //     name: "dEUROC",
+      //     symbol: "EUROC",
+      //     icon: "/tokens/dEUROC.svg",
+      //   },
+      //   tokenB: {
+      //     name: "EUROC",
+      //     symbol: "EUROC",
+      //     icon: "/tokens/EUROC.svg",
+      //   },
+      // },
     ],
   },
 ];
@@ -200,6 +200,8 @@ export function NetworkProvider({
   const [filteredNetwork, setFilteredNetwork] =
     useState<[NetworkI<Erc20Token>, NetworkI<string>]>(networks);
   const { data } = useBridgeSettingsQuery();
+
+  // console.log("data", data);
 
   useEffect(() => {
     if (data) {
