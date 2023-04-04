@@ -44,6 +44,9 @@ export class TransactionsDto {
     readonly blockHeight: string | null,
     readonly amount: string | null,
     readonly timestamp: string,
+    readonly status: string,
+    readonly sendTransactionHash: string | null,
+    readonly unconfirmedSendTransactionHash: string | null,
   ) {}
 }
 

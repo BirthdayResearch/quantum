@@ -1,12 +1,29 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
+import { SupportedEVMTokenSymbols } from 'src/AppConfig';
 
+import { TransactionsDto } from '../../../src/ethereum/EthereumInterface';
+import { PrismaService } from '../../../src/PrismaService';
 import { StartedDeFiChainStubContainer } from '../../defichain/containers/DeFiChainStubContainer';
 import { BridgeServerTestingApp } from '../BridgeServerTestingApp';
+import { mockTransactions } from '../mockData/transactions';
 import { buildTestConfig, TestingModule } from '../TestingModule';
+
+function verifyFormat(parsedPayload: TransactionsDto) {
+  expect(parsedPayload).toHaveProperty('txHash');
+  expect(parsedPayload).toHaveProperty('token');
+  expect(parsedPayload).toHaveProperty('blockHash');
+  expect(parsedPayload).toHaveProperty('blockHeight');
+  expect(parsedPayload).toHaveProperty('amount');
+  expect(parsedPayload).toHaveProperty('timestamp');
+  expect(parsedPayload).toHaveProperty('status');
+  expect(parsedPayload).toHaveProperty('sendTransactionHash');
+  expect(parsedPayload).toHaveProperty('unconfirmedSendTransactionHash');
+}
 
 describe('Transactions Service Test', () => {
   let testing: BridgeServerTestingApp;
   let startedPostgresContainer: StartedPostgreSqlContainer;
+  let prismaService: PrismaService;
 
   beforeAll(async () => {
     startedPostgresContainer = await new PostgreSqlContainer().start();
@@ -20,7 +37,10 @@ describe('Transactions Service Test', () => {
       ),
     );
 
-    await testing.start();
+    const app = await testing.start();
+
+    prismaService = app.get<PrismaService>(PrismaService);
+    await prismaService.bridgeEventTransactions.createMany({ data: mockTransactions });
   });
 
   afterAll(async () => {
@@ -108,10 +128,41 @@ describe('Transactions Service Test', () => {
   it(`should accept a valid fromDate & toDate pair`, async () => {
     const txReceipt = await testing.inject({
       method: 'GET',
-      url: `/ethereum/transactions?fromDate=2023-03-15&toDate=2023-03-16`,
+      url: `/ethereum/transactions?fromDate=2023-03-27&toDate=2023-03-30`,
     });
 
     const parsedPayload = JSON.parse(txReceipt.payload);
-    expect(parsedPayload).toBeTruthy();
+
+    expect(parsedPayload).toHaveLength(mockTransactions.length);
+
+    // Two different ways of verifying payload content
+    parsedPayload.forEach((p: any) => verifyFormat(p));
+
+    parsedPayload.forEach((p: any) => {
+      const {
+        transactionHash,
+        status,
+        sendTransactionHash,
+        createdAt,
+        amount,
+        tokenSymbol,
+        blockHash,
+        blockHeight,
+        unconfirmedSendTransactionHash,
+      } = mockTransactions.filter((m) => m.transactionHash === p.txHash)[0];
+      expect(p).toMatchObject(
+        new TransactionsDto(
+          transactionHash,
+          tokenSymbol as SupportedEVMTokenSymbols,
+          blockHash,
+          blockHeight,
+          amount,
+          createdAt.toISOString(),
+          status,
+          sendTransactionHash,
+          unconfirmedSendTransactionHash,
+        ),
+      );
+    });
   });
 });

@@ -36,6 +36,9 @@ export class EthereumTransactionsService {
             t.blockHeight,
             t.amount ?? '',
             t.createdAt.toISOString(),
+            t.status,
+            t.sendTransactionHash,
+            t.unconfirmedSendTransactionHash,
           ),
       );
     } catch (e: any) {
