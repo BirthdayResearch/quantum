@@ -51,6 +51,7 @@ export default function StepOneInitiate({
               title={TRANSACTION_ERROR_INFO.title}
               content={TRANSACTION_ERROR_INFO.content}
               customIconColor="text-dark-900"
+              testId="transaction-error-info"
             />
           </button>
         </div>

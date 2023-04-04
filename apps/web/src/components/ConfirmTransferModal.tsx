@@ -198,6 +198,7 @@ export default function ConfirmTransferModal({
               title={FEES_INFO.title}
               content={FEES_INFO.content}
               position="right"
+              testId="fees-info"
             />
           </div>
         </div>

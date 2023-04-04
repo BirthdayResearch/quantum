@@ -234,7 +234,10 @@ export default function StepTwoSendConfirmation({
               </div>
             </div>
             {sourceDetail.tokenName === "DFI" && (
-              <div className="text-xs text-warning pt-1 md:pt-0">
+              <div
+                className="text-xs text-warning pt-1 md:pt-0"
+                data-testid="dfi-warning"
+              >
                 Please only send DFI (UTXO) tokens.
               </div>
             )}
@@ -275,7 +278,10 @@ export default function StepTwoSendConfirmation({
 
       {/* Web info message */}
       <div className="hidden md:block">
-        <AlertInfoMessage containerStyle="p-4 mt-6 order-last">
+        <AlertInfoMessage
+          containerStyle="p-4 mt-6 order-last"
+          testId="irreversible"
+        >
           {WarningMessage()}
         </AlertInfoMessage>
       </div>

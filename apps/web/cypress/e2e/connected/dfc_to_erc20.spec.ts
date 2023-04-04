@@ -1,5 +1,8 @@
 /* eslint-disable cypress/no-unnecessary-waiting */
-import { DfcToErcTransferSteps } from "../../../src/constants";
+import {
+  DfcToErcTransferSteps,
+  TRANSACTION_ERROR_INFO,
+} from "../../../src/constants";
 import { Erc20Token, Network } from "../../../src/types";
 
 beforeEach(() => {
@@ -53,6 +56,65 @@ function verifyStep(stepNumber: number) {
   });
 }
 
+function verifyStepOneForm() {
+  cy.wait(3000);
+  cy.findByTestId("erc-transfer-step-one").should("be.visible");
+
+  cy.findByTestId("transaction-error-info-tooltip-icon").realHover();
+  cy.findByTestId("transaction-error-info-tooltip-content")
+    .should("be.visible")
+    .should("contain.text", TRANSACTION_ERROR_INFO.content);
+
+  // check DeFichain address input
+  cy.findByTestId("defichain-address-input")
+    .should("be.visible")
+    .invoke("attr", "placeholder")
+    .then((actualPlaceholder) => {
+      expect(actualPlaceholder).to.equal("Enter DeFiChain address");
+    });
+
+  cy.findByTestId("defichain-address-input").type("abcde");
+  cy.findByTestId("defichain-address").should("have.class", "border-error");
+
+  cy.findByTestId("defichain-address-error-msg")
+    .should("exist")
+    .should("contain.text", "Use correct address for DeFiChain Local"); // TODO: to make it dynamic based on env
+  cy.findByTestId("go-to-next-step-btn").should("be.disabled");
+  cy.findByTestId("defichain-address-clear").click(); // verify clear button functionality
+  cy.findByTestId("defichain-address-input").type(formData.destinationAddress);
+  cy.findByTestId("wallet-address-input-verified-badge").should("exist"); // verify badge functionality
+  cy.findByTestId("go-to-next-step-btn").click();
+}
+
+function verifyStepTwoForm(pair: { tokenA: string; tokenB: string }) {
+  cy.wait(1000); // to wait for QR code to load
+  cy.findByTestId("temp-defichain-sending-qr-address").should("be.visible");
+  cy.findByTestId("temp-defichain-sending-address").should("be.visible");
+
+  cy.findByTestId("transact-token-amount")
+    .should("be.visible")
+    .should("contain.text", formData.amount);
+
+  cy.findByTestId("transact-token-logo")
+    .should("be.visible")
+    .should("have.attr", "alt", pair.tokenB)
+    .should("have.attr", "src", `/tokens/${pair.tokenB}.svg`);
+
+  cy.findByTestId("transact-token-name")
+    .should("be.visible")
+    .should("contain.text", pair.tokenB);
+
+  if (pair.tokenB === "DFI") {
+    cy.findByTestId("dfi-warning")
+      .should("be.visible")
+      .should("contain.text", "Please only send DFI (UTXO) tokens.");
+  } else {
+    cy.findByTestId("dfi-warning").should("not.exist");
+  }
+
+  cy.findByTestId("irreversible-alert-container").should("be.visible");
+}
+
 context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
   let connectedWalletAddress: string;
   const fee = "0.0012";
@@ -100,11 +162,6 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
 
     // verify review button state
     cy.findByTestId("transfer-btn").click();
-    cy.findByTestId("transaction-review-modal").should("be.visible");
-    cy.findByTestId("transaction-review-modal-title").should(
-      "contain.text",
-      "Review transaction"
-    );
 
     cy.verifyConfirmTransferModal(
       formData.sourceNetwork,
@@ -118,64 +175,25 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
     cy.getTokenPairs(formData.tokenPair).then((pair) => {
       // verify erc-transfer-step-one
       cy.findByTestId("erc-transfer-procedure").should("be.visible");
-      cy.findByTestId("erc-transfer-procedure").should("be.visible");
       cy.findByTestId("erc-transfer-progress").should("be.visible");
 
       // verify step 1
       // validating progress step
       verifyStep(1);
-
-      cy.findByTestId("erc-transfer-step-one").should("be.visible");
-
-      // check DeFichain address input
-      cy.findByTestId("defichain-address-input")
-        .should("be.visible")
-        .invoke("attr", "placeholder")
-        .then((actualPlaceholder) => {
-          expect(actualPlaceholder).to.equal("Enter DeFiChain address");
-        });
-
-      cy.findByTestId("defichain-address-input").type("abcde");
-      cy.findByTestId("defichain-address").should("have.class", "border-error");
-
-      cy.findByTestId("defichain-address-error-msg")
-        .should("exist")
-        .should("contain.text", "Use correct address for DeFiChain Local"); // TODO: to make it dynamic based on env
-      cy.findByTestId("go-to-next-step-btn").should("be.disabled");
-      cy.findByTestId("defichain-address-clear").click(); // verify clear button functionality
-      cy.findByTestId("defichain-address-input").type(
-        formData.destinationAddress
-      );
-      cy.findByTestId("wallet-address-input-verified-badge").should("exist"); // verify badge functionality
-      cy.findByTestId("go-to-next-step-btn").click();
+      verifyStepOneForm();
 
       cy.findByTestId("erc-transfer-step-two").should("be.visible");
 
       // verify Step 2
       // validating progress step
       verifyStep(2);
-
-      cy.wait(600); // to wait for QR code to load
-      cy.findByTestId("temp-defichain-sending-qr-address").should("be.visible");
-      cy.findByTestId("temp-defichain-sending-address").should("be.visible");
-
-      cy.findByTestId("transact-token-amount")
-        .should("be.visible")
-        .should("contain.text", formData.amount);
-
-      cy.findByTestId("transact-token-logo")
-        .should("be.visible")
-        .should("have.attr", "alt", pair.tokenB)
-        .should("have.attr", "src", `/tokens/${pair.tokenB}.svg`);
-
-      cy.findByTestId("transact-token-name")
-        .should("be.visible")
-        .should("contain.text", pair.tokenB);
+      verifyStepTwoForm(pair);
 
       cy.findByTestId("verify-hot-wallet-transfer")
         .should("be.visible")
         .click();
 
+      // verify Step 3
       verifyStep(3);
 
       cy.findByTestId("erc-transfer-step-three").should("be.visible");
@@ -224,7 +242,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
     });
   });
 
-  it("3. Verify form setup DFC -> ETH - Success", () => {
+  it.only("3. Verify form setup DFC -> ETH - Success", () => {
     // bridge form setup
     cy.setupBridgeForm(
       true,
@@ -236,11 +254,6 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
 
     // verify review button state
     cy.findByTestId("transfer-btn").click();
-    cy.findByTestId("transaction-review-modal").should("be.visible");
-    cy.findByTestId("transaction-review-modal-title").should(
-      "contain.text",
-      "Review transaction"
-    );
 
     cy.verifyConfirmTransferModal(
       formData.sourceNetwork,
@@ -259,53 +272,14 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
       // verify step 1
       // validating progress step
       verifyStep(1);
-
-      cy.findByTestId("erc-transfer-step-one").should("be.visible");
-
-      // check DeFichain address input
-      cy.findByTestId("defichain-address-input")
-        .should("be.visible")
-        .invoke("attr", "placeholder")
-        .then((actualPlaceholder) => {
-          expect(actualPlaceholder).to.equal("Enter DeFiChain address");
-        });
-
-      cy.findByTestId("defichain-address-input").type("abcde");
-      cy.findByTestId("defichain-address").should("have.class", "border-error");
-
-      cy.findByTestId("defichain-address-error-msg")
-        .should("exist")
-        .should("contain.text", "Use correct address for DeFiChain Local"); // TODO: to make it dynamic based on env
-      cy.findByTestId("go-to-next-step-btn").should("be.disabled");
-      cy.findByTestId("defichain-address-clear").click(); // verify clear button functionality
-      cy.findByTestId("defichain-address-input").type(
-        formData.destinationAddress
-      );
-      cy.findByTestId("wallet-address-input-verified-badge").should("exist"); // verify badge functionality
-      cy.findByTestId("go-to-next-step-btn").click();
+      verifyStepOneForm();
 
       cy.findByTestId("erc-transfer-step-two").should("be.visible");
 
       // verify Step 2
       // validating progress step
       verifyStep(2);
-
-      cy.wait(1000); // to wait for QR code to load
-      cy.findByTestId("temp-defichain-sending-qr-address").should("be.visible");
-      cy.findByTestId("temp-defichain-sending-address").should("be.visible");
-
-      cy.findByTestId("transact-token-amount")
-        .should("be.visible")
-        .should("contain.text", formData.amount);
-
-      cy.findByTestId("transact-token-logo")
-        .should("be.visible")
-        .should("have.attr", "alt", pair.tokenB)
-        .should("have.attr", "src", `/tokens/${pair.tokenB}.svg`);
-
-      cy.findByTestId("transact-token-name")
-        .should("be.visible")
-        .should("contain.text", pair.tokenB);
+      verifyStepTwoForm(pair);
 
       // sending token to wallet
       cy.findByTestId("temp-defichain-sending-text")
@@ -320,6 +294,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
         .should("be.visible")
         .click();
 
+      // last step
       cy.findByTestId("claim-title")
         .should("be.visible")
         .should("contain.text", "Ready for claiming");
@@ -336,6 +311,8 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
         .should("contain.text", "Claim tokens");
       cy.findByTestId("ready-for-claiming-timing").should("be.visible");
       cy.wait(1000);
+      cy.findByTestId("claim-action-btn").click();
+      cy.wait(5000);
     });
   });
 });

@@ -1,6 +1,6 @@
 import "@testing-library/cypress/add-commands";
 import { Erc20Token, Network } from "../../src/types";
-import { DISCLAIMER_MESSAGE } from "../../src/constants";
+import { DISCLAIMER_MESSAGE, FEES_INFO } from "../../src/constants";
 import {
   LOCAL_BASE_URL,
   MaintenanceSocialLinks,
@@ -810,6 +810,7 @@ Cypress.Commands.add(
       }
 
       // check review transaction modal
+      cy.findByTestId("transaction-review-modal").should("be.visible");
       cy.findByTestId("transaction-review-modal-title").should(
         "contain.text",
         "Review transaction"
@@ -900,6 +901,11 @@ Cypress.Commands.add(
           "Transactions on-chain are irreversible. Ensure your transaction details are correct and funds are sent in a single transaction, with a stable network connection."
         );
       }
+
+      cy.findByTestId("fees-info-tooltip-icon").realHover();
+      cy.findByTestId("fees-info-tooltip-content")
+        .should("be.visible")
+        .should("contain.text", FEES_INFO.content);
 
       cy.findByTestId("transaction-fees-amount")
         .invoke("text")
