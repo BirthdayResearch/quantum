@@ -128,7 +128,7 @@ describe('Transactions Service Test', () => {
   it(`should accept a valid fromDate & toDate pair`, async () => {
     const txReceipt = await testing.inject({
       method: 'GET',
-      url: `/ethereum/transactions?fromDate=2023-03-27&toDate=2023-03-30`,
+      url: `/ethereum/transactions?fromDate=2023-03-27&toDate=2023-03-29`,
     });
 
     const parsedPayload = JSON.parse(txReceipt.payload);
@@ -164,5 +164,17 @@ describe('Transactions Service Test', () => {
         ),
       );
     });
+  });
+
+  it(`should filter out dates`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/transactions?fromDate=2023-03-27&toDate=2023-03-27`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload).toHaveLength(1);
+    expect(parsedPayload[0].timestamp).toBe('2023-03-27T03:50:56.503Z');
   });
 });

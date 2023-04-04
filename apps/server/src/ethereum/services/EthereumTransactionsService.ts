@@ -18,6 +18,10 @@ export class EthereumTransactionsService {
         throw new BadRequestException(`fromDate cannot be more recent than toDate`);
       }
 
+      // dateTo less than or equal to 23:59:59:999 is equivalent to
+      // dateTo less than (dateTo + 1)
+      dateTo.setDate(dateTo.getDate() + 1);
+
       const transactions = await this.prisma.bridgeEventTransactions.findMany({
         where: {
           createdAt: {
