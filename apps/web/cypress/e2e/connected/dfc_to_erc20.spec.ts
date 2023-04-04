@@ -14,7 +14,7 @@ const formData = {
   destinationNetwork: Network.Ethereum,
   tokenPair: "USDT" as Erc20Token,
   amount: "0.4",
-  destinationAddress: "bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d",
+  refundAddress: "bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d",
 };
 
 enum TitleLabel {
@@ -82,7 +82,7 @@ function verifyStepOneForm() {
     .should("contain.text", "Use correct address for DeFiChain Local"); // TODO: to make it dynamic based on env
   cy.findByTestId("go-to-next-step-btn").should("be.disabled");
   cy.findByTestId("defichain-address-clear").click(); // verify clear button functionality
-  cy.findByTestId("defichain-address-input").type(formData.destinationAddress);
+  cy.findByTestId("defichain-address-input").type(formData.refundAddress);
   cy.findByTestId("wallet-address-input-verified-badge").should("exist"); // verify badge functionality
   cy.findByTestId("go-to-next-step-btn").click();
 }
@@ -136,8 +136,7 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
       true,
       formData.sourceNetwork,
       formData.tokenPair,
-      formData.amount,
-      formData.destinationAddress
+      formData.amount
     );
 
     // verify locked and test reset form
@@ -151,14 +150,13 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
     );
   });
 
-  it("2. Verify form setup DFC -> ETH - Transfer not verified (not sending any token)", () => {
+  it.only("2. Verify form setup DFC -> ETH - Transfer not verified (not sending any token)", () => {
     // bridge form setup
     cy.setupBridgeForm(
       true,
       formData.sourceNetwork,
       formData.tokenPair,
-      formData.amount,
-      formData.destinationAddress
+      formData.amount
     );
 
     // verify review button state
@@ -243,14 +241,13 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
     });
   });
 
-  it.only("3. Verify form setup DFC -> ETH - Success", () => {
+  it("3. Verify form setup DFC -> ETH - Success", () => {
     // bridge form setup
     cy.setupBridgeForm(
       true,
       formData.sourceNetwork,
       formData.tokenPair,
-      formData.amount,
-      formData.destinationAddress
+      formData.amount
     );
 
     // verify review button state
