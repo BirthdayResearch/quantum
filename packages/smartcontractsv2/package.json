@@ -1,0 +1,22 @@
+{
+  "private": true,
+  "name": "smartcontractsv2",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm run generate:contract-types && tsc -b ./tsconfig.build.json",
+    "generate:contract-types": "hardhat compile --config ./src/hardhat.config.ts",
+    "clean": "rm -rf dist && rm -f tsconfig.build.tsbuildinfo && hardhat clean --config ./src/hardhat.config.ts"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "hardhat": "^2.13.0",
+    "@openzeppelin/contracts": "4.8.2",
+    "@openzeppelin/contracts-upgradeable": "4.8.2",
+    "@birthdayresearch/sticky-typescript": "^0.5.7"
+  }
+}
