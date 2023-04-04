@@ -213,23 +213,36 @@ export default function StepLastClaim({
         <Modal isOpen={showLoader}>
           <div className="flex flex-col items-center mt-6 mb-14">
             <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
-            <span className="font-bold text-2xl text-dark-900 mt-12">
+            <span
+              className="font-bold text-2xl text-dark-900 mt-12"
+              data-testid="bridge-status-title"
+            >
               {modalStatusMessage.title}
             </span>
-            <span className="text-dark-900 text-center mt-2">
+            <span
+              className="text-dark-900 text-center mt-2"
+              data-testid="bridge-status-msg"
+            >
               {modalStatusMessage.message}
             </span>
           </div>
         </Modal>
       )}
       {isSuccess && (
-        <Modal isOpen={isSuccess} onClose={() => router.reload()}>
+        <Modal
+          isOpen={isSuccess}
+          onClose={() => router.reload()}
+          testId="claim-success"
+        >
           <div className="flex flex-col items-center mt-6 mb-14">
             <FiCheck className="text-8xl text-valid ml-1" />
             <span className="font-bold text-2xl text-dark-900 mt-8">
               Token claimed
             </span>
-            <span className="text-dark-900 mt-2">
+            <span
+              className="text-dark-900 mt-2"
+              data-testid="claim-success-msg"
+            >
               {`You have successfully claimed your ${data.to.tokenName} tokens.`}
             </span>
             <div className="mt-14">
@@ -241,6 +254,7 @@ export default function StepLastClaim({
                     "_blank"
                   )
                 }
+                testId="view-etherscan-btn"
               />
             </div>
           </div>
@@ -259,6 +273,7 @@ export default function StepLastClaim({
               : handleOnClaim()
           }
           onClose={onClose}
+          testId="claim"
         />
       )}
       <div className={clsx("pt-4 px-6", "md:px-[73px] md:pt-4 md:pb-6")}>

@@ -163,14 +163,7 @@ function initTransaction(
   cy.findByTestId("confirm-transfer-btn").click();
 
   // check confirmation modal
-  cy.findByTestId("bridge-status-title").should(
-    "contain.text",
-    "Waiting for confirmation"
-  );
-  cy.findByTestId("bridge-status-msg").should(
-    "contain.text",
-    "Confirm this transaction in your Wallet."
-  );
+  cy.verifyConfirmationModal();
 
   if (!confirmMetamask) {
     return;
@@ -400,14 +393,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
     cy.findByTestId("confirm-transfer-btn").click();
 
     // check confirmation modal
-    cy.findByTestId("bridge-status-title").should(
-      "contain.text",
-      "Waiting for confirmation"
-    );
-    cy.findByTestId("bridge-status-msg").should(
-      "contain.text",
-      "Confirm this transaction in your Wallet."
-    );
+    cy.verifyConfirmationModal();
 
     // still able to accept metamask transaction
     cy.confirmMetamaskTransaction();

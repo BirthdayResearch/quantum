@@ -287,6 +287,13 @@ declare global {
        * cy.verifyHotWalletBalance();
        */
       verifyHotWalletBalance: () => Chainable<Element>;
+
+      /**
+       * @description Helper function to verify confirmation modal
+       * @example
+       * cy.verifyConfirmationModal();
+       */
+      verifyConfirmationModal: () => Chainable<Element>;
     }
   }
 }
@@ -1125,6 +1132,18 @@ Cypress.Commands.add("verifyHotWalletBalance", () => {
   // Clear input
   cy.findByTestId("quick-input-card-clear-icon").click();
   verifyBalanceSufficient(true);
+});
+
+Cypress.Commands.add("verifyConfirmationModal", () => {
+  // check confirmation modal
+  cy.findByTestId("bridge-status-title").should(
+    "contain.text",
+    "Waiting for confirmation"
+  );
+  cy.findByTestId("bridge-status-msg").should(
+    "contain.text",
+    "Confirm this transaction in your Wallet."
+  );
 });
 
 // Helper function to swap pairs

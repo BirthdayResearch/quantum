@@ -61,6 +61,7 @@ function verifyStepOneForm() {
   cy.findByTestId("erc-transfer-step-one").should("be.visible");
 
   cy.findByTestId("transaction-error-info-tooltip-icon").realHover();
+
   cy.findByTestId("transaction-error-info-tooltip-content")
     .should("be.visible")
     .should("contain.text", TRANSACTION_ERROR_INFO.content);
@@ -312,7 +313,32 @@ context("QA-770-1 Connected wallet - DFC > ETH - USDT", () => {
       cy.findByTestId("ready-for-claiming-timing").should("be.visible");
       cy.wait(1000);
       cy.findByTestId("claim-action-btn").click();
-      cy.wait(5000);
+      cy.verifyConfirmationModal();
+
+      //Reject
+      cy.rejectMetamaskTransaction();
+      cy.findByTestId("claim-err-title");
+      cy.findByTestId("claim-err-close-btn").should("contain.text", "Close");
+      cy.findByTestId("claim-err-action-btn")
+        .should("contain.text", "Try again")
+        .click();
+
+      // Approve
+      cy.confirmMetamaskTransaction();
+      // Show successfully claimed modal
+      cy.findByTestId("claim-success-modal").should("be.visible");
+      cy.findByTestId("claim-success-msg").should(
+        "contain.text",
+        `You have successfully claimed your ${pair.tokenA} tokens.`
+      );
+      cy.findByTestId("view-etherscan-btn").should(
+        "contain.text",
+        "View on Etherscan"
+      );
+      cy.findByTestId("claim-success-modal-close-icon").click();
+
+      // Form should restore to default
+      cy.verifyFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
     });
   });
 });
