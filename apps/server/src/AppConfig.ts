@@ -19,6 +19,7 @@ export function appConfig() {
       transferFee: process.env.ETH_FEE_PERCENTAGE,
       supportedTokens: process.env.SUPPORTED_EVM_TOKENS,
       minimumEVMBlockNumber: process.env.MINIMUM_BLOCK_NUMBER,
+      deploymentTransactionIndex: Number(process.env.DEPLOYMENT_TRANSACTION_INDEX),
       contracts: {
         bridgeProxy: {
           address: process.env.BRIDGE_PROXY_ADDRESS,

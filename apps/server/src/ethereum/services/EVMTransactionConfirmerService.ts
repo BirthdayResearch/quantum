@@ -87,9 +87,17 @@ export class EVMTransactionConfirmerService {
     }
 
     // only accept block number larger than the block that contract was created
-    const blockNumberAccepted = txReceipt.blockNumber > Number(this.minimumEVMBlockHeight);
-    if (blockNumberAccepted === false) {
-      throw new Error('Block Number not accepted');
+    const txAfterProxyDeployment =
+      txReceipt.blockNumber > Number(this.minimumEVMBlockHeight) ||
+      (txReceipt.blockNumber === Number(this.minimumEVMBlockHeight) && Number(txReceipt.transactionIndex) > 0);
+    if (txAfterProxyDeployment === false) {
+      throw new HttpException(
+        {
+          status: HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `Block Number not accepted`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
 
     // if transaction is reverted

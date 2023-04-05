@@ -91,6 +91,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
             transferFee: '0',
             minimumEVMBlockNumber:
               bridgeTxResponse.blockNumber === undefined ? '0' : bridgeTxResponse.blockNumber.toString(),
+            deploymentTransactionIndex: (await bridgeTxResponse.wait()).transactionIndex,
           },
           testnet: { bridgeContractAddress: bridgeContract.address },
           startedPostgresContainer,
@@ -529,17 +530,21 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
   });
 
   it('Should fail when sending a transaction before the contract is created', async () => {
-    // const txReceipt =
+    const bridgeDeploymentTx = await hardhatNetwork.ethersRpcProvider.getTransaction(
+      bridgeContractFixture.bridgeContractDeploymentTransaction,
+    );
+    const txBeforeBridgeDeployment = await hardhatNetwork.ethersRpcProvider.getTransaction(
+      bridgeContractFixture.wrongTxHash,
+    );
+    expect(bridgeDeploymentTx.blockNumber).toStrictEqual(txBeforeBridgeDeployment.blockNumber);
+    expect((await bridgeDeploymentTx.wait()).transactionIndex).toStrictEqual(
+      (await txBeforeBridgeDeployment.wait()).transactionIndex + 1,
+    );
     const txReceipt = await testing.inject({
       method: 'POST',
       url: `/ethereum/handleTransaction`,
       payload: { transactionHash: bridgeContractFixture.wrongTxHash },
     });
-
-    // expect(txReceipt.statusCode).toStrictEqual(500);
-    // new Logger().log('aaaaa');
-    // new Logger().log(txReceipt);
-    // console.log({ cuongthebest: txReceipt });
     const response = JSON.parse(txReceipt.body);
     expect(response.error).toContain('Block Number not accepted');
   });

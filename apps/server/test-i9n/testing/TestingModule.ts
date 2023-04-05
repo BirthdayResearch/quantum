@@ -50,6 +50,7 @@ export function buildTestConfig({
       transferFee: ethereum?.transferFee,
       supportedTokens: ethereum?.supportedTokens,
       minimumEVMBlockNumber: ethereum?.minimumEVMBlockNumber ?? '',
+      deploymentTransactionIndex: ethereum?.deploymentTransactionIndex,
       contracts: {
         bridgeProxy: {
           address: testnet?.bridgeContractAddress ?? '',
@@ -93,6 +94,7 @@ type OptionalBuildTestConfigParams = {
     transferFee: string;
     supportedTokens: string;
     minimumEVMBlockNumber: string;
+    deploymentTransactionIndex: number;
   };
   startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {
