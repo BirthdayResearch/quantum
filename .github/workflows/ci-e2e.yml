@@ -30,7 +30,7 @@ jobs:
 
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 8.1.0
+          version: 8.1.1
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 16
@@ -49,7 +49,7 @@ jobs:
 
       ## Implement ping on server side to do full e2e
 
-      - uses: cypress-io/github-action@96268482322bc63c76561c602a84be842c527dbc # v5.5.1
+      - uses: cypress-io/github-action@a29a621b736c9a8547ba0236cc9cee1e49725bd5 # v5.6.1
         with:
           config-file: cypress.config.js
           install: false
