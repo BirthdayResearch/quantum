@@ -75,14 +75,17 @@ export class EvmContractManager {
 
     // Outputs should only be valid EVM addresses. Anything else is considered an error, and
     // means that something went wrong with executing the hardhat contract deployment task
-    if (!ethers.utils.isAddress(output.trim())) {
+    const address = output.split('\n')[0];
+    const transactionResponse = output.split('\n')[1];
+    if (!ethers.utils.isAddress(address)) {
       throw Error(output);
     }
 
     // Enrich the contract with relevant metadata
     const deployedContract: DeployedContract<Abi> = {
       name: deploymentName,
-      ref: new ethers.Contract(output.trim(), abi, this.signer) as Abi,
+      ref: new ethers.Contract(address, abi, this.signer) as Abi,
+      deployTransaction: transactionResponse,
     };
     // Register the contract for future access
     await this.registerDeployedContract(deployedContract);
@@ -106,6 +109,14 @@ export class EvmContractManager {
       return contract.ref.connect(userSigner);
     }
     return contract.ref;
+  }
+
+  getDeployTransactionOfDeployedContract(deployedName: string): string {
+    const contract = this.#deployedContracts.get(deployedName);
+    if (contract === undefined) {
+      throw new Error(`Contract '${deployedName}' has not been deployed yet`);
+    }
+    return contract.deployTransaction;
   }
 
   async isContractDeployedOnChain(deployedName: string): Promise<boolean> {
@@ -134,4 +145,5 @@ export interface DeployContractParams {
 export interface DeployedContract<Abi extends ethers.BaseContract> {
   name: DeployContractParams['deploymentName'];
   ref: Abi;
+  deployTransaction: string;
 }

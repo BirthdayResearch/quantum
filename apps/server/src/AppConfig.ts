@@ -18,6 +18,7 @@ export function appConfig() {
       rpcUrl: process.env.ETHEREUM_RPC_URL,
       transferFee: process.env.ETH_FEE_PERCENTAGE,
       supportedTokens: process.env.SUPPORTED_EVM_TOKENS,
+      minimumEVMBlockNumber: process.env.MINIMUM_BLOCK_NUMBER,
       contracts: {
         bridgeProxy: {
           address: process.env.BRIDGE_PROXY_ADDRESS,

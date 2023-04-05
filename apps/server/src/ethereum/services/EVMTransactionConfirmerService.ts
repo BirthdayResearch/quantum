@@ -26,6 +26,8 @@ export class EVMTransactionConfirmerService {
 
   private network: EnvironmentNetwork;
 
+  private minimumEVMBlockHeight: Number;
+
   private readonly logger: Logger;
 
   private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
@@ -43,6 +45,7 @@ export class EVMTransactionConfirmerService {
   ) {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
     this.contractAddress = this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address');
+    this.minimumEVMBlockHeight = this.configService.getOrThrow('ethereum.minimumEVMBlockNumber');
     this.contract = BridgeV1__factory.connect(this.contractAddress, this.ethersRpcProvider);
     this.logger = new Logger(EVMTransactionConfirmerService.name);
   }
@@ -81,6 +84,12 @@ export class EVMTransactionConfirmerService {
     // Sanity check that the contractAddress, decoded name and signature are correct
     if (txReceipt.to !== this.contractAddress || !isValidTxn) {
       return { numberOfConfirmations: 0, isConfirmed: false };
+    }
+
+    // only accept block number larger than the block that contract was created
+    const blockNumberAccepted = txReceipt.blockNumber > Number(this.minimumEVMBlockHeight);
+    if (blockNumberAccepted === false) {
+      throw new Error('Block Number not accepted');
     }
 
     // if transaction is reverted

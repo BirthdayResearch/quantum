@@ -52,6 +52,7 @@ task('deployContract', 'Deploys a contract based on the name of the contract')
       // Logs the contract address as the output of this task
       // Can be picked up by the task executor to create a contract instance with the outputted contract address
       console.log(contract.address);
+      console.log(contract.deployTransaction.hash);
     } catch (e) {
       // Logs the error message to be picked up by the caller. Errors start with 'Error: ...'
       console.log(e);

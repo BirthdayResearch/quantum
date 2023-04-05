@@ -1,4 +1,6 @@
+import { Logger } from '@nestjs/common';
 import { BigNumberish, constants, ethers, Signer } from 'ethers';
+import { getContractAddress } from 'ethers/lib/utils';
 import {
   BridgeProxy,
   BridgeProxy__factory,
@@ -16,9 +18,12 @@ export class BridgeContractFixture {
   // The default signer used to deploy contracts
   public adminAndOperationalSigner: Signer;
 
+  public wrongTxHash: string;
+
   constructor(private readonly hardhatNetwork: HardhatNetwork) {
     this.contractManager = hardhatNetwork.contracts;
     this.adminAndOperationalSigner = hardhatNetwork.contractSigner;
+    this.wrongTxHash = '0x';
   }
 
   static readonly Contracts = {
@@ -93,6 +98,12 @@ export class BridgeContractFixture {
     };
   }
 
+  get bridgeContractDeploymentTransaction(): string {
+    return this.hardhatNetwork.contracts.getDeployTransactionOfDeployedContract(
+      BridgeContractFixture.Contracts.BridgeProxy.deploymentName,
+    );
+  }
+
   get contractsWithAdminAndOperationalSigner(): BridgeContracts {
     return this.getContractsWithSigner(this.adminAndOperationalSigner);
   }
@@ -110,6 +121,23 @@ export class BridgeContractFixture {
     await this.hardhatNetwork.generate(1);
 
     const adminAndOperationalAddress = await this.adminAndOperationalSigner.getAddress();
+
+    const calculatedBridgeProxyAddress = getContractAddress({
+      from: adminAndOperationalAddress,
+      nonce: (await this.adminAndOperationalSigner.getTransactionCount()) + 1,
+    });
+    new Logger().log('address of bridge contract', calculatedBridgeProxyAddress);
+
+    this.wrongTxHash = (
+      await this.adminAndOperationalSigner.sendTransaction({
+        to: calculatedBridgeProxyAddress,
+        data: BridgeV1__factory.createInterface().encodeFunctionData('bridgeToDeFiChain', [
+          '0x',
+          ethers.constants.AddressZero,
+          10,
+        ]),
+      })
+    ).hash;
 
     // Deployment arguments for the Proxy contract
     const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
@@ -137,6 +165,9 @@ export class BridgeContractFixture {
       deployArgs: [bridgeUpgradeable.address, encodedData],
       abi: BridgeProxy__factory.abi,
     });
+
+    new Logger().log('Address after deployment ', bridgeProxy.address);
+
     await this.hardhatNetwork.generate(1);
 
     // Deploy MockUSDT
@@ -194,7 +225,9 @@ export class BridgeContractFixture {
 
     await this.hardhatNetwork.generate(1);
 
-    return this.contracts;
+    return {
+      ...this.contracts,
+    };
   }
 
   /**

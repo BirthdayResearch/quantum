@@ -36,7 +36,8 @@ describe('Bridge Service Integration Tests', () => {
     // Using the default signer of the container to carry out tests
     ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
-
+    const bridgeTx = bridgeContractFixture.bridgeContractDeploymentTransaction;
+    const bridgeTxResponse = await hardhatNetwork.ethersRpcProvider.getTransaction(bridgeTx);
     // initialize config variables
     testing = new BridgeServerTestingApp(
       TestingModule.register(
@@ -44,6 +45,10 @@ describe('Bridge Service Integration Tests', () => {
           defichain: { key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
           startedHardhatContainer,
           testnet: { bridgeContractAddress: bridgeContract.address },
+          ethereum: {
+            minimumEVMBlockNumber:
+              bridgeTxResponse.blockNumber === undefined ? '0' : bridgeTxResponse.blockNumber.toString(),
+          },
           startedPostgresContainer,
           usdcAddress: musdcContract.address,
         }),

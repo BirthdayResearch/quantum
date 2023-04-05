@@ -1,5 +1,6 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
+import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EthereumTransactionStatus } from '@prisma/client';
 import BigNumber from 'bignumber.js';
@@ -71,6 +72,13 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     // Using the default signer of the container to carry out tests
     ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
+    const bridgeTx = bridgeContractFixture.bridgeContractDeploymentTransaction;
+    new Logger().log('In allocated DFC');
+    new Logger().log(bridgeTx);
+    const bridgeTxResponse = await hardhatNetwork.ethersRpcProvider.getTransaction(bridgeTx);
+    // new Logger().log(bridgeTxResponse.data);
+    new Logger().log(bridgeTxResponse.blockNumber);
+    new Logger().log((await bridgeTxResponse.wait()).transactionIndex);
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
     // initialize config variables
@@ -79,7 +87,11 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
         buildTestConfig({
           startedHardhatContainer,
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
-          ethereum: { transferFee: '0' },
+          ethereum: {
+            transferFee: '0',
+            minimumEVMBlockNumber:
+              bridgeTxResponse.blockNumber === undefined ? '0' : bridgeTxResponse.blockNumber.toString(),
+          },
           testnet: { bridgeContractAddress: bridgeContract.address },
           startedPostgresContainer,
           usdcAddress: musdcContract.address,
@@ -514,6 +526,22 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       isConfirmed: false,
       numberOfConfirmations: 0,
     });
+  });
+
+  it('Should fail when sending a transaction before the contract is created', async () => {
+    // const txReceipt =
+    const txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/handleTransaction`,
+      payload: { transactionHash: bridgeContractFixture.wrongTxHash },
+    });
+
+    // expect(txReceipt.statusCode).toStrictEqual(500);
+    // new Logger().log('aaaaa');
+    // new Logger().log(txReceipt);
+    // console.log({ cuongthebest: txReceipt });
+    const response = JSON.parse(txReceipt.body);
+    expect(response.error).toContain('Block Number not accepted');
   });
 });
 
