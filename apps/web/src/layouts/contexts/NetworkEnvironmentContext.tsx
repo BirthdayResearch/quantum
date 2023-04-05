@@ -10,6 +10,7 @@ import { useRouter } from "next/router";
 import { useNetwork } from "wagmi";
 import { EnvironmentNetwork, getEnvironment } from "@waveshq/walletkit-core";
 import { ETHEREUM_MAINNET_ID } from "../../constants";
+import { HARDHAT_CHAINID } from "../../../cypress/support/utils";
 
 interface NetworkContextI {
   networkEnv: EnvironmentNetwork;
@@ -40,7 +41,7 @@ export function NetworkEnvironmentProvider({
       return env.networks.includes(n) ? n : defaultNetwork;
     }
     // temporary workaround for local playground to work
-    if (chain?.id === 1337) {
+    if (chain?.id === HARDHAT_CHAINID) {
       return EnvironmentNetwork.LocalPlayground;
     }
     return isEthereumMainNet
