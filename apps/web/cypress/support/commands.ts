@@ -289,6 +289,18 @@ declare global {
        * cy.verifyHotWalletBalance();
        */
       verifyHotWalletBalance: () => Chainable<Element>;
+
+      /**
+       * @description To get liquidity through token symbol and chain
+       * @param {string} symbol - Token symbol
+       * @param {string} chain - Network chain
+       * @example
+       * cy.getLiquidityBySymbolChain("USDT", "DeFiChain");
+       */
+      getLiquidityBySymbolChain: (
+        symbol: string,
+        chain: string
+      ) => Chainable<Element>;
     }
   }
 }
