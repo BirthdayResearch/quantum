@@ -8,6 +8,7 @@ import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
 import Logging from "@api/logging";
 import { getStorageItem } from "@utils/localStorage";
+import { DEFICHAIN_WALLET_URL } from "config/networkUrl";
 import {
   CONFIRMATIONS_BLOCK_TOTAL,
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
@@ -102,26 +103,21 @@ function Home() {
 }
 
 export async function getServerSideProps() {
-  let isBridgeUp = true;
+  const props = { isBridgeUp: true };
 
-  return fetch(`https://wallet.defichain.com/api/v0/bridge/status`)
-    .then((res) => Promise.all([res.json(), res.status]))
-    .then(([data, statusCode]) => {
-      if (statusCode === 200) {
-        isBridgeUp = data?.isUp;
-      } else {
-        Logging.error("Get bridge status API error.");
-      }
-      return {
-        props: { isBridgeUp }, // will be passed to the page component as props
-      };
-    })
-    .catch((e) => {
-      Logging.error(`${e}`);
-      return {
-        props: { isBridgeUp }, // will be passed to the page component as props
-      };
-    });
+  try {
+    const res = await fetch(`${DEFICHAIN_WALLET_URL}/bridge/status`);
+    const data = await res.json();
+    if (res.status === 200) {
+      props.isBridgeUp = data?.isUp;
+    } else {
+      Logging.error("Get bridge status API error.");
+    }
+  } catch (e) {
+    Logging.error(`${e}`);
+  }
+
+  return { props };
 }
 
 export default Home;

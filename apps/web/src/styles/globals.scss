@@ -193,15 +193,15 @@ body {
   .bg-dark-gradient-2 {
     background: var(--ui-dark-gradient-2);
   }
-  .bg-dark-grdient-3 {
-    background: var(--accent-gradient-3);
-  }
   .dark-bg-card-section {
     background: var(--ui-dark-card-section);
     opacity: var(--tw-bg-opacity);
   }
   .bg-dark-gradient-3 {
     background: var(--ui-dark-gradient-3);
+  }
+  .bg-dark-gradient-4 {
+    background: var(--accent-gradient-4);
   }
   .hover-text-gradient-1 {
     background-image: linear-gradient(90deg, #ff00ff 0%, #ec0c8d 100.04%);

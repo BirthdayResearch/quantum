@@ -1132,3 +1132,12 @@ function swapTokenPositions(
     return { tokenA: tokenB, tokenB: tokenA };
   });
 }
+
+Cypress.Commands.add("getLiquidityBySymbolChain", (symbol, chain) => {
+  cy.findByTestId(`${symbol}-${chain}-liquidity`)
+    .invoke("text")
+    .then((s) => {
+      s = s.substring(0, s.lastIndexOf(" "));
+      return s.replaceAll(",", "");
+    });
+});
