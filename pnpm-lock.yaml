@@ -212,8 +212,8 @@ importers:
         version: 0.12.7(@babel/core@7.21.0)(@types/node@18.14.0)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@4.9.5)
     devDependencies:
       '@cypress/code-coverage':
-        specifier: ^3.10.0
-        version: 3.10.0(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.9.0)(webpack@5.76.2)
+        specifier: ^3.10.3
+        version: 3.10.3(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.9.0)(webpack@5.76.2)
       '@netlify/plugin-lighthouse':
         specifier: ^4.0.7
         version: 4.0.7
@@ -2030,8 +2030,8 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  /@cypress/code-coverage@3.10.0(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.9.0)(webpack@5.76.2):
-    resolution: {integrity: sha512-K5pW2KPpK4vKMXqxd6vuzo6m9BNgpAv1LcrrtmqAtOJ1RGoEILXYZVost0L6Q+V01NyY7n7jXIIfS7LR3nP6YA==}
+  /@cypress/code-coverage@3.10.3(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.9.0)(webpack@5.76.2):
+    resolution: {integrity: sha512-wsTAhldbMI/qopvogEjwU9ISXDH+9t+ChOE8OGdxMmJ4f0yhq6xP0ZFcjdE8JGo1ZptoyT8fq/NdgwsCK4AIoA==}
     peerDependencies:
       cypress: '*'
     dependencies:
@@ -2043,7 +2043,7 @@ packages:
       execa: 4.1.0
       globby: 11.0.4
       istanbul-lib-coverage: 3.0.0
-      js-yaml: 3.14.1
+      js-yaml: 4.1.0
       nyc: 15.1.0
     transitivePeerDependencies:
       - '@babel/core'
