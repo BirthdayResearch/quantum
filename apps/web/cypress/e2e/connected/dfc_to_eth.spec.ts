@@ -72,6 +72,7 @@ function sendTokenToWallet() {
 }
 
 function verifyStepOneForm() {
+  cy.wait(1000);
   cy.findByTestId("erc-transfer-step-one").should("be.visible");
 
   // real hover is not reliable here, not sure why
