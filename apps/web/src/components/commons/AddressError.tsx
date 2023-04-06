@@ -18,7 +18,10 @@ export default function AddressError({
   return (
     <div className="flex flex-col items-center justify-center mt-8">
       <FiAlertCircle size={48} className="text-dark-1000" />
-      <span className="text-center text-xs text-dark-900 mt-6 mb-4">
+      <span
+        className="text-center text-xs text-dark-900 mt-6 mb-4"
+        data-testid="address-error-msg"
+      >
         {error}
       </span>
       <div className="w-full md:w-auto md:px-0 mb-11">
@@ -28,6 +31,7 @@ export default function AddressError({
           variant="secondary"
           onClick={onClick}
           disabledClass="!opacity-100 text-dark-1000/[0.3] !border-dark-1000/[0.3] dark-bg-card-section bg-opacity-30"
+          testId="generate-again-btn"
         >
           {isDisabled && delayAction && (
             <div className="inline-block ml-1 opacity-100">

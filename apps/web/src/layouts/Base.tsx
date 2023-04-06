@@ -30,7 +30,12 @@ import { StorageProvider } from "@contexts/StorageContext";
 import { store } from "@store/store";
 import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
-import { LOCAL_HARDHAT_CONFIG, MAINNET_CONFIG } from "../config";
+import {
+  LOCAL_HARDHAT_CONFIG,
+  MAINNET_CONFIG,
+  TESTNET_CONFIG,
+} from "../config";
+import { HARDHAT_CHAINID } from "../../cypress/support/utils";
 
 const metamask = new MetaMaskConnector({
   chains: [mainnet, goerli, localhost, hardhat],
@@ -41,9 +46,12 @@ const { chains } = configureChains(
   [
     jsonRpcProvider({
       rpc: (chain) => {
-        const isMainNet = chain.id === ETHEREUM_MAINNET_ID;
-        // const config = isMainNet ? MAINNET_CONFIG : TESTNET_CONFIG;
-        const config = isMainNet ? MAINNET_CONFIG : LOCAL_HARDHAT_CONFIG;
+        let config = TESTNET_CONFIG;
+        if (chain.id === ETHEREUM_MAINNET_ID) {
+          config = MAINNET_CONFIG;
+        } else if (chain.id === HARDHAT_CHAINID) {
+          config = LOCAL_HARDHAT_CONFIG;
+        }
         return {
           http: (config.EthereumRpcUrl || chain.rpcUrls.default) as string,
         };

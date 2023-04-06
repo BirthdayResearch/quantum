@@ -1,6 +1,7 @@
 import { DOCUMENTATION_URL, FAQS_URL } from "../../src/constants";
 
 export const LOCAL_BASE_URL = "http://localhost:3000/";
+export const HARDHAT_CHAINID = 1337;
 
 export const QuantumHelperLinks = [
   {
