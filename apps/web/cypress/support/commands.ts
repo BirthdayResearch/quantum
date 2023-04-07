@@ -1064,6 +1064,14 @@ Cypress.Commands.add("verifyFormHover", (isMetamaskConnected: boolean) => {
         "linear-gradient(90deg, rgb(255, 0, 255) 0%, rgb(236, 12, 141) 100.04%)"
       );
   });
+
+  // hover liquidity tab
+  cy.visit("/liquidity?network=Local");
+  cy.findByTestId("liquidity-tooltip-icon").realHover();
+  cy.findByTestId("liquidity-tooltip-content").should(
+    "contain.text",
+    "The max amount available to bridge for a specific token."
+  );
 });
 
 Cypress.Commands.add("verifySocialLinks", () => {

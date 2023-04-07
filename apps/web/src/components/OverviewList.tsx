@@ -285,6 +285,7 @@ export default function OverviewList({ balances }) {
               size={12}
               customIconColor="text-dark-1000"
               content="The max amount available to bridge for a specific token."
+              testId="liquidity"
             />
           </div>
           <div className="text-dark-1000 text-sm font-semibold w-4/12">

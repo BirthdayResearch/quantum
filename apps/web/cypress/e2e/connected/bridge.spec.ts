@@ -77,7 +77,7 @@ context("QA-769-7~12 Connected wallet - Bridge Form", () => {
     cy.verifyFormPairing(true, destination, source, currentPair);
   });
 
-  it.only("5: Verify HW balance", () => {
+  it("5: Verify HW balance", () => {
     cy.verifyHotWalletBalance();
   });
 
