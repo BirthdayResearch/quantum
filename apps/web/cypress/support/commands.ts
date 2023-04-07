@@ -2,8 +2,10 @@ import "@testing-library/cypress/add-commands";
 import { Erc20Token, Network } from "../../src/types";
 import { DISCLAIMER_MESSAGE } from "../../src/constants";
 import {
-  LOCAL_BASE_URL,
+  LOCAL_BASE_ENDPOINT,
+  LOCAL_DFC_ENDPOINT,
   MaintenanceSocialLinks,
+  TokenBalanceI,
   UtilityButtonType,
 } from "./utils";
 /// <reference types="cypress" />
@@ -197,15 +199,15 @@ declare global {
 
       /**
        * @description Sends token to wallet. Accepts a list of token symbols to be sent.
-       * @param {string[]} tokens to be sent
+       * @param {string} walletAddress to be sent to
        * @param {string} amount to be sent
-       * @param {Erc20Token} token to be sent
+       * @param {string[]} tokens to be sent
        * @example cy.sendTokenToWallet(['BTC', 'ETH']).wait(4000)
        */
       sendTokenToWallet: (
-        params: any,
+        walletAddress: string,
         amount: string,
-        token: Erc20Token
+        tokens: string[]
       ) => Chainable<Element>;
 
       /**
@@ -310,6 +312,17 @@ declare global {
         symbol: string,
         chain: string
       ) => Chainable<Element>;
+
+      /**
+       * @description To get the balance of a DFC wallet address
+       * @param {string} walletAddress - Address of DFC wallet
+       * @return {TokenBalanceI[]} - Array of token balance
+       * @example
+       * cy.getDfcWalletBalance("bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d");
+       */
+      getDfcWalletBalance: (
+        walletAddress: string
+      ) => Chainable<TokenBalanceI[]>;
     }
   }
 }
@@ -332,7 +345,7 @@ export interface UtilityDataI {
 }
 
 Cypress.Commands.add("visitBridgeHomePage", (isBridgeUp: boolean = true) => {
-  cy.visit(`${LOCAL_BASE_URL}?network=Local`, {
+  cy.visit(`${LOCAL_BASE_ENDPOINT}?network=Local`, {
     onBeforeLoad: (win) => {
       let nextData: any;
       Object.defineProperty(win, "__NEXT_DATA__", {
@@ -715,15 +728,49 @@ Cypress.Commands.add(
   }
 );
 
-Cypress.Commands.add("sendTokenToWallet", (tempAddress, amount, token) => {
-  cy.request({
-    url: "https://playground.jellyfishsdk.com/v0/playground/rpc/sendtokenstoaddress",
-    method: "POST",
-    body: {
-      params: [{}, { [tempAddress]: `${amount}@${token}` }],
-    },
-  });
-});
+Cypress.Commands.add(
+  "sendTokenToWallet",
+  (walletAddress: string, amount: string, tokens: string[]) => {
+    cy.wrap(tokens).each((token: string) => {
+      if (token === "DFI") {
+        cy.request({
+          url: `${LOCAL_DFC_ENDPOINT}/playground/wallet/tokens/0/send`,
+          method: "POST",
+          body: {
+            amount: amount,
+            address: walletAddress,
+          },
+        });
+      } else if (token === "UTXO") {
+        cy.request({
+          url: `${LOCAL_DFC_ENDPOINT}/playground/rpc/sendtoaddress`,
+          method: "POST",
+          body: {
+            params: [
+              walletAddress,
+              amount,
+              "",
+              "",
+              false,
+              false,
+              6,
+              "UNSET",
+              false,
+            ],
+          },
+        });
+      } else {
+        cy.request({
+          url: `${LOCAL_DFC_ENDPOINT}/playground/rpc/sendtokenstoaddress`,
+          method: "POST",
+          body: {
+            params: [{}, { [walletAddress]: `${amount}@${token}` }],
+          },
+        });
+      }
+    });
+  }
+);
 
 Cypress.Commands.add("verifyConnectWalletPopUp", () => {
   // display from top connect button
@@ -1084,7 +1131,7 @@ Cypress.Commands.add("verify404Page", () => {
     .should("be.visible")
     .contains("Return to home")
     .click();
-  cy.url().should("equal", LOCAL_BASE_URL);
+  cy.url().should("equal", LOCAL_BASE_ENDPOINT);
 });
 
 Cypress.Commands.add("verifyMaintenancePage", () => {
@@ -1197,4 +1244,14 @@ Cypress.Commands.add("getLiquidityBySymbolChain", (symbol, chain) => {
       s = s.substring(0, s.lastIndexOf(" "));
       return s.replaceAll(",", "");
     });
+});
+
+Cypress.Commands.add("getDfcWalletBalance", (walletAddress: string) => {
+  cy.request({
+    url: `${LOCAL_DFC_ENDPOINT}/regtest/address/${walletAddress}/tokens?size=200`,
+    method: "GET",
+  }).then((response) => {
+    cy.log(`response: ${JSON.stringify(response.body)}`);
+    return cy.wrap(response.body.data);
+  });
 });

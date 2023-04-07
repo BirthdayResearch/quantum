@@ -6,6 +6,7 @@ import {
 } from "../../../src/constants";
 import { HttpStatusCode } from "axios";
 import { UtilityButtonType } from "../../support/utils";
+import { LOCAL_HARDHAT_CONFIG } from "../../../src/config";
 
 enum TransactionStatusType {
   INITIAL,
@@ -217,6 +218,14 @@ beforeEach(() => {
 });
 
 context("QA-769-5 Connected wallet - Restore Lost Session", () => {
+  before(() => {
+    // mint dfc HW balance
+    cy.sendTokenToWallet(LOCAL_HARDHAT_CONFIG.HotWalletAddress, "10", [
+      "USDT",
+      "UTXO",
+    ]);
+  });
+
   it("1: Verify restore button visibility", () => {
     // shown default
     cy.findByTestId("transaction-interrupted-msg")
@@ -426,28 +435,52 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
   });
 
   it("5: should be able to bridge USDT", () => {
-    initTransaction(connectedWalletAddress);
-    verifyTransactionStatus(TransactionStatusType.INITIAL);
-    // verify form is not able to proceed another transaction
-    cy.findByTestId("transfer-btn")
-      .should("be.disabled")
-      .should("contain.text", "Pending Transaction");
-    cy.findByTestId("transfer-btn-loader-icon").should("be.visible");
-    cy.findByTestId("error-transaction-pending")
-      .should("be.visible")
-      .should("have.text", "Unable to edit while transaction is pending");
+    // check initial balance
+    cy.getDfcWalletBalance(formData.destinationAddress).then((balances) => {
+      const initialBalance = balances.find(
+        (item) => item.symbol === formData.tokenPair
+      );
+      const initialBalanceAmount =
+        initialBalance !== undefined ? initialBalance.amount : 0;
 
-    startEvmMine();
-    waitUntilEvmBlocksConfirm();
-    // verify is DFC confirmation now
-    cy.findByTestId("txn-progress-status").should("contain.text", "For DFC");
-    // continue verify blocks
-    waitUntilBlocksConfirm();
-    verifyTransactionStatus(TransactionStatusType.CONFIRM);
+      initTransaction(connectedWalletAddress);
+      verifyTransactionStatus(TransactionStatusType.INITIAL);
+      // verify form is not able to proceed another transaction
+      cy.findByTestId("transfer-btn")
+        .should("be.disabled")
+        .should("contain.text", "Pending Transaction");
+      cy.findByTestId("transfer-btn-loader-icon").should("be.visible");
+      cy.findByTestId("error-transaction-pending")
+        .should("be.visible")
+        .should("have.text", "Unable to edit while transaction is pending");
 
-    // verify transfer button is enabled
-    cy.findByTestId("transfer-btn")
-      .should("be.enabled")
-      .should("contain.text", "Review transaction");
+      startEvmMine();
+      waitUntilEvmBlocksConfirm();
+      // verify is DFC confirmation now
+      cy.findByTestId("txn-progress-status").should("contain.text", "For DFC");
+      // continue verify blocks
+      waitUntilBlocksConfirm();
+      verifyTransactionStatus(TransactionStatusType.CONFIRM);
+
+      // verify transfer button is enabled
+      cy.findByTestId("transfer-btn")
+        .should("be.enabled")
+        .should("contain.text", "Review transaction");
+
+      // check final balance, should be updated
+      cy.getDfcWalletBalance(formData.destinationAddress).then((balances) => {
+        const finalBalance = balances.find(
+          (item) => item.symbol === formData.tokenPair
+        );
+        const finalBalanceAmount =
+          finalBalance !== undefined ? finalBalance.amount : 0;
+        const diff = new BigNumber(finalBalanceAmount).minus(
+          new BigNumber(initialBalanceAmount)
+        );
+        if (!diff.eq(new BigNumber(formData.amount))) {
+          cy.contains("Failed, amount not transferred");
+        }
+      });
+    });
   });
 });
