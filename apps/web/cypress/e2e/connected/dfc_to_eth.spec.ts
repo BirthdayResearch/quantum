@@ -67,7 +67,7 @@ function sendTokenToWallet() {
   cy.findByTestId("temp-defichain-sending-text")
     .invoke("text")
     .then((text) => {
-      cy.sendTokenToWallet(text, formData.amount, formData.tokenPair);
+      cy.sendTokenToWallet(text, formData.amount, [formData.tokenPair]);
     });
 }
 
