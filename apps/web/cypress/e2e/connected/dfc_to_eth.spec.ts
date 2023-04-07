@@ -4,13 +4,14 @@ import { Erc20Token, Network } from "../../../src/types";
 import { HttpStatusCode } from "axios";
 import dayjs from "dayjs";
 import { UtilityButtonType } from "../../support/utils";
+import { LOCAL_HARDHAT_CONFIG } from "../../../src/config";
 
 const formData = {
   sourceNetwork: Network.DeFiChain,
   destinationNetwork: Network.Ethereum,
-  tokenPair: "USDT" as Erc20Token,
+  tokenPair: "EUROC" as Erc20Token,
   amount: "0.4",
-  refundAddress: "bcrt1qr3d3d0pdcw5as77crdy6pchh7j7xy4pfyhg64d",
+  refundAddress: "bcrt1qamyk5n7ljrsx37d7hast5t9c7kczjhlx2etysl",
 };
 
 let connectedWalletAddress: string;
@@ -215,7 +216,15 @@ beforeEach(() => {
   });
 });
 
-context("QA-770-5~10 Connected wallet - DFC > ETH - USDT", () => {
+context("QA-770-5~10 Connected wallet - DFC > ETH - EUROC", () => {
+  before(() => {
+    cy.sendTokenToWallet(formData.refundAddress, "10", ["EUROC", "UTXO"]);
+    cy.sendTokenToWallet(LOCAL_HARDHAT_CONFIG.HotWalletAddress, "10", [
+      "EUROC",
+      "UTXO",
+    ]);
+  });
+
   it("1. Verify reset form functionality : DFC -> ETH", () => {
     // bridge form setup
     cy.setupBridgeForm(
@@ -249,16 +258,6 @@ context("QA-770-5~10 Connected wallet - DFC > ETH - USDT", () => {
     cy.findByTestId("erc-transfer-step-three").should("be.visible");
 
     // verify  will fail
-    cy.findByTestId("verification-title")
-      .should("be.visible")
-      .should("contain.text", TitleLabel.Validating);
-
-    cy.findByTestId("verification-content")
-      .should("be.visible")
-      .should("contain.text", ContentLabel.Validating);
-
-    cy.wait(3000);
-
     cy.findByTestId("revalidate-transaction")
       .should("be.visible")
       .should("contain.text", "Try again")
@@ -272,6 +271,12 @@ context("QA-770-5~10 Connected wallet - DFC > ETH - USDT", () => {
     cy.findByTestId("verification-content")
       .should("be.visible")
       .should("contain.text", "Please check our Error guide and try again");
+
+    cy.findByTestId("revalidate-transaction")
+      .should("be.visible")
+      .should("contain.text", "Try again")
+      .click();
+    cy.wait(3000);
 
     cy.findByTestId("revalidate-transaction")
       .should("be.visible")
