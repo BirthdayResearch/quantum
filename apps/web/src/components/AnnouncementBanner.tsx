@@ -66,8 +66,16 @@ export default function AnnouncementBanner() {
         <span>
           {announcement.content}
           {announcement.url && (
-            <Link href={announcement.url} target="_blank">
-              <FiArrowUpRight size={20} className="inline shrink-0 ml-2" />
+            <Link
+              href={announcement.url}
+              target="_blank"
+              data-testid="announcement-url"
+            >
+              <FiArrowUpRight
+                size={20}
+                className="inline shrink-0 ml-2"
+                data-testid="announcement-url-icon"
+              />
             </Link>
           )}
         </span>
@@ -76,6 +84,7 @@ export default function AnnouncementBanner() {
         size={20}
         className="shrink-0 cursor-pointer ml-6"
         onClick={() => onHideAnnouncement()}
+        data-testid="announcement-close-icon"
       />
     </div>
   ) : null;
