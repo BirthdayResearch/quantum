@@ -112,26 +112,21 @@ export class WhaleWalletService {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
-      // Verify that transaction has reached 35 confirmations
-      let blockTxInfo: BlockConfirmerInfo;
-      if (verify.symbol === TokenSymbol.DFI) {
-        blockTxInfo = await this.getBlockConfirmationDFI(wallet, address);
-      } else {
-        blockTxInfo = await this.getBlockConfirmationNonDFI(wallet, address, verify.symbol);
-      }
+      // Verify that transaction has reached n number of confirmations
+      const txInfo = await this.getDfcTxnConfirmations(wallet, address, verify.symbol);
 
-      // Verify that user only has one transaction
-      if (blockTxInfo.numberOfTxns > 1) {
+      // Verify that address only has one transaction
+      if (txInfo.totalNumberOfTxns > 1) {
         return { isValid: false, statusCode: CustomErrorCodes.FoundMoreThanOneTxn };
       }
 
       // Verify that required number of confirmation block is reached
-      if (blockTxInfo.numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
+      if (txInfo.numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
         return { isValid: false, statusCode: CustomErrorCodes.IsBelowMinConfirmationRequired };
       }
 
       // Verify that amount === block amount
-      if (!blockTxInfo.confirmedAmount.isEqualTo(verify.amount)) {
+      if (!txInfo.amount.isEqualTo(verify.amount)) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
@@ -302,44 +297,41 @@ export class WhaleWalletService {
     }
   }
 
-  private async getBlockConfirmationDFI(wallet: WhaleWalletAccount, address: string): Promise<BlockConfirmerInfo> {
-    let txInfo = { numberOfConfirmations: 0, numberOfTxns: 0, confirmedAmount: BigNumber(0) };
-    try {
-      const dfiTokenTxns = await wallet.client.address.listTransaction(address);
-      const {txid} = dfiTokenTxns[0];
-      const txAmount = BigNumber.max(new BigNumber(dfiTokenTxns[0].value), 0);
-      const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(txid);
-      this.logger.log(
-        `[BlockConfirmer-DFI info for txid ${txid}] ${blockHash} ${blockHeight} ${numberOfConfirmations}`,
-      );
-      txInfo = { numberOfConfirmations, numberOfTxns: dfiTokenTxns.length, confirmedAmount: txAmount };
-    } catch (e: any) {
-      this.logger.log(`[BlockConfirmer-DFI ERROR] ${e.message}`);
-    }
-    return txInfo;
-  }
-
-  private async getBlockConfirmationNonDFI(
+  private async getDfcTxnConfirmations(
     wallet: WhaleWalletAccount,
     address: string,
     symbol: string,
-  ): Promise<BlockConfirmerInfo> {
-    let txInfo = { numberOfConfirmations: 0, numberOfTxns: 0, confirmedAmount: BigNumber(0) };
+  ): Promise<ConfirmedTxnInfo> {
+    let txInfo = { numberOfConfirmations: 0, totalNumberOfTxns: 0, amount: BigNumber(0) };
+
     try {
-      const nonDfiTokenTxnList = await wallet.client.address.listAccountHistory(address);
-      const amount = nonDfiTokenTxnList[0].amounts[0]?.split('@');
-      const tokenSymbol = amount[1];
-      const tokenAmount = symbol === tokenSymbol ? amount[0] : 0;
-      const txAmount = BigNumber.max(new BigNumber(tokenAmount), 0);
-      const {txid} = nonDfiTokenTxnList[0];
+      const dfiTokenTxns = await wallet.client.address.listTransaction(address);
+      const otherTokensTxns = await wallet.client.address.listAccountHistory(address);
+      const totalNumberOfTxns = dfiTokenTxns.length + otherTokensTxns.length;
+
+      let txid: string;
+      let txAmount: BigNumber;
+      if (symbol === TokenSymbol.DFI && dfiTokenTxns.length > 0) {
+        txid = dfiTokenTxns[0].txid;
+        txAmount = BigNumber.max(new BigNumber(dfiTokenTxns[0].value), 0);
+      } else {
+        const amount = otherTokensTxns[0].amounts[0]?.split('@');
+        const tokenSymbol = amount[1];
+        const tokenAmount = symbol === tokenSymbol ? amount[0] : 0;
+        txAmount = BigNumber.max(new BigNumber(tokenAmount), 0);
+        txid = otherTokensTxns[0].txid;
+      }
+
       const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(txid);
       this.logger.log(
-        `[BlockConfirmer-NonDFI info for txid ${txid}] ${blockHash} ${blockHeight} ${numberOfConfirmations}`,
+        `[DfcTxnConfirmations] info for txid ${txid}: ${txAmount} ${symbol} ${blockHash} ${blockHeight} ${numberOfConfirmations}`,
       );
-      txInfo = { numberOfConfirmations, numberOfTxns: nonDfiTokenTxnList.length, confirmedAmount: txAmount };
+
+      txInfo = { numberOfConfirmations, totalNumberOfTxns, amount: txAmount };
     } catch (e: any) {
-      this.logger.log(`[BlockConfirmer-NonDFI ERROR] ${e.message}`);
+      this.logger.log(`[DfcTxnConfirmations ERROR] ${e.message}`);
     }
+
     return txInfo;
   }
 }
@@ -352,8 +344,8 @@ export interface VerifyResponse {
   deadline?: number;
 }
 
-interface BlockConfirmerInfo {
+interface ConfirmedTxnInfo {
   numberOfConfirmations: number;
-  numberOfTxns: number;
-  confirmedAmount: BigNumber;
+  totalNumberOfTxns: number;
+  amount: BigNumber;
 }
