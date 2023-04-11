@@ -8,8 +8,9 @@ import {
   WhaleApiContainer,
 } from '@defichain/testcontainers';
 import { WhaleApiClient } from '@defichain/whale-api-client';
-import { sleep } from 'test-i9n/helper/sleep';
 import { Network } from 'testcontainers';
+
+import { sleep } from '../../helper/sleep';
 
 /**
  * DeFiChain Container that runs all necessary containers (Playground, Whale, Ain).
