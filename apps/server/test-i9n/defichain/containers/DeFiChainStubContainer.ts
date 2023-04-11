@@ -50,8 +50,8 @@ export class StartedDeFiChainStubContainer {
     await this.playground.stop();
   }
 
-  async generateBlock(): Promise<void> {
-    await this.playgroundClient.rpc.call('generatetoaddress', [10, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
+  async generateBlock(number = 10): Promise<void> {
+    await this.playgroundClient.rpc.call('generatetoaddress', [number, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
   }
 
   async getWhaleURL(): Promise<string> {
