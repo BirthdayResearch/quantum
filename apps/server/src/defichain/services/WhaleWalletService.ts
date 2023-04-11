@@ -114,7 +114,7 @@ export class WhaleWalletService {
 
       // Get and validate the number of confirmation blocks
       const blockTxnStatus = await this.validateBlockTxn(wallet, verify);
-      if (blockTxnStatus && blockTxnStatus.code !== undefined) {
+      if (blockTxnStatus.code !== undefined) {
         return { isValid: false, statusCode: blockTxnStatus.code };
       }
 
