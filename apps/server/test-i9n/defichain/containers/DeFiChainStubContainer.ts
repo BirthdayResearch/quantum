@@ -50,6 +50,11 @@ export class StartedDeFiChainStubContainer {
     await this.playground.stop();
   }
 
+  /**
+   * Please note that number of blocks generated can be 2-3 blocks off from the given `number`.
+   * eg. if you want to generate 35 blocks you might need to add a little allowance and generate 38 blocks instead
+   * @param number
+   */
   async generateBlock(number = 10): Promise<void> {
     await this.playgroundClient.rpc.call('generatetoaddress', [number, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
   }
