@@ -275,6 +275,43 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.TokenSymbolNotSupported });
   });
 
+  it('should throw error if confirmed block number is less than 35', async () => {
+    // Generate address (index = 4)
+    const newWallet = whaleWalletProvider.createWallet(4);
+    const newLocalAddress = await newWallet.getAddress();
+
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    // Sends token to the address
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [newLocalAddress]: `1@BTC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock(); // Only waits for 10 blocks
+
+    const response = await verify({
+      amount: '1',
+      symbol: 'BTC',
+      address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+
+    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.IsBelowMinConfirmationRequired });
+  });
+
   it('should verify fund in the wallet address and top up UTXO', async () => {
     const hotWallet = whaleWalletProvider.getHotWallet();
     const hotWalletAddress = await hotWallet.getAddress();
