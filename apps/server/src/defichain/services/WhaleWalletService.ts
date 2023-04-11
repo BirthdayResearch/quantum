@@ -292,15 +292,12 @@ export class WhaleWalletService {
     if (txInfo === undefined) {
       return { code: CustomErrorCodes.TxnWithExactAmountNotFound, numberOfConfirmations: 0 };
     }
-    const { numberOfConfirmations, amount } = txInfo;
+    const { numberOfConfirmations } = txInfo;
     let statusCode: CustomErrorCodes | undefined;
 
     if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
       // Verify that required number of confirmation block is reached
       statusCode = CustomErrorCodes.IsBelowMinConfirmationRequired;
-    } else if (!amount.isEqualTo(verify.amount)) {
-      // Verify that amount === block amount
-      statusCode = CustomErrorCodes.BalanceNotMatched;
     }
 
     return { code: statusCode, numberOfConfirmations };
@@ -309,7 +306,7 @@ export class WhaleWalletService {
   private async getDfcTxnConfirmations(
     wallet: WhaleWalletAccount,
     verify: VerifyObject,
-  ): Promise<{ numberOfConfirmations: number; amount: BigNumber } | undefined> {
+  ): Promise<{ numberOfConfirmations: number } | undefined> {
     try {
       const dfiTokenTxns = await wallet.client.address.listTransaction(verify.address);
       const otherTokensTxns = await wallet.client.address.listAccountHistory(verify.address);
@@ -343,7 +340,7 @@ export class WhaleWalletService {
         `[DfcTxnConfirmations] info for txid ${txid}: ${txAmount} ${verify.symbol} ${blockHash} ${blockHeight} ${numberOfConfirmations}`,
       );
 
-      return { numberOfConfirmations, amount: txAmount };
+      return { numberOfConfirmations };
     } catch (e: any) {
       this.logger.log(`[DfcTxnConfirmations ERROR] ${e.message}`);
       return undefined;
