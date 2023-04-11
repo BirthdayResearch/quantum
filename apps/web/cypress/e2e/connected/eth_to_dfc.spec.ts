@@ -477,9 +477,7 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
         const diff = new BigNumber(finalBalanceAmount).minus(
           new BigNumber(initialBalanceAmount)
         );
-        if (!diff.eq(new BigNumber(formData.amount))) {
-          cy.contains("Failed, amount not transferred");
-        }
+        expect(diff.toFixed()).to.equal(formData.amount);
       });
     });
   });

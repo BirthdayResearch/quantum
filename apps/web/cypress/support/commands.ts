@@ -158,7 +158,7 @@ declare global {
        * @example
        * hardhatRequest("evm_setAutomine", [true]);
        */
-      hardhatRequest: (method: string, params: any[]) => Chainable<Element>;
+      hardhatRequest: (method: string, params: any[]) => Chainable<any>;
 
       /**
        * @description Get token pairs of each source and destination
@@ -593,6 +593,8 @@ Cypress.Commands.add("hardhatRequest", (method: string, params: any[]) => {
       method,
       params,
     },
+  }).then((res) => {
+    return cy.wrap(res.body.result);
   });
 });
 
@@ -1259,7 +1261,6 @@ Cypress.Commands.add("getDfcWalletBalance", (walletAddress: string) => {
     url: `${LOCAL_DFC_ENDPOINT}/regtest/address/${walletAddress}/tokens?size=200`,
     method: "GET",
   }).then((response) => {
-    cy.log(`response: ${JSON.stringify(response.body)}`);
     return cy.wrap(response.body.data);
   });
 });

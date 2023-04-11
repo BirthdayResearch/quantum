@@ -5,6 +5,9 @@ import { HttpStatusCode } from "axios";
 import dayjs from "dayjs";
 import { UtilityButtonType } from "../../support/utils";
 import { LOCAL_HARDHAT_CONFIG } from "../../../src/config";
+import { ethers } from "ethers";
+import BigNumber from "bignumber.js";
+import { balanceOf } from "../../support/ethUtils";
 
 const formData = {
   sourceNetwork: Network.DeFiChain,
@@ -17,6 +20,7 @@ const formData = {
 let connectedWalletAddress: string;
 const fee = "0.0012";
 const toReceive = "0.3988";
+const meurcTokenAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
 
 enum TitleLabel {
   Validating = "Validating your transaction",
@@ -297,36 +301,61 @@ context("QA-770-5~10 Connected wallet - DFC > ETH - EUROC", () => {
   });
 
   it("3. Verify form setup DFC -> ETH - Success", () => {
-    proceedUntilStep(4);
-    cy.wait(1000);
-    cy.getTokenPairs(formData.tokenPair).then((pair) => {
-      cy.findByTestId("claim-action-btn").click();
-      cy.verifyConfirmationModal();
-
-      //Reject
-      cy.rejectMetamaskTransaction();
-      cy.findByTestId("claim-err-title");
-      cy.findByTestId("claim-err-close-btn").should("contain.text", "Close");
-      cy.findByTestId("claim-err-action-btn")
-        .should("contain.text", "Try again")
-        .click();
-
-      // Approve
-      cy.confirmMetamaskTransaction();
-      // Show successfully claimed modal
-      cy.findByTestId("claim-success-modal").should("be.visible");
-      cy.findByTestId("claim-success-msg").should(
-        "contain.text",
-        `You have successfully claimed your ${pair.tokenA} tokens.`
+    // get metamask initial EUROC balance
+    cy.then(async () => {
+      const initialRes = await balanceOf(
+        connectedWalletAddress,
+        meurcTokenAddress
       );
-      cy.findByTestId("view-etherscan-btn").should(
-        "contain.text",
-        "View on Etherscan"
+      const initialBalance = new BigNumber(
+        ethers.utils.formatEther(initialRes)
       );
-      cy.findByTestId("claim-success-modal-close-icon").click();
+      proceedUntilStep(4);
 
-      // Form should restore to default
-      cy.verifyFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
+      cy.wait(1000);
+      cy.getTokenPairs(formData.tokenPair).then((pair) => {
+        cy.findByTestId("claim-action-btn").click();
+        cy.verifyConfirmationModal();
+
+        //Reject
+        cy.rejectMetamaskTransaction();
+        cy.findByTestId("claim-err-title");
+        cy.findByTestId("claim-err-close-btn").should("contain.text", "Close");
+        cy.findByTestId("claim-err-action-btn")
+          .should("contain.text", "Try again")
+          .click();
+
+        // Approve
+        cy.confirmMetamaskTransaction();
+        // Show successfully claimed modal
+        cy.findByTestId("claim-success-modal").should("be.visible");
+        cy.findByTestId("claim-success-msg").should(
+          "contain.text",
+          `You have successfully claimed your ${pair.tokenA} tokens.`
+        );
+        cy.findByTestId("view-etherscan-btn").should(
+          "contain.text",
+          "View on Etherscan"
+        );
+        cy.findByTestId("claim-success-modal-close-icon").click();
+
+        // Form should restore to default
+        cy.verifyFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");
+
+        // get metamask final balance
+        cy.then(async () => {
+          const finalRes = await balanceOf(
+            connectedWalletAddress,
+            meurcTokenAddress
+          );
+          const finalBalance = new BigNumber(
+            ethers.utils.formatEther(finalRes)
+          );
+          // check if amount transferred is received
+          const diff = finalBalance.minus(initialBalance);
+          expect(diff.toFixed()).to.equal(toReceive);
+        });
+      });
     });
   });
 });
@@ -341,7 +370,6 @@ context("QA-770-11 Connected wallet - DFC > ETH - QR address expired", () => {
       const createdDate = new Date();
       createdDate.setDate(createdDate.getDate() - 1);
       createdDate.setSeconds(createdDate.getSeconds() + 10);
-      cy.log(`createdDate: ${createdDate.toISOString()}`);
       cy.intercept(
         "GET",
         `**/defichain/wallet/address/generate?refundAddress=${formData.refundAddress}`,
