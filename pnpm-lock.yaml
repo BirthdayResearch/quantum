@@ -169,8 +169,8 @@ importers:
         specifier: ^1.9.3
         version: 1.9.3(react-redux@8.0.5)(react@18.2.0)
       '@tailwindcss/line-clamp':
-        specifier: ^0.4.2
-        version: 0.4.2(tailwindcss@3.3.1)
+        specifier: ^0.4.4
+        version: 0.4.4(tailwindcss@3.3.1)
       '@waveshq/standard-web':
         specifier: ^0.49.0
         version: 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)(sass@1.60.0)
@@ -4805,8 +4805,8 @@ packages:
     dependencies:
       tslib: 2.5.0
 
-  /@tailwindcss/line-clamp@0.4.2(tailwindcss@3.3.1):
-    resolution: {integrity: sha512-HFzAQuqYCjyy/SX9sLGB1lroPzmcnWv1FHkIpmypte10hptf4oPUfucryMKovZh2u0uiS9U5Ty3GghWfEJGwVw==}
+  /@tailwindcss/line-clamp@0.4.4(tailwindcss@3.3.1):
+    resolution: {integrity: sha512-5U6SY5z8N42VtrCrKlsTAA35gy2VSyYtHWCsg1H87NU1SXnEfekTVlrga9fzUDrrHcGi2Lb5KenUWb4lRQT5/g==}
     peerDependencies:
       tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
     dependencies:
