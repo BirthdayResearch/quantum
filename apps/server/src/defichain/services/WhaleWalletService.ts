@@ -113,7 +113,12 @@ export class WhaleWalletService {
       }
 
       // Get the number of confirmation blocks
-      const txInfo = await this.getDfcTxnConfirmations(wallet, address, verify.symbol);
+      const txInfo = await this.getDfcTxnConfirmations(wallet, address, verify.symbol, verify.amount);
+
+      // Verify that user sent one transaction with exact amount needed
+      if (txInfo === undefined) {
+        return { isValid: false, statusCode: CustomErrorCodes.TxnWithExactAmountNotFound };
+      }
 
       // Verify that required number of confirmation block is reached
       if (txInfo.numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
@@ -296,8 +301,8 @@ export class WhaleWalletService {
     wallet: WhaleWalletAccount,
     address: string,
     symbol: string,
-  ): Promise<{ numberOfConfirmations: number; amount: BigNumber }> {
-    let txInfo = { numberOfConfirmations: 0, amount: BigNumber(0) };
+    amount: BigNumber,
+  ): Promise<{ numberOfConfirmations: number; amount: BigNumber } | undefined> {
     try {
       const dfiTokenTxns = await wallet.client.address.listTransaction(address);
       const otherTokensTxns = await wallet.client.address.listAccountHistory(address);
@@ -305,16 +310,25 @@ export class WhaleWalletService {
       let txid: string;
       let txAmount: BigNumber;
       if (symbol === TokenSymbol.DFI && dfiTokenTxns.length > 0) {
-        // Only checks the first txn
-        txid = dfiTokenTxns[0].txid;
-        txAmount = BigNumber.max(new BigNumber(dfiTokenTxns[0].value), 0);
+        // Find DFI txn with exact amount
+        const transaction = dfiTokenTxns.find((tx) => amount.isEqualTo(tx.value));
+        if (transaction === undefined) {
+          throw new Error(`No txn found with same amount needed (${symbol}).`);
+        }
+        txid = transaction.txid;
+        txAmount = new BigNumber(transaction.value);
       } else {
-        // Only checks the first txn
-        const amount = otherTokensTxns[0].amounts[0]?.split('@');
-        const tokenSymbol = amount[1];
-        const tokenAmount = symbol === tokenSymbol ? amount[0] : 0;
-        txAmount = BigNumber.max(new BigNumber(tokenAmount), 0);
-        txid = otherTokensTxns[0].txid;
+        // Find non-DFI token txn with exact amount
+        const transaction = otherTokensTxns.find((tx) => {
+          const txAmountSymbol = tx.amounts[0]?.split('@');
+          const tokenSymbol = txAmountSymbol[1];
+          return amount.isEqualTo(txAmountSymbol[0]) && symbol === tokenSymbol;
+        });
+        if (transaction === undefined) {
+          throw new Error(`No txn found with same amount needed (${symbol}).`);
+        }
+        txAmount = new BigNumber(transaction.amounts[0]?.split('@')[0]);
+        txid = transaction.txid;
       }
 
       const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(txid);
@@ -322,12 +336,11 @@ export class WhaleWalletService {
         `[DfcTxnConfirmations] info for txid ${txid}: ${txAmount} ${symbol} ${blockHash} ${blockHeight} ${numberOfConfirmations}`,
       );
 
-      txInfo = { numberOfConfirmations, amount: txAmount };
+      return { numberOfConfirmations, amount: txAmount };
     } catch (e: any) {
       this.logger.log(`[DfcTxnConfirmations ERROR] ${e.message}`);
+      return undefined;
     }
-
-    return txInfo;
   }
 }
 
