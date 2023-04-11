@@ -52,9 +52,20 @@ export class StartedDeFiChainStubContainer {
     await this.playground.stop();
   }
 
-  async generateBlock(): Promise<void> {
-    await this.playgroundClient.rpc.call('generatetoaddress', [1, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
-    await sleep(3000);
+  /**
+   * Please note that number of blocks generated can be 2-3 blocks off from the given `number`.
+   * eg. if you want to generate 35 blocks you might need to add a little allowance and generate 38 blocks instead
+   * @param number
+   */
+  async generateBlock(number = 1): Promise<void> {
+    for (let i = 0; i < number; i += 1) {
+      await this.playgroundClient.rpc.call(
+        'generatetoaddress',
+        [number, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'],
+        'number',
+      );
+      await sleep(3000);
+    }
   }
 
   async getWhaleURL(): Promise<string> {
