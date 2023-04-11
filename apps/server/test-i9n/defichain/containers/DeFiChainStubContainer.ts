@@ -8,6 +8,7 @@ import {
   WhaleApiContainer,
 } from '@defichain/testcontainers';
 import { WhaleApiClient } from '@defichain/whale-api-client';
+import { sleep } from 'test-i9n/helper/sleep';
 import { Network } from 'testcontainers';
 
 /**
@@ -51,7 +52,8 @@ export class StartedDeFiChainStubContainer {
   }
 
   async generateBlock(): Promise<void> {
-    await this.playgroundClient.rpc.call('generatetoaddress', [20, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
+    await this.playgroundClient.rpc.call('generatetoaddress', [1, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'], 'number');
+    await sleep(3000);
   }
 
   async getWhaleURL(): Promise<string> {
