@@ -27,7 +27,7 @@ export class EthereumStatsService {
       }
 
       dateFrom.setUTCHours(0, 0, 0, 0); // set to UTC +0
-      const dateTo = new Date(today);
+      const dateTo = new Date(dateFrom);
       dateTo.setDate(dateFrom.getDate() + 1);
 
       // Concurrently query both count and confirmed txns

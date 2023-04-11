@@ -10,7 +10,9 @@ import { EthersModule } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
 import { EthereumController } from './controllers/EthereumController';
 import { StatsController } from './controllers/StatsController';
+import { TransactionsController } from './controllers/TransactionsController';
 import { EthereumStatsService } from './services/EthereumStatsService';
+import { EthereumTransactionsService } from './services/EthereumTransactionsService';
 import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirmerService';
 
 @Module({
@@ -23,9 +25,10 @@ import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirm
     DeFiChainTransactionService,
     EVMTransactionConfirmerService,
     EthereumStatsService,
+    EthereumTransactionsService,
     SemaphoreCache,
   ],
-  controllers: [EthereumController, StatsController],
+  controllers: [EthereumController, StatsController, TransactionsController],
   imports: [EthersModule, CacheModule.register({ max: 10_000 })],
   exports: [EVMTransactionConfirmerService, EthereumStatsService],
 })
