@@ -112,13 +112,8 @@ export class WhaleWalletService {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
-      // Verify that transaction has reached n number of confirmations
+      // Get the number of confirmation blocks
       const txInfo = await this.getDfcTxnConfirmations(wallet, address, verify.symbol);
-
-      // Verify that address only has one transaction
-      if (txInfo.totalNumberOfTxns > 1) {
-        return { isValid: false, statusCode: CustomErrorCodes.FoundMoreThanOneTxn };
-      }
 
       // Verify that required number of confirmation block is reached
       if (txInfo.numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
@@ -301,20 +296,20 @@ export class WhaleWalletService {
     wallet: WhaleWalletAccount,
     address: string,
     symbol: string,
-  ): Promise<ConfirmedTxnInfo> {
-    let txInfo = { numberOfConfirmations: 0, totalNumberOfTxns: 0, amount: BigNumber(0) };
-
+  ): Promise<{ numberOfConfirmations: number; amount: BigNumber }> {
+    let txInfo = { numberOfConfirmations: 0, amount: BigNumber(0) };
     try {
       const dfiTokenTxns = await wallet.client.address.listTransaction(address);
       const otherTokensTxns = await wallet.client.address.listAccountHistory(address);
-      const totalNumberOfTxns = dfiTokenTxns.length + otherTokensTxns.length;
 
       let txid: string;
       let txAmount: BigNumber;
       if (symbol === TokenSymbol.DFI && dfiTokenTxns.length > 0) {
+        // Only checks the first txn
         txid = dfiTokenTxns[0].txid;
         txAmount = BigNumber.max(new BigNumber(dfiTokenTxns[0].value), 0);
       } else {
+        // Only checks the first txn
         const amount = otherTokensTxns[0].amounts[0]?.split('@');
         const tokenSymbol = amount[1];
         const tokenAmount = symbol === tokenSymbol ? amount[0] : 0;
@@ -327,7 +322,7 @@ export class WhaleWalletService {
         `[DfcTxnConfirmations] info for txid ${txid}: ${txAmount} ${symbol} ${blockHash} ${blockHeight} ${numberOfConfirmations}`,
       );
 
-      txInfo = { numberOfConfirmations, totalNumberOfTxns, amount: txAmount };
+      txInfo = { numberOfConfirmations, amount: txAmount };
     } catch (e: any) {
       this.logger.log(`[DfcTxnConfirmations ERROR] ${e.message}`);
     }
@@ -342,10 +337,4 @@ export interface VerifyResponse {
   signature?: string;
   nonce?: number;
   deadline?: number;
-}
-
-interface ConfirmedTxnInfo {
-  numberOfConfirmations: number;
-  totalNumberOfTxns: number;
-  amount: BigNumber;
 }
