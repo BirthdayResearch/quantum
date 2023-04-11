@@ -2,10 +2,12 @@ import { DeFiAddress } from '@defichain/jellyfish-address';
 import { CTransactionSegWit, Script, TransactionSegWit } from '@defichain/jellyfish-transaction';
 import { P2WPKHTransactionBuilder } from '@defichain/jellyfish-transaction-builder';
 import { Transaction } from '@defichain/whale-api-client/dist/api/transactions';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentNetwork, isPlayground } from '@waveshq/walletkit-core';
+import { ModifyDeFiChainAddressIndex } from 'src/utils/StatsUtils';
 
+import { PrismaService } from '../../PrismaService';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 import { WhaleApiService } from './WhaleApiService';
@@ -22,6 +24,7 @@ export class DeFiChainTransactionService {
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly whaleClient: WhaleApiService,
     private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
   ) {
     this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
   }
@@ -112,5 +115,54 @@ export class DeFiChainTransactionService {
         }, INTERVAL_TIME);
       }, initialTime);
     });
+  }
+
+  // this function is expected to be called only by endpoint /defichain/transactions?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD
+  async getTransactions(dateFrom: Date, dateTo: Date, today: Date): Promise<ModifyDeFiChainAddressIndex[]> {
+    try {
+      if (dateFrom > today) {
+        throw new BadRequestException(`Cannot query future date`);
+      }
+
+      if (dateFrom > dateTo) {
+        throw new BadRequestException(`fromDate cannot be more recent than toDate`);
+      }
+
+      // dateTo less than or equal to 23:59:59:999 is equivalent to
+      // dateTo less than (dateTo + 1)
+      dateTo.setDate(dateTo.getDate() + 1);
+      const result = await this.prisma.deFiChainAddressIndex.findMany({
+        where: {
+          createdAt: {
+            gte: dateFrom.toISOString(),
+            lt: dateTo.toISOString(),
+          },
+        },
+      });
+
+      const modifiedResult = result?.map((x) => {
+        let r = {};
+        for (const i in x) {
+          if (Object.hasOwn(x, i)) {
+            r = i === 'id' ? { ...r, [i]: x[i].toString() } : { ...r, [i]: x[i as keyof ModifyDeFiChainAddressIndex] };
+          }
+        }
+        return r as ModifyDeFiChainAddressIndex;
+      });
+
+      return modifiedResult;
+    } catch (e: any) {
+      throw new HttpException(
+        {
+          statusCode: e.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `API call for DeFiChain transactions was unsuccessful`,
+          message: e.message,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
   }
 }

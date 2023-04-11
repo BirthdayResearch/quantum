@@ -1,4 +1,4 @@
-import { IsDateString, IsOptional } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsOptional } from 'class-validator';
 
 import { SupportedDFCTokenSymbols } from '../AppConfig';
 import { Iso8601DateOnlyString } from '../utils/StatsUtils';
@@ -37,3 +37,13 @@ export type BridgedDFCTokenSum = {
   tokenSymbol: SupportedDFCTokenSymbols;
   totalAmount: string;
 };
+
+export class TransactionsQueryDto {
+  @IsDateString()
+  @IsNotEmpty()
+  fromDate!: Iso8601DateOnlyString;
+
+  @IsDateString()
+  @IsNotEmpty()
+  toDate!: Iso8601DateOnlyString;
+}
