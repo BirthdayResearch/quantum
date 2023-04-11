@@ -331,10 +331,7 @@ describe('DeFiChain Verify fund Testing', () => {
       ],
       'number',
     );
-
-    console.log('GENBLOCK-BEFORE: ', (await defichain.whaleClient.stats.get()).count.blocks); // eslint-disable-line no-console
     await defichain.generateBlock(40);
-    console.log('GENBLOCK-AFTER: ', (await defichain.whaleClient.stats.get()).count.blocks); // eslint-disable-line no-console
 
     const response = await verify({
       amount: '10',
