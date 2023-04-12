@@ -379,12 +379,15 @@ describe('/defichain/transactions test', () => {
 
     const parsedPayload = JSON.parse(txReceipt.payload);
     expect(parsedPayload).toStrictEqual(
-      mockDeFiChainTransactions.map((transaction) => ({
-        ...transaction,
-        id: transaction.id.toString(),
-        createdAt: transaction.createdAt.toISOString(),
-        updatedAt: transaction.updatedAt?.toISOString(),
-      })),
+      mockDeFiChainTransactions.map((transaction) => {
+        const { id, ...res } = transaction;
+
+        return {
+          ...res,
+          createdAt: transaction.createdAt.toISOString(),
+          updatedAt: transaction.updatedAt?.toISOString(),
+        };
+      }),
     );
   });
 
@@ -398,12 +401,14 @@ describe('/defichain/transactions test', () => {
     expect(parsedPayload).toStrictEqual(
       mockDeFiChainTransactions
         .filter((transaction) => transaction.createdAt.toISOString() === '2023-04-03T03:50:56.503Z')
-        .map((transaction) => ({
-          ...transaction,
-          id: transaction.id.toString(),
-          createdAt: transaction.createdAt.toISOString(),
-          updatedAt: transaction.updatedAt?.toISOString(),
-        })),
+        .map((transaction) => {
+          const { id, ...res } = transaction;
+          return {
+            ...res,
+            createdAt: transaction.createdAt.toISOString(),
+            updatedAt: transaction.updatedAt?.toISOString(),
+          };
+        }),
     );
   });
 });

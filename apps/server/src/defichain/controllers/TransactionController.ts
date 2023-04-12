@@ -1,5 +1,5 @@
 import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
-import { ModifyDeFiChainAddressIndex } from 'src/utils/StatsUtils';
+import { DeFiChainAddressIndex } from '@prisma/client';
 
 import { SemaphoreCache } from '../../libs/caches/SemaphoreCache';
 import { TransactionsQueryDto } from '../DefichainInterface';
@@ -15,7 +15,7 @@ export class TransactionsController {
   @Get('transactions')
   async getTransactions(
     @Query(new ValidationPipe()) { fromDate, toDate }: TransactionsQueryDto,
-  ): Promise<ModifyDeFiChainAddressIndex[] | undefined> {
+  ): Promise<Omit<DeFiChainAddressIndex, 'id'>[] | undefined> {
     const dateFrom = new Date(fromDate);
     const dateTo = new Date(toDate);
     const today = new Date();

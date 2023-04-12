@@ -4,8 +4,8 @@ import { P2WPKHTransactionBuilder } from '@defichain/jellyfish-transaction-build
 import { Transaction } from '@defichain/whale-api-client/dist/api/transactions';
 import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DeFiChainAddressIndex } from '@prisma/client';
 import { EnvironmentNetwork, isPlayground } from '@waveshq/walletkit-core';
-import { ModifyDeFiChainAddressIndex } from 'src/utils/StatsUtils';
 
 import { PrismaService } from '../../PrismaService';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
@@ -118,7 +118,7 @@ export class DeFiChainTransactionService {
   }
 
   // this function is expected to be called only by endpoint /defichain/transactions?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD
-  async getTransactions(dateFrom: Date, dateTo: Date, today: Date): Promise<ModifyDeFiChainAddressIndex[]> {
+  async getTransactions(dateFrom: Date, dateTo: Date, today: Date): Promise<Omit<DeFiChainAddressIndex, 'id'>[]> {
     try {
       if (dateFrom > today || dateTo > today) {
         throw new BadRequestException(`Cannot query future date`);
@@ -131,7 +131,7 @@ export class DeFiChainTransactionService {
       // dateTo less than or equal to 23:59:59:999 is equivalent to
       // dateTo less than (dateTo + 1)
       dateTo.setDate(dateTo.getDate() + 1);
-      const result = await this.prisma.deFiChainAddressIndex.findMany({
+      const fullResult = await this.prisma.deFiChainAddressIndex.findMany({
         where: {
           createdAt: {
             gte: dateFrom.toISOString(),
@@ -140,20 +140,10 @@ export class DeFiChainTransactionService {
         },
       });
 
-      const modifiedResult = result?.map((transaction) => {
-        let modifiedTransaction = {};
-        for (const k in transaction) {
-          if (Object.hasOwn(transaction, k)) {
-            modifiedTransaction =
-              k === 'id'
-                ? { ...modifiedTransaction, [k]: transaction[k].toString() }
-                : { ...modifiedTransaction, [k]: transaction[k as keyof ModifyDeFiChainAddressIndex] };
-          }
-        }
-        return modifiedTransaction as ModifyDeFiChainAddressIndex;
+      return fullResult.map((transaction) => {
+        const { id, ...modifyTransaction } = transaction;
+        return modifyTransaction;
       });
-
-      return modifiedResult;
     } catch (e: any) {
       throw new HttpException(
         {
