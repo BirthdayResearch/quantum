@@ -309,7 +309,9 @@ describe('DeFiChain Verify fund Testing', () => {
       tokenAddress: mwbtcContract.address,
     });
 
-    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.IsBelowMinConfirmationRequired });
+    expect(response.isValid).toBeFalsy();
+    expect(response.statusCode).toStrictEqual(CustomErrorCodes.IsBelowMinConfirmationRequired);
+    expect(response.txnId).toBeDefined();
   });
 
   it('should verify fund in the wallet address and top up UTXO', async () => {
@@ -345,11 +347,12 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response.signature).toBeDefined();
     expect(response.nonce).toBeDefined();
     expect(response.deadline).toBeDefined();
+    expect(response.txnId).toBeDefined();
 
     // TODO: Fix flaky tests for UTXO
     /* await defichain.generateBlock();
-    expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
-      new BigNumber('0.001').toFixed(8),
-    ); */
+                    expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
+                      new BigNumber('0.001').toFixed(8),
+                    ); */
   });
 });

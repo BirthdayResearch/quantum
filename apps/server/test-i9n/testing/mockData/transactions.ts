@@ -1,6 +1,6 @@
-import { BridgeEventTransactions, EthereumTransactionStatus } from '@prisma/client';
+import { BotStatus, BridgeEventTransactions, DeFiChainAddressIndex, EthereumTransactionStatus } from '@prisma/client';
 
-export const mockTransactions: BridgeEventTransactions[] = [
+export const mockEVMTransactions: BridgeEventTransactions[] = [
   {
     id: BigInt(1),
     transactionHash: '0x9d0a68dad173120c67d3cb7fc498a288e8c4aa45a14147bb86208318d485ced0',
@@ -39,5 +39,56 @@ export const mockTransactions: BridgeEventTransactions[] = [
     blockHash: '209c81fdbfd93b2f9770d7d766f847c90daa8270c6d9c0012c65cd1d00e85e4c',
     blockHeight: '1545080',
     unconfirmedSendTransactionHash: 'c089cc06d2c9ecf67aa0eff2e77b477e3ff3d6ed28113a17689327091dd40fba',
+  },
+];
+
+export const mockDeFiChainTransactions: DeFiChainAddressIndex[] = [
+  {
+    id: BigInt(900),
+    index: 2,
+    address: 'a',
+    refundAddress: '',
+    claimNonce: '',
+    claimDeadline: '',
+    claimSignature: '',
+    claimAmount: '',
+    tokenSymbol: '',
+    createdAt: new Date('2023-04-01T03:50:56.503Z'),
+    updatedAt: new Date('2023-04-01T03:50:56.503Z'),
+    hotWalletAddress: '',
+    ethReceiverAddress: '',
+    botStatus: BotStatus.SENT,
+  },
+  {
+    id: BigInt(901),
+    index: 3,
+    address: 'b',
+    refundAddress: '',
+    claimNonce: '',
+    claimDeadline: '',
+    claimSignature: '',
+    claimAmount: '',
+    tokenSymbol: '',
+    createdAt: new Date('2023-04-02T03:50:56.503Z'),
+    updatedAt: new Date('2023-04-02T03:50:56.503Z'),
+    hotWalletAddress: '',
+    ethReceiverAddress: '',
+    botStatus: BotStatus.SENT,
+  },
+  {
+    id: BigInt(902),
+    index: 4,
+    address: 'c',
+    refundAddress: '',
+    claimNonce: '',
+    claimDeadline: '',
+    claimSignature: '',
+    claimAmount: '',
+    tokenSymbol: '',
+    createdAt: new Date('2023-04-03T03:50:56.503Z'),
+    updatedAt: new Date('2023-04-03T03:50:56.503Z'),
+    hotWalletAddress: '',
+    ethReceiverAddress: '',
+    botStatus: BotStatus.SENT,
   },
 ];
