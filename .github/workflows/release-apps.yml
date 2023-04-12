@@ -20,16 +20,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  APPS: "bridge-api"
-
 jobs:
   aws_ecr:
     name: Publish AWS ECR
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        app: [bridge-api]
         include:
           - name: bridge-api-staging
             environment: AWS ECR
