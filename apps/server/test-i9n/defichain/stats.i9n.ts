@@ -157,7 +157,7 @@ describe('DeFiChain Stats Testing', () => {
       ],
       'number',
     );
-    await defichain.generateBlock();
+    await defichain.generateBlock(40);
 
     const response = await verify({
       amount: '10',
