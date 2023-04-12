@@ -115,7 +115,11 @@ export class WhaleWalletService {
       // Get and validate the number of confirmation blocks
       const blockTxnStatus = await this.validateBlockTxn(wallet, verify);
       if (blockTxnStatus.code !== undefined) {
-        return { isValid: false, statusCode: blockTxnStatus.code };
+        return {
+          isValid: false,
+          statusCode: blockTxnStatus.code,
+          txnId: blockTxnStatus.txid,
+        };
       }
 
       // Successful verification, proceed to sign the claim
@@ -138,7 +142,13 @@ export class WhaleWalletService {
         }`,
       );
 
-      return { isValid: true, signature: claim.signature, nonce: claim.nonce, deadline: claim.deadline };
+      return {
+        isValid: true,
+        signature: claim.signature,
+        nonce: claim.nonce,
+        deadline: claim.deadline,
+        txnId: blockTxnStatus.txid,
+      };
     } catch (error) {
       throw new HttpException(
         {
@@ -290,9 +300,9 @@ export class WhaleWalletService {
 
     // Verify that user sent one transaction with exact amount needed
     if (txInfo === undefined) {
-      return { code: CustomErrorCodes.TxnWithExactAmountNotFound, numberOfConfirmations: 0 };
+      return { code: CustomErrorCodes.TxnWithExactAmountNotFound, numberOfConfirmations: 0, txid: undefined };
     }
-    const { numberOfConfirmations } = txInfo;
+    const { numberOfConfirmations, txid } = txInfo;
     let statusCode: CustomErrorCodes | undefined;
 
     if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
@@ -300,13 +310,13 @@ export class WhaleWalletService {
       statusCode = CustomErrorCodes.IsBelowMinConfirmationRequired;
     }
 
-    return { code: statusCode, numberOfConfirmations };
+    return { code: statusCode, numberOfConfirmations, txid };
   }
 
   private async getDfcTxnConfirmations(
     wallet: WhaleWalletAccount,
     verify: VerifyObject,
-  ): Promise<{ numberOfConfirmations: number } | undefined> {
+  ): Promise<{ numberOfConfirmations: number; txid: string } | undefined> {
     try {
       const dfiTokenTxns = await wallet.client.address.listTransaction(verify.address);
       const otherTokensTxns = await wallet.client.address.listAccountHistory(verify.address);
@@ -340,7 +350,7 @@ export class WhaleWalletService {
         `[DfcTxnConfirmations] info for txid ${txid}: ${txAmount} ${verify.symbol} ${blockHash} ${blockHeight} ${numberOfConfirmations}`,
       );
 
-      return { numberOfConfirmations };
+      return { numberOfConfirmations, txid };
     } catch (e: any) {
       this.logger.log(`[DfcTxnConfirmations ERROR] ${e.message}`);
       return undefined;
@@ -354,4 +364,5 @@ export interface VerifyResponse {
   signature?: string;
   nonce?: number;
   deadline?: number;
+  txnId?: string;
 }
