@@ -21,6 +21,8 @@ import { SendService } from './SendService';
 export class WhaleWalletService {
   private readonly logger: Logger;
 
+  private readonly dustUTXO: number;
+
   private readonly MIN_REQUIRED_DFC_CONFIRMATION = 35;
 
   constructor(
@@ -33,6 +35,7 @@ export class WhaleWalletService {
     private readonly sendService: SendService,
   ) {
     this.logger = new Logger(WhaleWalletService.name);
+    this.dustUTXO = configService.get('defichain.dustUTXO', 0.001);
   }
 
   async verify(verify: VerifyObject, network: EnvironmentNetwork): Promise<VerifyResponse> {
@@ -103,7 +106,11 @@ export class WhaleWalletService {
       }
 
       // Verify that the amount === utxo balance
-      if (verify.symbol === TokenSymbol.DFI && !new BigNumber(verify.amount).isEqualTo(utxo)) {
+      if (
+        verify.symbol === TokenSymbol.DFI &&
+        !new BigNumber(verify.amount).isEqualTo(utxo) &&
+        !new BigNumber(verify.amount).plus(this.dustUTXO).isEqualTo(utxo)
+      ) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
@@ -130,7 +137,10 @@ export class WhaleWalletService {
         uniqueDfcAddress: verify.address,
       });
 
-      await this.fundUTXO(verify.address);
+      // Fund address once with dust UTXO
+      if (!pathIndex.claimSignature) {
+        await this.fundUTXO(verify.address);
+      }
 
       this.logger.log(
         `[Verify SUCCESS] ${verify.amount} ${fee.toString()} ${amountLessFee} ${verify.symbol} ${verify.address} ${
@@ -272,12 +282,11 @@ export class WhaleWalletService {
   // This function will top up UTXO on a successful signing of DFC -> EVM claim
   private async fundUTXO(toAddress: string): Promise<void> {
     try {
-      const dustUTXO = this.configService.get('defichain.dustUTXO', 0.001);
       this.logger.log(`[Sending UTXO] to ${toAddress}...`);
       const sendTransactionHash = await this.sendService.send(toAddress, {
         symbol: 'DFI',
         id: '0',
-        amount: new BigNumber(dustUTXO),
+        amount: new BigNumber(this.dustUTXO),
       });
       this.logger.log(`[Sent UTXO] to ${toAddress} ${sendTransactionHash}`);
     } catch (e) {
