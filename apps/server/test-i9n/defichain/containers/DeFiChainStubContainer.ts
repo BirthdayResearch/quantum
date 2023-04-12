@@ -53,18 +53,21 @@ export class StartedDeFiChainStubContainer {
   }
 
   /**
-   * Please note that number of blocks generated can be 2-3 blocks off from the given `number`.
-   * eg. if you want to generate 35 blocks you might need to add a little allowance and generate 38 blocks instead
+   * Generate block sequentially, by making sure the client return a new block before generating the next one
    * @param number
    */
   async generateBlock(number = 1): Promise<void> {
     for (let i = 0; i < number; i += 1) {
+      const statsBeforeGenerate = await this.whaleClient.stats.get();
       await this.playgroundClient.rpc.call(
         'generatetoaddress',
         [number, 'mswsMVsyGMj1FzDMbbxw2QW3KvQAv2FKiy'],
         'number',
       );
-      await sleep(3000);
+      const statsAfterGenerate = await this.whaleClient.stats.get();
+      if (statsBeforeGenerate.count.blocks > statsAfterGenerate.count.blocks) {
+        await sleep(3000);
+      }
     }
   }
 
