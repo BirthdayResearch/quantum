@@ -1,5 +1,6 @@
 import { fromAddress } from '@defichain/jellyfish-address';
 import { AddressToken } from '@defichain/whale-api-client/dist/api/address';
+import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
 import { BadRequestException, HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DeFiChainAddressIndex } from '@prisma/client';
@@ -13,15 +14,19 @@ import { PrismaService } from '../../PrismaService';
 import { TokenSymbol, VerifyObject } from '../model/VerifyDto';
 import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
+import { DeFiChainTransactionService } from './DeFiChainTransactionService';
 import { SendService } from './SendService';
 
 @Injectable()
 export class WhaleWalletService {
   private readonly logger: Logger;
 
+  private readonly MIN_REQUIRED_DFC_CONFIRMATION = 35;
+
   constructor(
     private readonly whaleWalletProvider: WhaleWalletProvider,
     private readonly clientProvider: WhaleApiClientProvider,
+    private readonly deFiChainTransactionService: DeFiChainTransactionService,
     private readonly evmTransactionService: EVMTransactionConfirmerService,
     private configService: ConfigService,
     private prisma: PrismaService,
@@ -105,6 +110,12 @@ export class WhaleWalletService {
       // Verify that the amount === token balance
       if (token !== undefined && !new BigNumber(verify.amount).isEqualTo(token.amount)) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
+      }
+
+      // Get and validate the number of confirmation blocks
+      const blockTxnStatus = await this.validateBlockTxn(wallet, verify);
+      if (blockTxnStatus.code !== undefined) {
+        return { isValid: false, statusCode: blockTxnStatus.code };
       }
 
       // Successful verification, proceed to sign the claim
@@ -271,6 +282,68 @@ export class WhaleWalletService {
       this.logger.log(`[Sent UTXO] to ${toAddress} ${sendTransactionHash}`);
     } catch (e) {
       this.logger.log(`[Sent UTXO] Failed to send ${toAddress}. Check UTXO balance.`);
+    }
+  }
+
+  private async validateBlockTxn(wallet: WhaleWalletAccount, verify: VerifyObject) {
+    const txInfo = await this.getDfcTxnConfirmations(wallet, verify);
+
+    // Verify that user sent one transaction with exact amount needed
+    if (txInfo === undefined) {
+      return { code: CustomErrorCodes.TxnWithExactAmountNotFound, numberOfConfirmations: 0 };
+    }
+    const { numberOfConfirmations } = txInfo;
+    let statusCode: CustomErrorCodes | undefined;
+
+    if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
+      // Verify that required number of confirmation block is reached
+      statusCode = CustomErrorCodes.IsBelowMinConfirmationRequired;
+    }
+
+    return { code: statusCode, numberOfConfirmations };
+  }
+
+  private async getDfcTxnConfirmations(
+    wallet: WhaleWalletAccount,
+    verify: VerifyObject,
+  ): Promise<{ numberOfConfirmations: number } | undefined> {
+    try {
+      const dfiTokenTxns = await wallet.client.address.listTransaction(verify.address);
+      const otherTokensTxns = await wallet.client.address.listAccountHistory(verify.address);
+
+      let txid: string;
+      let txAmount: BigNumber;
+      if (verify.symbol === TokenSymbol.DFI && dfiTokenTxns.length > 0) {
+        // Find DFI txn with exact amount
+        const transaction = dfiTokenTxns.find((tx) => verify.amount.isEqualTo(tx.value));
+        if (transaction === undefined) {
+          throw new Error(`No txn found with same amount needed (${verify.symbol}).`);
+        }
+        txid = transaction.txid;
+        txAmount = new BigNumber(transaction.value);
+      } else {
+        // Find non-DFI token txn with exact amount
+        const transaction = otherTokensTxns.find((tx) => {
+          const txAmountSymbol = tx.amounts[0]?.split('@');
+          const tokenSymbol = txAmountSymbol[1];
+          return verify.amount.isEqualTo(txAmountSymbol[0]) && verify.symbol === tokenSymbol;
+        });
+        if (transaction === undefined) {
+          throw new Error(`No txn found with same amount needed (${verify.symbol}).`);
+        }
+        txAmount = new BigNumber(transaction.amounts[0]?.split('@')[0]);
+        txid = transaction.txid;
+      }
+
+      const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(txid);
+      this.logger.log(
+        `[DfcTxnConfirmations] info for txid ${txid}: ${txAmount} ${verify.symbol} ${blockHash} ${blockHeight} ${numberOfConfirmations}`,
+      );
+
+      return { numberOfConfirmations };
+    } catch (e: any) {
+      this.logger.log(`[DfcTxnConfirmations ERROR] ${e.message}`);
+      return undefined;
     }
   }
 }
