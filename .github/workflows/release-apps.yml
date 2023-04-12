@@ -63,7 +63,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ matrix.acc }}.dkr.ecr.eu-west-1.amazonaws.com
-          IMAGE_TAG: bridge-api:${{ steps.ecr-tags.outputs.result }}
+          IMAGE_TAG: private-bridge-api:${{ steps.ecr-tags.outputs.result }}
         run: |
           docker build --file apps/server/Dockerfile -t $ECR_REGISTRY/$IMAGE_TAG .
           docker push $ECR_REGISTRY/$IMAGE_TAG
