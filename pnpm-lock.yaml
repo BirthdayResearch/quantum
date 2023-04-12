@@ -173,7 +173,7 @@ importers:
         version: 0.4.4(tailwindcss@3.3.1)
       '@waveshq/standard-web':
         specifier: ^0.49.0
-        version: 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)(sass@1.60.0)
+        version: 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)(sass@1.62.0)
       axios:
         specifier: ^1.3.5
         version: 1.3.5
@@ -205,8 +205,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       sass:
-        specifier: ^1.60.0
-        version: 1.60.0
+        specifier: ^1.62.0
+        version: 1.62.0
       wagmi:
         specifier: ^0.12.10
         version: 0.12.10(@babel/core@7.21.0)(@types/node@18.14.0)(ethers@5.7.2)(react-dom@18.2.0)(react@18.2.0)(typescript@4.9.5)
@@ -231,7 +231,7 @@ importers:
         version: 18.14.0
       '@waveshq/standard-web-linter':
         specifier: ^0.49.0
-        version: 0.49.0(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.57.1)(@typescript-eslint/parser@5.57.1)(react-dom@18.2.0)(react@18.2.0)(sass@1.60.0)
+        version: 0.49.0(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.57.1)(@typescript-eslint/parser@5.57.1)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.0)
       autoprefixer:
         specifier: ^10.4.13
         version: 10.4.13(postcss@8.4.21)
@@ -5795,7 +5795,7 @@ packages:
       - supports-color
     dev: false
 
-  /@waveshq/standard-web-linter@0.49.0(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.57.1)(@typescript-eslint/parser@5.57.1)(react-dom@18.2.0)(react@18.2.0)(sass@1.60.0):
+  /@waveshq/standard-web-linter@0.49.0(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.57.1)(@typescript-eslint/parser@5.57.1)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.0):
     resolution: {integrity: sha512-ANVHDW/rU7eqjYn5I+F5wVvN+J3FDpEMSm0/3IfLcP4Ew7jitcAodMND3Laba/X2eLtY2MASH7E4PIPLI3xNrw==}
     dependencies:
       eslint: 8.38.0
@@ -5813,7 +5813,7 @@ packages:
       eslint-plugin-simple-import-sort: 10.0.0(eslint@8.38.0)
       husky: 8.0.3
       lint-staged: 13.2.1
-      next: 13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.60.0)
+      next: 13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.0)
       prettier: 2.8.7
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -5832,7 +5832,7 @@ packages:
       - sass
       - supports-color
 
-  /@waveshq/standard-web@0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)(sass@1.60.0):
+  /@waveshq/standard-web@0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)(sass@1.62.0):
     resolution: {integrity: sha512-cEUfr3O1YRrejYbILHzQl6JeDRe2zA1MYdcANEOAMLYhRz+PiEY3JiHonvTxg81AlXUnM2/DUJOoqiS+oXy/kg==}
     dependencies:
       '@netlify/ipx': 1.4.0
@@ -5840,7 +5840,7 @@ packages:
       '@types/react': 18.0.33
       '@types/react-dom': 18.0.11
       follow-redirects: 1.15.2(debug@4.3.4)
-      next: 13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.60.0)
+      next: 13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.0)
       next-sitemap: 4.0.7(@next/env@13.3.0)(next@13.3.0)
       nextjs-progressbar: 0.0.16(next@13.3.0)(react@18.2.0)
       react: 18.2.0
@@ -5875,8 +5875,8 @@ packages:
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.9(@babel/core@7.21.0)(@types/node@18.14.0)(ts-node@10.9.1)(typescript@4.9.5)
       '@waveshq/standard-defichain-jellyfishsdk': 0.49.0(@types/tar-fs@2.0.1)
-      '@waveshq/standard-web': 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)(sass@1.60.0)
-      '@waveshq/standard-web-linter': 0.49.0(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.57.1)(@typescript-eslint/parser@5.57.1)(react-dom@18.2.0)(react@18.2.0)(sass@1.60.0)
+      '@waveshq/standard-web': 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)(sass@1.62.0)
+      '@waveshq/standard-web-linter': 0.49.0(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.57.1)(@typescript-eslint/parser@5.57.1)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.0)
       '@waveshq/walletkit-core': 0.44.0
       bignumber.js: 9.1.1
       dayjs: 1.11.7
@@ -12307,10 +12307,10 @@ packages:
       '@corex/deepmerge': 4.0.37
       '@next/env': 13.3.0
       minimist: 1.2.8
-      next: 13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.60.0)
+      next: 13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.0)
     dev: false
 
-  /next@13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.60.0):
+  /next@13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.0):
     resolution: {integrity: sha512-OVTw8MpIPa12+DCUkPqRGPS3thlJPcwae2ZL4xti3iBff27goH024xy4q2lhlsdoYiKOi8Kz6uJoLW/GXwgfOA==}
     engines: {node: '>=14.6.0'}
     hasBin: true
@@ -12338,7 +12338,7 @@ packages:
       postcss: 8.4.14
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sass: 1.60.0
+      sass: 1.62.0
       styled-jsx: 5.1.1(@babel/core@7.21.0)(react@18.2.0)
     optionalDependencies:
       '@next/swc-darwin-arm64': 13.3.0
@@ -12361,7 +12361,7 @@ packages:
       react: '>= 16.0.0'
     dependencies:
       '@types/nprogress': 0.2.0
-      next: 13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.60.0)
+      next: 13.3.0(@babel/core@7.21.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.62.0)
       nprogress: 0.2.0
       prop-types: 15.8.1
       react: 18.2.0
@@ -14238,9 +14238,9 @@ packages:
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  /sass@1.60.0:
-    resolution: {integrity: sha512-updbwW6fNb5gGm8qMXzVO7V4sWf7LMXnMly/JEyfbfERbVH46Fn6q02BX7/eHTdKpE7d+oTkMMQpFWNUMfFbgQ==}
-    engines: {node: '>=12.0.0'}
+  /sass@1.62.0:
+    resolution: {integrity: sha512-Q4USplo4pLYgCi+XlipZCWUQz5pkg/ruSSgJ0WRDSb/+3z9tXUOkQ7QPYn4XrhZKYAK4HlpaQecRwKLJX6+DBg==}
+    engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
       chokidar: 3.5.3
