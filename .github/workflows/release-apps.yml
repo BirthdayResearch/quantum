@@ -51,7 +51,7 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@2f9f10ea3fa2eed41ac443fee8bfbd059af2d0a4 # v1.6.0
         with:
-          registry-type: public
+          registry-type: private
 
       - name: Resolve ECR Tags
         uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410 # v6.4.1
