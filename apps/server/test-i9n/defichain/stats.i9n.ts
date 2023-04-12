@@ -13,7 +13,7 @@ import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletPr
 import { PrismaService } from '../../src/PrismaService';
 import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
-import { mockDeFiChainAddressIndex } from '../testing/mockData/transactions';
+import { mockDeFiChainTransactions } from '../testing/mockData/transactions';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
 
@@ -275,11 +275,23 @@ describe('/defichain/transactions test', () => {
 
     prismaService = app.get<PrismaService>(PrismaService);
 
-    await prismaService.deFiChainAddressIndex.createMany({ data: mockDeFiChainAddressIndex });
+    await prismaService.deFiChainAddressIndex.createMany({ data: mockDeFiChainTransactions });
   });
 
   afterAll(async () => {
     await testing.stop();
+  });
+
+  it(`should throw an error if there is no toDate`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=2023-03-27`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.message).toStrictEqual(['toDate must be a valid ISO 8601 date string']);
   });
 
   it(`should throw an error if both dates are invalid`, async () => {
@@ -334,7 +346,7 @@ describe('/defichain/transactions test', () => {
     expect(parsedPayload.message).toStrictEqual('Cannot query future date');
   });
 
-  it(`should not throw an error if toDate is in the future`, async () => {
+  it(`should throw an error if toDate is in the future`, async () => {
     const txReceipt = await testing.inject({
       method: 'GET',
       url: `/defichain/transactions?fromDate=2023-03-15&toDate=2033-03-16`,
@@ -342,14 +354,9 @@ describe('/defichain/transactions test', () => {
 
     const parsedPayload = JSON.parse(txReceipt.payload);
 
-    expect(parsedPayload).toStrictEqual(
-      mockDeFiChainAddressIndex.map((r) => ({
-        ...r,
-        id: r.id.toString(),
-        createdAt: r.createdAt.toISOString(),
-        updatedAt: r.updatedAt?.toISOString(),
-      })),
-    );
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.error).toStrictEqual('API call for DeFiChain transactions was unsuccessful');
+    expect(parsedPayload.message).toStrictEqual('Cannot query future date');
   });
 
   it(`should throw an error fromDate is more recent than toDate`, async () => {
@@ -372,11 +379,11 @@ describe('/defichain/transactions test', () => {
 
     const parsedPayload = JSON.parse(txReceipt.payload);
     expect(parsedPayload).toStrictEqual(
-      mockDeFiChainAddressIndex.map((r) => ({
-        ...r,
-        id: r.id.toString(),
-        createdAt: r.createdAt.toISOString(),
-        updatedAt: r.updatedAt?.toISOString(),
+      mockDeFiChainTransactions.map((transaction) => ({
+        ...transaction,
+        id: transaction.id.toString(),
+        createdAt: transaction.createdAt.toISOString(),
+        updatedAt: transaction.updatedAt?.toISOString(),
       })),
     );
   });
@@ -389,13 +396,13 @@ describe('/defichain/transactions test', () => {
 
     const parsedPayload = JSON.parse(txReceipt.payload);
     expect(parsedPayload).toStrictEqual(
-      mockDeFiChainAddressIndex
-        .filter((r) => r.createdAt.toISOString() === '2023-04-03T03:50:56.503Z')
-        .map((r) => ({
-          ...r,
-          id: r.id.toString(),
-          createdAt: r.createdAt.toISOString(),
-          updatedAt: r.updatedAt?.toISOString(),
+      mockDeFiChainTransactions
+        .filter((transaction) => transaction.createdAt.toISOString() === '2023-04-03T03:50:56.503Z')
+        .map((transaction) => ({
+          ...transaction,
+          id: transaction.id.toString(),
+          createdAt: transaction.createdAt.toISOString(),
+          updatedAt: transaction.updatedAt?.toISOString(),
         })),
     );
   });

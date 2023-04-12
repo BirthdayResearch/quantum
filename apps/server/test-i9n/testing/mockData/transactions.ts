@@ -1,6 +1,6 @@
 import { BotStatus, BridgeEventTransactions, DeFiChainAddressIndex, EthereumTransactionStatus } from '@prisma/client';
 
-export const mockTransactions: BridgeEventTransactions[] = [
+export const mockEVMTransactions: BridgeEventTransactions[] = [
   {
     id: BigInt(1),
     transactionHash: '0x9d0a68dad173120c67d3cb7fc498a288e8c4aa45a14147bb86208318d485ced0',
@@ -42,7 +42,7 @@ export const mockTransactions: BridgeEventTransactions[] = [
   },
 ];
 
-export const mockDeFiChainAddressIndex: DeFiChainAddressIndex[] = [
+export const mockDeFiChainTransactions: DeFiChainAddressIndex[] = [
   {
     id: BigInt(900),
     index: 2,

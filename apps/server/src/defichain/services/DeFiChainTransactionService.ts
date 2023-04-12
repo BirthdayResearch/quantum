@@ -120,7 +120,7 @@ export class DeFiChainTransactionService {
   // this function is expected to be called only by endpoint /defichain/transactions?fromDate=YYYY-MM-DD&toDate=YYYY-MM-DD
   async getTransactions(dateFrom: Date, dateTo: Date, today: Date): Promise<ModifyDeFiChainAddressIndex[]> {
     try {
-      if (dateFrom > today) {
+      if (dateFrom > today || dateTo > today) {
         throw new BadRequestException(`Cannot query future date`);
       }
 
@@ -140,14 +140,17 @@ export class DeFiChainTransactionService {
         },
       });
 
-      const modifiedResult = result?.map((x) => {
-        let r = {};
-        for (const i in x) {
-          if (Object.hasOwn(x, i)) {
-            r = i === 'id' ? { ...r, [i]: x[i].toString() } : { ...r, [i]: x[i as keyof ModifyDeFiChainAddressIndex] };
+      const modifiedResult = result?.map((transaction) => {
+        let modifiedTransaction = {};
+        for (const k in transaction) {
+          if (Object.hasOwn(transaction, k)) {
+            modifiedTransaction =
+              k === 'id'
+                ? { ...modifiedTransaction, [k]: transaction[k].toString() }
+                : { ...modifiedTransaction, [k]: transaction[k as keyof ModifyDeFiChainAddressIndex] };
           }
         }
-        return r as ModifyDeFiChainAddressIndex;
+        return modifiedTransaction as ModifyDeFiChainAddressIndex;
       });
 
       return modifiedResult;
