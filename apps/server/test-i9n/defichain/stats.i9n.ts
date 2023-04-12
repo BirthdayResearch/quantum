@@ -168,6 +168,7 @@ describe('DeFiChain Stats Testing', () => {
     expect(response.signature).toBeDefined();
     expect(response.nonce).toBeDefined();
     expect(response.deadline).toBeDefined();
+    expect(response.txnId).toBeDefined();
 
     await defichain.generateBlock();
     const claimAmt = await prismaService.deFiChainAddressIndex.findMany({
