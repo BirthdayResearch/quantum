@@ -1,8 +1,8 @@
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { useEffect, useState } from "react";
+import { WhaleApiClient } from "@defichain/whale-api-client";
 import { DFC_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import Logging from "../api/logging";
-import { WhaleApiClient } from "@defichain/whale-api-client";
 import { useContractContext } from "../layouts/contexts/ContractContext";
 
 export default function useWatchDfcTxn(txnId?: string) {

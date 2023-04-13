@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { FiAlertCircle } from "react-icons/fi";
 import UtilityButton from "@components/commons/UtilityButton";
+import clsx from "clsx";
 import { DFC_TO_API_RESET_TIME_LIMIT } from "../../constants";
 import CircularProgress from "./CircularProgress";
-import clsx from "clsx";
 import useResponsive from "../../hooks/useResponsive";
 
 export default function AddressError({
