@@ -6,14 +6,16 @@ import UtilitySecondaryButton from "@components/erc-transfer/VerifiedUtilityButt
 import { useLazyVerifyQuery } from "@store/index";
 import BigNumber from "bignumber.js";
 import Logging from "@api/logging";
-import { SignedClaim } from "types";
+import { CustomErrorCodes, SignedClaim } from "types";
 import { HttpStatusCode } from "axios";
 import { useContractContext } from "@contexts/ContractContext";
 import useTimeout from "@hooks/useSetTimeout";
 import { useStorageContext } from "@contexts/StorageContext";
-import QrAddress from "@components/QrAddress";
 import { RiLoader2Line } from "react-icons/ri";
 import { IoCheckmarkCircle } from "react-icons/io5";
+import DfcTransactionStatus from "../DfcTransactionStatus";
+import useWatchDfcTxn from "../../hooks/useWatchDfcTxn";
+import QrAddress from "../QrAddress";
 
 enum ButtonLabel {
   Validating = "Verifying",
@@ -112,6 +114,9 @@ export default function StepThreeVerification({
     TitleLabel.Validating
   );
 
+  const [txnId, setTxnId] = useState<string | undefined>(undefined);
+  const { dfcTxnStatus, isApiSuccess } = useWatchDfcTxn(txnId);
+
   const contentLabelRejected = (
     <span>
       <span>Please check our </span>
@@ -163,12 +168,22 @@ export default function StepThreeVerification({
 
         if (response.statusCode !== undefined) {
           Logging.info(`Returned statusCode: ${response.statusCode}`);
-          setContent(contentLabelRejected);
-          setTitle(`Something went wrong (Error code ${response.statusCode})`);
-          setValidationSuccess(false);
-          setIsValidating(false);
-          setButtonLabel(ButtonLabel.Rejected);
-          setShowButton(true);
+          if (
+            response.statusCode ===
+            CustomErrorCodes.IsBelowMinConfirmationRequired
+          ) {
+            // start polling and wait for 35 blocks confirmation
+            setTxnId(response.txnId);
+          } else {
+            setContent(contentLabelRejected);
+            setTitle(
+              `Something went wrong (Error code ${response.statusCode})`
+            );
+            setValidationSuccess(false);
+            setIsValidating(false);
+            setButtonLabel(ButtonLabel.Rejected);
+            setShowButton(true);
+          }
           return;
         }
 
@@ -202,6 +217,12 @@ export default function StepThreeVerification({
     triggerVerify();
   }, [isValidating, validationSuccess]);
 
+  useEffect(() => {
+    if (dfcTxnStatus.isConfirmed) {
+      triggerVerify();
+    }
+  }, [dfcTxnStatus.isConfirmed]);
+
   const onTryAgainClicked = () => {
     setTitle(TitleLabel.Validating);
     setContent(ContentLabel.Validating);
@@ -210,39 +231,54 @@ export default function StepThreeVerification({
   };
 
   return (
-    <div className={clsx("flex flex-col mt-6", "md:flex-row md:gap-6 md:mt-4")}>
-      {dfcAddress && (
-        <div
-          className={clsx(
-            "relative max-w-max mx-auto flex flex-row order-1 mt-6 justify-start border-[0.5px] border-dark-200 rounded",
-            "md:w-2/5 md:flex-col md:shrink-0 md:order-none px-6 pt-6 pb-3 md:mt-0"
-          )}
-        >
-          <QrAddress dfcUniqueAddress={dfcAddress}>
-            <div className="flex justify-center mt-3">
-              <ValidationStatus
-                showButton={showButton}
-                buttonLabel={buttonLabel}
-                validationSuccess={validationSuccess}
-                isValidating={isValidating}
-                isThrottled={isThrottled}
-                onClick={onTryAgainClicked}
-              />
+    <div className={clsx("flex flex-col mt-6", "md:flex-row md:mt-4")}>
+      {isValidating ? (
+        <DfcTransactionStatus
+          isConfirmed={dfcTxnStatus.isConfirmed}
+          isApiSuccess={isApiSuccess}
+          numOfConfirmations={dfcTxnStatus.numberOfConfirmations}
+        />
+      ) : (
+        <div className={clsx("flex flex-col", "md:gap-6 md:flex-row")}>
+          {dfcAddress && (
+            <div
+              className={clsx(
+                "relative max-w-max mx-auto flex flex-row order-1 mt-6 justify-start border-[0.5px] border-dark-200 rounded",
+                "md:w-2/5 md:flex-col md:shrink-0 md:order-none px-6 pt-6 pb-3 md:mt-0"
+              )}
+            >
+              <QrAddress dfcUniqueAddress={dfcAddress}>
+                <div
+                  className={clsx(
+                    "flex justify-left mt-3",
+                    "md:justify-center"
+                  )}
+                >
+                  <ValidationStatus
+                    showButton={showButton}
+                    buttonLabel={buttonLabel}
+                    validationSuccess={validationSuccess}
+                    isValidating={isValidating}
+                    isThrottled={isThrottled}
+                    onClick={onTryAgainClicked}
+                  />
+                </div>
+              </QrAddress>
             </div>
-          </QrAddress>
+          )}
+          <div
+            className={clsx(
+              "flex flex-col grow text-center",
+              "md:text-left md:mt-4"
+            )}
+          >
+            <span className="font-semibold text-dark-900 tracking-[0.01em] md:tracking-wider">
+              {title}
+            </span>
+            <p className="text-sm text-dark-700 mt-2">{content}</p>
+          </div>
         </div>
       )}
-      <div
-        className={clsx(
-          "flex flex-col grow text-center",
-          "md:text-left md:mt-4"
-        )}
-      >
-        <span className="font-semibold text-dark-900 tracking-[0.01em] md:tracking-wider">
-          {title}
-        </span>
-        <p className="text-sm text-dark-700 mt-2">{content}</p>
-      </div>
     </div>
   );
 }
