@@ -2,7 +2,6 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import UtilityButton from "@components/commons/UtilityButton";
-import UtilitySecondaryButton from "@components/erc-transfer/VerifiedUtilityButton";
 import { useLazyVerifyQuery } from "@store/index";
 import BigNumber from "bignumber.js";
 import Logging from "@api/logging";
@@ -12,20 +11,15 @@ import { useContractContext } from "@contexts/ContractContext";
 import useTimeout from "@hooks/useSetTimeout";
 import { useStorageContext } from "@contexts/StorageContext";
 import { RiLoader2Line } from "react-icons/ri";
-import { IoCheckmarkCircle } from "react-icons/io5";
 import DfcTransactionStatus from "../DfcTransactionStatus";
 import useWatchDfcTxn from "../../hooks/useWatchDfcTxn";
 import QrAddress from "../QrAddress";
 
 enum ButtonLabel {
-  Validating = "Verifying",
-  Validated = "Verified",
   Rejected = "Try again",
 }
 
 enum TitleLabel {
-  Validating = "Validating your transaction",
-  Validated = "Transaction has been validated",
   Rejected = "Validation failed",
   ThrottleLimit = "Verification attempt limit reached",
 }
@@ -33,20 +27,16 @@ enum TitleLabel {
 type RejectedLabelType = `Something went wrong${string}`;
 
 enum ContentLabel {
-  Validating = "Please wait as we verify the funds transfer to the provided address. Upon validation, you will be redirected to the next stage to claim your tokens",
-  Validated = "Please wait as we redirect you to the next step.",
   ThrottleLimit = "Please wait for a minute and try again.",
 }
 
 function ValidationStatus({
-  showButton,
   buttonLabel,
   validationSuccess,
   isValidating,
   isThrottled,
   onClick,
 }: {
-  showButton: boolean;
   buttonLabel: string;
   validationSuccess: boolean;
   isValidating: boolean;
@@ -62,42 +52,16 @@ function ValidationStatus({
     );
   }
 
-  // once button is shown, it will remain there with updated status, to make it consistent with the rest of the app
-  if (showButton) {
-    return (
-      <div>
-        {validationSuccess ? (
-          <UtilitySecondaryButton label={ButtonLabel.Validated} disabled />
-        ) : (
-          <UtilityButton
-            label={buttonLabel}
-            isLoading={isValidating}
-            disabled={isValidating || validationSuccess || isThrottled}
-            withRefreshIcon={!validationSuccess && !isValidating}
-            onClick={onClick}
-            responsiveStyle="py-2 px-5 leading-4 text-xs md:text-sm"
-          />
-        )}
-      </div>
-    );
-  }
-
   return (
-    <div
-      className={clsx(
-        "flex flex-row w-full items-center justify-center text-xs",
-        isValidating ? "text-warning" : "text-valid"
-      )}
-    >
-      {isValidating ? "Validating" : "Validated"}
-      {isValidating ? (
-        <RiLoader2Line
-          size={16}
-          className={clsx("inline-block animate-spin ml-1")}
-        />
-      ) : (
-        <IoCheckmarkCircle size={16} className={clsx("inline-block ml-1")} />
-      )}
+    <div>
+      <UtilityButton
+        label={buttonLabel}
+        isLoading={isValidating}
+        disabled={isValidating || validationSuccess || isThrottled}
+        withRefreshIcon={!validationSuccess && !isValidating}
+        onClick={onClick}
+        responsiveStyle="py-2 px-5 leading-4 text-xs md:text-sm"
+      />
     </div>
   );
 }
@@ -112,7 +76,7 @@ export default function StepThreeVerification({
   const { Erc20Tokens } = useContractContext();
   const [trigger] = useLazyVerifyQuery();
   const [title, setTitle] = useState<TitleLabel | RejectedLabelType>(
-    TitleLabel.Validating
+    TitleLabel.Rejected
   );
 
   const [txnId, setTxnId] = useState<string | undefined>(undefined);
@@ -133,17 +97,16 @@ export default function StepThreeVerification({
     </span>
   );
   const [content, setContent] = useState<ContentLabel | JSX.Element>(
-    ContentLabel.Validating
+    contentLabelRejected
   );
   const [buttonLabel, setButtonLabel] = useState<ButtonLabel>(
-    ButtonLabel.Validating
+    ButtonLabel.Rejected
   );
 
   const { txnForm: txn, dfcAddress } = useStorageContext();
   const [validationSuccess, setValidationSuccess] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
   const [isThrottled, setIsThrottled] = useState(false);
-  const [showButton, setShowButton] = useState<boolean>(false);
 
   const [throttledTimeOut] = useTimeout(() => {
     setIsThrottled(false);
@@ -183,14 +146,10 @@ export default function StepThreeVerification({
             setValidationSuccess(false);
             setIsValidating(false);
             setButtonLabel(ButtonLabel.Rejected);
-            setShowButton(true);
           }
           return;
         }
 
-        setTitle(TitleLabel.Validated);
-        setContent(ContentLabel.Validated);
-        setButtonLabel(ButtonLabel.Validated);
         setValidationSuccess(true);
         onSuccess(response);
         goToNextStep();
@@ -198,7 +157,6 @@ export default function StepThreeVerification({
         setButtonLabel(ButtonLabel.Rejected);
         setIsValidating(false);
         setValidationSuccess(false);
-        setShowButton(true);
 
         if (e.data?.statusCode === HttpStatusCode.TooManyRequests) {
           setTitle(TitleLabel.ThrottleLimit);
@@ -225,9 +183,6 @@ export default function StepThreeVerification({
   }, [dfcTxnStatus.isConfirmed]);
 
   const onTryAgainClicked = () => {
-    setTitle(TitleLabel.Validating);
-    setContent(ContentLabel.Validating);
-    setButtonLabel(ButtonLabel.Validating);
     setIsValidating(true);
   };
 
@@ -256,7 +211,6 @@ export default function StepThreeVerification({
                   )}
                 >
                   <ValidationStatus
-                    showButton={showButton}
                     buttonLabel={buttonLabel}
                     validationSuccess={validationSuccess}
                     isValidating={isValidating}
