@@ -1,8 +1,8 @@
 import { EnvironmentNetwork } from "@waveshq/walletkit-core";
+import { WhaleApiClientOptions } from "@defichain/whale-api-client";
 /**
  * Place for common types we want to reuse in entire app
  */
-
 import BigNumber from "bignumber.js";
 
 export enum Network {
@@ -22,6 +22,7 @@ export interface AddressDetails {
   refundAddress: string;
   createdAt: Date;
 }
+
 export interface BridgeVersion {
   v: string;
 }
@@ -46,6 +47,7 @@ export interface TokensI {
   tokenA: TokenDetailI<string>;
   tokenB: TokenDetailI<string>;
 }
+
 export interface NetworkOptionsI {
   name: Network;
   icon: string;
@@ -101,6 +103,7 @@ export interface ContractContextI {
   HotWalletAddress: string;
   BridgeV1: ContractConfigI;
   Erc20Tokens: Record<Erc20Token, ContractConfigI>;
+  WhaleApiClientOption: WhaleApiClientOptions;
 }
 
 export enum CustomErrorCodes {

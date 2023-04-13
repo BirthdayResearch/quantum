@@ -1,24 +1,14 @@
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { useEffect, useState } from "react";
-import {
-  DFC_CONFIRMATIONS_BLOCK_TOTAL,
-  ETHEREUM_MAINNET_ID,
-} from "../constants";
+import { DFC_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import Logging from "../api/logging";
 import { WhaleApiClient } from "@defichain/whale-api-client";
-import { useNetwork } from "wagmi";
+import { useContractContext } from "../layouts/contexts/ContractContext";
 
 export default function useWatchDfcTxn(txnId?: string) {
   const { networkEnv } = useNetworkEnvironmentContext();
-  const { chain } = useNetwork();
-  const isEthereumMainNet = chain?.id === ETHEREUM_MAINNET_ID;
-  const client = new WhaleApiClient({
-    url: isEthereumMainNet
-      ? "https://ocean.defichain.com"
-      : "https://testnet.ocean.jellyfishsdk.com",
-    network: isEthereumMainNet ? "mainnet" : "testnet",
-    version: "v0",
-  });
+  const { WhaleApiClientOption } = useContractContext();
+  const client = new WhaleApiClient(WhaleApiClientOption);
 
   const [shouldStopPolling, setStopPolling] = useState(false);
   const [isApiSuccess, setIsApiSuccess] = useState(false);
@@ -46,8 +36,6 @@ export default function useWatchDfcTxn(txnId?: string) {
       stopPolling?: boolean
     ) {
       try {
-        console.log(`transactionId: ${transactionId}`);
-        console.log(`stopPolling: ${stopPolling}`);
         if (
           transactionId === undefined ||
           stopPolling === undefined ||
@@ -56,7 +44,6 @@ export default function useWatchDfcTxn(txnId?: string) {
           return;
         }
         const stats = await client.stats.get();
-        console.log(`stats: ${JSON.stringify(stats)}`);
         const txnData = await client.transactions.get(transactionId);
         const numberOfConfirmations = stats.count.blocks - txnData.block.height;
         let isConfirmed = false;
@@ -80,7 +67,6 @@ export default function useWatchDfcTxn(txnId?: string) {
     if (!shouldStopPolling) {
       // Run on load
       if (!isApiSuccess) {
-        console.log("polling on load");
         setDfcTxnStatus({
           isConfirmed: false,
           numberOfConfirmations: "0",
