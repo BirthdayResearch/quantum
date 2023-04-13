@@ -74,7 +74,7 @@ export default function StepTwoSendConfirmation({
 }) {
   const [dfcUniqueAddress, setDfcUniqueAddress] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isAddressExpired, setIsAddressExpired] = useState(true);
+  const [isAddressExpired, setIsAddressExpired] = useState(false);
   const [createdBeforeInMSec, setCreatedBeforeInMSec] = useState(
     getTimeDifference(addressDetail?.createdAt)
   );

@@ -75,6 +75,7 @@ function ValidationStatus({
             disabled={isValidating || validationSuccess || isThrottled}
             withRefreshIcon={!validationSuccess && !isValidating}
             onClick={onClick}
+            responsiveStyle="py-2 px-5 leading-4 text-xs md:text-sm"
           />
         )}
       </div>
