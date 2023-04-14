@@ -5,7 +5,7 @@ import { TransactionsDto } from '../../../src/ethereum/EthereumInterface';
 import { PrismaService } from '../../../src/PrismaService';
 import { StartedDeFiChainStubContainer } from '../../defichain/containers/DeFiChainStubContainer';
 import { BridgeServerTestingApp } from '../BridgeServerTestingApp';
-import { mockTransactions } from '../mockData/transactions';
+import { mockEVMTransactions } from '../mockData/transactions';
 import { buildTestConfig, TestingModule } from '../TestingModule';
 
 function verifyFormat(parsedPayload: TransactionsDto) {
@@ -40,7 +40,7 @@ describe('Transactions Service Test', () => {
     const app = await testing.start();
 
     prismaService = app.get<PrismaService>(PrismaService);
-    await prismaService.bridgeEventTransactions.createMany({ data: mockTransactions });
+    await prismaService.bridgeEventTransactions.createMany({ data: mockEVMTransactions });
   });
 
   afterAll(async () => {
@@ -133,7 +133,7 @@ describe('Transactions Service Test', () => {
 
     const parsedPayload = JSON.parse(txReceipt.payload);
 
-    expect(parsedPayload).toHaveLength(mockTransactions.length);
+    expect(parsedPayload).toHaveLength(mockEVMTransactions.length);
 
     // Two different ways of verifying payload content
     parsedPayload.forEach((p: any) => verifyFormat(p));
@@ -149,7 +149,7 @@ describe('Transactions Service Test', () => {
         blockHash,
         blockHeight,
         unconfirmedSendTransactionHash,
-      } = mockTransactions.filter((m) => m.transactionHash === p.txHash)[0];
+      } = mockEVMTransactions.filter((m) => m.transactionHash === p.txHash)[0];
       expect(p).toMatchObject(
         new TransactionsDto(
           transactionHash,

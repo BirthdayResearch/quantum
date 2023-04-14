@@ -111,6 +111,9 @@ export enum CustomErrorCodes {
   BalanceNotMatched = 3,
   IsZeroBalance = 4,
   AmountNotValid = 5,
+  TokenSymbolNotSupported = 6,
+  IsBelowMinConfirmationRequired = 7,
+  TxnWithExactAmountNotFound = 8,
 }
 
 export interface SignedClaim {
