@@ -1,5 +1,4 @@
 import { EnvironmentNetwork } from "@waveshq/walletkit-core";
-import { WhaleApiClientOptions } from "@defichain/whale-api-client";
 /**
  * Place for common types we want to reuse in entire app
  */
@@ -103,7 +102,6 @@ export interface ContractContextI {
   HotWalletAddress: string;
   BridgeV1: ContractConfigI;
   Erc20Tokens: Record<Erc20Token, ContractConfigI>;
-  WhaleApiClientOption: WhaleApiClientOptions;
 }
 
 export enum CustomErrorCodes {

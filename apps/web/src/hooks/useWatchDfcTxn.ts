@@ -1,14 +1,12 @@
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { useEffect, useState } from "react";
-import { WhaleApiClient } from "@defichain/whale-api-client";
+import { useWhaleApiClient } from "@waveshq/walletkit-ui/dist/contexts";
 import { DFC_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import Logging from "../api/logging";
-import { useContractContext } from "../layouts/contexts/ContractContext";
 
 export default function useWatchDfcTxn(txnId?: string) {
   const { networkEnv } = useNetworkEnvironmentContext();
-  const { WhaleApiClientOption } = useContractContext();
-  const client = new WhaleApiClient(WhaleApiClientOption);
+  const client = useWhaleApiClient();
 
   const [shouldStopPolling, setStopPolling] = useState(false);
   const [isApiSuccess, setIsApiSuccess] = useState(false);
