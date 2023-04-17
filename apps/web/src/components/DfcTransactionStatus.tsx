@@ -19,7 +19,7 @@ export default function DfcTransactionStatus({
     : "Validating your transaction";
   const description = isConfirmed
     ? "Please wait as we redirect you to the next step."
-    : "Please wait as your transaction is being validated.  Upon validation, you will be redirected to the next step for the claiming of your tokens.";
+    : "Please wait as your transaction is being validated. Upon validation, you will be redirected to the next step for the claiming of your tokens.";
 
   return (
     <div
