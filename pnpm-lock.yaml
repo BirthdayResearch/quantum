@@ -163,8 +163,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0(react-dom@18.2.0)(react@18.2.0)
       '@headlessui/react':
-        specifier: ^1.7.13
-        version: 1.7.13(react-dom@18.2.0)(react@18.2.0)
+        specifier: ^1.7.14
+        version: 1.7.14(react-dom@18.2.0)(react@18.2.0)
       '@reduxjs/toolkit':
         specifier: ^1.9.4
         version: 1.9.4(react-redux@8.0.5)(react@18.2.0)
@@ -2816,8 +2816,8 @@ packages:
       '@hapi/hoek': 9.3.0
     dev: false
 
-  /@headlessui/react@1.7.13(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-9n+EQKRtD9266xIHXdY5MfiXPDfYwl7zBM7KOx2Ae3Gdgxy8QML1FkCMjq6AsOf0l6N9uvI4HcFtuFlenaldKg==}
+  /@headlessui/react@1.7.14(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-znzdq9PG8rkwcu9oQ2FwIy0ZFtP9Z7ycS+BAqJ3R5EIqC/0bJGvhT7193rFf+45i9nnPsYvCQVW4V/bB9Xc+gA==}
     engines: {node: '>=10'}
     peerDependencies:
       react: ^16 || ^17 || ^18
@@ -5990,7 +5990,7 @@ packages:
     resolution: {integrity: sha512-3flkQELF4mmJ1w0DJRoi9XHjfa6ivDXD0jXq+5kSdU6kdOnNWugvwyJsd50xuPBV0U7fmVYXr0FgOW803ymyuQ==}
     dependencies:
       '@netlify/ipx': 1.4.0
-      '@reduxjs/toolkit': 1.9.3(react-redux@8.0.5)(react@18.2.0)
+      '@reduxjs/toolkit': 1.9.4(react-redux@8.0.5)(react@18.2.0)
       '@types/react': 18.0.35
       '@types/react-dom': 18.0.11
       follow-redirects: 1.15.2(debug@4.3.4)
