@@ -275,6 +275,45 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.TokenSymbolNotSupported });
   });
 
+  it('should throw error if confirmed block number is less than 35', async () => {
+    // Generate address (index = 4)
+    const newWallet = whaleWalletProvider.createWallet(4);
+    const newLocalAddress = await newWallet.getAddress();
+
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    // Sends token to the address
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [newLocalAddress]: `1@BTC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock(); // Only waits for 10 blocks
+
+    const response = await verify({
+      amount: '1',
+      symbol: 'BTC',
+      address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+
+    expect(response.isValid).toBeFalsy();
+    expect(response.statusCode).toStrictEqual(CustomErrorCodes.IsBelowMinConfirmationRequired);
+    expect(response.txnId).toBeDefined();
+  });
+
   it('should verify fund in the wallet address and top up UTXO', async () => {
     const hotWallet = whaleWalletProvider.getHotWallet();
     const hotWalletAddress = await hotWallet.getAddress();
@@ -294,7 +333,7 @@ describe('DeFiChain Verify fund Testing', () => {
       ],
       'number',
     );
-    await defichain.generateBlock();
+    await defichain.generateBlock(40);
 
     const response = await verify({
       amount: '10',
@@ -308,11 +347,12 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response.signature).toBeDefined();
     expect(response.nonce).toBeDefined();
     expect(response.deadline).toBeDefined();
+    expect(response.txnId).toBeDefined();
 
     // TODO: Fix flaky tests for UTXO
     /* await defichain.generateBlock();
-    expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
-      new BigNumber('0.001').toFixed(8),
-    ); */
+                    expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
+                      new BigNumber('0.001').toFixed(8),
+                    ); */
   });
 });
