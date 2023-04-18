@@ -166,8 +166,8 @@ importers:
         specifier: ^1.7.14
         version: 1.7.14(react-dom@18.2.0)(react@18.2.0)
       '@reduxjs/toolkit':
-        specifier: ^1.9.4
-        version: 1.9.4(react-redux@8.0.5)(react@18.2.0)
+        specifier: ^1.9.5
+        version: 1.9.5(react-redux@8.0.5)(react@18.2.0)
       '@tailwindcss/line-clamp':
         specifier: ^0.4.4
         version: 0.4.4(tailwindcss@3.3.1)
@@ -4342,8 +4342,8 @@ packages:
     resolution: {integrity: sha512-0alKtnxhNB5hYU+ymESBlGI4b9XrGGSdv7Ud+8TE/fBNOEhIud0XQsAR+TrvUZgS4na5czubiMsODw0TUrgkIA==}
     requiresBuild: true
 
-  /@reduxjs/toolkit@1.9.4(react-redux@8.0.5)(react@18.2.0):
-    resolution: {integrity: sha512-j2R4I+dzt7cWjf50CNS17A/TBX0rH5SmFhKcOQDZlFtFvmSGWfEQvNPjrCI729Am5o1USFWT1PaxV/JflmP/Dg==}
+  /@reduxjs/toolkit@1.9.5(react-redux@8.0.5)(react@18.2.0):
+    resolution: {integrity: sha512-Rt97jHmfTeaxL4swLRNPD/zV4OxTes4la07Xc4hetpUW/vc75t5m1ANyxG6ymnEQ2FsLQsoMlYB2vV1sO3m8tQ==}
     peerDependencies:
       react: ^16.9.0 || ^17.0.0 || ^18
       react-redux: ^7.2.1 || ^8.0.2
@@ -6011,7 +6011,7 @@ packages:
     resolution: {integrity: sha512-cEUfr3O1YRrejYbILHzQl6JeDRe2zA1MYdcANEOAMLYhRz+PiEY3JiHonvTxg81AlXUnM2/DUJOoqiS+oXy/kg==}
     dependencies:
       '@netlify/ipx': 1.4.0
-      '@reduxjs/toolkit': 1.9.4(react-redux@8.0.5)(react@18.2.0)
+      '@reduxjs/toolkit': 1.9.5(react-redux@8.0.5)(react@18.2.0)
       '@types/react': 18.0.33
       '@types/react-dom': 18.0.11
       follow-redirects: 1.15.2(debug@4.3.4)
@@ -6043,7 +6043,7 @@ packages:
     resolution: {integrity: sha512-3flkQELF4mmJ1w0DJRoi9XHjfa6ivDXD0jXq+5kSdU6kdOnNWugvwyJsd50xuPBV0U7fmVYXr0FgOW803ymyuQ==}
     dependencies:
       '@netlify/ipx': 1.4.0
-      '@reduxjs/toolkit': 1.9.4(react-redux@8.0.5)(react@18.2.0)
+      '@reduxjs/toolkit': 1.9.5(react-redux@8.0.5)(react@18.2.0)
       '@types/react': 18.0.35
       '@types/react-dom': 18.0.11
       follow-redirects: 1.15.2(debug@4.3.4)
