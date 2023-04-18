@@ -23,28 +23,15 @@ const formData = {
   destinationAddress: "bcrt1qamyk5n7ljrsx37d7hast5t9c7kczjhlx2etysl",
 };
 
-function waitUntilEvmBlocksConfirm(): void {
+function waitUntilBlocksConfirm(totalBlocks: number): void {
   cy.findByTestId("txn-progress-blocks")
     .invoke("text")
     .then((text: string) => {
       const value = text.split(" ")[0];
       const currentBlockCount = new BigNumber(value);
-      if (currentBlockCount.lt(new BigNumber(EVM_CONFIRMATIONS_BLOCK_TOTAL))) {
+      if (currentBlockCount.lt(new BigNumber(totalBlocks))) {
         cy.wait(15000);
-        waitUntilEvmBlocksConfirm();
-      }
-    });
-}
-
-function waitUntilBlocksConfirm(): void {
-  cy.findByTestId("txn-progress-blocks")
-    .invoke("text")
-    .then((text: string) => {
-      const value = text.split(" ")[0];
-      const currentBlockCount = new BigNumber(value);
-      if (currentBlockCount.lt(new BigNumber(CONFIRMATIONS_BLOCK_TOTAL))) {
-        cy.wait(15000);
-        waitUntilBlocksConfirm();
+        waitUntilBlocksConfirm(totalBlocks);
       }
     });
 }
@@ -455,11 +442,11 @@ context("QA-769-10 Connected wallet - ETH > DFC - USDT", () => {
         .should("have.text", "Unable to edit while transaction is pending");
 
       startEvmMine();
-      waitUntilEvmBlocksConfirm();
+      waitUntilBlocksConfirm(EVM_CONFIRMATIONS_BLOCK_TOTAL);
       // verify is DFC confirmation now
       cy.findByTestId("txn-progress-status").should("contain.text", "For DFC");
       // continue verify blocks
-      waitUntilBlocksConfirm();
+      waitUntilBlocksConfirm(CONFIRMATIONS_BLOCK_TOTAL);
       verifyTransactionStatus(TransactionStatusType.CONFIRM);
 
       // verify transfer button is enabled
