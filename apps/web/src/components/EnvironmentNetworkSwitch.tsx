@@ -3,10 +3,8 @@ import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContex
 import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 
 export default function EnvironmentNetworkSwitch({
-  onChange,
   disabled = false,
 }: {
-  onChange: () => void;
   disabled?: boolean;
 }): JSX.Element {
   const { networkEnv: currentNetworkEnv, updateNetworkEnv } =
@@ -30,7 +28,6 @@ export default function EnvironmentNetworkSwitch({
         break;
     }
     updateNetworkEnv(nextNetworkEnv);
-    onChange();
   };
 
   return (
@@ -38,8 +35,7 @@ export default function EnvironmentNetworkSwitch({
       data-testid="network-env-switch"
       type="button"
       className={clsx(
-        "flex items-center rounded-[37px] dark-section-bg border border-dark-card-stroke px-2 py-1 ml-2 hover:dark-btn-hover hover:border-dark-500",
-        "lg:px-2.5 lg:py-1.5",
+        "flex items-center rounded-[37px] dark-section-bg border border-dark-card-stroke px-3 py-2 ml-2 lg:ml-4 hover:dark-btn-hover hover:border-dark-500",
         {
           "pointer-events-none": disabled,
         }
