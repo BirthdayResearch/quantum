@@ -39,7 +39,7 @@ export function NetworkEnvironmentProvider({
   const isEthereumMainNet = chain?.id === ETHEREUM_MAINNET_ID;
 
   function getNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
-    if (chain === undefined) {
+    if (chain === undefined || process.env.NODE_ENV === "development") {
       return env.networks.includes(n) ? n : defaultNetwork;
     }
     // temporary workaround for local playground to work
