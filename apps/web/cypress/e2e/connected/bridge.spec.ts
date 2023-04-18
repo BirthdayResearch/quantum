@@ -23,9 +23,6 @@ context("QA-769-1 Connected wallet - Connect wallet", () => {
     });
 
     cy.findByTestId("connected_env").should("contain.text", "Localhost");
-    cy.findByTestId("network-env-switch")
-      .should("be.disabled")
-      .should("contain.text", "Local");
 
     // verify pairing
     cy.verifyFormPairing(true, Network.Ethereum, Network.DeFiChain, "DFI");

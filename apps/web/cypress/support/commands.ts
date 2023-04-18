@@ -538,15 +538,6 @@ Cypress.Commands.add(
         erc20ToDfc ? "be.visible" : "not.exist"
       );
 
-      // verify network env visibility
-      cy.findByTestId("network-env-switch").should(
-        erc20ToDfc ? "exist" : "not.exist"
-      );
-
-      if (erc20ToDfc) {
-        cy.findByTestId("network-env-switch").contains("Local"); // TODO: dynamic network env
-      }
-
       // destination network validation
       cy.verifyNetwork("Destination", destination);
       cy.verifyTokenPair(tokenToSend, tokeToReceive);

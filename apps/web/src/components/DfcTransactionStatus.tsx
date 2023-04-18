@@ -44,6 +44,7 @@ export default function DfcTransactionStatus({
           isApiSuccess={isApiSuccess}
           txnType="DeFiChain"
           showCircular={isConfirmed}
+          testId="dfc-txn"
         />
       </div>
       <div
@@ -60,6 +61,7 @@ export default function DfcTransactionStatus({
               "text-center": isMobile && isConfirmed,
             }
           )}
+          data-testid="dfc-txn-status-title"
         >
           {title}
         </div>
@@ -67,6 +69,7 @@ export default function DfcTransactionStatus({
           className={clsx("pt-2 text-sm text-dark-700 text-left", {
             "text-center": isMobile && isConfirmed,
           })}
+          data-testid="dfc-txn-status-desc"
         >
           {description}
         </div>
