@@ -35,6 +35,7 @@ export default function ConfirmationProgress({
   isUnsentFund,
   isApiSuccess,
   txnType,
+  showCircular = false,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
@@ -43,6 +44,7 @@ export default function ConfirmationProgress({
   isUnsentFund: boolean;
   isApiSuccess: boolean;
   txnType: string;
+  showCircular?: boolean;
 }) {
   const { isLg } = useResponsive();
   const [valuePercentage, setValuePercentage] = useState<number>(0);
@@ -55,7 +57,7 @@ export default function ConfirmationProgress({
 
   return (
     <div className="w-full">
-      {isLg ? (
+      {isLg || showCircular ? (
         <div className="w-[136px] h-[136px]">
           <svg style={{ height: 0, width: 0 }}>
             <defs>

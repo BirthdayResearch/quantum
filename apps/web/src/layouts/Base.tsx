@@ -10,7 +10,7 @@ import {
   website,
 } from "@components/siteInfo";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { goerli, hardhat, localhost, mainnet } from "wagmi/chains";
+import { goerli, mainnet } from "wagmi/chains";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
@@ -38,11 +38,11 @@ import {
 import { HARDHAT_CHAINID } from "../../cypress/support/utils";
 
 const metamask = new MetaMaskConnector({
-  chains: [mainnet, goerli, localhost, hardhat],
+  chains: [mainnet, goerli],
 });
 
 const { chains } = configureChains(
-  [localhost, hardhat, goerli, mainnet],
+  [goerli, mainnet],
   [
     jsonRpcProvider({
       rpc: (chain) => {

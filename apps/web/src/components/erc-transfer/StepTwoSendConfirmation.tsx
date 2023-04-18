@@ -138,8 +138,12 @@ export default function StepTwoSendConfirmation({
       >
         <div
           className={clsx(
-            "max-w-max mx-auto flex flex-row order-1 mt-6 justify-start border-[0.5px] border-dark-200 rounded",
-            "md:w-2/5 md:flex-col md:shrink-0 md:order-none px-6 pt-6 pb-3 md:mt-0"
+            "max-w-max mx-auto flex flex-row order-1 mt-6 justify-start border-[0.5px] border-dark-200 rounded px-6 pt-6 pb-6 ",
+            "md:w-2/5 md:flex-col md:shrink-0 md:order-none md:pb-3 md:mt-0",
+            {
+              "md:border-error":
+                isAddressExpired || addressGenerationError !== "",
+            }
           )}
         >
           {isLoading ? (
@@ -152,7 +156,7 @@ export default function StepTwoSendConfirmation({
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center">
-              <div className="w-[164px] relative">
+              <div className={clsx("w-full relative", "md:w-[164px]")}>
                 {isAddressExpired ? (
                   <AddressError
                     delayAction={false}
@@ -177,7 +181,9 @@ export default function StepTwoSendConfirmation({
                           testId="temp-defichain-sending"
                         >
                           {createdBeforeInMSec > 0 && (
-                            <div className="text-center">
+                            <div
+                              className={clsx("text-left", "md:text-center")}
+                            >
                               <TimeLimitCounter
                                 time={createdBeforeInMSec}
                                 onTimeElapsed={() => {
