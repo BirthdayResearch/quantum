@@ -52,7 +52,7 @@ importers:
         version: 0.44.0
       '@waveshq/walletkit-ui':
         specifier: ^0.44.0
-        version: 0.44.0(@babel/core@7.21.0)(@next/env@13.3.0)(@types/node@18.14.0)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 0.44.0(@babel/core@7.21.0)(@next/env@13.3.0)(@types/node@18.14.0)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5)
       async-mutex:
         specifier: ^0.4.0
         version: 0.4.0
@@ -213,7 +213,7 @@ importers:
     devDependencies:
       '@cypress/code-coverage':
         specifier: ^3.10.4
-        version: 3.10.4(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.9.0)(webpack@5.79.0)
+        version: 3.10.4(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.10.0)(webpack@5.79.0)
       '@netlify/plugin-lighthouse':
         specifier: ^4.1.0
         version: 4.1.0
@@ -225,7 +225,7 @@ importers:
         version: 0.5.9(tailwindcss@3.3.1)
       '@testing-library/cypress':
         specifier: ^9.0.0
-        version: 9.0.0(cypress@12.9.0)
+        version: 9.0.0(cypress@12.10.0)
       '@types/node':
         specifier: 18.14.0
         version: 18.14.0
@@ -242,8 +242,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(@babel/core@7.21.0)
       cypress:
-        specifier: ^12.9.0
-        version: 12.9.0
+        specifier: ^12.10.0
+        version: 12.10.0
       postcss:
         specifier: ^8.4.22
         version: 8.4.22
@@ -2083,14 +2083,14 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  /@cypress/code-coverage@3.10.4(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.9.0)(webpack@5.79.0):
+  /@cypress/code-coverage@3.10.4(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.10.0)(webpack@5.79.0):
     resolution: {integrity: sha512-FTB6ftXjO87KlqXiR/55UaniXwPia6+CcaO7I6aZDbB9u7Zz2InBx5iakpKB28CJoqmk1sywblOP57QHd6weLQ==}
     peerDependencies:
       cypress: '*'
     dependencies:
       '@cypress/webpack-preprocessor': 5.17.0(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(webpack@5.79.0)
       chalk: 4.1.2
-      cypress: 12.9.0
+      cypress: 12.10.0
       dayjs: 1.10.7
       debug: 4.3.4(supports-color@5.5.0)
       execa: 4.1.0
@@ -4802,7 +4802,7 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  /@testing-library/cypress@9.0.0(cypress@12.9.0):
+  /@testing-library/cypress@9.0.0(cypress@12.10.0):
     resolution: {integrity: sha512-c1XiCGeHGGTWn0LAU12sFUfoX3qfId5gcSE2yHode+vsyHDWraxDPALjVnHd4/Fa3j4KBcc5k++Ccy6A9qnkMA==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
@@ -4810,7 +4810,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       '@testing-library/dom': 8.20.0
-      cypress: 12.9.0
+      cypress: 12.10.0
     dev: true
 
   /@testing-library/dom@8.20.0:
@@ -6007,7 +6007,7 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web@0.49.0(@babel/core@7.21.0)(@next/env@13.3.0):
+  /@waveshq/standard-web@0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1):
     resolution: {integrity: sha512-cEUfr3O1YRrejYbILHzQl6JeDRe2zA1MYdcANEOAMLYhRz+PiEY3JiHonvTxg81AlXUnM2/DUJOoqiS+oXy/kg==}
     dependencies:
       '@netlify/ipx': 1.4.0
@@ -6021,7 +6021,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-icons: 4.8.0(react@18.2.0)
-      react-redux: 8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.35)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
+      react-redux: 8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.33)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
       react-responsive: 9.0.2(react@18.2.0)
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -6077,12 +6077,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui@0.44.0(@babel/core@7.21.0)(@next/env@13.3.0)(@types/node@18.14.0)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5):
+  /@waveshq/walletkit-ui@0.44.0(@babel/core@7.21.0)(@next/env@13.3.0)(@types/node@18.14.0)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5):
     resolution: {integrity: sha512-LJGCwNjqnP8O11Xg+m5D/zMT94h3cSNIrTdbeNuDqpmpuU/sn1tQ+Nl3PvXbhdVKNd3jIvBua5dasa3c9sbdwg==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.9(@babel/core@7.21.0)(@types/node@18.14.0)(ts-node@10.9.1)(typescript@4.9.5)
       '@waveshq/standard-defichain-jellyfishsdk': 0.49.0(@types/tar-fs@2.0.1)
-      '@waveshq/standard-web': 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)
+      '@waveshq/standard-web': 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)
       '@waveshq/standard-web-linter': 0.49.0(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)
       '@waveshq/walletkit-core': 0.44.0
       bignumber.js: 9.1.1
@@ -7673,8 +7673,8 @@ packages:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
 
-  /commander@5.1.0:
-    resolution: {integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==}
+  /commander@6.2.1:
+    resolution: {integrity: sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==}
     engines: {node: '>= 6'}
     dev: true
 
@@ -7958,8 +7958,8 @@ packages:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
     dev: false
 
-  /cypress@12.9.0:
-    resolution: {integrity: sha512-Ofe09LbHKgSqX89Iy1xen2WvpgbvNxDzsWx3mgU1mfILouELeXYGwIib3ItCwoRrRifoQwcBFmY54Vs0zw7QCg==}
+  /cypress@12.10.0:
+    resolution: {integrity: sha512-Y0wPc221xKKW1/4iAFCphkrG2jNR4MjOne3iGn4mcuCaE7Y5EtXL83N8BzRsAht7GYfWVjJ/UeTqEdDKHz39HQ==}
     engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
     hasBin: true
     requiresBuild: true
@@ -7978,7 +7978,7 @@ packages:
       check-more-types: 2.24.0
       cli-cursor: 3.1.0
       cli-table3: 0.6.3
-      commander: 5.1.0
+      commander: 6.2.1
       common-tags: 1.8.2
       dayjs: 1.11.7
       debug: 4.3.4(supports-color@8.1.1)
@@ -13897,6 +13897,40 @@ packages:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 18.2.0
+    dev: false
+
+  /react-redux@8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.33)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
+    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
+    peerDependencies:
+      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+      react-native: '>=0.59'
+      redux: ^4
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@types/hoist-non-react-statics': 3.3.1
+      '@types/react': 18.0.33
+      '@types/react-dom': 18.0.11
+      '@types/use-sync-external-store': 0.0.3
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-is: 18.2.0
+      redux: 4.2.1
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /react-redux@8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.35)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
