@@ -144,6 +144,7 @@ export default function TransactionStatus({
             isUnsentFund={isUnsentFund}
             isApiSuccess={isApiSuccess}
             txnType={ethTxnStatusIsConfirmed ? "For DFC" : "For EVM"}
+            testId="txn"
           />
         </div>
       )}
@@ -230,6 +231,7 @@ export default function TransactionStatus({
                 isUnsentFund={isUnsentFund}
                 isApiSuccess={isApiSuccess}
                 txnType={ethTxnStatusIsConfirmed ? "For DFC" : "For EVM"}
+                testId="txn"
               />
             )}
 

@@ -36,6 +36,7 @@ export default function ConfirmationProgress({
   isApiSuccess,
   txnType,
   showCircular = false,
+  testId,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
@@ -45,6 +46,7 @@ export default function ConfirmationProgress({
   isApiSuccess: boolean;
   txnType: string;
   showCircular?: boolean;
+  testId?: string;
 }) {
   const { isLg } = useResponsive();
   const [valuePercentage, setValuePercentage] = useState<number>(0);
@@ -92,7 +94,7 @@ export default function ConfirmationProgress({
               {isApiSuccess || isConfirmed ? (
                 <div
                   className="text-lg font-bold text-dark-1000"
-                  data-testid="txn-progress-blocks"
+                  data-testid={`${testId}-progress-blocks`}
                 >{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
               ) : (
                 <SkeletonLoader isDesktop />
@@ -100,7 +102,7 @@ export default function ConfirmationProgress({
 
               <span
                 className="text-xs text-dark-700"
-                data-testid="txn-progress-status"
+                data-testid={`${testId}-progress-status`}
               >
                 {isConfirmed ? "Confirmed" : txnType}
               </span>
@@ -111,7 +113,7 @@ export default function ConfirmationProgress({
         <div>
           <div
             className="flex text-sm text-dark-700"
-            data-testid="txn-progress-status-mobile"
+            data-testid={`${testId}-progress-status-mobile`}
           >
             {isApiSuccess || isConfirmed ? (
               <span
@@ -120,7 +122,7 @@ export default function ConfirmationProgress({
                   "text-warning": isReverted,
                   "text-error": isUnsentFund,
                 })}
-                data-testid="txn-progress-blocks-mobile"
+                data-testid={`${testId}-progress-blocks-mobile`}
               >
                 {`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}\u00A0`}
               </span>
@@ -136,7 +138,7 @@ export default function ConfirmationProgress({
                 "h-full rounded-md mt-1",
                 isConfirmed ? "bg-valid" : "bg-brand-100"
               )}
-              data-testid="txn-progress-bar-mobile"
+              data-testid={`${testId}-progress-bar-mobile`}
             />
           </div>
         </div>

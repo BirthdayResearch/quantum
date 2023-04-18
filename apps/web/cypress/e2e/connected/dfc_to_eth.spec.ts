@@ -1,5 +1,8 @@
 /* eslint-disable cypress/no-unnecessary-waiting */
-import { DfcToErcTransferSteps } from "../../../src/constants";
+import {
+  DFC_CONFIRMATIONS_BLOCK_TOTAL,
+  DfcToErcTransferSteps,
+} from "../../../src/constants";
 import { Erc20Token, Network } from "../../../src/types";
 import { HttpStatusCode } from "axios";
 import dayjs from "dayjs";
@@ -23,48 +26,41 @@ const toReceive = "0.3988";
 const meurcTokenAddress = "0x0165878A594ca255338adfa4d48449f69242Eb8F";
 
 enum TitleLabel {
-  Validating = "Validating your transaction",
-  Validated = "Transaction has been validated",
-  Rejected = "Validation failed",
   ThrottleLimit = "Verification attempt limit reached",
 }
 
 enum ContentLabel {
-  Validating = "Please wait as we verify the funds transfer to the provided address. Upon validation, you will be redirected to the next stage to claim your tokens",
-  Validated = "Please wait as we redirect you to the next step.",
   ThrottleLimit = "Please wait for a minute and try again.",
 }
 
 function verifyStep(stepNumber: number) {
   DfcToErcTransferSteps.forEach(({ step, label }, idx) => {
-    cy.findByTestId(`erc-transfer-step-${idx}`).within(() => {
-      const isCurrentlyStep4 = stepNumber === 4 && step === stepNumber;
+    const isCurrentlyStep4 = stepNumber === 4 && step === stepNumber;
 
-      // Verify step node
-      cy.findByTestId("step-node")
-        .should(
-          "have.class",
-          isCurrentlyStep4 || stepNumber > step ? "bg-valid" : "bg-dark-100"
-        )
-        .should(
-          "have.class",
-          stepNumber >= step ? "border-valid" : "border-dark-500"
-        );
+    // Verify step node
+    cy.findByTestId(`step-node-${idx}`)
+      .should(
+        "have.class",
+        isCurrentlyStep4 || stepNumber > step ? "bg-valid" : "bg-dark-100"
+      )
+      .should(
+        "have.class",
+        stepNumber >= step ? "border-valid" : "border-dark-500"
+      );
 
-      if (stepNumber === step) {
-        cy.findByTestId("step-number").should("contain.text", stepNumber);
-      }
+    if (stepNumber === step) {
+      cy.findByTestId(`step-number-${idx}`).should("contain.text", stepNumber);
+    }
 
-      // Verify step label
-      cy.findByTestId("step-label")
-        .should(
-          "have.class",
-          isCurrentlyStep4 || stepNumber !== step
-            ? "text-dark-500"
-            : "text-dark-1000"
-        )
-        .should("contain.text", label);
-    });
+    // Verify step label
+    cy.findByTestId(`step-label-${idx}`)
+      .should(
+        "have.class",
+        isCurrentlyStep4 || stepNumber !== step
+          ? "text-dark-500"
+          : "text-dark-1000"
+      )
+      .should("contain.text", label);
   });
 }
 
@@ -135,6 +131,26 @@ function verifyStepTwoForm(pair: { tokenA: string; tokenB: string }) {
   cy.findByTestId("irreversible-alert-container").should("be.visible");
 }
 
+async function waitUntilBlocksConfirm() {
+  // if still in step 3, proceed to check block confirmations
+  cy.findByTestId("step-number-3").then(($stepThree) => {
+    if ($stepThree.css("color") === "rgb(12, 199, 44)") {
+      cy.findByTestId("dfc-txn-progress-blocks")
+        .invoke("text")
+        .then((text: string) => {
+          const value = text.split(" ")[0];
+          const currentBlockCount = new BigNumber(value);
+          if (
+            currentBlockCount.lt(new BigNumber(DFC_CONFIRMATIONS_BLOCK_TOTAL))
+          ) {
+            cy.wait(15000);
+            waitUntilBlocksConfirm();
+          }
+        });
+    }
+  });
+}
+
 function proceedUntilStep(stepNumber: number) {
   // bridge form setup
   cy.setupBridgeForm(
@@ -187,8 +203,20 @@ function proceedUntilStep(stepNumber: number) {
     cy.wait(5000);
     cy.findByTestId("verify-hot-wallet-transfer").should("be.visible").click();
 
-    // no controls over step 3 proceeding to step 4 here, step 3 is passing too fast, so no verification for step 3
+    // verify Step 3
+    // wait for 35 blocks of confirmations
     cy.wait(2000);
+    verifyStep(3);
+    cy.findByTestId("erc-transfer-step-three").should("be.visible");
+    cy.findByTestId("dfc-txn-status-title").should(
+      "contain.text",
+      "Validating your transaction"
+    );
+    cy.findByTestId("dfc-txn-status-desc").should(
+      "contain.text",
+      "Please wait as your transaction is being validated. Upon validation, you will be redirected to the next step for the claiming of your tokens."
+    );
+    waitUntilBlocksConfirm();
 
     // last step
     verifyStep(4);

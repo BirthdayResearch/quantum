@@ -44,10 +44,10 @@ export default function ProgressStepIndicator({
               activeStep > step ? "bg-valid" : "bg-dark-100",
               activeStep >= step ? "border-valid" : "border-dark-500"
             )}
-            data-testid="step-node"
+            data-testid={`step-node-${idx}`}
           >
             <span
-              data-testid="step-number"
+              data-testid={`step-number-${idx}`}
               className={clsx(
                 "font-bold tracking-wide",
                 activeStep > step ? "text-dark-00" : "text-valid"
@@ -60,7 +60,7 @@ export default function ProgressStepIndicator({
           {/* Step label */}
           <div className="absolute top-7 left-1/2 -translate-x-1/2">
             <span
-              data-testid="step-label"
+              data-testid={`step-label-${idx}`}
               className={clsx(
                 "text-xs",
                 activeStep === step ? "text-dark-1000" : "text-dark-500"
