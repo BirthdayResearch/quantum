@@ -17,7 +17,7 @@ export class RefundService {
       throw new HttpException(
         {
           status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `API call for requestRefundOrder was unsuccessful: ${e.message}`,
+          error: `API call for refund was unsuccessful: ${e.message}`,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
         {

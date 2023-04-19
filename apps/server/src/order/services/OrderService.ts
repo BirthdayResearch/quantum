@@ -11,7 +11,7 @@ export class OrderService {
       // return await this.prisma.ethereumOrderTable.findUnique({
       //   where: {
       //     transactionHash: transactionHash,
-      //     discontinued: status ?? undefined,
+      //     status: status ?? undefined,
       //   },
       // });
       return `${transactionHash} and ${status}`;
