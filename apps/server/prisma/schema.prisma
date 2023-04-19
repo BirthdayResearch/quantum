@@ -54,3 +54,46 @@ model BridgeEventTransactions {
   blockHash                      String?
   blockHeight                    String?
 }
+
+enum OrderStatus {
+  IN_PROGRESS
+  COMPLETED
+  REJECTED
+  EXPIRED
+  REFUND_REQUESTED
+  REFUNDED
+}
+
+enum DeFiChainTransactionStatus {
+  NOT_CONFIRMED
+  CONFIRMED
+}
+
+model EthereumOrders {
+  id                 BigInt                     @id @default(autoincrement())
+  transactionHash    String                     @unique
+  ethereumStatus     EthereumTransactionStatus
+  status             OrderStatus
+  defichainStatus    DeFiChainTransactionStatus
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime?                  @updatedAt
+  amount             String?
+  tokenSymbol        String?
+  defichainAddress   String
+  expiryDate         DateTime
+  adminEthereumOrder AdminEthereumOrders?
+}
+
+model AdminEthereumOrders {
+  id                  BigInt         @id @default(autoincrement())
+  order               EthereumOrders @relation(fields: [orderId], references: [id])
+  orderId             BigInt         @unique
+  lastUpdatedBy       String
+  hotWalletAddress    String
+  hotWalletIndex      Int
+  generatedAddress    String         @unique
+  sendTransactionHash String?
+  hasVerified         Boolean
+  blockHash           String?
+  blockHeight         String?
+}
