@@ -42,8 +42,8 @@ export class CreateService {
       throw new BadRequestException(`Transaction Reverted`);
     }
 
-    const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-    const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
+    // const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+    // const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
     // const txHashFound = await this.prisma.EthereumOrders.findFirst({
     //   where: {
     //     transactionHash,
@@ -51,23 +51,73 @@ export class CreateService {
     // });
     const txHashFound = null;
     if (txHashFound === null) {
+      // await this.prisma.EthereumOrders.create({
+      //     data: {
+      //         transactionHash,
+      //         status: OrderStatus.DRAFT
+      //         ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
+      //     },
+      //     });
+      return `Draft order created for ${transactionHash}`;
+    }
+
+    // await this.prisma.EthereumOrders.update({
+    //     where: {
+    //       id: txHashFound?.id,
+    //     },
+    //     data: {
+    //       status: OrderStatus.DRAFT
+    //     },
+    //   });
+    return `Draft order updated for ${transactionHash}`;
+  }
+
+  async verify(transactionHash: string) {
+    const isValidTxn = await this.verifyIfValidTxn(transactionHash);
+    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+
+    // if transaction is still pending
+    if (txReceipt === null) {
+      return { numberOfConfirmations: 0, isConfirmed: false };
+    }
+
+    // Sanity check that the contractAddress, decoded name and signature are correct
+    if (txReceipt.to !== this.contractAddress || !isValidTxn) {
+      return { numberOfConfirmations: 0, isConfirmed: false };
+    }
+
+    // if transaction is reverted
+    const isReverted = txReceipt.status === 0;
+    if (isReverted === true) {
+      throw new BadRequestException(`Transaction Reverted`);
+    }
+
+    const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+    const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
+    // const txHashFound = await this.prisma.EthereumOrders.findFirst({
+    //   where: {
+    //     transactionHash,
+    //   },
+    // });
+    const txHashFound = 'blah';
+    if (txHashFound === null) {
       if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
         // await this.prisma.EthereumOrders.create({
         // data: {
         //     transactionHash,
-        //     status: OrderStatus.IN_PROGRESS
+        //     status: OrderStatus.DRAFT
         //     ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
         // },
         // });
         return { numberOfConfirmations, isConfirmed: false };
       }
-      // await this.prisma.EthereumOrders.create({
-      //     data: {
-      //         transactionHash,
-      //         status: OrderStatus.IN_PROGRESS
-      //         ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-      //     },
-      // });
+      //   await this.prisma.EthereumOrders.create({
+      //       data: {
+      //           transactionHash,
+      //           status: OrderStatus.IN_PROGRESS
+      //           ethereumStatus: EthereumTransactionStatus.CONFIRMED,
+      //       },
+      //   });
       return { numberOfConfirmations, isConfirmed: true };
     }
     if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {

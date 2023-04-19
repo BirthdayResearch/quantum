@@ -8,9 +8,15 @@ import { CreateService } from './CreateService';
 export class CreateController {
   constructor(private readonly createService: CreateService) {}
 
-  @Post('createOrder')
+  @Post('order')
   @Throttle(35, 60)
-  createOrder(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
+  order(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.createService.createOrder(transactionHash);
+  }
+
+  @Post('verify')
+  @Throttle(35, 60)
+  verify(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
+    return this.createService.verify(transactionHash);
   }
 }
