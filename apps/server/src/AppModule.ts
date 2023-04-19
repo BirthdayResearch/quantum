@@ -5,7 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
 import { BalancesModule } from './balances/BalancesModule';
-import { CreateModule } from './create/CreateModule';
+import { CreateModule } from './createOrder/CreateModule';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';

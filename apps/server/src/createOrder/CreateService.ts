@@ -95,32 +95,7 @@ export class CreateService {
 
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
     const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
-    // const txHashFound = await this.prisma.EthereumOrders.findFirst({
-    //   where: {
-    //     transactionHash,
-    //   },
-    // });
-    const txHashFound = 'blah';
-    if (txHashFound === null) {
-      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
-        // await this.prisma.EthereumOrders.create({
-        // data: {
-        //     transactionHash,
-        //     status: OrderStatus.DRAFT
-        //     ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
-        // },
-        // });
-        return { numberOfConfirmations, isConfirmed: false };
-      }
-      //   await this.prisma.EthereumOrders.create({
-      //       data: {
-      //           transactionHash,
-      //           status: OrderStatus.IN_PROGRESS
-      //           ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-      //       },
-      //   });
-      return { numberOfConfirmations, isConfirmed: true };
-    }
+
     if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
       return { numberOfConfirmations, isConfirmed: false };
     }

@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { EthereumTransactionValidationPipe } from 'src/pipes/EthereumTransactionValidation.pipe';
 
@@ -14,7 +14,7 @@ export class CreateController {
     return this.createService.createOrder(transactionHash);
   }
 
-  @Post('verify')
+  @Put('verify')
   @Throttle(35, 60)
   verify(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.createService.verify(transactionHash);
