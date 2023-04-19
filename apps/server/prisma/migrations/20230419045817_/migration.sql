@@ -11,7 +11,7 @@ CREATE TABLE "EthereumOrderTable" (
     "updatedAt" TIMESTAMP(3),
     "amount" TEXT,
     "tokenSymbol" TEXT,
-    "defiChainAddress" TEXT NOT NULL,
+    "defichainAddress" TEXT NOT NULL,
     "expiryDate" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "EthereumOrderTable_pkey" PRIMARY KEY ("id")
@@ -20,10 +20,11 @@ CREATE TABLE "EthereumOrderTable" (
 -- CreateTable
 CREATE TABLE "AdminEthereumOrderTable" (
     "id" BIGSERIAL NOT NULL,
-    "orderId" TEXT NOT NULL,
+    "orderId" BIGINT NOT NULL,
     "lastUpdatedBy" TEXT NOT NULL,
     "hotWalletAddress" TEXT NOT NULL,
     "hotWalletIndex" INTEGER NOT NULL,
+    "generatedAddress" TEXT NOT NULL,
     "sendTransactionHash" TEXT,
     "hasVerified" BOOLEAN NOT NULL,
     "blockHash" TEXT NOT NULL,
@@ -36,7 +37,7 @@ CREATE TABLE "AdminEthereumOrderTable" (
 CREATE UNIQUE INDEX "EthereumOrderTable_transactionHash_key" ON "EthereumOrderTable"("transactionHash");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "EthereumOrderTable_defiChainAddress_key" ON "EthereumOrderTable"("defiChainAddress");
-
--- CreateIndex
 CREATE UNIQUE INDEX "AdminEthereumOrderTable_orderId_key" ON "AdminEthereumOrderTable"("orderId");
+
+-- AddForeignKey
+ALTER TABLE "AdminEthereumOrderTable" ADD CONSTRAINT "AdminEthereumOrderTable_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "EthereumOrderTable"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -14,10 +14,19 @@ export class OrderBookService {
     try {
       const orderBook = await this.prisma.ethereumOrderTable.create({
         data: {
-          ...order,
+          transactionHash: order.transactionHash,
+          ethereumStatus: order.ethereumStatus,
+          status: order.status,
+          createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+          amount: order.amount,
+          tokenSymbol: order.tokenSymbol,
+          defichainAddress: order.defichainAddress,
+          expiryDate: order.expiryDate,
         },
       });
-      return orderBook;
+      // to display id as string in Postman
+      return { ...orderBook, id: orderBook.id.toString() };
     } catch (e: any) {
       throw new HttpException(
         {

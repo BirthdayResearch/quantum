@@ -65,24 +65,27 @@ enum OrderStatus {
 }
 
 model EthereumOrderTable {
-  id               BigInt                    @id @default(autoincrement())
-  transactionHash  String                    @unique
-  ethereumStatus   EthereumTransactionStatus
-  status           OrderStatus
-  createdAt        DateTime                  @default(now())
-  updatedAt        DateTime?                 @updatedAt
-  amount           String?
-  tokenSymbol      String?
-  defiChainAddress String                    @unique
-  expiryDate       DateTime
+  id                      BigInt                    @id @default(autoincrement())
+  transactionHash         String                    @unique
+  ethereumStatus          EthereumTransactionStatus
+  status                  OrderStatus
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime?                 @updatedAt
+  amount                  String?
+  tokenSymbol             String?
+  defichainAddress        String
+  expiryDate              DateTime
+  AdminEthereumOrderTable AdminEthereumOrderTable?
 }
 
 model AdminEthereumOrderTable {
-  id                  BigInt  @id @default(autoincrement())
-  orderId             String  @unique
+  id                  BigInt             @id @default(autoincrement())
+  order               EthereumOrderTable @relation(fields: [orderId], references: [id])
+  orderId             BigInt             @unique
   lastUpdatedBy       String
   hotWalletAddress    String
   hotWalletIndex      Int
+  generatedAddress    String
   sendTransactionHash String?
   hasVerified         Boolean
   blockHash           String

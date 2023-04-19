@@ -9,8 +9,6 @@ export class OrderBookController {
 
   @Post('/orderbook')
   async getOrderBook(@Query() order: EthereumOrderTable) {
-    // eslint-disable-next-line no-param-reassign
-    order.id = BigInt(order.id);
     return this.orderService.insertOrderBook(order);
   }
 }
