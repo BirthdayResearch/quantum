@@ -91,11 +91,11 @@ model AdminEthereumOrders {
   order               EthereumOrders @relation(fields: [orderId], references: [id])
   orderId             BigInt         @unique
   lastUpdatedBy       String
-  hotWalletAddress    String
-  hotWalletIndex      Int
-  generatedAddress    String         @unique
+  hotWalletAddress    String?
+  hotWalletIndex      Int?
+  generatedAddress    String?        @unique
   sendTransactionHash String?
-  hasVerified         Boolean
+  hasVerified         Boolean?       @default(false)
   blockHash           String?
   blockHeight         String?
   createdAt           DateTime       @default(now())
