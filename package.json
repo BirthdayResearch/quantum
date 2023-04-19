@@ -17,10 +17,10 @@
     "migration:deploy": "turbo run migration:deploy"
   },
   "dependencies": {
-    "@waveshq/standard-defichain-jellyfishsdk": "^0.49.0"
+    "@waveshq/standard-defichain-jellyfishsdk": "^0.49.1"
   },
   "devDependencies": {
-    "@birthdayresearch/sticky-turbo": "^0.5.9",
+    "@birthdayresearch/sticky-turbo": "^0.5.10",
     "husky": "^8.0.3",
     "lint-staged": "^13.2.1"
   },

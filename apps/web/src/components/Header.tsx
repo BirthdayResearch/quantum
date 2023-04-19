@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useNetwork } from "wagmi";
 import ConnectButton from "./ConnectButton";
 import Banner from "./Banner";
 import Navigation from "./Navigation";
+import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
 
 export default function Header({
@@ -10,6 +12,8 @@ export default function Header({
 }: {
   isBridgeUp: boolean;
 }): JSX.Element {
+  const { chain } = useNetwork();
+
   return (
     <div className="relative z-[1] flex flex-col">
       <Banner />
@@ -32,6 +36,7 @@ export default function Header({
         )}
         <div className="flex h-9 items-center md:h-10 lg:h-12">
           <ConnectButton />
+          {chain === undefined && <EnvironmentNetworkSwitch />}
         </div>
       </div>
       {isBridgeUp && (
