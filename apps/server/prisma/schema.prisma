@@ -54,3 +54,37 @@ model BridgeEventTransactions {
   blockHash                      String?
   blockHeight                    String?
 }
+
+enum OrderStatus {
+  IN_PROGRESS
+  COMPLETE
+  REJECTED
+  EXPIRED
+  REFUND_REQUESTED
+  REFUNDED
+}
+
+model EthereumOrderTable {
+  id               BigInt                    @id @default(autoincrement())
+  transactionHash  String                    @unique
+  ethereumStatus   EthereumTransactionStatus
+  status           OrderStatus
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime?                 @updatedAt
+  amount           String?
+  tokenSymbol      String?
+  defiChainAddress String                    @unique
+  expiryDate       DateTime
+}
+
+model AdminEthereumOrderTable {
+  id                  BigInt  @id @default(autoincrement())
+  orderId             String  @unique
+  lastUpdatedBy       String
+  hotWalletAddress    String
+  hotWalletIndex      Int
+  sendTransactionHash String?
+  hasVerified         Boolean
+  blockHash           String
+  blockHeight         String
+}

@@ -7,6 +7,7 @@ import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
 import { BalancesModule } from './balances/BalancesModule';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
+import { OrderBookModule } from './ethereumorderbook/OrderBookModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
 import { SettingsModule } from './settings/SettingsModule';
@@ -40,6 +41,7 @@ import { VersionModule } from './version/VersionModule';
     VersionModule,
     BalancesModule,
     SettingsModule,
+    OrderBookModule,
   ],
   controllers: [],
   providers: [
