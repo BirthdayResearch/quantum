@@ -1,13 +1,13 @@
 import { Controller, Post, Query } from '@nestjs/common';
 import { EthereumOrderTable } from '@prisma/client';
 
-import { OrderBookService } from './OrderBookService';
+import { EthereumOrderBookService } from './EthereumOrderBookService';
 
 @Controller()
-export class OrderBookController {
-  constructor(private readonly orderService: OrderBookService) {}
+export class EthereumOrderBookController {
+  constructor(private readonly orderService: EthereumOrderBookService) {}
 
-  @Post('/orderbook')
+  @Post('/ethereum/orderbook')
   async getOrderBook(@Query() order: EthereumOrderTable) {
     return this.orderService.insertOrderBook(order);
   }

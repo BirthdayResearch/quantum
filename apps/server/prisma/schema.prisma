@@ -64,13 +64,19 @@ enum OrderStatus {
   REFUNDED
 }
 
+enum DeFiChainTransactionStatus {
+  NOT_CONFIRMED
+  CONFIRMED
+}
+
 model EthereumOrderTable {
-  id                      BigInt                    @id @default(autoincrement())
-  transactionHash         String                    @unique
+  id                      BigInt                     @id @default(autoincrement())
+  transactionHash         String                     @unique
   ethereumStatus          EthereumTransactionStatus
   status                  OrderStatus
-  createdAt               DateTime                  @default(now())
-  updatedAt               DateTime?                 @updatedAt
+  defichainStatus         DeFiChainTransactionStatus
+  createdAt               DateTime                   @default(now())
+  updatedAt               DateTime?                  @updatedAt
   amount                  String?
   tokenSymbol             String?
   defichainAddress        String

@@ -1,12 +1,16 @@
 -- CreateEnum
 CREATE TYPE "OrderStatus" AS ENUM ('IN_PROGRESS', 'COMPLETE', 'REJECTED', 'EXPIRED', 'REFUND_REQUESTED', 'REFUNDED');
 
+-- CreateEnum
+CREATE TYPE "DeFiChainTransactionStatus" AS ENUM ('NOT_CONFIRMED', 'CONFIRMED');
+
 -- CreateTable
 CREATE TABLE "EthereumOrderTable" (
     "id" BIGSERIAL NOT NULL,
     "transactionHash" TEXT NOT NULL,
     "ethereumStatus" "EthereumTransactionStatus" NOT NULL,
     "status" "OrderStatus" NOT NULL,
+    "defichainStatus" "DeFiChainTransactionStatus" NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
     "amount" TEXT,

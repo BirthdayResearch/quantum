@@ -1,28 +1,20 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { EthereumOrderTable } from '@prisma/client';
 
-import { PrismaService } from '../PrismaService';
+import { PrismaService } from '../../PrismaService';
 
 // services to insert data, where the logic lies
 // calls controller via endpoint, then controller calls service and then insert into the DB
 
 @Injectable()
-export class OrderBookService {
+export class EthereumOrderBookService {
   constructor(private prisma: PrismaService) {}
 
   async insertOrderBook(order: EthereumOrderTable) {
     try {
       const orderBook = await this.prisma.ethereumOrderTable.create({
         data: {
-          transactionHash: order.transactionHash,
-          ethereumStatus: order.ethereumStatus,
-          status: order.status,
-          createdAt: order.createdAt,
-          updatedAt: order.updatedAt,
-          amount: order.amount,
-          tokenSymbol: order.tokenSymbol,
-          defichainAddress: order.defichainAddress,
-          expiryDate: order.expiryDate,
+          ...order,
         },
       });
       // to display id as string in Postman
