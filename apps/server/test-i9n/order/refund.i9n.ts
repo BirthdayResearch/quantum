@@ -27,7 +27,7 @@ describe('Request Refund Testing', () => {
   it('Should be able to update order status to REFUND_REQUESTED', async () => {
     const resp = await testing.inject({
       method: 'POST',
-      url: `/requestRefundOrder?transactionHash=1234`,
+      url: `/order/1234/refund`,
     });
 
     expect(resp.body).toStrictEqual('Refund_Requested for 1234');
@@ -36,7 +36,7 @@ describe('Request Refund Testing', () => {
   it('Should not be able to update order status when transactionHash is invalid', async () => {
     const resp = await testing.inject({
       method: 'POST',
-      url: `/requestRefundOrder?transactionHash=1234`,
+      url: `/order/1234/refund`,
     });
 
     expect(resp.body).toHaveProperty('API call for requestRefundOrder was unsuccessful:');

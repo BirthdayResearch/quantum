@@ -1,19 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
-import { PrismaService } from '../PrismaService';
-import { RequestRefundOrderDto } from './RefundInterface';
+import { PrismaService } from '../../PrismaService';
 
 @Injectable()
 export class RefundService {
   constructor(private prisma: PrismaService) {}
 
-  async requestRefundOrder(orderDto: RequestRefundOrderDto) {
+  async requestRefundOrder(transactionHash: string) {
     try {
-      await this.prisma.ethereumOrderTable.update({
-        where: { transactionHash: orderDto.transactionHash },
-        data: { status: 'REFUND_REQUESTED' },
-      });
-      return `Refund_Requested for ${orderDto.transactionHash}`;
+      // await this.prisma.ethereumOrderTable.update({
+      //   where: { transactionHash: transactionHash },
+      //   data: { status: 'REFUND_REQUESTED' },
+      // });
+      return `Refund_Requested for ${transactionHash}`;
     } catch (e: any) {
       throw new HttpException(
         {
