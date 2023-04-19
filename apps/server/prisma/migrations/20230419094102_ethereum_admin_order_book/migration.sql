@@ -30,7 +30,7 @@ CREATE TABLE "AdminEthereumOrders" (
     "hotWalletIndex" INTEGER,
     "generatedAddress" TEXT,
     "sendTransactionHash" TEXT,
-    "hasVerified" BOOLEAN DEFAULT false,
+    "hasVerified" BOOLEAN,
     "blockHash" TEXT,
     "blockHeight" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,

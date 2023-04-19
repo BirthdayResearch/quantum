@@ -95,7 +95,7 @@ model AdminEthereumOrders {
   hotWalletIndex      Int?
   generatedAddress    String?        @unique
   sendTransactionHash String?
-  hasVerified         Boolean?       @default(false)
+  hasVerified         Boolean?
   blockHash           String?
   blockHeight         String?
   createdAt           DateTime       @default(now())
