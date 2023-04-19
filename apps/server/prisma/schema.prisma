@@ -56,8 +56,10 @@ model BridgeEventTransactions {
 }
 
 enum OrderStatus {
+  DRAFT
   IN_PROGRESS
   COMPLETED
+  ERROR
   REJECTED
   EXPIRED
   REFUND_REQUESTED
