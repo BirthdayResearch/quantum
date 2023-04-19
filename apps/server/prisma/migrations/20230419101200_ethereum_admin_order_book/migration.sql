@@ -25,7 +25,7 @@ CREATE TABLE "EthereumOrders" (
 CREATE TABLE "AdminEthereumOrders" (
     "id" BIGSERIAL NOT NULL,
     "orderId" BIGINT NOT NULL,
-    "lastUpdatedBy" TEXT NOT NULL,
+    "lastUpdatedBy" TEXT,
     "hotWalletAddress" TEXT,
     "hotWalletIndex" INTEGER,
     "generatedAddress" TEXT,

@@ -90,7 +90,7 @@ model AdminEthereumOrders {
   id                  BigInt         @id @default(autoincrement())
   order               EthereumOrders @relation(fields: [orderId], references: [id])
   orderId             BigInt         @unique
-  lastUpdatedBy       String
+  lastUpdatedBy       String?
   hotWalletAddress    String?
   hotWalletIndex      Int?
   generatedAddress    String?        @unique
