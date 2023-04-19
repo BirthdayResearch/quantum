@@ -7,6 +7,7 @@ import { BridgeV1__factory } from 'smartcontracts';
 
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
+import { VerifyOrderTransaction } from './CreateInterface';
 
 @Injectable()
 export class CreateService {
@@ -22,18 +23,18 @@ export class CreateService {
     this.contractAddress = this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address');
   }
 
-  async createOrder(transactionHash: string) {
+  async createOrder(transactionHash: string): Promise<string> {
     const isValidTxn = await this.verifyIfValidTxn(transactionHash);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
     // if transaction is still pending
     if (txReceipt === null) {
-      return { numberOfConfirmations: 0, isConfirmed: false };
+      return `${transactionHash} is still pending`;
     }
 
     // Sanity check that the contractAddress, decoded name and signature are correct
     if (txReceipt.to !== this.contractAddress || !isValidTxn) {
-      return { numberOfConfirmations: 0, isConfirmed: false };
+      return `${txReceipt.to}, decoded name and signature is inaccurate`;
     }
 
     // if transaction is reverted
@@ -72,7 +73,7 @@ export class CreateService {
     return `Draft order updated for ${transactionHash}`;
   }
 
-  async verify(transactionHash: string) {
+  async verify(transactionHash: string): Promise<VerifyOrderTransaction> {
     const isValidTxn = await this.verifyIfValidTxn(transactionHash);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
