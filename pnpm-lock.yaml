@@ -45,14 +45,14 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0(@nestjs/common@9.4.0)(@nestjs/core@9.4.0)(reflect-metadata@0.1.13)
       '@prisma/client':
-        specifier: ^4.12.0
-        version: 4.12.0(prisma@4.12.0)
+        specifier: ^4.13.0
+        version: 4.13.0(prisma@4.13.0)
       '@waveshq/walletkit-core':
         specifier: ^0.44.0
         version: 0.44.0
       '@waveshq/walletkit-ui':
         specifier: ^0.44.0
-        version: 0.44.0(@babel/core@7.21.0)(@next/env@13.3.0)(@types/node@18.14.0)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 0.44.0(@babel/core@7.21.0)(@next/env@13.3.0)(@types/node@18.14.0)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5)
       async-mutex:
         specifier: ^0.4.0
         version: 0.4.0
@@ -124,8 +124,8 @@ importers:
         specifier: 5.9.1
         version: 5.9.1
       prisma:
-        specifier: ^4.12.0
-        version: 4.12.0
+        specifier: ^4.13.0
+        version: 4.13.0
       shuffle-seed:
         specifier: ^1.1.6
         version: 1.1.6
@@ -4320,8 +4320,8 @@ packages:
     requiresBuild: true
     optional: true
 
-  /@prisma/client@4.12.0(prisma@4.12.0):
-    resolution: {integrity: sha512-j9/ighfWwux97J2dS15nqhl60tYoH8V0IuSsgZDb6bCFcQD3fXbXmxjYC8GHhIgOk3lB7Pq+8CwElz2MiDpsSg==}
+  /@prisma/client@4.13.0(prisma@4.13.0):
+    resolution: {integrity: sha512-YaiiICcRB2hatxsbnfB66uWXjcRw3jsZdlAVxmx0cFcTc/Ad/sKdHCcWSnqyDX47vAewkjRFwiLwrOUjswVvmA==}
     engines: {node: '>=14.17'}
     requiresBuild: true
     peerDependencies:
@@ -4330,16 +4330,16 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.12.0-67.659ef412370fa3b41cd7bf6e94587c1dfb7f67e7
-      prisma: 4.12.0
+      '@prisma/engines-version': 4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a
+      prisma: 4.13.0
     dev: false
 
-  /@prisma/engines-version@4.12.0-67.659ef412370fa3b41cd7bf6e94587c1dfb7f67e7:
-    resolution: {integrity: sha512-JIHNj5jlXb9mcaJwakM0vpgRYJIAurxTUqM0iX0tfEQA5XLZ9ONkIckkhuAKdAzocZ+80GYg7QSsfpjg7OxbOA==}
+  /@prisma/engines-version@4.13.0-50.1e7af066ee9cb95cf3a403c78d9aab3e6b04f37a:
+    resolution: {integrity: sha512-fsQlbkhPJf08JOzKoyoD9atdUijuGBekwoOPZC3YOygXEml1MTtgXVpnUNchQlRSY82OQ6pSGQ9PxUe4arcSLQ==}
     dev: false
 
-  /@prisma/engines@4.12.0:
-    resolution: {integrity: sha512-0alKtnxhNB5hYU+ymESBlGI4b9XrGGSdv7Ud+8TE/fBNOEhIud0XQsAR+TrvUZgS4na5czubiMsODw0TUrgkIA==}
+  /@prisma/engines@4.13.0:
+    resolution: {integrity: sha512-HrniowHRZXHuGT9XRgoXEaP2gJLXM5RMoItaY2PkjvuZ+iHc0Zjbm/302MB8YsPdWozAPHHn+jpFEcEn71OgPw==}
     requiresBuild: true
 
   /@reduxjs/toolkit@1.9.4(react-redux@8.0.5)(react@18.2.0):
@@ -6007,7 +6007,7 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web@0.49.0(@babel/core@7.21.0)(@next/env@13.3.0):
+  /@waveshq/standard-web@0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1):
     resolution: {integrity: sha512-cEUfr3O1YRrejYbILHzQl6JeDRe2zA1MYdcANEOAMLYhRz+PiEY3JiHonvTxg81AlXUnM2/DUJOoqiS+oXy/kg==}
     dependencies:
       '@netlify/ipx': 1.4.0
@@ -6021,7 +6021,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-icons: 4.8.0(react@18.2.0)
-      react-redux: 8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.35)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
+      react-redux: 8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.33)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
       react-responsive: 9.0.2(react@18.2.0)
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -6077,12 +6077,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui@0.44.0(@babel/core@7.21.0)(@next/env@13.3.0)(@types/node@18.14.0)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5):
+  /@waveshq/walletkit-ui@0.44.0(@babel/core@7.21.0)(@next/env@13.3.0)(@types/node@18.14.0)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5):
     resolution: {integrity: sha512-LJGCwNjqnP8O11Xg+m5D/zMT94h3cSNIrTdbeNuDqpmpuU/sn1tQ+Nl3PvXbhdVKNd3jIvBua5dasa3c9sbdwg==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.9(@babel/core@7.21.0)(@types/node@18.14.0)(ts-node@10.9.1)(typescript@4.9.5)
       '@waveshq/standard-defichain-jellyfishsdk': 0.49.0(@types/tar-fs@2.0.1)
-      '@waveshq/standard-web': 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)
+      '@waveshq/standard-web': 0.49.0(@babel/core@7.21.0)(@next/env@13.3.0)(redux@4.2.1)
       '@waveshq/standard-web-linter': 0.49.0(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.58.0)(@typescript-eslint/parser@5.58.0)(react-dom@18.2.0)(react@18.2.0)
       '@waveshq/walletkit-core': 0.44.0
       bignumber.js: 9.1.1
@@ -13556,13 +13556,13 @@ packages:
     resolution: {integrity: sha512-lg++21mreCEOuGWTbO5DnJKAdxfjrdN0S9ysoW9SzdSJvbkWpkaDdpG/cdsPCsEnoLUwmd9m3WcZhngW7yKA2g==}
     optional: true
 
-  /prisma@4.12.0:
-    resolution: {integrity: sha512-xqVper4mbwl32BWzLpdznHAYvYDWQQWK2tBfXjdUD397XaveRyAP7SkBZ6kFlIg8kKayF4hvuaVtYwXd9BodAg==}
+  /prisma@4.13.0:
+    resolution: {integrity: sha512-L9mqjnSmvWIRCYJ9mQkwCtj4+JDYYTdhoyo8hlsHNDXaZLh/b4hR0IoKIBbTKxZuyHQzLopb/+0Rvb69uGV7uA==}
     engines: {node: '>=14.17'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.12.0
+      '@prisma/engines': 4.13.0
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
@@ -13897,6 +13897,40 @@ packages:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 18.2.0
+    dev: false
+
+  /react-redux@8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.33)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
+    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
+    peerDependencies:
+      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+      react-native: '>=0.59'
+      redux: ^4
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@types/hoist-non-react-statics': 3.3.1
+      '@types/react': 18.0.33
+      '@types/react-dom': 18.0.11
+      '@types/use-sync-external-store': 0.0.3
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-is: 18.2.0
+      redux: 4.2.1
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /react-redux@8.0.5(@types/react-dom@18.0.11)(@types/react@18.0.35)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
