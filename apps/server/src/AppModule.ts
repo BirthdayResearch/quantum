@@ -27,7 +27,6 @@ import { VersionModule } from './version/VersionModule';
     EthersModule,
     DeFiChainModule,
     EthereumModule,
-    OrderModule,
     RouterModule.register([
       {
         path: 'defichain',
@@ -36,6 +35,12 @@ import { VersionModule } from './version/VersionModule';
       {
         path: 'ethereum',
         module: EthereumModule,
+        children: [
+          {
+            path: 'order',
+            module: OrderModule,
+          },
+        ],
       },
     ]),
     HealthModule,
