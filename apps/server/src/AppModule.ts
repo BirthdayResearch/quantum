@@ -5,11 +5,11 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 
 import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
 import { BalancesModule } from './balances/BalancesModule';
-import { CreateModule } from './createOrder/CreateModule';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
+import { OrderModule } from './order/OrderModule';
 import { SettingsModule } from './settings/SettingsModule';
 import { VersionModule } from './version/VersionModule';
 
@@ -27,7 +27,7 @@ import { VersionModule } from './version/VersionModule';
     EthersModule,
     DeFiChainModule,
     EthereumModule,
-    CreateModule,
+    OrderModule,
     RouterModule.register([
       {
         path: 'defichain',
