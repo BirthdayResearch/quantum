@@ -100,4 +100,6 @@ model AdminEthereumOrders {
   blockHeight         String?
   createdAt           DateTime                   @default(now())
   updatedAt           DateTime?                  @updatedAt
+
+  @@unique([hotWalletAddress, hotWalletIndex])
 }

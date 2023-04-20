@@ -48,5 +48,8 @@ CREATE UNIQUE INDEX "AdminEthereumOrders_orderId_key" ON "AdminEthereumOrders"("
 -- CreateIndex
 CREATE UNIQUE INDEX "AdminEthereumOrders_generatedAddress_key" ON "AdminEthereumOrders"("generatedAddress");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "AdminEthereumOrders_hotWalletAddress_hotWalletIndex_key" ON "AdminEthereumOrders"("hotWalletAddress", "hotWalletIndex");
+
 -- AddForeignKey
 ALTER TABLE "AdminEthereumOrders" ADD CONSTRAINT "AdminEthereumOrders_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "EthereumOrders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
