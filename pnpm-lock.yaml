@@ -213,7 +213,7 @@ importers:
     devDependencies:
       '@cypress/code-coverage':
         specifier: ^3.10.4
-        version: 3.10.4(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.9.0)(webpack@5.79.0)
+        version: 3.10.4(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.10.0)(webpack@5.79.0)
       '@netlify/plugin-lighthouse':
         specifier: ^4.1.0
         version: 4.1.0
@@ -225,7 +225,7 @@ importers:
         version: 0.5.9(tailwindcss@3.3.1)
       '@testing-library/cypress':
         specifier: ^9.0.0
-        version: 9.0.0(cypress@12.9.0)
+        version: 9.0.0(cypress@12.10.0)
       '@types/node':
         specifier: 18.14.0
         version: 18.14.0
@@ -242,8 +242,8 @@ importers:
         specifier: ^3.0.0
         version: 3.0.0(@babel/core@7.21.0)
       cypress:
-        specifier: ^12.9.0
-        version: 12.9.0
+        specifier: ^12.10.0
+        version: 12.10.0
       postcss:
         specifier: ^8.4.22
         version: 8.4.22
@@ -2083,14 +2083,14 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  /@cypress/code-coverage@3.10.4(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.9.0)(webpack@5.79.0):
+  /@cypress/code-coverage@3.10.4(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(cypress@12.10.0)(webpack@5.79.0):
     resolution: {integrity: sha512-FTB6ftXjO87KlqXiR/55UaniXwPia6+CcaO7I6aZDbB9u7Zz2InBx5iakpKB28CJoqmk1sywblOP57QHd6weLQ==}
     peerDependencies:
       cypress: '*'
     dependencies:
       '@cypress/webpack-preprocessor': 5.17.0(@babel/core@7.21.0)(@babel/preset-env@7.20.2)(babel-loader@9.1.2)(webpack@5.79.0)
       chalk: 4.1.2
-      cypress: 12.9.0
+      cypress: 12.10.0
       dayjs: 1.10.7
       debug: 4.3.4(supports-color@5.5.0)
       execa: 4.1.0
@@ -4802,7 +4802,7 @@ packages:
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
-  /@testing-library/cypress@9.0.0(cypress@12.9.0):
+  /@testing-library/cypress@9.0.0(cypress@12.10.0):
     resolution: {integrity: sha512-c1XiCGeHGGTWn0LAU12sFUfoX3qfId5gcSE2yHode+vsyHDWraxDPALjVnHd4/Fa3j4KBcc5k++Ccy6A9qnkMA==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
@@ -4810,7 +4810,7 @@ packages:
     dependencies:
       '@babel/runtime': 7.21.0
       '@testing-library/dom': 8.20.0
-      cypress: 12.9.0
+      cypress: 12.10.0
     dev: true
 
   /@testing-library/dom@8.20.0:
@@ -7673,8 +7673,8 @@ packages:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
 
-  /commander@5.1.0:
-    resolution: {integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==}
+  /commander@6.2.1:
+    resolution: {integrity: sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==}
     engines: {node: '>= 6'}
     dev: true
 
@@ -7958,8 +7958,8 @@ packages:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
     dev: false
 
-  /cypress@12.9.0:
-    resolution: {integrity: sha512-Ofe09LbHKgSqX89Iy1xen2WvpgbvNxDzsWx3mgU1mfILouELeXYGwIib3ItCwoRrRifoQwcBFmY54Vs0zw7QCg==}
+  /cypress@12.10.0:
+    resolution: {integrity: sha512-Y0wPc221xKKW1/4iAFCphkrG2jNR4MjOne3iGn4mcuCaE7Y5EtXL83N8BzRsAht7GYfWVjJ/UeTqEdDKHz39HQ==}
     engines: {node: ^14.0.0 || ^16.0.0 || >=18.0.0}
     hasBin: true
     requiresBuild: true
@@ -7978,7 +7978,7 @@ packages:
       check-more-types: 2.24.0
       cli-cursor: 3.1.0
       cli-table3: 0.6.3
-      commander: 5.1.0
+      commander: 6.2.1
       common-tags: 1.8.2
       dayjs: 1.11.7
       debug: 4.3.4(supports-color@8.1.1)
