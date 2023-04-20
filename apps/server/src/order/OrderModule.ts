@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 
 import { EthersModule } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
-import { CreateController } from './CreateController';
-import { CreateService } from './CreateService';
+import { OrderController } from './OrderController';
+import { OrderService } from './OrderService';
 
 @Module({
-  controllers: [CreateController],
-  providers: [CreateService, PrismaService],
+  controllers: [OrderController],
+  providers: [OrderService, PrismaService],
   imports: [EthersModule],
 })
 export class CreateModule {}

@@ -7,10 +7,10 @@ import { BridgeV1__factory } from 'smartcontracts';
 
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
-import { VerifyOrderTransaction } from './CreateInterface';
+import { VerifyOrderTransaction } from './OrderInterface';
 
 @Injectable()
-export class CreateService {
+export class OrderService {
   private contractAddress: string;
 
   private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
