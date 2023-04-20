@@ -6,7 +6,7 @@ import { RefundService } from '../services/RefundService';
 export class RefundController {
   constructor(private readonly refundService: RefundService) {}
 
-  @Put(':transactionHash/refund')
+  @Put('/ethereum/order/:transactionHash/refund')
   async requestRefundOrder(@Param('transactionHash') transactionHash: string) {
     return this.refundService.requestRefundOrder(transactionHash);
   }

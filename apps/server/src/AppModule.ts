@@ -9,7 +9,6 @@ import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
-import { OrderModule } from './order/OrderModule';
 import { SettingsModule } from './settings/SettingsModule';
 import { VersionModule } from './version/VersionModule';
 
@@ -36,22 +35,16 @@ import { VersionModule } from './version/VersionModule';
         path: 'ethereum',
         module: EthereumModule,
       },
-      {
-        path: 'order',
-        module: OrderModule,
-      },
     ]),
     HealthModule,
     VersionModule,
     BalancesModule,
     SettingsModule,
-    OrderModule,
   ],
   controllers: [],
   providers: [
     DeFiChainModule,
     EthereumModule,
-    OrderModule,
     {
       provide: APP_GUARD,
       useClass: ThrottlerGuard,

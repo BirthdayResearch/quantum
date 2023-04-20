@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
-import { PrismaService } from '../../PrismaService';
+import { PrismaService } from '../../../PrismaService';
 
 @Injectable()
 export class RefundService {
