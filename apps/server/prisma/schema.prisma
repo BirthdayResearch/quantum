@@ -72,32 +72,32 @@ enum DeFiChainTransactionStatus {
 }
 
 model EthereumOrders {
-  id                 BigInt                     @id @default(autoincrement())
-  transactionHash    String                     @unique
-  ethereumStatus     EthereumTransactionStatus
-  status             OrderStatus
-  defichainStatus    DeFiChainTransactionStatus
-  createdAt          DateTime                   @default(now())
-  updatedAt          DateTime?                  @updatedAt
-  amount             String?
-  tokenSymbol        String?
-  defichainAddress   String
-  expiryDate         DateTime
-  adminEthereumOrder AdminEthereumOrders?
+  id               BigInt                    @id @default(autoincrement())
+  transactionHash  String                    @unique
+  ethereumStatus   EthereumTransactionStatus
+  status           OrderStatus
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime?                 @updatedAt
+  amount           String?
+  tokenSymbol      String?
+  defichainAddress String
+  expiryDate       DateTime
+  adminOrder       AdminEthereumOrders?
 }
 
 model AdminEthereumOrders {
-  id                  BigInt         @id @default(autoincrement())
-  order               EthereumOrders @relation(fields: [orderId], references: [id])
-  orderId             BigInt         @unique
+  id                  BigInt                     @id @default(autoincrement())
+  order               EthereumOrders             @relation(fields: [orderId], references: [id])
+  orderId             BigInt                     @unique
   lastUpdatedBy       String?
   hotWalletAddress    String?
   hotWalletIndex      Int?
-  generatedAddress    String?        @unique
+  generatedAddress    String?                    @unique
   sendTransactionHash String?
+  defichainStatus     DeFiChainTransactionStatus
   hasVerified         Boolean?
   blockHash           String?
   blockHeight         String?
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime?      @updatedAt
+  createdAt           DateTime                   @default(now())
+  updatedAt           DateTime?                  @updatedAt
 }
