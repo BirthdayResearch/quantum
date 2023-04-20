@@ -1,4 +1,6 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
+import { OrderStatus } from '@prisma/client';
+import { ethers } from 'ethers';
 import {
   BridgeV1,
   HardhatNetwork,
@@ -23,8 +25,8 @@ describe('Request Refund Testing', () => {
   let bridgeContract: BridgeV1;
   let bridgeContractFixture: BridgeContractFixture;
   let musdcContract: TestToken;
-
-  const validTxnHash = '0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3834';
+  let validTxnHash: string;
+  let validTxnHashNotInDB: string;
 
   beforeAll(async () => {
     startedPostgresContainer = await new PostgreSqlContainer().start();
@@ -36,6 +38,21 @@ describe('Request Refund Testing', () => {
 
     ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
+
+    const transactionCall = await bridgeContract.bridgeToDeFiChain(
+      ethers.constants.AddressZero,
+      musdcContract.address,
+      5,
+    );
+    validTxnHash = transactionCall.hash;
+
+    const transactionCallNotInDB = await bridgeContract.bridgeToDeFiChain(
+      ethers.constants.AddressZero,
+      musdcContract.address,
+      5,
+    );
+
+    validTxnHashNotInDB = transactionCallNotInDB.hash;
 
     const dynamicModule = TestingModule.register(
       buildTestConfig({
@@ -85,21 +102,23 @@ describe('Request Refund Testing', () => {
       url: `/ethereum/order/${validTxnHash}/refund`,
     });
 
-    expect(resp.body).toStrictEqual({
-      id: '1',
-      transactionHash: validTxnHash,
-      ethereumStatus: 'NOT_CONFIRMED',
-      status: 'REFUND_REQUESTED',
-      createdAt: '2023-04-20T06:14:43.847Z',
-      updatedAt: '2023-04-20T06:28:17.185Z',
-      amount: null,
-      tokenSymbol: null,
-      defichainAddress: '',
-      expiryDate: '1970-01-01T00:00:00.000Z',
-    });
+    const updatedOrder = JSON.parse(resp.body);
+    expect(updatedOrder.id).toEqual('1');
+    expect(updatedOrder.transactionHash).toEqual(validTxnHash);
+    expect(updatedOrder.status).toEqual(OrderStatus.REFUND_REQUESTED);
   });
 
-  it('Should not be able to find order that transactionHash does not exist in db', async () => {
+  it('Should have `Order not found` when transaction exist but order does not exist in DB', async () => {
+    const resp = await testing.inject({
+      method: 'PUT',
+      url: `/ethereum/order/${validTxnHashNotInDB}/refund`,
+    });
+
+    expect(resp.statusCode).toEqual(500);
+    expect(JSON.parse(resp.body).error).toEqual('API call for refund was unsuccessful: Order not found');
+  });
+
+  it('Should have an error when transaction does not exist', async () => {
     const resp = await testing.inject({
       method: 'PUT',
       url: `/ethereum/order/0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3835/refund`,

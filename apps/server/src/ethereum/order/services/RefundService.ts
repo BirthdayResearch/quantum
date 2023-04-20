@@ -21,13 +21,26 @@ export class RefundService {
         throw new Error('Invalid Transaction Hash');
       }
 
-      const order = await this.prisma.ethereumOrders.update({
+      const order = await this.prisma.ethereumOrders.findFirst({
+        where: {
+          transactionHash,
+        },
+      });
+
+      // If order does not exist throw 'Order not found'
+      if (!order) {
+        throw new Error('Order not found');
+      }
+
+      // Update order if order exist
+      const updateOrder = await this.prisma.ethereumOrders.update({
         where: { transactionHash },
         data: { status: 'REFUND_REQUESTED' },
       });
+
       return {
-        ...order,
-        id: String(order.id),
+        ...updateOrder,
+        id: String(updateOrder.id),
       };
     } catch (e: any) {
       throw new HttpException(
