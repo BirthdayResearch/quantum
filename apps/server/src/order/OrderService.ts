@@ -25,7 +25,7 @@ export class OrderService {
   }
 
   async createOrder(transactionHash: string): Promise<string> {
-    const isValidTxn = await this.verifyIfValidTxn(transactionHash);
+    const isValidTxn = await this.evmTransactionConfirmerService.verifyIfValidTxn(transactionHash);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
     // if transaction is still pending
