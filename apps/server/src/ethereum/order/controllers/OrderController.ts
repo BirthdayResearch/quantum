@@ -6,8 +6,11 @@ import { OrderService } from '../services/OrderService';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Get('/ethereum/order/:transactionHash')
+  @Get(':transactionHash')
   async getOrder(@Param('transactionHash') transactionHash: string, @Query('status') status: string) {
     return this.orderService.getOrder(transactionHash, status);
   }
+
+  // @Get('list')
+  // async listOrder(@Query('status') status: string, @Query() query?: PaginationQuery) {}
 }
