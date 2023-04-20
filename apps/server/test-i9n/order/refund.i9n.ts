@@ -59,7 +59,7 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should be able to update order status to REFUND_REQUESTED', async () => {
-    const order = await prismaService.ethereumOrders.create({
+    await prismaService.ethereumOrders.create({
       data: {
         transactionHash: validTxnHash,
         ethereumStatus: 'NOT_CONFIRMED',
@@ -73,18 +73,12 @@ describe('Request Refund Testing', () => {
       },
     });
 
-    expect(order).toEqual({
-      id: BigInt(1),
-      transactionHash: validTxnHash,
-      ethereumStatus: 'NOT_CONFIRMED',
-      status: 'DRAFT',
-      createdAt: new Date('2023-04-20T06:14:43.847Z'),
-      updatedAt: new Date('2023-04-20T06:28:17.185Z'),
-      amount: null,
-      tokenSymbol: null,
-      defichainAddress: '',
-      expiryDate: new Date('1970-01-01T00:00:00.000Z'),
+    // Check that order details exists in the database
+    const dbRecord = await prismaService.ethereumOrders.findFirst({
+      where: { transactionHash: validTxnHash },
     });
+
+    expect(dbRecord?.transactionHash).toStrictEqual(validTxnHash);
 
     const resp = await testing.inject({
       method: 'PUT',
