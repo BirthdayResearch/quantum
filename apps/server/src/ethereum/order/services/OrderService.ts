@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { OrderStatus } from '@prisma/client';
 
 import { PrismaService } from '../../../PrismaService';
 
@@ -6,15 +7,23 @@ import { PrismaService } from '../../../PrismaService';
 export class OrderService {
   constructor(private prisma: PrismaService) {}
 
-  async getOrder(transactionHash: string, status?: string) {
+  async getOrder(transactionHash: string, status?: OrderStatus) {
     try {
-      // return await this.prisma.ethereumOrderTable.findUnique({
-      //   where: {
-      //     transactionHash: transactionHash,
-      //     status: {status} ?? undefined,
-      //   },
-      // });
-      return `${transactionHash} and ${status}`;
+      const order = await this.prisma.ethereumOrders.findFirst({
+        where: {
+          transactionHash,
+          status: status || undefined,
+        },
+      });
+
+      if (!order) {
+        return null;
+      }
+
+      return {
+        ...order,
+        id: String(order.id),
+      };
     } catch (e: any) {
       throw new HttpException(
         {

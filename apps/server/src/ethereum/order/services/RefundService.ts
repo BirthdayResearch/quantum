@@ -8,11 +8,14 @@ export class RefundService {
 
   async requestRefundOrder(transactionHash: string) {
     try {
-      // await this.prisma.ethereumOrderTable.update({
-      //   where: { transactionHash: transactionHash },
-      //   data: { status: 'REFUND_REQUESTED' },
-      // });
-      return `Refund_Requested for ${transactionHash}`;
+      const order = await this.prisma.ethereumOrders.update({
+        where: { transactionHash },
+        data: { status: 'REFUND_REQUESTED' },
+      });
+      return {
+        ...order,
+        id: String(order.id),
+      };
     } catch (e: any) {
       throw new HttpException(
         {
