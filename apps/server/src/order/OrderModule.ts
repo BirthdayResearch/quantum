@@ -10,4 +10,4 @@ import { OrderService } from './OrderService';
   providers: [OrderService, PrismaService],
   imports: [EthersModule],
 })
-export class CreateModule {}
+export class OrderModule {}
