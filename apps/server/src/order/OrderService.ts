@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 // import { DeFiChainTransactionStatus, EthereumTransactionStatus, OrderStatus } from '@prisma/client';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
-import { BridgeV1__factory } from 'smartcontracts';
 
+import { EVMTransactionConfirmerService } from '../ethereum/services/EVMTransactionConfirmerService';
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
 import { VerifyOrderTransaction } from './OrderInterface';
@@ -18,6 +18,7 @@ export class OrderService {
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private configService: ConfigService,
+    private readonly evmTransactionConfirmerService: EVMTransactionConfirmerService,
     private prisma: PrismaService,
   ) {
     this.contractAddress = this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address');
@@ -74,7 +75,7 @@ export class OrderService {
   }
 
   async verify(transactionHash: string): Promise<VerifyOrderTransaction> {
-    const isValidTxn = await this.verifyIfValidTxn(transactionHash);
+    const isValidTxn = await this.evmTransactionConfirmerService.verifyIfValidTxn(transactionHash);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
     // if transaction is still pending
@@ -108,34 +109,5 @@ export class OrderService {
     //   },
     // });
     return { numberOfConfirmations, isConfirmed: true };
-  }
-
-  private async verifyIfValidTxn(transactionHash: string): Promise<boolean> {
-    const { parsedTxnData } = await this.parseTxnHash(transactionHash);
-    // Sanity check that the decoded function name and signature are correct
-    if (
-      parsedTxnData.name !== 'bridgeToDeFiChain' ||
-      parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
-    ) {
-      return false;
-    }
-
-    // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
-
-    return true;
-  }
-
-  private async parseTxnHash(transactionHash: string): Promise<{
-    etherInterface: ethers.utils.Interface;
-    parsedTxnData: ethers.utils.TransactionDescription;
-  }> {
-    const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-    const etherInterface = new ethers.utils.Interface(BridgeV1__factory.abi);
-    const parsedTxnData = etherInterface.parseTransaction({
-      data: onChainTxnDetail.data,
-      value: onChainTxnDetail.value,
-    });
-
-    return { etherInterface, parsedTxnData };
   }
 }
