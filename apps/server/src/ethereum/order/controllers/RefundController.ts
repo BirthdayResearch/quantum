@@ -8,6 +8,11 @@ import { RefundService } from '../services/RefundService';
 export class RefundController {
   constructor(private readonly refundService: RefundService) {}
 
+  /**
+   * Return order with status updated as OrderStatus.REFUND_REQUESTED
+   *
+   * @param {transactionHash} transactionHash unique transaction hash that is created when a transaction is done from EVM -> DFC
+   */
   @Throttle(35, 60)
   @Put(':transactionHash/refund')
   async requestRefundOrder(@Param('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {

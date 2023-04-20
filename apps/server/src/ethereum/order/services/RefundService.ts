@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { OrderStatus } from '@prisma/client';
 import { ethers } from 'ethers';
 
 import { ETHERS_RPC_PROVIDER } from '../../../modules/EthersModule';
@@ -35,7 +36,7 @@ export class RefundService {
       // Update order if order exist
       const updateOrder = await this.prisma.ethereumOrders.update({
         where: { transactionHash },
-        data: { status: 'REFUND_REQUESTED' },
+        data: { status: OrderStatus.REFUND_REQUESTED },
       });
 
       return {
