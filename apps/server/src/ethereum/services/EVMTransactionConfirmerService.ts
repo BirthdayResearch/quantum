@@ -414,7 +414,7 @@ export class EVMTransactionConfirmerService {
     return { ...dTokenDetails, amount: transferAmount, toAddress };
   }
 
-  private async verifyIfValidTxn(transactionHash: string): Promise<boolean> {
+  async verifyIfValidTxn(transactionHash: string): Promise<boolean> {
     const { parsedTxnData } = await this.parseTxnHash(transactionHash);
     // Sanity check that the decoded function name and signature are correct
     if (
