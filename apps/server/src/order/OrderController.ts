@@ -8,7 +8,7 @@ import { OrderService } from './OrderService';
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
 
-  @Post('order')
+  @Post()
   @Throttle(35, 60)
   order(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.orderService.createOrder(transactionHash);
