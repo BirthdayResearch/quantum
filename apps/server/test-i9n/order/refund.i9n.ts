@@ -1,10 +1,12 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { OrderStatus } from '@prisma/client';
+import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import {
   BridgeV1,
   HardhatNetwork,
   HardhatNetworkContainer,
+  ShellBridgeV1__factory,
   StartedHardhatNetworkContainer,
   TestToken,
 } from 'smartcontracts';
@@ -100,7 +102,7 @@ describe('Request Refund Testing', () => {
     await hardhatNetwork.generate(1);
 
     const resp = await testing.inject({
-      method: 'PUT',
+      method: 'POST',
       url: `/ethereum/order/${validTxnHash}/refund`,
     });
 
@@ -110,10 +112,58 @@ describe('Request Refund Testing', () => {
     );
   });
 
+  it('Should check that transaction comes from quantum deployed smart contract', async () => {
+    // Given any random arbitrary EOA
+    const signer = ethers.Wallet.createRandom().connect(hardhatNetwork.ethersRpcProvider);
+    await hardhatNetwork.activateAccount(signer.address);
+    await hardhatNetwork.generate(1);
+
+    // Fund arbitrary EOA to allow it to make transactions. It has no other funds
+    await hardhatNetwork.fundAddress(signer.address, ethers.utils.parseEther('1000'));
+    await hardhatNetwork.generate(1);
+
+    // Deploy shell contract
+    const ShellContractDeployment = await new ShellBridgeV1__factory(signer).deploy();
+    await hardhatNetwork.generate(1);
+    const shellContract = await ShellContractDeployment.deployed();
+
+    // Create shell transaction
+    const address = 'bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g';
+    const tx = await shellContract.bridgeToDeFiChain(
+      ethers.utils.toUtf8Bytes(address),
+      musdcContract.address,
+      new BigNumber(1).multipliedBy(new BigNumber(10).pow(18)).toFixed(0),
+    );
+    await hardhatNetwork.generate(100);
+    const vulnerableTxHash = (await tx.wait(100)).transactionHash;
+
+    await prismaService.ethereumOrders.create({
+      data: {
+        transactionHash: vulnerableTxHash,
+        ethereumStatus: 'NOT_CONFIRMED',
+        status: 'IN_PROGRESS',
+        createdAt: '2023-04-20T06:14:43.847Z',
+        updatedAt: '2023-04-20T06:28:17.185Z',
+        amount: null,
+        tokenSymbol: null,
+        defichainAddress: '',
+        expiryDate: '1970-01-01T00:00:00.000Z',
+      },
+    });
+
+    const resp = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/order/${vulnerableTxHash}/refund`,
+    });
+
+    const order = JSON.parse(resp.body);
+    expect(order.error).toEqual('API call for refund was unsuccessful: Invalid transaction hash');
+  });
+
   it('Should not be able to update order status to REFUND_REQUESTED status when status is in DRAFT', async () => {
     await hardhatNetwork.generate(65);
     const resp = await testing.inject({
-      method: 'PUT',
+      method: 'POST',
       url: `/ethereum/order/${validTxnHash}/refund`,
     });
 
@@ -128,7 +178,7 @@ describe('Request Refund Testing', () => {
     });
 
     const resp = await testing.inject({
-      method: 'PUT',
+      method: 'POST',
       url: `/ethereum/order/${validTxnHash}/refund`,
     });
 
@@ -143,7 +193,7 @@ describe('Request Refund Testing', () => {
     });
 
     const resp = await testing.inject({
-      method: 'PUT',
+      method: 'POST',
       url: `/ethereum/order/${validTxnHash}/refund`,
     });
 
@@ -158,7 +208,7 @@ describe('Request Refund Testing', () => {
     });
 
     const resp = await testing.inject({
-      method: 'PUT',
+      method: 'POST',
       url: `/ethereum/order/${validTxnHash}/refund`,
     });
 
@@ -170,7 +220,7 @@ describe('Request Refund Testing', () => {
 
   it('Should have `Order not found` error when transaction exist but order does not exist in DB', async () => {
     const resp = await testing.inject({
-      method: 'PUT',
+      method: 'POST',
       url: `/ethereum/order/${validTxnHashNotInDB}/refund`,
     });
 
@@ -180,7 +230,7 @@ describe('Request Refund Testing', () => {
 
   it("Should have `Cannot read properties of null (reading 'data')` error when transaction does not exist", async () => {
     const resp = await testing.inject({
-      method: 'PUT',
+      method: 'POST',
       url: `/ethereum/order/0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3835/refund`,
     });
 
@@ -192,7 +242,7 @@ describe('Request Refund Testing', () => {
 
   it('Should have `Invalid Ethereum transaction hash: 1234` message transactionHash is invalid', async () => {
     const resp = await testing.inject({
-      method: 'PUT',
+      method: 'POST',
       url: `/ethereum/order/1234/refund`,
     });
 

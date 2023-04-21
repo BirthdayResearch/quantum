@@ -57,7 +57,8 @@ export class RefundService {
       if (
         order.status === OrderStatus.REFUNDED ||
         order.status === OrderStatus.DRAFT ||
-        order.status === OrderStatus.COMPLETED
+        order.status === OrderStatus.COMPLETED ||
+        order.status === OrderStatus.REFUND_REQUESTED
       ) {
         throw new Error('Order cannot be refunded');
       }
