@@ -201,7 +201,22 @@ describe('Request Refund Testing', () => {
     expect(order.error).toEqual('API call for refund was unsuccessful: Order cannot be refunded');
   });
 
-  it('Should be able to update order status to REFUND_REQUESTED when status is not in DRAFT, COMPLETED and REFUNDED', async () => {
+  it('Should not be able to update order status to REFUND_REQUESTED when status is in REFUND_REQUESTED', async () => {
+    await prismaService.ethereumOrders.update({
+      where: { transactionHash: validTxnHash },
+      data: { status: OrderStatus.REFUND_REQUESTED },
+    });
+
+    const resp = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/order/${validTxnHash}/refund`,
+    });
+
+    const order = JSON.parse(resp.body);
+    expect(order.error).toEqual('API call for refund was unsuccessful: Order cannot be refunded');
+  });
+
+  it('Should be able to update order status to REFUND_REQUESTED when status is not in DRAFT, COMPLETED, REFUNDED and REFUND_REQUESTED', async () => {
     await prismaService.ethereumOrders.update({
       where: { transactionHash: validTxnHash },
       data: { status: OrderStatus.IN_PROGRESS },
