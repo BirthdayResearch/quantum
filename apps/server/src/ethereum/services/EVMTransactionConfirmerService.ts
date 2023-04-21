@@ -429,7 +429,7 @@ export class EVMTransactionConfirmerService {
     return true;
   }
 
-  private async parseTxnHash(transactionHash: string): Promise<{
+  async parseTxnHash(transactionHash: string): Promise<{
     etherInterface: ethers.utils.Interface;
     parsedTxnData: ethers.utils.TransactionDescription;
   }> {
@@ -443,7 +443,7 @@ export class EVMTransactionConfirmerService {
     return { etherInterface, parsedTxnData };
   }
 
-  private decodeTxnData({
+  decodeTxnData({
     etherInterface,
     parsedTxnData,
   }: {
