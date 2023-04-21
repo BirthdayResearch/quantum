@@ -32,7 +32,7 @@ export class RefundService {
 
       // Check if txn is created from our contract
       if (!isValidTxn || txReceipt.to !== this.contractAddress) {
-        throw new Error('Invalid Transaction Hash');
+        throw new Error('Invalid transaction hash');
       }
 
       const order = await this.prisma.ethereumOrders.findFirst({
@@ -41,7 +41,7 @@ export class RefundService {
         },
       });
 
-      // Check if order exists'
+      // Check if order exists
       if (!order) {
         throw new Error('Order not found');
       }
