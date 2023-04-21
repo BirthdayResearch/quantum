@@ -75,7 +75,7 @@ describe('Request Refund Testing', () => {
     await testing.stop();
   });
 
-  it('Should be able to update order status to REFUND_REQUESTED', async () => {
+  it('Should not be able to update order status to REFUND_REQUESTED when transaction did not complete 65 confirmations', async () => {
     await prismaService.ethereumOrders.create({
       data: {
         transactionHash: validTxnHash,
@@ -97,15 +97,75 @@ describe('Request Refund Testing', () => {
 
     expect(dbRecord?.transactionHash).toStrictEqual(validTxnHash);
 
+    await hardhatNetwork.generate(1);
+
     const resp = await testing.inject({
       method: 'PUT',
       url: `/ethereum/order/${validTxnHash}/refund`,
     });
 
-    const updatedOrder = JSON.parse(resp.body);
-    expect(updatedOrder.id).toEqual('1');
-    expect(updatedOrder.transactionHash).toEqual(validTxnHash);
-    expect(updatedOrder.status).toEqual(OrderStatus.REFUND_REQUESTED);
+    const order = JSON.parse(resp.body);
+    expect(order.error).toEqual(
+      'API call for refund was unsuccessful: Transaction has not been processed, did not complete 65 confirmations for EVM unable to proceed with refund request',
+    );
+  });
+
+  it('Should not be able to update order status when status is in DRAFT', async () => {
+    await hardhatNetwork.generate(65);
+    const resp = await testing.inject({
+      method: 'PUT',
+      url: `/ethereum/order/${validTxnHash}/refund`,
+    });
+
+    const order = JSON.parse(resp.body);
+    expect(order.error).toEqual('API call for refund was unsuccessful: Order cannot be refunded');
+  });
+
+  it('Should not be able to update order status when status is in COMPLETED', async () => {
+    await prismaService.ethereumOrders.update({
+      where: { transactionHash: validTxnHash },
+      data: { status: OrderStatus.COMPLETED },
+    });
+
+    const resp = await testing.inject({
+      method: 'PUT',
+      url: `/ethereum/order/${validTxnHash}/refund`,
+    });
+
+    const order = JSON.parse(resp.body);
+    expect(order.error).toEqual('API call for refund was unsuccessful: Order cannot be refunded');
+  });
+
+  it('Should not be able to update order status when status is in REFUNDED', async () => {
+    await prismaService.ethereumOrders.update({
+      where: { transactionHash: validTxnHash },
+      data: { status: OrderStatus.REFUNDED },
+    });
+
+    const resp = await testing.inject({
+      method: 'PUT',
+      url: `/ethereum/order/${validTxnHash}/refund`,
+    });
+
+    const order = JSON.parse(resp.body);
+    expect(order.error).toEqual('API call for refund was unsuccessful: Order cannot be refunded');
+  });
+
+  it('Should be able to update order status when status is not in DRAFT, COMPLETED and REFUNDED', async () => {
+    await prismaService.ethereumOrders.update({
+      where: { transactionHash: validTxnHash },
+      data: { status: OrderStatus.IN_PROGRESS },
+    });
+
+    const resp = await testing.inject({
+      method: 'PUT',
+      url: `/ethereum/order/${validTxnHash}/refund`,
+    });
+
+    const order = JSON.parse(resp.body);
+    expect(order.id).toEqual('1');
+    expect(order.transactionHash).toEqual(validTxnHash);
+    expect(order.status).toEqual(OrderStatus.REFUND_REQUESTED);
   });
 
   it('Should have `Order not found` when transaction exist but order does not exist in DB', async () => {
