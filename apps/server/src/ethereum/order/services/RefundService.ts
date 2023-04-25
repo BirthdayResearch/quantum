@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 
 import { ETHERS_RPC_PROVIDER } from '../../../modules/EthersModule';
 import { PrismaService } from '../../../PrismaService';
-import { EVMTransactionConfirmerService } from '../../services/EVMTransactionConfirmerService';
+import { VerificationService } from '../../services/VerificationService';
 
 @Injectable()
 export class RefundService {
@@ -16,7 +16,7 @@ export class RefundService {
 
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
-    private evmTransactionConfirmerService: EVMTransactionConfirmerService,
+    private verficationService: VerificationService,
     private prisma: PrismaService,
     private configService: ConfigService,
   ) {
@@ -25,7 +25,7 @@ export class RefundService {
 
   async requestRefundOrder(transactionHash: string) {
     try {
-      const isValidTxn = await this.evmTransactionConfirmerService.verifyIfValidTxn(transactionHash);
+      const isValidTxn = await this.verficationService.verifyIfValidTxn(transactionHash);
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
       const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
       const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();

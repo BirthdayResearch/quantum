@@ -15,6 +15,7 @@ import { OrderModule } from './order/OrderModule';
 import { EthereumStatsService } from './services/EthereumStatsService';
 import { EthereumTransactionsService } from './services/EthereumTransactionsService';
 import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirmerService';
+import { VerificationService } from './services/VerificationService';
 
 @Module({
   providers: [
@@ -27,6 +28,7 @@ import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirm
     EVMTransactionConfirmerService,
     EthereumStatsService,
     EthereumTransactionsService,
+    VerificationService,
     SemaphoreCache,
     OrderModule,
   ],
