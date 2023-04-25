@@ -38,6 +38,7 @@ describe('Request Refund Testing', () => {
     bridgeContractFixture = new BridgeContractFixture(hardhatNetwork);
     await bridgeContractFixture.setup();
 
+    // Using the default signer of the container to carry out tests
     ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
