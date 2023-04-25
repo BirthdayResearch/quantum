@@ -1,4 +1,4 @@
-import { Controller, Param, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
 import { EthereumTransactionValidationPipe } from '../../../pipes/EthereumTransactionValidation.pipe';
@@ -9,13 +9,13 @@ export class RefundController {
   constructor(private readonly refundService: RefundService) {}
 
   /**
-   * Return order with status updated as OrderStatus.REFUND_REQUESTED
+   * Return order with status updated to OrderStatus.REFUND_REQUESTED
    *
-   * @param {transactionHash} transactionHash unique transaction hash that is created when a transaction is done from EVM -> DFC
+   * @body {transactionHash} transactionHash unique Ethereum transaction hash that is created when a transaction is done from EVM -> DFC
    */
   @Throttle(35, 60)
-  @Post(':transactionHash/refund')
-  async requestRefundOrder(@Param('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
+  @Post('refund')
+  async requestRefundOrder(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.refundService.requestRefundOrder(transactionHash);
   }
 }

@@ -103,7 +103,10 @@ describe('Request Refund Testing', () => {
 
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/${validTxnHash}/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
     });
 
     const order = JSON.parse(resp.body);
@@ -153,7 +156,10 @@ describe('Request Refund Testing', () => {
 
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/${vulnerableTxHash}/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: vulnerableTxHash,
+      },
     });
 
     const order = JSON.parse(resp.body);
@@ -164,7 +170,10 @@ describe('Request Refund Testing', () => {
     await hardhatNetwork.generate(65);
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/${validTxnHash}/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
     });
 
     const order = JSON.parse(resp.body);
@@ -179,7 +188,10 @@ describe('Request Refund Testing', () => {
 
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/${validTxnHash}/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
     });
 
     const order = JSON.parse(resp.body);
@@ -194,7 +206,10 @@ describe('Request Refund Testing', () => {
 
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/${validTxnHash}/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
     });
 
     const order = JSON.parse(resp.body);
@@ -209,7 +224,10 @@ describe('Request Refund Testing', () => {
 
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/${validTxnHash}/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
     });
 
     const order = JSON.parse(resp.body);
@@ -224,7 +242,10 @@ describe('Request Refund Testing', () => {
 
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/${validTxnHash}/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
     });
 
     const order = JSON.parse(resp.body);
@@ -236,7 +257,10 @@ describe('Request Refund Testing', () => {
   it('Should have `Order not found` error when transaction exist but order does not exist in DB', async () => {
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/${validTxnHashNotInDB}/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: validTxnHashNotInDB,
+      },
     });
 
     expect(resp.statusCode).toEqual(500);
@@ -246,7 +270,10 @@ describe('Request Refund Testing', () => {
   it("Should have `Cannot read properties of null (reading 'data')` error when transaction does not exist", async () => {
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3835/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: '0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3835',
+      },
     });
 
     expect(resp.statusCode).toEqual(500);
@@ -258,7 +285,10 @@ describe('Request Refund Testing', () => {
   it('Should have `Invalid Ethereum transaction hash: 1234` message transactionHash is invalid', async () => {
     const resp = await testing.inject({
       method: 'POST',
-      url: `/ethereum/order/1234/refund`,
+      url: `/ethereum/order/refund`,
+      payload: {
+        transactionHash: '1234',
+      },
     });
 
     expect(JSON.parse(resp.body).message).toEqual('Invalid Ethereum transaction hash: 1234');
