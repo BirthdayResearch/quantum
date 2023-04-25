@@ -50,7 +50,7 @@ contract BridgeOrderBook is
         address newImplementation
     ) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
-    function intialize(
+    function initialize(
         address _timelockContract,
         address _coldWallet,
         uint256 _fee,
@@ -62,6 +62,12 @@ contract BridgeOrderBook is
         communityWallet = _communityWallet;
     }
 
+    /**
+     * @notice Used to transfer the supported token from Mainnet(EVM) to DefiChain
+     * @param _defiAddress DefiChain address
+     * @param _tokenAddress Supported token address that being bridged
+     * @param _amount Amount to be bridged, this in in Wei
+     */
     function bridgeToDeFiChain(
         bytes calldata _defiAddress,
         address _tokenAddress,
