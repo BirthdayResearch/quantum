@@ -11,6 +11,7 @@ import { PrismaService } from '../PrismaService';
 import { EthereumController } from './controllers/EthereumController';
 import { StatsController } from './controllers/StatsController';
 import { TransactionsController } from './controllers/TransactionsController';
+import { QueueModule } from './queue/QueueModule';
 import { EthereumStatsService } from './services/EthereumStatsService';
 import { EthereumTransactionsService } from './services/EthereumTransactionsService';
 import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirmerService';
@@ -27,9 +28,10 @@ import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirm
     EthereumStatsService,
     EthereumTransactionsService,
     SemaphoreCache,
+    QueueModule,
   ],
   controllers: [EthereumController, StatsController, TransactionsController],
-  imports: [EthersModule, CacheModule.register({ max: 10_000 })],
+  imports: [EthersModule, CacheModule.register({ max: 10_000 }), QueueModule],
   exports: [EVMTransactionConfirmerService, EthereumStatsService],
 })
 export class EthereumModule {}
