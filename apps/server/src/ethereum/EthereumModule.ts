@@ -7,7 +7,7 @@ import { SendService } from '../defichain/services/SendService';
 import { WhaleApiService } from '../defichain/services/WhaleApiService';
 import { SemaphoreCache } from '../libs/caches/SemaphoreCache';
 import { EthersModule } from '../modules/EthersModule';
-import { OrderModule } from '../order/OrderModule';
+import { QueueModule } from '../order/QueueModule';
 import { PrismaService } from '../PrismaService';
 import { EthereumController } from './controllers/EthereumController';
 import { StatsController } from './controllers/StatsController';
@@ -28,10 +28,10 @@ import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirm
     EthereumStatsService,
     EthereumTransactionsService,
     SemaphoreCache,
-    OrderModule,
+    QueueModule,
   ],
   controllers: [EthereumController, StatsController, TransactionsController],
-  imports: [EthersModule, CacheModule.register({ max: 10_000 }), OrderModule],
+  imports: [EthersModule, CacheModule.register({ max: 10_000 }), QueueModule],
   exports: [EVMTransactionConfirmerService, EthereumStatsService],
 })
 export class EthereumModule {}

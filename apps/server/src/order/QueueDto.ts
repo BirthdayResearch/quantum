@@ -1,4 +1,4 @@
-export interface VerifyOrderTransactionDto {
+export interface VerifyQueueTransactionDto {
   numberOfConfirmations: number;
   isConfirmed: boolean;
 }

@@ -9,7 +9,7 @@ import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
-import { OrderModule } from './order/OrderModule';
+import { QueueModule } from './order/QueueModule';
 import { SettingsModule } from './settings/SettingsModule';
 import { VersionModule } from './version/VersionModule';
 
@@ -38,7 +38,7 @@ import { VersionModule } from './version/VersionModule';
         children: [
           {
             path: 'order',
-            module: OrderModule,
+            module: QueueModule,
           },
         ],
       },

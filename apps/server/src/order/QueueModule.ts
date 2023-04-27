@@ -8,13 +8,13 @@ import { WhaleApiService } from '../defichain/services/WhaleApiService';
 import { EVMTransactionConfirmerService } from '../ethereum/services/EVMTransactionConfirmerService';
 import { EthersModule } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
-import { OrderController } from './OrderController';
-import { OrderService } from './OrderService';
+import { QueueController } from './QueueController';
+import { QueueService } from './QueueService';
 
 @Module({
-  controllers: [OrderController],
+  controllers: [QueueController],
   providers: [
-    OrderService,
+    QueueService,
     PrismaService,
     EVMTransactionConfirmerService,
     WhaleApiService,
@@ -25,4 +25,4 @@ import { OrderService } from './OrderService';
   ],
   imports: [EthersModule],
 })
-export class OrderModule {}
+export class QueueModule {}
