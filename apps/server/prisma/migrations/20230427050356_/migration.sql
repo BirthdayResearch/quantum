@@ -42,7 +42,7 @@ CREATE TABLE "EthereumQueue" (
 -- CreateTable
 CREATE TABLE "AdminEthereumQueue" (
     "id" BIGSERIAL NOT NULL,
-    "queueId" BIGINT NOT NULL,
+    "queueTransactionHash" TEXT NOT NULL,
     "lastUpdatedBy" TEXT,
     "hotWalletAddress" TEXT,
     "hotWalletIndex" INTEGER,
@@ -64,7 +64,7 @@ CREATE TABLE "AdminEthereumQueue" (
 CREATE UNIQUE INDEX "EthereumQueue_transactionHash_key" ON "EthereumQueue"("transactionHash");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "AdminEthereumQueue_queueId_key" ON "AdminEthereumQueue"("queueId");
+CREATE UNIQUE INDEX "AdminEthereumQueue_queueTransactionHash_key" ON "AdminEthereumQueue"("queueTransactionHash");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "AdminEthereumQueue_generatedAddress_key" ON "AdminEthereumQueue"("generatedAddress");
@@ -73,4 +73,4 @@ CREATE UNIQUE INDEX "AdminEthereumQueue_generatedAddress_key" ON "AdminEthereumQ
 CREATE UNIQUE INDEX "AdminEthereumQueue_hotWalletAddress_hotWalletIndex_key" ON "AdminEthereumQueue"("hotWalletAddress", "hotWalletIndex");
 
 -- AddForeignKey
-ALTER TABLE "AdminEthereumQueue" ADD CONSTRAINT "AdminEthereumQueue_queueId_fkey" FOREIGN KEY ("queueId") REFERENCES "EthereumQueue"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "AdminEthereumQueue" ADD CONSTRAINT "AdminEthereumQueue_queueTransactionHash_fkey" FOREIGN KEY ("queueTransactionHash") REFERENCES "EthereumQueue"("transactionHash") ON DELETE RESTRICT ON UPDATE CASCADE;

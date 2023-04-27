@@ -91,22 +91,22 @@ model EthereumQueue {
 }
 
 model AdminEthereumQueue {
-  id                  BigInt                     @id @default(autoincrement())
-  queue               EthereumQueue              @relation(fields: [queueId], references: [id])
-  queueId             BigInt                     @unique
-  lastUpdatedBy       String?
-  hotWalletAddress    String?
-  hotWalletIndex      Int?
-  generatedAddress    String?                    @unique
-  sendTransactionHash String? // when admin send funds to generated address
-  defichainStatus     DeFiChainTransactionStatus
-  hasVerified         Boolean?
-  blockHash           String?
-  blockHeight         String?
-  createdAt           DateTime                   @default(now())
-  updatedAt           DateTime?                  @updatedAt
-  botQueueStatus      BotQueueStatus?
-  botTransactionHash  String? // when the bot sends funds from generated address to the user address
+  id                   BigInt                     @id @default(autoincrement())
+  queue                EthereumQueue              @relation(fields: [queueTransactionHash], references: [transactionHash])
+  queueTransactionHash String                     @unique
+  lastUpdatedBy        String?
+  hotWalletAddress     String?
+  hotWalletIndex       Int?
+  generatedAddress     String?                    @unique
+  sendTransactionHash  String? // when admin send funds to generated address / hot wallet address
+  defichainStatus      DeFiChainTransactionStatus
+  hasVerified          Boolean?
+  blockHash            String?
+  blockHeight          String?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime?                  @updatedAt
+  botQueueStatus       BotQueueStatus?
+  botTransactionHash   String? // when the bot sends funds from generated address to the user address
 
   @@unique([hotWalletAddress, hotWalletIndex])
 }
