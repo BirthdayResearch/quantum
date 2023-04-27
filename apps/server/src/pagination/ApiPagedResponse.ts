@@ -100,11 +100,13 @@ export class ApiPagedResponse<T> extends ApiRawResponse {
   /**
    * @param {T[]} data array slice
    * @param {number} limit number of elements in the data array slice
-   * @param {(item: T) => string} nextProvider to get next token when (limit === data array slice)
+   * @param {(item: T) => string} nextProvider to get next token when ( data array > limit)
    */
   static of<T>(data: T[], limit: number, nextProvider: (item: T) => string): ApiPagedResponse<T> {
+    // if data.length > limit means that there is a next page
     if (data.length > limit && data.length > 0 && limit > 0) {
       const next = nextProvider(data[limit]);
+      // slice data to get data minus the additional queue that is used to check for next page
       return this.next(data.slice(0, data.length - 1), next);
     }
 

@@ -69,7 +69,7 @@ export class QueueService {
       const orderList = await this.prisma.ethereumOrders.findMany({
         where: status ? { status } : undefined,
         cursor: next ? { id: next } : undefined,
-        take: size + 1,
+        take: size + 1, // to get extra 1 to check for next page
         orderBy: {
           id: Prisma.SortOrder.asc,
         },

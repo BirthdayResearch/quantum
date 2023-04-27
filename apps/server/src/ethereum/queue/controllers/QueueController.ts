@@ -1,7 +1,7 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 
-import { PaginationQuery } from '../../../pagination/api.query';
+import { PaginationQuery } from '../../../pagination/ApiQuery';
 import { EthereumOrderStatusPipe } from '../../../pipes/EthereumOrderStatus.pipe';
 import { EthereumTransactionValidationPipe } from '../../../pipes/EthereumTransactionValidation.pipe';
 import { QueueService } from '../services/QueueService';
