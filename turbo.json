@@ -18,7 +18,6 @@
     "build": {
       "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
       "outputs": ["dist/**", ".next/**"],
-      "cache": false,
       "dependsOn": [
         "^build",
         "generate:client",
