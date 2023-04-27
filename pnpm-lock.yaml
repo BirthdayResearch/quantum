@@ -202,8 +202,8 @@ importers:
         specifier: ^2.0.11
         version: 2.0.11(react@18.2.0)
       react-secure-storage:
-        specifier: ^1.2.0
-        version: 1.2.0
+        specifier: ^1.2.1
+        version: 1.2.1
       sass:
         specifier: ^1.62.1
         version: 1.62.1
@@ -14188,8 +14188,8 @@ packages:
       shallow-equal: 1.2.1
     dev: false
 
-  /react-secure-storage@1.2.0:
-    resolution: {integrity: sha512-ZKRky6jG0B4LpK6PmFcK9rv5gX38BuJDFl2wM4+k3Qlxq8WKQOlkxy3JZ0RhnReYJFzErsLLHAh2+KAGycaVIg==}
+  /react-secure-storage@1.2.1:
+    resolution: {integrity: sha512-I99hMRwScDGKT7rAW73CUYQGiVWsLG/VSX2U82o4+BZWdXDhy8HPHNDjAo+MHzB72h/8Tm68O5a4ASKSaisa0w==}
     dependencies:
       crypto-js: 4.1.1
       murmurhash-js: 1.0.0
