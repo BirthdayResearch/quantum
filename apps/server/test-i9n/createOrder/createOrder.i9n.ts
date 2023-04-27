@@ -1,5 +1,5 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
-import { EthereumTransactionStatus } from '@prisma/client';
+import { EthereumTransactionStatus, OrderStatus } from '@prisma/client';
 import { ethers } from 'ethers';
 import {
   BridgeV1,
@@ -66,7 +66,7 @@ describe('Create Order Service Integration Tests', () => {
   it('Validates that the transaction inputted is of the correct format', async () => {
     const txReceipt = await testing.inject({
       method: 'POST',
-      url: `/order`,
+      url: `ethereum/order`,
       payload: {
         transactionHash: 'wrong_transaction_test',
       },
@@ -108,7 +108,7 @@ describe('Create Order Service Integration Tests', () => {
     });
     expect(JSON.parse(txReceipt.body)).toStrictEqual(`Draft order created for ${transactionCall.hash}`);
 
-    let transactionDbRecord = await prismaService.EthereumOrders.findFirst({
+    let transactionDbRecord = await prismaService.ethereumOrders.findFirst({
       where: { transactionHash: transactionCall.hash },
     });
     expect(transactionDbRecord?.status).toStrictEqual(OrderStatus.DRAFT);
