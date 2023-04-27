@@ -55,7 +55,7 @@ model BridgeEventTransactions {
   blockHeight                    String?
 }
 
-enum OrderStatus {
+enum QueueStatus {
   DRAFT
   IN_PROGRESS
   COMPLETED
@@ -64,6 +64,7 @@ enum OrderStatus {
   EXPIRED
   REFUND_REQUESTED
   REFUNDED
+  READY_FOR_BOT
 }
 
 enum DeFiChainTransactionStatus {
@@ -71,24 +72,24 @@ enum DeFiChainTransactionStatus {
   CONFIRMED
 }
 
-model EthereumOrders {
+model EthereumQueue {
   id               BigInt                    @id @default(autoincrement())
   transactionHash  String                    @unique
   ethereumStatus   EthereumTransactionStatus
-  status           OrderStatus
+  status           QueueStatus
   createdAt        DateTime                  @default(now())
   updatedAt        DateTime?                 @updatedAt
   amount           String?
   tokenSymbol      String?
   defichainAddress String
   expiryDate       DateTime
-  adminOrder       AdminEthereumOrders?
+  adminOrder       AdminEthereumQueue?
 }
 
-model AdminEthereumOrders {
+model AdminEthereumQueue {
   id                  BigInt                     @id @default(autoincrement())
-  order               EthereumOrders             @relation(fields: [orderId], references: [id])
-  orderId             BigInt                     @unique
+  queue               EthereumQueue              @relation(fields: [queueId], references: [id])
+  queueId             BigInt                     @unique
   lastUpdatedBy       String?
   hotWalletAddress    String?
   hotWalletIndex      Int?
@@ -100,6 +101,8 @@ model AdminEthereumOrders {
   blockHeight         String?
   createdAt           DateTime                   @default(now())
   updatedAt           DateTime?                  @updatedAt
+  botQueueStatus      QueueStatus
+  transactionHash     String
 
   @@unique([hotWalletAddress, hotWalletIndex])
 }
