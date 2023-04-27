@@ -33,7 +33,8 @@
           "check-file/filename-naming-convention": "off",
           "import/no-default-export": "off",
           "no-console": "off",
-          "no-underscore-dangle": "off"
+          "no-underscore-dangle": "off",
+          "import/extensions": "off"
         }
       }
     ]
@@ -51,10 +52,10 @@
     ]
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.5.10",
-    "@birthdayresearch/sticky-testcontainers": "^0.5.10",
-    "@birthdayresearch/sticky-turbo-jest": "^0.5.10",
-    "@birthdayresearch/sticky-typescript": "^0.5.10",
+    "@birthdayresearch/eslint-config": "^0.5.11",
+    "@birthdayresearch/sticky-testcontainers": "^0.5.11",
+    "@birthdayresearch/sticky-turbo-jest": "^0.5.11",
+    "@birthdayresearch/sticky-typescript": "^0.5.11",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "1.0.6",
