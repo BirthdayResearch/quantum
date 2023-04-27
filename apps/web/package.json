@@ -31,7 +31,7 @@
     "react-content-loader": "^6.2.1",
     "react-qr-code": "^2.0.11",
     "react-secure-storage": "^1.2.0",
-    "sass": "^1.62.0",
+    "sass": "^1.62.1",
     "wagmi": "^0.12.12"
   },
   "devDependencies": {
