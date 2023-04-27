@@ -78,7 +78,7 @@ enum BotQueueStatus {
 
 model EthereumQueue {
   id               BigInt                    @id @default(autoincrement())
-  transactionHash  String                    @unique // when user sends fund to smart contract
+  transactionHash  String                    @unique // when user sends funds to smart contract
   ethereumStatus   EthereumTransactionStatus
   status           QueueStatus
   createdAt        DateTime                  @default(now())
