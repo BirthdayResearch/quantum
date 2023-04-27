@@ -1,5 +1,5 @@
 # Dockerfile used to build an image for the bridge-api
-FROM node:18.15.0-alpine3.17
+FROM node:18.16.0-alpine3.17
 
 RUN corepack enable pnpm
 RUN pnpm config set auto-install-peers true

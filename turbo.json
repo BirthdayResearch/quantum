@@ -19,10 +19,10 @@
       "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
       "outputs": ["dist/**", ".next/**"],
       "dependsOn": [
-        "^build",
         "generate:client",
         "generate:schema",
-        "generate:prisma"
+        "generate:prisma",
+        "^build"
       ]
     },
     "build:docker": {
