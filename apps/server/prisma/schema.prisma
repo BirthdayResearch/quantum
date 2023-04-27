@@ -64,7 +64,6 @@ enum QueueStatus {
   EXPIRED
   REFUND_REQUESTED
   REFUNDED
-  READY_FOR_BOT
 }
 
 enum DeFiChainTransactionStatus {
@@ -72,9 +71,14 @@ enum DeFiChainTransactionStatus {
   CONFIRMED
 }
 
+enum BotQueueStatus {
+  SUCCESS
+  ERROR
+}
+
 model EthereumQueue {
   id               BigInt                    @id @default(autoincrement())
-  transactionHash  String                    @unique
+  transactionHash  String                    @unique // when user sends fund to smart contract
   ethereumStatus   EthereumTransactionStatus
   status           QueueStatus
   createdAt        DateTime                  @default(now())
@@ -94,15 +98,15 @@ model AdminEthereumQueue {
   hotWalletAddress    String?
   hotWalletIndex      Int?
   generatedAddress    String?                    @unique
-  sendTransactionHash String?
+  sendTransactionHash String? // when admin send funds to generated address
   defichainStatus     DeFiChainTransactionStatus
   hasVerified         Boolean?
   blockHash           String?
   blockHeight         String?
   createdAt           DateTime                   @default(now())
   updatedAt           DateTime?                  @updatedAt
-  botQueueStatus      QueueStatus
-  transactionHash     String
+  botQueueStatus      BotQueueStatus?
+  botTransactionHash  String? // when the bot sends fund from generated address to the user address
 
   @@unique([hotWalletAddress, hotWalletIndex])
 }
