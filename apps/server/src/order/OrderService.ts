@@ -10,7 +10,7 @@ import { EVMTransactionConfirmerService } from '../ethereum/services/EVMTransact
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
 import { getDTokenDetailsByWToken } from '../utils/TokensUtils';
-import { VerifyOrderTransactionDto } from './OrderInterface';
+import { VerifyOrderTransactionDto } from './OrderDto';
 
 @Injectable()
 export class OrderService {
@@ -115,6 +115,12 @@ export class OrderService {
 
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
     const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
+
+    if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
+      return { numberOfConfirmations, isConfirmed: false };
+    }
+
+    // only calls DB if transaction is confirmed
     const txHashFound = await this.prisma.ethereumOrders.findFirst({
       where: {
         transactionHash,

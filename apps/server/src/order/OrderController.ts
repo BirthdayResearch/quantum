@@ -1,7 +1,7 @@
 import { Body, Controller, Post, Put } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
-import { EthereumTransactionValidationPipe } from 'src/pipes/EthereumTransactionValidation.pipe';
 
+import { EthereumTransactionValidationPipe } from '../pipes/EthereumTransactionValidation.pipe';
 import { OrderService } from './OrderService';
 
 @Controller()
