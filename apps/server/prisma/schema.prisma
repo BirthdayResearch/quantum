@@ -106,7 +106,7 @@ model AdminEthereumQueue {
   createdAt           DateTime                   @default(now())
   updatedAt           DateTime?                  @updatedAt
   botQueueStatus      BotQueueStatus?
-  botTransactionHash  String? // when the bot sends fund from generated address to the user address
+  botTransactionHash  String? // when the bot sends funds from generated address to the user address
 
   @@unique([hotWalletAddress, hotWalletIndex])
 }
