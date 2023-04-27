@@ -6,7 +6,7 @@ import { IsInt, IsOptional, IsString, Min } from 'class-validator';
  * - size as limit/count/max query
  * - next token for next slice/page
  *
- * This provides a singular consistent query pattern for DeFi Whale.
+ * This provides a singular consistent query pattern
  */
 export class PaginationQuery {
   @IsOptional()

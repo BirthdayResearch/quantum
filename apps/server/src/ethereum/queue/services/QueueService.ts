@@ -9,9 +9,9 @@ import { PrismaService } from '../../../PrismaService';
 export class QueueService {
   constructor(private prisma: PrismaService) {}
 
-  async getOrder(transactionHash: string, status?: OrderStatus) {
+  async getQueue(transactionHash: string, status?: OrderStatus) {
     try {
-      const order = await this.prisma.ethereumOrders.findFirst({
+      const queue = await this.prisma.ethereumOrders.findFirst({
         where: {
           transactionHash,
           status: status || undefined,
@@ -34,19 +34,19 @@ export class QueueService {
         },
       });
 
-      if (!order) {
-        throw new Error('Order not found');
+      if (!queue) {
+        throw new Error('Queue not found');
       }
 
       return {
-        ...order,
-        id: String(order.id),
+        ...queue,
+        id: String(queue.id),
       };
     } catch (e: any) {
       throw new HttpException(
         {
           status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `API call to get order was unsuccessful: ${e.message}`,
+          error: `API call to get queue was unsuccessful: ${e.message}`,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
         {
@@ -56,7 +56,7 @@ export class QueueService {
     }
   }
 
-  async listOrder(
+  async listQueue(
     query: PaginationQuery = {
       size: 30,
     },
@@ -66,7 +66,7 @@ export class QueueService {
       const next = query.next !== undefined ? BigInt(query.next) : undefined;
       const size = Math.min(query.size ?? 12);
 
-      const orderList = await this.prisma.ethereumOrders.findMany({
+      const queueList = await this.prisma.ethereumOrders.findMany({
         where: status ? { status } : undefined,
         cursor: next ? { id: next } : undefined,
         take: size + 1, // to get extra 1 to check for next page
@@ -75,21 +75,21 @@ export class QueueService {
         },
       });
 
-      if (!orderList) {
-        throw new Error('No orders found');
+      if (!queueList || queueList.length === 0) {
+        throw new Error('No queues found');
       }
 
-      const stringifiedOrderList = orderList.map((order) => ({
-        ...order,
-        id: order.id.toString(),
+      const stringifiedQueueList = queueList.map((queue) => ({
+        ...queue,
+        id: queue.id.toString(),
       }));
 
-      return ApiPagedResponse.of(stringifiedOrderList, size, (order) => order.id);
+      return ApiPagedResponse.of(stringifiedQueueList, size, (queue) => queue.id);
     } catch (e: any) {
       throw new HttpException(
         {
           status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `API call to list order was unsuccessful: ${e.message}`,
+          error: `API call to list queue was unsuccessful: ${e.message}`,
         },
         HttpStatus.INTERNAL_SERVER_ERROR,
         {

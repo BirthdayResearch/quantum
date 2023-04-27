@@ -1,5 +1,3 @@
-import { ApiError } from './ApiError';
-
 /**
  * ApiPage for pagination ApiPagedResponse pagination
  * - `next` token indicate the token used to get the next slice window.
@@ -14,7 +12,6 @@ export interface ApiPage {
 export interface ApiResponse {
   data?: any;
   page?: ApiPage;
-  error?: ApiError;
 }
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */

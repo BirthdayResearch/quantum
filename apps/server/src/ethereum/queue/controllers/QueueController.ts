@@ -8,22 +8,22 @@ import { QueueService } from '../services/QueueService';
 
 @Controller()
 export class QueueController {
-  constructor(private readonly orderService: QueueService) {}
+  constructor(private readonly queueService: QueueService) {}
 
   @Get(':transactionHash')
-  async getOrder(
+  async getQueue(
     @Param('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
     @Query('status', new EthereumOrderStatusPipe(OrderStatus))
     status?: OrderStatus,
   ) {
-    return this.orderService.getOrder(transactionHash, status);
+    return this.queueService.getQueue(transactionHash, status);
   }
 
   @Get('list')
-  async listOrder(
+  async listQueue(
     @Query('status', new EthereumOrderStatusPipe(OrderStatus)) status: OrderStatus,
     @Query() query?: PaginationQuery,
   ) {
-    return this.orderService.listOrder(query, status);
+    return this.queueService.listQueue(query, status);
   }
 }
