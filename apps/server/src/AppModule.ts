@@ -7,7 +7,7 @@ import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
 import { BalancesModule } from './balances/BalancesModule';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
-import { OrderModule } from './ethereum/order/OrderModule';
+import { QueueModule } from './ethereum/queue/QueueModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
 import { SettingsModule } from './settings/SettingsModule';
@@ -37,8 +37,8 @@ import { VersionModule } from './version/VersionModule';
         module: EthereumModule,
         children: [
           {
-            path: 'order',
-            module: OrderModule,
+            path: 'queue',
+            module: QueueModule,
           },
         ],
       },

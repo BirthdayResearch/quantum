@@ -13,7 +13,7 @@ export class RefundController {
    *
    * @body {transactionHash} transactionHash unique Ethereum transaction hash that is created when a transaction is done from EVM -> DFC
    */
-  @Throttle(35, 60)
+  @Throttle(5, 60)
   @Post('refund')
   async requestRefundOrder(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.refundService.requestRefundOrder(transactionHash);

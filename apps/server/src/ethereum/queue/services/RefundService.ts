@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 
 import { ETHERS_RPC_PROVIDER } from '../../../modules/EthersModule';
 import { PrismaService } from '../../../PrismaService';
-import { VerificationService } from '../../services/VerificationService';
+import { ContractType, VerificationService } from '../../services/VerificationService';
 
 @Injectable()
 export class RefundService {
@@ -20,12 +20,12 @@ export class RefundService {
     private prisma: PrismaService,
     private configService: ConfigService,
   ) {
-    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address');
+    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.address');
   }
 
   async requestRefundOrder(transactionHash: string) {
     try {
-      const isValidTxn = await this.verficationService.verifyIfValidTxn(transactionHash);
+      const isValidTxn = await this.verficationService.verifyIfValidTxn(transactionHash, ContractType.v2);
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
       const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
       const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
