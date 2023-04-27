@@ -10,7 +10,7 @@ import { EVMTransactionConfirmerService } from '../ethereum/services/EVMTransact
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
 import { getDTokenDetailsByWToken } from '../utils/TokensUtils';
-import { VerifyOrderTransaction } from './OrderInterface';
+import { VerifyOrderTransactionDto } from './OrderInterface';
 
 @Injectable()
 export class OrderService {
@@ -79,38 +79,21 @@ export class OrderService {
       throw new BadRequestException(`Transaction Reverted`);
     }
 
-    const txHashFound = await this.prisma.ethereumOrders.findFirst({
-      where: {
-        transactionHash,
-      },
-    });
-    if (txHashFound === null) {
-      await this.prisma.ethereumOrders.create({
-        data: {
-          transactionHash,
-          status: OrderStatus.DRAFT,
-          ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
-          amount: new BigNumber(transferAmount).toString(),
-          defichainAddress: toAddress,
-          expiryDate: new Date(expiryDate),
-          tokenSymbol: dTokenDetails.symbol,
-        },
-      });
-      return `Draft order created for ${transactionHash}`;
-    }
-
-    await this.prisma.ethereumOrders.update({
-      where: {
-        id: txHashFound?.id,
-      },
+    await this.prisma.ethereumOrders.create({
       data: {
+        transactionHash,
         status: OrderStatus.DRAFT,
+        ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
+        amount: new BigNumber(transferAmount).toString(),
+        defichainAddress: toAddress,
+        expiryDate: new Date(expiryDate),
+        tokenSymbol: dTokenDetails.symbol,
       },
     });
-    return `Draft order updated for ${transactionHash}`;
+    return `Draft order created for ${transactionHash}`;
   }
 
-  async verify(transactionHash: string): Promise<VerifyOrderTransaction> {
+  async verify(transactionHash: string): Promise<VerifyOrderTransactionDto> {
     const isValidTxn = await this.evmTransactionConfirmerService.verifyIfValidTxn(transactionHash);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
@@ -141,23 +124,21 @@ export class OrderService {
     if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
       return { numberOfConfirmations, isConfirmed: false };
     }
-    if (txHashFound) {
-      await this.prisma.ethereumOrders.update({
-        where: {
-          id: txHashFound?.id,
-        },
-        data: {
-          ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-        },
-      });
+    await this.prisma.ethereumOrders.update({
+      where: {
+        id: txHashFound?.id,
+      },
+      data: {
+        ethereumStatus: EthereumTransactionStatus.CONFIRMED,
+      },
+    });
 
-      await this.prisma.adminEthereumOrders.create({
-        data: {
-          orderId: txHashFound?.id,
-          defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
-        },
-      });
-    }
+    await this.prisma.adminEthereumOrders.create({
+      data: {
+        orderId: txHashFound?.id,
+        defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+      },
+    });
 
     return { numberOfConfirmations, isConfirmed: true };
   }
