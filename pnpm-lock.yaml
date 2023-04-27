@@ -184,8 +184,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       connectkit:
-        specifier: ^1.2.1
-        version: 1.2.1(ethers@5.7.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(wagmi@0.12.12)
+        specifier: ^1.2.3
+        version: 1.2.3(ethers@5.7.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(wagmi@0.12.12)
       dayjs:
         specifier: ^1.11.7
         version: 1.11.7
@@ -7809,14 +7809,14 @@ packages:
   /confusing-browser-globals@1.0.11:
     resolution: {integrity: sha512-JsPKdmh8ZkmnHxDk55FZ1TqVLvEQTvoByJZRN9jzI0UjxK/QgAmsphz7PGtqgPieQZ/CQcHWXCR7ATDNhGe+YA==}
 
-  /connectkit@1.2.1(ethers@5.7.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(wagmi@0.12.12):
-    resolution: {integrity: sha512-Re5lOwtQunIp50J6cuCvUxYsd0FeW3PwuRG+sIYD7XeCyCaYjqBeMxppEwVgYEbteJ+tBkmH5ALnLHDTipRs/Q==}
+  /connectkit@1.2.3(ethers@5.7.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(wagmi@0.12.12):
+    resolution: {integrity: sha512-IZdfgbFMt0rPybJXmLSNDuvwFBF2Gh+9qjYxGN6EdWHPPKqXqdyOzrctQIHpr29JwqVT9jfsni2CNJPTSAjOsg==}
     engines: {node: '>=12.4'}
     peerDependencies:
       ethers: '>=5.5.0 <6'
       react: 17.x || 18.x
       react-dom: 17.x || 18.x
-      wagmi: 0.11.x
+      wagmi: 0.12.x
     dependencies:
       buffer: 6.0.3
       detect-browser: 5.3.0
