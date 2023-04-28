@@ -6,10 +6,7 @@
 
 */
 -- CreateEnum
-CREATE TYPE "QueueStatus" AS ENUM ('DRAFT', 'IN_PROGRESS', 'COMPLETED', 'ERROR', 'REJECTED', 'EXPIRED', 'REFUND_REQUESTED', 'REFUNDED', 'REFUND_PROCESSED');
-
--- CreateEnum
-CREATE TYPE "BotQueueStatus" AS ENUM ('SUCCESS', 'ERROR');
+CREATE TYPE "QueueStatus" AS ENUM ('DRAFT', 'IN_PROGRESS', 'COMPLETED', 'ERROR', 'REJECTED', 'EXPIRED', 'REFUND_REQUESTED', 'REFUND_PROCESSED', 'REFUNDED');
 
 -- DropForeignKey
 ALTER TABLE "AdminEthereumOrders" DROP CONSTRAINT "AdminEthereumOrders_orderId_fkey";
@@ -54,7 +51,6 @@ CREATE TABLE "AdminEthereumQueue" (
     "blockHeight" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3),
-    "botQueueStatus" "BotQueueStatus",
     "botTransactionHash" TEXT,
 
     CONSTRAINT "AdminEthereumQueue_pkey" PRIMARY KEY ("id")

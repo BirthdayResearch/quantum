@@ -72,11 +72,6 @@ enum DeFiChainTransactionStatus {
   CONFIRMED
 }
 
-enum BotQueueStatus {
-  SUCCESS
-  ERROR
-}
-
 model EthereumQueue {
   id               BigInt                    @id @default(autoincrement())
   transactionHash  String                    @unique // when user sends funds to smart contract
@@ -106,7 +101,6 @@ model AdminEthereumQueue {
   blockHeight          String?
   createdAt            DateTime                   @default(now())
   updatedAt            DateTime?                  @updatedAt
-  botQueueStatus       BotQueueStatus?
   botTransactionHash   String? // when the bot sends funds from generated address to the user address
 
   @@unique([hotWalletAddress, hotWalletIndex])
