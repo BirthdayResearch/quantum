@@ -1,17 +1,18 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { OrderStatus, Prisma } from '@prisma/client';
+import { Prisma,QueueStatus } from '@prisma/client';
 
 import { ApiPagedResponse } from '../../../pagination/ApiPagedResponse';
 import { PaginationQuery } from '../../../pagination/ApiQuery';
 import { PrismaService } from '../../../PrismaService';
+import { Queue } from '../model/Queue';
 
 @Injectable()
 export class QueueService {
   constructor(private prisma: PrismaService) {}
 
-  async getQueue(transactionHash: string, status?: OrderStatus) {
+  async getQueue(transactionHash: string, status?: QueueStatus) {
     try {
-      const queue = await this.prisma.ethereumOrders.findFirst({
+      const queue = await this.prisma.ethereumQueue.findFirst({
         where: {
           transactionHash,
           status: status || undefined,
@@ -26,7 +27,7 @@ export class QueueService {
           tokenSymbol: true,
           defichainAddress: true,
           expiryDate: true,
-          adminOrder: {
+          adminQueue: {
             select: {
               sendTransactionHash: true,
             },
@@ -60,13 +61,13 @@ export class QueueService {
     query: PaginationQuery = {
       size: 30,
     },
-    status?: OrderStatus,
-  ) {
+    status?: QueueStatus,
+  ): Promise<ApiPagedResponse<Queue>> {
     try {
       const next = query.next !== undefined ? BigInt(query.next) : undefined;
-      const size = Math.min(query.size ?? 12);
+      const size = Math.min(query.size ?? 10);
 
-      const queueList = await this.prisma.ethereumOrders.findMany({
+      const queueList = await this.prisma.ethereumQueue.findMany({
         where: status ? { status } : undefined,
         cursor: next ? { id: next } : undefined,
         take: size + 1, // to get extra 1 to check for next page

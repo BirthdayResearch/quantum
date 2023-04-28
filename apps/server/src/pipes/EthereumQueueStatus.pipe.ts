@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
-export class EthereumOrderStatusPipe<T extends Record<string, string>> implements PipeTransform {
+export class EthereumQueueStatusPipe<T extends Record<string, string>> implements PipeTransform {
   constructor(private enumType: T) {}
 
   transform(value: any): any {
