@@ -88,7 +88,7 @@ model EthereumQueue {
   tokenSymbol      String?
   defichainAddress String
   expiryDate       DateTime
-  adminOrder       AdminEthereumQueue?
+  adminQueue       AdminEthereumQueue?
 }
 
 model AdminEthereumQueue {
