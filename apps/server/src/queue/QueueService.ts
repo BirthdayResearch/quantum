@@ -79,35 +79,18 @@ export class QueueService {
       throw new BadRequestException(`Transaction Reverted`);
     }
 
-    const txHashFound = await this.prisma.ethereumQueue.findFirst({
-      where: {
-        transactionHash,
-      },
-    });
-    if (txHashFound === null) {
-      await this.prisma.ethereumQueue.create({
-        data: {
-          transactionHash,
-          status: QueueStatus.DRAFT,
-          ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
-          amount: new BigNumber(transferAmount).toString(),
-          defichainAddress: toAddress,
-          expiryDate: new Date(expiryDate),
-          tokenSymbol: dTokenDetails.symbol,
-        },
-      });
-      return `Draft queue transaction created for ${transactionHash}`;
-    }
-
-    await this.prisma.ethereumQueue.update({
-      where: {
-        id: txHashFound?.id,
-      },
+    await this.prisma.ethereumQueue.create({
       data: {
+        transactionHash,
         status: QueueStatus.DRAFT,
+        ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
+        amount: new BigNumber(transferAmount).toString(),
+        defichainAddress: toAddress,
+        expiryDate: new Date(expiryDate),
+        tokenSymbol: dTokenDetails.symbol,
       },
     });
-    return `Draft queue transaction updated for ${transactionHash}`;
+    return `Draft queue transaction created for ${transactionHash}`;
   }
 
   async verify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
