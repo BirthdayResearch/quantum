@@ -4,6 +4,7 @@ import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
 import MobileBottomMenu from "@components/MobileBottomMenu";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
+// import useWatchEthQueueTxn from "@hooks/useWatchEthQueueTxn";
 import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
 import Logging from "@api/logging";
@@ -17,6 +18,8 @@ import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
+  // polling for verify queue endpoints
+  // const { ethQueueTxnStatus, isQueueApiSuccess } = useWatchEthQueueTxn();
   const { txnHash, setStorage } = useStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
     useBridgeFormStorageKeys();
