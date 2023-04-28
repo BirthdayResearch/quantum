@@ -1,6 +1,6 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EthereumTransactionStatus, OrderStatus } from '@prisma/client';
+import { DeFiChainTransactionStatus, EthereumTransactionStatus, QueueStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
@@ -79,28 +79,16 @@ export class QueueService {
       throw new BadRequestException(`Transaction Reverted`);
     }
 
-    // await this.prisma.ethereumOrders.create({
-    //   data: {
-    //     transactionHash,
-    //     status: OrderStatus.DRAFT,
-    //     ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
-    //     amount: new BigNumber(transferAmount).toString(),
-    //     defichainAddress: toAddress,
-    //     expiryDate: new Date(expiryDate),
-    //     tokenSymbol: dTokenDetails.symbol,
-    //   },
-    // });
-    // return `Draft order created for ${transactionHash}`;
-    const txHashFound = await this.prisma.ethereumOrders.findFirst({
+    const txHashFound = await this.prisma.ethereumQueue.findFirst({
       where: {
         transactionHash,
       },
     });
     if (txHashFound === null) {
-      await this.prisma.ethereumOrders.create({
+      await this.prisma.ethereumQueue.create({
         data: {
           transactionHash,
-          status: OrderStatus.DRAFT,
+          status: QueueStatus.DRAFT,
           ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
           amount: new BigNumber(transferAmount).toString(),
           defichainAddress: toAddress,
@@ -111,12 +99,12 @@ export class QueueService {
       return `Draft queue transaction created for ${transactionHash}`;
     }
 
-    await this.prisma.ethereumOrders.update({
+    await this.prisma.ethereumQueue.update({
       where: {
         id: txHashFound?.id,
       },
       data: {
-        status: OrderStatus.DRAFT,
+        status: QueueStatus.DRAFT,
       },
     });
     return `Draft queue transaction updated for ${transactionHash}`;
@@ -145,39 +133,29 @@ export class QueueService {
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
     const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
 
-    // console.log(numberOfConfirmations);
-
     if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
       return { numberOfConfirmations, isConfirmed: false };
     }
 
-    // only calls DB if transaction is confirmed
-    const txHashFound = await this.prisma.ethereumOrders.findFirst({
+    if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
+      return { numberOfConfirmations, isConfirmed: false };
+    }
+    await this.prisma.ethereumQueue.update({
       where: {
         transactionHash,
       },
-    });
-    // console.log(txHashFound);
-
-    if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
-      return { numberOfConfirmations, isConfirmed: false };
-    }
-    await this.prisma.ethereumOrders.update({
-      where: {
-        id: txHashFound?.id,
-      },
       data: {
         ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-        status: OrderStatus.IN_PROGRESS,
+        status: QueueStatus.IN_PROGRESS,
       },
     });
 
-    // await this.prisma.adminEthereumOrders.create({
-    //   data: {
-    //     orderId: txHashFound?.id,
-    //     defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
-    //   },
-    // });
+    await this.prisma.adminEthereumQueue.create({
+      data: {
+        queueTransactionHash: transactionHash,
+        defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+      },
+    });
 
     return { numberOfConfirmations, isConfirmed: true };
   }
