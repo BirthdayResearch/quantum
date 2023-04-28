@@ -29,7 +29,7 @@ describe('Get and List from EthereumQueue table', () => {
     // init postgres database
     prismaService = app.get<PrismaService>(PrismaService);
 
-    // create 23 items in database
+    // create 20 items in database
     let count = 1;
     while (count <= 20) {
       await prismaService.ethereumQueue.create({
@@ -73,7 +73,7 @@ describe('Get and List from EthereumQueue table', () => {
       url: `/ethereum/queue/list`,
     });
 
-    const {data} = JSON.parse(resp.body);
+    const { data } = JSON.parse(resp.body);
     expect(data.length).toStrictEqual(10);
     expect(data[0].id).toStrictEqual('1');
     expect(data[data.length - 1].id).toStrictEqual('10');
@@ -86,14 +86,14 @@ describe('Get and List from EthereumQueue table', () => {
     });
 
     // get next page
-    const {next} = JSON.parse(resp.body).page;
+    const { next } = JSON.parse(resp.body).page;
     expect(next).toStrictEqual('11');
 
     const nextPageResp = await testing.inject({
       method: 'GET',
       url: `/ethereum/queue/list?next=${next}`,
     });
-    const {data} = JSON.parse(nextPageResp.body);
+    const { data } = JSON.parse(nextPageResp.body);
     expect(data.length).toStrictEqual(10);
     expect(data[0].id).toStrictEqual('11');
     expect(data[data.length - 1].id).toStrictEqual('20');
@@ -106,14 +106,14 @@ describe('Get and List from EthereumQueue table', () => {
     });
 
     // get next page
-    const {next} = JSON.parse(resp.body).page;
+    const { next } = JSON.parse(resp.body).page;
     expect(next).toStrictEqual('11');
 
     const nextPageResp = await testing.inject({
       method: 'GET',
       url: `/ethereum/queue/list?next=${next}`,
     });
-    const {data} = JSON.parse(nextPageResp.body);
+    const { data } = JSON.parse(nextPageResp.body);
     expect(data.length).toStrictEqual(10);
     expect(data[0].id).toStrictEqual('11');
     expect(data[data.length - 1].id).toStrictEqual('20');
@@ -128,8 +128,8 @@ describe('Get and List from EthereumQueue table', () => {
       url: `/ethereum/queue/list?size=5`,
     });
 
-    const {data} = JSON.parse(resp.body);
-    const {page} = JSON.parse(resp.body);
+    const { data } = JSON.parse(resp.body);
+    const { page } = JSON.parse(resp.body);
 
     expect(data.length).toStrictEqual(5);
     expect(page.next).toStrictEqual('6');
@@ -141,8 +141,8 @@ describe('Get and List from EthereumQueue table', () => {
       url: `/ethereum/queue/list?size=5`,
     });
 
-    const {data} = JSON.parse(resp.body);
-    const {page} = JSON.parse(resp.body);
+    const { data } = JSON.parse(resp.body);
+    const { page } = JSON.parse(resp.body);
 
     expect(data.length).toStrictEqual(5);
 
@@ -165,7 +165,7 @@ describe('Get and List from EthereumQueue table', () => {
       method: 'GET',
       url: `/ethereum/queue/list?size=20`,
     });
-    const {page} = JSON.parse(resp.body);
+    const { page } = JSON.parse(resp.body);
     expect(page).toBeUndefined();
   });
 
@@ -189,7 +189,7 @@ describe('Get and List from EthereumQueue table', () => {
       url: `/ethereum/queue/list?size=30&status=DRAFT`,
     });
 
-    const {data} = JSON.parse(resp.body);
+    const { data } = JSON.parse(resp.body);
 
     expect(data.length).toStrictEqual(20);
     data.forEach((queue: Queue) => {
@@ -212,8 +212,8 @@ describe('Get and List from EthereumQueue table', () => {
       url: `/ethereum/queue/list?size=5&status=DRAFT`,
     });
 
-    const {data} = JSON.parse(resp.body);
-    const {page} = JSON.parse(resp.body);
+    const { data } = JSON.parse(resp.body);
+    const { page } = JSON.parse(resp.body);
 
     expect(page.next).toStrictEqual('6');
     expect(data.length).toStrictEqual(5);
