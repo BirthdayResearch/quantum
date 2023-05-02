@@ -3,6 +3,8 @@
 
   - The values [FUNDED,REFUND_PROCESSED] on the enum `QueueStatus` will be removed. If these variants are still used in the database, this will fail.
   - You are about to drop the column `botTransactionHash` on the `AdminEthereumQueue` table. All the data in the column will be lost.
+  - You are about to drop the column `generatedAddress` on the `AdminEthereumQueue` table. All the data in the column will be lost.
+  - You are about to drop the column `hotWalletIndex` on the `AdminEthereumQueue` table. All the data in the column will be lost.
 
 */
 -- AlterEnum
@@ -17,5 +19,13 @@ COMMIT;
 -- DropIndex
 DROP INDEX "AdminEthereumQueue_botTransactionHash_key";
 
+-- DropIndex
+DROP INDEX "AdminEthereumQueue_generatedAddress_key";
+
+-- DropIndex
+DROP INDEX "AdminEthereumQueue_hotWalletAddress_hotWalletIndex_key";
+
 -- AlterTable
-ALTER TABLE "AdminEthereumQueue" DROP COLUMN "botTransactionHash";
+ALTER TABLE "AdminEthereumQueue" DROP COLUMN "botTransactionHash",
+DROP COLUMN "generatedAddress",
+DROP COLUMN "hotWalletIndex";
