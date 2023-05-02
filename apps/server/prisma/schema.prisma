@@ -66,7 +66,6 @@ enum QueueStatus {
   REFUND_REQUESTED
   REFUND_PROCESSED
   REFUNDED
-  REFUND_PROCESSED
 }
 
 enum DeFiChainTransactionStatus {
