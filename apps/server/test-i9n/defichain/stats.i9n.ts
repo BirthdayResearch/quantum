@@ -13,6 +13,7 @@ import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletPr
 import { PrismaService } from '../../src/PrismaService';
 import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
+import { mockDeFiChainTransactions } from '../testing/mockData/transactions';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 import { DeFiChainStubContainer, StartedDeFiChainStubContainer } from './containers/DeFiChainStubContainer';
 
@@ -155,7 +156,7 @@ describe('DeFiChain Stats Testing', () => {
       ],
       'number',
     );
-    await defichain.generateBlock();
+    await defichain.generateBlock(40);
 
     const response = await verify({
       amount: '10',
@@ -168,6 +169,7 @@ describe('DeFiChain Stats Testing', () => {
     expect(response.signature).toBeDefined();
     expect(response.nonce).toBeDefined();
     expect(response.deadline).toBeDefined();
+    expect(response.txnId).toBeDefined();
 
     await defichain.generateBlock();
     const claimAmt = await prismaService.deFiChainAddressIndex.findMany({
@@ -252,5 +254,162 @@ describe('DeFiChain Stats Testing', () => {
     const parsedPayload = JSON.parse(txReceipt.payload);
 
     verifyFormat(parsedPayload);
+  });
+});
+
+describe('/defichain/transactions test', () => {
+  let testing: BridgeServerTestingApp;
+  let startedPostgresContainer: StartedPostgreSqlContainer;
+  let prismaService: PrismaService;
+  beforeAll(async () => {
+    startedPostgresContainer = await new PostgreSqlContainer().start();
+
+    testing = new BridgeServerTestingApp(
+      TestingModule.register(
+        buildTestConfig({
+          startedPostgresContainer,
+        }),
+      ),
+    );
+
+    const app = await testing.start();
+
+    prismaService = app.get<PrismaService>(PrismaService);
+
+    await prismaService.deFiChainAddressIndex.createMany({ data: mockDeFiChainTransactions });
+  });
+
+  afterAll(async () => {
+    await testing.stop();
+  });
+
+  it(`should throw an error if there is no toDate`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=2023-03-27`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.message).toStrictEqual(['toDate must be a valid ISO 8601 date string']);
+  });
+
+  it(`should throw an error if both dates are invalid`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=abc&toDate=def`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.message).toStrictEqual([
+      'fromDate must be a valid ISO 8601 date string',
+      'toDate must be a valid ISO 8601 date string',
+    ]);
+  });
+
+  it(`should throw an error if fromDate invalid`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=abc&toDate=2023-03-27`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.message).toStrictEqual(['fromDate must be a valid ISO 8601 date string']);
+  });
+
+  it(`should throw an error if toDate invalid`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=2023-03-27&toDate=def`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.message).toStrictEqual(['toDate must be a valid ISO 8601 date string']);
+  });
+
+  it(`should throw an error if fromDate is in the future`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=2033-03-15&toDate=2033-03-16`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.error).toStrictEqual('API call for DeFiChain transactions was unsuccessful');
+    expect(parsedPayload.message).toStrictEqual('Cannot query future date');
+  });
+
+  it(`should throw an error if toDate is in the future`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=2023-03-15&toDate=2033-03-16`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.error).toStrictEqual('API call for DeFiChain transactions was unsuccessful');
+    expect(parsedPayload.message).toStrictEqual('Cannot query future date');
+  });
+
+  it(`should throw an error fromDate is more recent than toDate`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=2023-03-10&toDate=2023-03-09`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+    expect(parsedPayload.statusCode).toStrictEqual(400);
+    expect(parsedPayload.error).toStrictEqual('API call for DeFiChain transactions was unsuccessful');
+    expect(parsedPayload.message).toStrictEqual('fromDate cannot be more recent than toDate');
+  });
+
+  it(`should accept a valid fromDate & toDate pair`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=2023-04-01&toDate=2023-04-03`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+    expect(parsedPayload).toStrictEqual(
+      mockDeFiChainTransactions.map((transaction) => {
+        const { id, ...res } = transaction;
+
+        return {
+          ...res,
+          createdAt: transaction.createdAt.toISOString(),
+          updatedAt: transaction.updatedAt?.toISOString(),
+        };
+      }),
+    );
+  });
+
+  it(`should filter out dates`, async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/defichain/transactions?fromDate=2023-04-03&toDate=2023-04-03`,
+    });
+
+    const parsedPayload = JSON.parse(txReceipt.payload);
+    expect(parsedPayload).toStrictEqual(
+      mockDeFiChainTransactions
+        .filter((transaction) => transaction.createdAt.toISOString() === '2023-04-03T03:50:56.503Z')
+        .map((transaction) => {
+          const { id, ...res } = transaction;
+          return {
+            ...res,
+            createdAt: transaction.createdAt.toISOString(),
+            updatedAt: transaction.updatedAt?.toISOString(),
+          };
+        }),
+    );
   });
 });

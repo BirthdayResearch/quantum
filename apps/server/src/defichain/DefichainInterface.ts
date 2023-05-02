@@ -37,3 +37,11 @@ export type BridgedDFCTokenSum = {
   tokenSymbol: SupportedDFCTokenSymbols;
   totalAmount: string;
 };
+
+export class TransactionsQueryDto {
+  @IsDateString()
+  fromDate!: Iso8601DateOnlyString;
+
+  @IsDateString()
+  toDate!: Iso8601DateOnlyString;
+}

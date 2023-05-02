@@ -4,6 +4,7 @@ import { EthereumModule } from '../ethereum/EthereumModule';
 import { SemaphoreCache } from '../libs/caches/SemaphoreCache';
 import { PrismaService } from '../PrismaService';
 import { StatsController } from './controllers/StatsController';
+import { TransactionsController } from './controllers/TransactionController';
 import { WhaleWalletController } from './controllers/WhaleWalletController';
 import { WhaleApiClientProvider } from './providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from './providers/WhaleWalletProvider';
@@ -26,7 +27,7 @@ import { WhaleWalletService } from './services/WhaleWalletService';
     SendService,
     DeFiChainStatsService,
   ],
-  controllers: [StatsController, WhaleWalletController],
+  controllers: [StatsController, WhaleWalletController, TransactionsController],
   exports: [WhaleWalletService],
 })
 export class DeFiChainModule {}

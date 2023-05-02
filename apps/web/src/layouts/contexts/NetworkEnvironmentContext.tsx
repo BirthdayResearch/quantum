@@ -8,6 +8,7 @@ import React, {
 } from "react";
 import { useRouter } from "next/router";
 import { useNetwork } from "wagmi";
+import { useNetworkContext as useWhaleNetworkContext } from "@waveshq/walletkit-ui";
 import { EnvironmentNetwork, getEnvironment } from "@waveshq/walletkit-core";
 import { ETHEREUM_MAINNET_ID } from "../../constants";
 
@@ -31,14 +32,16 @@ export function NetworkEnvironmentProvider({
   const router = useRouter();
   const env = getEnvironment(process.env.NODE_ENV);
   const networkQuery = router.query.network;
-
+  const defaultNetwork = EnvironmentNetwork.MainNet;
+  const { updateNetwork: updateWhaleNetwork } = useWhaleNetworkContext();
   const { chain } = useNetwork();
   const isEthereumMainNet = chain?.id === ETHEREUM_MAINNET_ID;
 
   function getNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
-    if (!isEthereumMainNet && env.networks.includes(n)) {
-      return n;
+    if (chain === undefined || process.env.NODE_ENV === "development") {
+      return env.networks.includes(n) ? n : defaultNetwork;
     }
+
     return isEthereumMainNet
       ? EnvironmentNetwork.MainNet
       : EnvironmentNetwork.TestNet;
@@ -48,22 +51,21 @@ export function NetworkEnvironmentProvider({
   const [networkEnv, setNetworkEnv] =
     useState<EnvironmentNetwork>(initialNetwork);
 
+  const updateRoute = (value: EnvironmentNetwork) => {
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: value === defaultNetwork ? {} : { network: value },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
   const handleNetworkEnvChange = (value: EnvironmentNetwork) => {
-    if (isEthereumMainNet) {
-      // Network environment should never be updated
-      return;
-    }
     setNetworkEnv(value);
-    if (value !== initialNetwork) {
-      router.replace(
-        {
-          pathname: "/",
-          query: { network: value },
-        },
-        undefined,
-        { shallow: true }
-      );
-    }
+    updateRoute(value);
+    updateWhaleNetwork(value);
   };
 
   const resetNetworkEnv = () => {
@@ -72,7 +74,9 @@ export function NetworkEnvironmentProvider({
 
   useEffect(() => {
     setNetworkEnv(initialNetwork);
-  }, [initialNetwork]);
+    updateRoute(initialNetwork);
+    updateWhaleNetwork(initialNetwork);
+  }, [initialNetwork, chain]);
 
   const context: NetworkContextI = useMemo(
     () => ({

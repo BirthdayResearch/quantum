@@ -23,14 +23,14 @@ jobs:
       matrix:
         containers: [1]
     steps:
-      - uses: actions/checkout@8f4b7f84864484a7bf31766abe9204da3cbe65b3 # v3.5.0
+      - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
 
       - name: Setup Playground
         run: docker-compose -f docker-compose.yml up -d
 
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 7.30.3
+          version: 8.3.1
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 16
@@ -49,7 +49,7 @@ jobs:
 
       ## Implement ping on server side to do full e2e
 
-      - uses: cypress-io/github-action@96268482322bc63c76561c602a84be842c527dbc # v5.5.1
+      - uses: cypress-io/github-action@a29a621b736c9a8547ba0236cc9cee1e49725bd5 # v5.6.1
         with:
           config-file: cypress.config.js
           install: false
@@ -65,6 +65,6 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: codecov/codecov-action@d9f34f8cd5cb3b3eb79b3e4b5dae3a16df499a70 # tag=v3.1.1
+      - uses: codecov/codecov-action@894ff025c7b54547a9a2a1e9f228beae737ad3c2 # v3.1.3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

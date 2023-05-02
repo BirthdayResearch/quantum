@@ -54,3 +54,55 @@ model BridgeEventTransactions {
   blockHash                      String?
   blockHeight                    String?
 }
+
+enum QueueStatus {
+  DRAFT
+  IN_PROGRESS
+  FUNDED
+  COMPLETED
+  ERROR
+  REJECTED
+  EXPIRED
+  REFUND_REQUESTED
+  REFUND_PROCESSED
+  REFUNDED
+}
+
+enum DeFiChainTransactionStatus {
+  NOT_CONFIRMED
+  CONFIRMED
+}
+
+model EthereumQueue {
+  id               BigInt                    @id @default(autoincrement())
+  transactionHash  String                    @unique // when user sends funds to smart contract
+  ethereumStatus   EthereumTransactionStatus
+  status           QueueStatus
+  createdAt        DateTime                  @default(now())
+  updatedAt        DateTime?                 @updatedAt
+  amount           String?
+  tokenSymbol      String?
+  defichainAddress String
+  expiryDate       DateTime
+  adminQueue       AdminEthereumQueue?
+}
+
+model AdminEthereumQueue {
+  id                   BigInt                     @id @default(autoincrement())
+  queue                EthereumQueue              @relation(fields: [queueTransactionHash], references: [transactionHash])
+  queueTransactionHash String                     @unique
+  lastUpdatedBy        String?
+  hotWalletAddress     String?
+  hotWalletIndex       Int?
+  generatedAddress     String?                    @unique
+  sendTransactionHash  String?                    @unique // when admin send funds to generated address / hot wallet address 
+  defichainStatus      DeFiChainTransactionStatus
+  hasVerified          Boolean?
+  blockHash            String?
+  blockHeight          String?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime?                  @updatedAt
+  botTransactionHash   String?                    @unique // when the bot sends funds from generated address to the user address
+
+  @@unique([hotWalletAddress, hotWalletIndex])
+}
