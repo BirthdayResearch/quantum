@@ -2,6 +2,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+
 error ETH_TRANSFER_FAILED();
 error AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
 error MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
@@ -22,34 +23,93 @@ contract BridgeOrderBook is
     address public constant ETH = address(0);
     uint256 public constant MAX_FEE = 10000;
 
+    // Cold wallet that will receive the net bridged amount
     address public coldWallet;
+
+    // Community wallet that receive transaction fee
     address public communityWallet;
+
+    // Transaction fee when bridging from EVM to DeFiChain. Based on dps (e.g. 1% = 100dps)
     uint256 public transactionFee;
+
+    // Mapping to check whether a token is supported or not
     mapping(address => bool) public supportedTokens;
 
+    /**
+     * @notice Emitted when a bridgeToDeFiChain operation is performed
+     * @param defiAddress DeFiChain address of user
+     * @param tokenAddress Supported token's being bridged
+     * @param bridgeAmount Amount of the bridged token
+     */
     event BRIDGE_TO_DEFI_CHAIN(
         bytes defiAddress,
-        address tokenAddress,
-        uint256 bridgeAmount
+        address indexed tokenAddress,
+        uint256 indexed bridgeAmount
     );
 
-    event TOKEN_SUPPORTED(address tokenAddress);
-    event TOKEN_REMOVED(address tokenAddress);
-    event TRANSACTION_FEE_CHANGED(uint256 oldTxFee, uint256 transactionFee);
-    event COLD_WALLET_CHANGED(address oldColdWallet, address newColdWallet);
+    /**
+     * @notice Emitted when a token is supported
+     * @param tokenAddress address of the token being added support for
+     */
+    event TOKEN_SUPPORTED(address indexed tokenAddress);
+
+    /**
+     * @notice Emitted when a token is removed out of support
+     * @param tokenAddress address of the token being removed out of support
+     */
+    event TOKEN_REMOVED(address indexed tokenAddress);
+
+    /**
+     * @notice Emitted when the transaction fee is changed
+     * @param oldTxFee the old transaction fee
+     * @param transactionFee the new transaction fee
+     */
+    event TRANSACTION_FEE_CHANGED(
+        uint256 indexed oldTxFee,
+        uint256 indexed transactionFee
+    );
+
+    /**
+     * @notice Emitted when the cold wallet is changed
+     * @param oldColdWallet the old cold wallet address
+     * @param newColdWallet the new cold wallet address
+     */
+    event COLD_WALLET_CHANGED(
+        address indexed oldColdWallet,
+        address indexed newColdWallet
+    );
+
+    /**
+     * @notice Emitted when the community wallet is changed
+     * @param oldCommunityWallet the old community wallet address
+     * @param newCommunityWallet the new community wallet address
+     */
     event COMMUNITY_WALLET_CHANGED(
-        address oldCommunityWallet,
-        address newCommunityWallet
+        address indexed oldCommunityWallet,
+        address indexed newCommunityWallet
     );
 
+    /**
+     * @notice constructor to disable initialization of implementation smart contract
+     */
     constructor() {
         _disableInitializers();
     }
 
+    /**
+     * @notice function to limit the right to upgrade the smart contract
+     */
     function _authorizeUpgrade(
         address newImplementation
     ) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
+    /**
+     * @notice To initialize this contract
+     * @param _timelockContract TimelockContract who will have the DEFAULT_ADMIN_ROLE
+     * @param _coldWallet Cold wallet to receive the net bridge amount
+     * @param _fee Fee charge per each bridgeToDeFiChain operation (100% = 10000)
+     * @param _communityWallet Community wallet that will receive a fee for each bridgeToDeFiChain transaction
+     */
     function initialize(
         address _timelockContract,
         address _coldWallet,
@@ -106,10 +166,17 @@ contract BridgeOrderBook is
         }
     }
 
+    /**
+     * @notice Function to calculate the fee for bridgeToDeFiChain operation
+     */
     function calculateFee(uint256 _amount) internal view returns (uint256) {
         return (_amount * transactionFee) / 10000;
     }
 
+    /**
+     * @notice Function to add support for a token
+     * @param _tokenAddress address of the token to be supported
+     */
     function addSupportedToken(
         address _tokenAddress
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -118,6 +185,10 @@ contract BridgeOrderBook is
         emit TOKEN_SUPPORTED(_tokenAddress);
     }
 
+    /**
+     * @notice Function to remove support for a token
+     * @param _tokenAddress address of the token to be removal of support
+     */
     function removeSupportedToken(
         address _tokenAddress
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -126,13 +197,21 @@ contract BridgeOrderBook is
         emit TOKEN_REMOVED(_tokenAddress);
     }
 
-    function changeTxFee(uint256 fee) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (fee > MAX_FEE) revert MORE_THAN_MAX_FEE();
+    /**
+     * @notice Function to change transaction fee
+     * @param _fee the transaction fee to be changed to
+     */
+    function changeTxFee(uint256 _fee) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (_fee > MAX_FEE) revert MORE_THAN_MAX_FEE();
         uint256 oldTxFee = transactionFee;
-        transactionFee = fee;
-        emit TRANSACTION_FEE_CHANGED(oldTxFee, transactionFee);
+        transactionFee = _fee;
+        emit TRANSACTION_FEE_CHANGED(oldTxFee, _fee);
     }
 
+    /**
+     * @notice Function to change the cold wallet address
+     * @param _newColdWallet the new cold wallet address
+     */
     function changeColdWallet(
         address _newColdWallet
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -142,6 +221,10 @@ contract BridgeOrderBook is
         emit COLD_WALLET_CHANGED(oldColdWallet, _newColdWallet);
     }
 
+    /**
+     * @notice Function to change the community wallet address
+     * @param _newCommunityWallet the new community wallet address
+     */
     function changeCommunityWallet(
         address _newCommunityWallet
     ) external onlyRole(DEFAULT_ADMIN_ROLE) {
