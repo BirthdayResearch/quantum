@@ -66,6 +66,12 @@ CREATE UNIQUE INDEX "AdminEthereumQueue_queueTransactionHash_key" ON "AdminEther
 CREATE UNIQUE INDEX "AdminEthereumQueue_generatedAddress_key" ON "AdminEthereumQueue"("generatedAddress");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "AdminEthereumQueue_sendTransactionHash_key" ON "AdminEthereumQueue"("sendTransactionHash");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AdminEthereumQueue_botTransactionHash_key" ON "AdminEthereumQueue"("botTransactionHash");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "AdminEthereumQueue_hotWalletAddress_hotWalletIndex_key" ON "AdminEthereumQueue"("hotWalletAddress", "hotWalletIndex");
 
 -- AddForeignKey
