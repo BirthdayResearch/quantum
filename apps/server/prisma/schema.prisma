@@ -58,13 +58,11 @@ model BridgeEventTransactions {
 enum QueueStatus {
   DRAFT
   IN_PROGRESS
-  FUNDED
   COMPLETED
   ERROR
   REJECTED
   EXPIRED
   REFUND_REQUESTED
-  REFUND_PROCESSED
   REFUNDED
 }
 
@@ -102,7 +100,6 @@ model AdminEthereumQueue {
   blockHeight          String?
   createdAt            DateTime                   @default(now())
   updatedAt            DateTime?                  @updatedAt
-  botTransactionHash   String?                    @unique // when the bot sends funds from generated address to the user address
 
   @@unique([hotWalletAddress, hotWalletIndex])
 }
