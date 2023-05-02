@@ -58,6 +58,7 @@ model BridgeEventTransactions {
 enum QueueStatus {
   DRAFT
   IN_PROGRESS
+  FUNDED
   COMPLETED
   ERROR
   REJECTED
