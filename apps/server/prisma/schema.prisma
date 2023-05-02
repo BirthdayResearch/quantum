@@ -58,11 +58,13 @@ model BridgeEventTransactions {
 enum QueueStatus {
   DRAFT
   IN_PROGRESS
+  FUNDED
   COMPLETED
   ERROR
   REJECTED
   EXPIRED
   REFUND_REQUESTED
+  REFUND_PROCESSED
   REFUNDED
   REFUND_PROCESSED
 }
@@ -70,11 +72,6 @@ enum QueueStatus {
 enum DeFiChainTransactionStatus {
   NOT_CONFIRMED
   CONFIRMED
-}
-
-enum BotQueueStatus {
-  SUCCESS
-  ERROR
 }
 
 model EthereumQueue {
@@ -88,7 +85,7 @@ model EthereumQueue {
   tokenSymbol      String?
   defichainAddress String
   expiryDate       DateTime
-  adminOrder       AdminEthereumQueue?
+  adminQueue       AdminEthereumQueue?
 }
 
 model AdminEthereumQueue {
@@ -99,15 +96,14 @@ model AdminEthereumQueue {
   hotWalletAddress     String?
   hotWalletIndex       Int?
   generatedAddress     String?                    @unique
-  sendTransactionHash  String? // when admin send funds to generated address / hot wallet address
+  sendTransactionHash  String?                    @unique // when admin send funds to generated address / hot wallet address 
   defichainStatus      DeFiChainTransactionStatus
   hasVerified          Boolean?
   blockHash            String?
   blockHeight          String?
   createdAt            DateTime                   @default(now())
   updatedAt            DateTime?                  @updatedAt
-  botQueueStatus       BotQueueStatus?
-  botTransactionHash   String? // when the bot sends funds from generated address to the user address
+  botTransactionHash   String?                    @unique // when the bot sends funds from generated address to the user address
 
   @@unique([hotWalletAddress, hotWalletIndex])
 }
