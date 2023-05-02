@@ -64,7 +64,7 @@ export class QueueService {
     },
     orderBy?: OrderBy,
     status?: QueueStatus[],
-  ): Promise<ApiPagedResponse<Queue>> {
+  ): Promise<ApiPagedResponse<Queue> | []> {
     try {
       const next = query.next !== undefined ? BigInt(query.next) : undefined;
       const size = Math.min(query.size ?? 10);
@@ -119,6 +119,10 @@ export class QueueService {
         }),
       ]);
 
+      if (!queueList || queueList.length === 0) {
+        return [];
+      }
+
       const totalPage = Math.ceil(queueCount / size);
 
       // Fetch the final page
@@ -141,10 +145,6 @@ export class QueueService {
 
       const totalPageObj =
         firstItemId !== undefined ? { totalPage: totalPage.toString(), lastPageCursor: firstItemId } : undefined;
-
-      if (!queueList || queueList.length === 0) {
-        throw new Error('No queues found');
-      }
 
       const stringifiedQueueList = queueList.map((queue) => ({
         ...queue,

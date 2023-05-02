@@ -55,6 +55,15 @@ describe('Get and List from EthereumQueue table', () => {
     await testing.stop();
   });
 
+  it('Should have empty list returned when there is no queue matching the conditions', async () => {
+    const resp = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/queue/list?status=${QueueStatus.EXPIRED}`,
+    });
+    const data = JSON.parse(resp.body);
+    expect(data).toStrictEqual([]);
+  });
+
   it('Should throw error when status provided is not valid', async () => {
     const resp = await testing.inject({
       method: 'GET',

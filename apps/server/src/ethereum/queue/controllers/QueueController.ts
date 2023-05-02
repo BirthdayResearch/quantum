@@ -36,7 +36,7 @@ export class QueueController {
    * @param {QueueStatus[]} status accepts multiple status filters split by ',' eg: status=QueueStatus.IN_PROGRESS,QueueStatus.COMPLETED
    * @param {PaginationQuery} query pagination query
    * @param {OrderBy} [orderBy=OrderBy.ASC] default value of list orderBy is ASC
-   * @returns {Promise<ApiPagedResponse<Queue>>}
+   * @returns {Promise<ApiPagedResponse<Queue> | []>}
    */
   @Get('list')
   @Throttle(20, 60)
@@ -45,7 +45,7 @@ export class QueueController {
     @Query() query?: PaginationQuery,
     @Query('orderBy', new EnumValidationPipe(OrderBy, OrderBy.ASC))
     orderBy?: OrderBy,
-  ): Promise<ApiPagedResponse<Queue>> {
+  ): Promise<ApiPagedResponse<Queue> | []> {
     return this.queueService.listQueue(query, orderBy, status);
   }
 }
