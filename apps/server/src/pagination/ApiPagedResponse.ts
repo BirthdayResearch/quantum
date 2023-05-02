@@ -95,7 +95,7 @@ export class ApiPagedResponse<T> extends ApiRawResponse {
   }
 
   /**
-   * @param {T[]} data array slice
+   * @param {T[]} data array slice ( array slice should be passing 1 more than limit in service to check for next page )
    * @param {number} limit number of elements in the data array slice
    * @param {(item: T) => string} nextProvider to get next token when ( data array > limit)
    */

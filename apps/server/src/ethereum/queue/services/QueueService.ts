@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Prisma,QueueStatus } from '@prisma/client';
+import { Prisma, QueueStatus } from '@prisma/client';
 
 import { ApiPagedResponse } from '../../../pagination/ApiPagedResponse';
 import { PaginationQuery } from '../../../pagination/ApiQuery';
@@ -10,7 +10,7 @@ import { Queue } from '../model/Queue';
 export class QueueService {
   constructor(private prisma: PrismaService) {}
 
-  async getQueue(transactionHash: string, status?: QueueStatus) {
+  async getQueue(transactionHash: string, status?: QueueStatus): Promise<Queue> {
     try {
       const queue = await this.prisma.ethereumQueue.findFirst({
         where: {
@@ -22,6 +22,7 @@ export class QueueService {
           transactionHash: true,
           ethereumStatus: true,
           status: true,
+          createdAt: true,
           updatedAt: true,
           amount: true,
           tokenSymbol: true,
@@ -73,6 +74,23 @@ export class QueueService {
         take: size + 1, // to get extra 1 to check for next page
         orderBy: {
           id: Prisma.SortOrder.asc,
+        },
+        select: {
+          id: true,
+          transactionHash: true,
+          ethereumStatus: true,
+          status: true,
+          updatedAt: true,
+          createdAt: true,
+          amount: true,
+          tokenSymbol: true,
+          defichainAddress: true,
+          expiryDate: true,
+          adminQueue: {
+            select: {
+              sendTransactionHash: true,
+            },
+          },
         },
       });
 

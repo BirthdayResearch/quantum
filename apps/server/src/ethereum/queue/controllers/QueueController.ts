@@ -13,15 +13,29 @@ import { QueueService } from '../services/QueueService';
 export class QueueController {
   constructor(private readonly queueService: QueueService) {}
 
+  /**
+   * Get information about a queue with given transactionHash.
+   *
+   * @param {string} transactionHash transactionHash
+   * @param {QueueStatus} [status=QueueStatus] status of queue
+   * @returns {Promise<Queue>}
+   */
   @Get(':transactionHash')
   async getQueue(
     @Param('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
     @Query('status', new EthereumQueueStatusPipe(QueueStatus))
     status?: QueueStatus,
-  ) {
+  ): Promise<Queue> {
     return this.queueService.getQueue(transactionHash, status);
   }
 
+  /**
+   * Return paginated queue list.
+   *
+   * @param {QueueStatus} [status=QueueStatus] status of queue
+   * @param {PaginationQuery} query pagination query
+   * @returns {Promise<ApiPagedResponse<Queue>>}
+   */
   @Get('list')
   @Throttle(20, 60)
   async listQueue(
