@@ -4,7 +4,7 @@ import { Prisma, QueueStatus } from '@prisma/client';
 import { ApiPagedResponse } from '../../../pagination/ApiPagedResponse';
 import { PaginationQuery } from '../../../pagination/ApiQuery';
 import { PrismaService } from '../../../PrismaService';
-import { Queue } from '../model/Queue';
+import { OrderBy, Queue } from '../model/Queue';
 
 @Injectable()
 export class QueueService {
@@ -62,37 +62,85 @@ export class QueueService {
     query: PaginationQuery = {
       size: 30,
     },
-    status?: QueueStatus,
+    orderBy?: OrderBy,
+    status?: QueueStatus[],
   ): Promise<ApiPagedResponse<Queue>> {
     try {
       const next = query.next !== undefined ? BigInt(query.next) : undefined;
       const size = Math.min(query.size ?? 10);
+      let orderById;
 
-      const queueList = await this.prisma.ethereumQueue.findMany({
-        where: status ? { status } : undefined,
-        cursor: next ? { id: next } : undefined,
-        take: size + 1, // to get extra 1 to check for next page
-        orderBy: {
-          id: Prisma.SortOrder.asc,
-        },
-        select: {
-          id: true,
-          transactionHash: true,
-          ethereumStatus: true,
-          status: true,
-          updatedAt: true,
-          createdAt: true,
-          amount: true,
-          tokenSymbol: true,
-          defichainAddress: true,
-          expiryDate: true,
-          adminQueue: {
-            select: {
-              sendTransactionHash: true,
+      switch (orderBy) {
+        case OrderBy.DESC:
+          orderById = Prisma.SortOrder.desc;
+          break;
+        case OrderBy.ASC:
+        default:
+          orderById = Prisma.SortOrder.asc;
+          break;
+      }
+
+      const [queueCount, queueList] = await this.prisma.$transaction([
+        this.prisma.ethereumQueue.count({
+          where: {
+            status: {
+              in: status,
             },
           },
+        }),
+        this.prisma.ethereumQueue.findMany({
+          where: {
+            status: {
+              in: status,
+            },
+          },
+          cursor: next ? { id: next } : undefined,
+          take: size + 1, // to get extra 1 to check for next page
+          orderBy: {
+            id: orderById,
+          },
+          select: {
+            id: true,
+            transactionHash: true,
+            ethereumStatus: true,
+            status: true,
+            updatedAt: true,
+            createdAt: true,
+            amount: true,
+            tokenSymbol: true,
+            defichainAddress: true,
+            expiryDate: true,
+            adminQueue: {
+              select: {
+                sendTransactionHash: true,
+              },
+            },
+          },
+        }),
+      ]);
+
+      const totalPage = Math.ceil(queueCount / size);
+
+      // Fetch the final page
+      const finalPage = await this.prisma.ethereumQueue.findMany({
+        where: {
+          status: {
+            in: status,
+          },
+        },
+        take: size,
+        skip: (totalPage - 1) * size,
+        orderBy: {
+          id: orderById,
         },
       });
+
+      // get first item of the final page and extract the id
+      const firstItem = finalPage[0];
+      const firstItemId = firstItem ? firstItem.id.toString() : undefined;
+
+      const totalPageObj =
+        firstItemId !== undefined ? { totalPage: totalPage.toString(), lastPageCursor: firstItemId } : undefined;
 
       if (!queueList || queueList.length === 0) {
         throw new Error('No queues found');
@@ -103,7 +151,7 @@ export class QueueService {
         id: queue.id.toString(),
       }));
 
-      return ApiPagedResponse.of(stringifiedQueueList, size, (queue) => queue.id);
+      return ApiPagedResponse.of(stringifiedQueueList, size, (queue) => queue.id, totalPageObj);
     } catch (e: any) {
       throw new HttpException(
         {

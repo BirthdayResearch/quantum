@@ -63,11 +63,11 @@ describe('Get and List from EthereumQueue table', () => {
   it('Should retrieve a single queue', async () => {
     const resp = await testing.inject({
       method: 'GET',
-      url: `/ethereum/queue/0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3831`,
+      url: `/ethereum/queue/${txnHash}`,
     });
 
     const queue = JSON.parse(resp.body);
-    expect(queue.transactionHash).toStrictEqual('0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3831');
+    expect(queue.transactionHash).toStrictEqual(txnHash);
     expect(queue.id).toStrictEqual('1');
     expect(queue.adminQueue.sendTransactionHash).toStrictEqual(sendTxnHash);
   });
@@ -75,11 +75,11 @@ describe('Get and List from EthereumQueue table', () => {
   it('Should be able to retrieve single queue with specific status', async () => {
     const resp = await testing.inject({
       method: 'GET',
-      url: `/ethereum/queue/0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3831?status=DRAFT`,
+      url: `/ethereum/queue/${txnHash}?status=DRAFT`,
     });
 
     const queue = JSON.parse(resp.body);
-    expect(queue.transactionHash).toStrictEqual('0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3831');
+    expect(queue.transactionHash).toStrictEqual(txnHash);
     expect(queue.id).toStrictEqual('1');
     expect(queue.adminQueue.sendTransactionHash).toStrictEqual(sendTxnHash);
     expect(queue.status).toStrictEqual(QueueStatus.DRAFT);
@@ -110,7 +110,7 @@ describe('Get and List from EthereumQueue table', () => {
 
     const data = JSON.parse(resp.body);
     expect(data.message).toStrictEqual(
-      'Invalid query parameter value. See the acceptable values: DRAFT, IN_PROGRESS, COMPLETED, ERROR, REJECTED, EXPIRED, REFUND_REQUESTED, REFUND_PROCESSED, REFUNDED',
+      'Invalid query parameter value. See the acceptable values: DRAFT, IN_PROGRESS, COMPLETED, ERROR, REJECTED, EXPIRED, REFUND_REQUESTED, REFUNDED',
     );
   });
 });

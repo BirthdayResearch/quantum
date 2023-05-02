@@ -6,7 +6,7 @@
 
 */
 -- CreateEnum
-CREATE TYPE "QueueStatus" AS ENUM ('DRAFT', 'IN_PROGRESS', 'COMPLETED', 'ERROR', 'REJECTED', 'EXPIRED', 'REFUND_REQUESTED', 'REFUND_PROCESSED', 'REFUNDED');
+CREATE TYPE "QueueStatus" AS ENUM ('DRAFT', 'IN_PROGRESS', 'FUNDED', 'COMPLETED', 'ERROR', 'REJECTED', 'EXPIRED', 'REFUND_REQUESTED', 'REFUND_PROCESSED', 'REFUNDED');
 
 -- DropForeignKey
 ALTER TABLE "AdminEthereumOrders" DROP CONSTRAINT "AdminEthereumOrders_orderId_fkey";
@@ -64,6 +64,12 @@ CREATE UNIQUE INDEX "AdminEthereumQueue_queueTransactionHash_key" ON "AdminEther
 
 -- CreateIndex
 CREATE UNIQUE INDEX "AdminEthereumQueue_generatedAddress_key" ON "AdminEthereumQueue"("generatedAddress");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AdminEthereumQueue_sendTransactionHash_key" ON "AdminEthereumQueue"("sendTransactionHash");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "AdminEthereumQueue_botTransactionHash_key" ON "AdminEthereumQueue"("botTransactionHash");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "AdminEthereumQueue_hotWalletAddress_hotWalletIndex_key" ON "AdminEthereumQueue"("hotWalletAddress", "hotWalletIndex");

@@ -5,6 +5,13 @@
 export interface ApiPage {
   next?: string;
 }
+/**
+ * TotalPage for getting totalPages and first cursor of the last page for ApiPagedResponse pagination
+ */
+export interface TotalPages {
+  totalPage: string;
+  lastPageCursor?: string;
+}
 
 /**
  * Universal response structure for 'module.api'
@@ -12,6 +19,7 @@ export interface ApiPage {
 export interface ApiResponse {
   data?: any;
   page?: ApiPage;
+  totalPages?: TotalPages;
 }
 
 /* eslint-disable @typescript-eslint/no-extraneous-class */
@@ -80,31 +88,41 @@ export class ApiPagedResponse<T> extends ApiRawResponse {
 
   page?: ApiPage;
 
-  protected constructor(data: T[], next?: string) {
+  totalPages?: TotalPages;
+
+  protected constructor(data: T[], next?: string, totalPages?: TotalPages) {
     super();
     this.data = data;
     this.page = next !== undefined ? { next } : undefined;
+    this.totalPages = totalPages ?? undefined;
   }
 
   /**
    * @param {T[]} data array slice
    * @param {string} next token slice for greater than, less than operator
+   * @param {TotalPages} totalPages contains total pages of the list and the cursor of the lastPage
    */
-  static next<T>(data: T[], next?: string): ApiPagedResponse<T> {
-    return new ApiPagedResponse<T>(data, next);
+  static next<T>(data: T[], next?: string, totalPages?: TotalPages): ApiPagedResponse<T> {
+    return new ApiPagedResponse<T>(data, next, totalPages);
   }
 
   /**
    * @param {T[]} data array slice ( array slice should be passing 1 more than limit in service to check for next page )
    * @param {number} limit number of elements in the data array slice
    * @param {(item: T) => string} nextProvider to get next token when ( data array > limit)
+   * @param {TotalPages} totalPages contains total pages of the list and the cursor of the lastPage
    */
-  static of<T>(data: T[], limit: number, nextProvider: (item: T) => string): ApiPagedResponse<T> {
+  static of<T>(
+    data: T[],
+    limit: number,
+    nextProvider: (item: T) => string,
+    totalPages?: TotalPages,
+  ): ApiPagedResponse<T> {
     // if data.length > limit means that there is a next page
     if (data.length > limit && data.length > 0 && limit > 0) {
       const next = nextProvider(data[limit]);
       // slice data to get data minus the additional queue that is used to check for next page
-      return this.next(data.slice(0, data.length - 1), next);
+      return this.next(data.slice(0, data.length - 1), next, totalPages);
     }
 
     return this.next(data);

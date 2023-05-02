@@ -15,3 +15,8 @@ export interface Queue {
     sendTransactionHash: string | null;
   };
 }
+
+export enum OrderBy {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
