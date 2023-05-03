@@ -111,9 +111,9 @@ export class ApiPagedResponse<T> extends ApiRawResponse {
    * @param {(item: T) => string} nextProvider to get next token when ( data array > limit)
    * @param {TotalCount} count contains total count of the number of queues
    */
-  static of<T>(data: T[], limit: number, nextProvider: (item: T) => string, count?: string): ApiPagedResponse<T> {
+  static of<T>(data: T[], limit: number, nextProvider?: (item: T) => string, count?: string): ApiPagedResponse<T> {
     // if data.length > limit means that there is a next page
-    if (data.length > limit && data.length > 0 && limit > 0) {
+    if (data.length > limit && data.length > 0 && limit > 0 && nextProvider) {
       const next = nextProvider(data[limit]);
       // slice data to get data minus the additional queue that is used to check for next page
       return this.next(data.slice(0, data.length - 1), next, count);

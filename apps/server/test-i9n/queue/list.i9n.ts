@@ -61,7 +61,7 @@ describe('Get and List from EthereumQueue table', () => {
       method: 'GET',
       url: `/ethereum/queue/list?status=${QueueStatus.EXPIRED}`,
     });
-    const data = JSON.parse(resp.body);
+    const { data } = JSON.parse(resp.body);
     expect(data).toStrictEqual([]);
   });
 

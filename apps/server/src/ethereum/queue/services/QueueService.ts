@@ -54,7 +54,7 @@ export class QueueService {
     },
     orderBy?: OrderBy,
     status?: QueueStatus[],
-  ): Promise<ApiPagedResponse<Queue> | []> {
+  ): Promise<ApiPagedResponse<Queue>> {
     try {
       const next = query.next !== undefined ? BigInt(query.next) : undefined;
       const size = Number(query.size ?? 10);
@@ -101,7 +101,7 @@ export class QueueService {
       ]);
 
       if (!queueList || queueList.length === 0) {
-        return [];
+        return ApiPagedResponse.of([], size);
       }
 
       const stringifiedQueueList = queueList.map((queue) => ({
