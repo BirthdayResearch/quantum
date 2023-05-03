@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
@@ -22,6 +22,7 @@ export enum ErrorMsg {
   InaccurateNameAndSignature = 'Decoded function name or signation is inaccurate',
   PendingTxn = 'Transaction is still pending',
   InaccurateContractAddress = 'Contract Address, decoded name, or signature is inaccurate',
+  RevertedTxn = 'Transaction Reverted',
 }
 export interface VerifyIfValidTxnDto {
   isValidTxn: boolean;
@@ -61,7 +62,7 @@ export class VerificationService {
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      throw new BadRequestException(`Transaction Reverted`);
+      return { isValidTxn: false, ErrorMsg: ErrorMsg.RevertedTxn };
     }
 
     // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
