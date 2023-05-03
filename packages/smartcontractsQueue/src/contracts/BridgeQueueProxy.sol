@@ -1,6 +1,6 @@
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 
-contract BridgeOrderBookProxy is ERC1967Proxy {
+contract BridgeQueueProxy is ERC1967Proxy {
     constructor(
         address _logic,
         bytes memory _data

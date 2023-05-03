@@ -5,15 +5,11 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { deployContracts } from "./utils/deployment";
 import { toWei } from "./utils/mathUtils";
-import {
-  BridgeOrderBook__factory,
-  BridgeOrderBook,
-  TestToken,
-} from "../generated";
+import { BridgeQueue, TestToken } from "../generated";
 
 describe("Bridge order tests", () => {
   describe("Administrative functions", () => {
-    let proxyBridge: BridgeOrderBook;
+    let proxyBridge: BridgeQueue;
     let testToken: TestToken;
     let defaultAdminSigner: SignerWithAddress;
     let arbitrarySigner: SignerWithAddress;

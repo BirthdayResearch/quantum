@@ -13,7 +13,7 @@ error MORE_THAN_MAX_FEE();
 error INVALID_COLD_WALLET();
 error INVALID_COMMUNITY_WALLET();
 
-contract BridgeOrderBook is
+contract BridgeQueue is
     UUPSUpgradeable,
     ReentrancyGuardUpgradeable,
     AccessControlUpgradeable
