@@ -72,7 +72,7 @@ export class EVMTransactionConfirmerService {
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
-    const isValidTxn = this.verificationService.verifyIfValidTxn(transactionHash, ContractType.v1);
+    const isValidTxn = await this.verificationService.verifyIfValidTxn(transactionHash, ContractType.v1);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
     // if transaction is still pending
