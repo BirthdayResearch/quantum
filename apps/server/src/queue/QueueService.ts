@@ -40,48 +40,48 @@ export class QueueService {
         ContractType.queue,
       );
 
-      if (isValidTxn) {
-        const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-        const parsedTxnData = await this.verficationService.parseTxnHash(transactionHash, ContractType.queue);
-        const { params } = this.verficationService.decodeTxnData(parsedTxnData);
-        const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
-
-        const toAddress = ethers.utils.toUtf8String(defiAddress);
-
-        let transferAmount = new BigNumber(0);
-        let dTokenDetails;
-
-        // eth transfer
-        if (tokenAddress === ethers.constants.AddressZero) {
-          const ethAmount = EthBigNumber.from(onChainTxnDetail.value).toString();
-          transferAmount = new BigNumber(ethAmount).dividedBy(new BigNumber(10).pow(18));
-          dTokenDetails = getDTokenDetailsByWToken('ETH', this.network);
-        }
-        // wToken transfer
-        const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
-        const wTokenSymbol = await evmTokenContract.symbol();
-        const wTokenDecimals = await evmTokenContract.decimals();
-        transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
-        dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
-        // expiry date
-        const currentDate = new Date();
-        const expiryDate = currentDate.setDate(currentDate.getDate() + 3);
-
-        await this.prisma.ethereumQueue.create({
-          data: {
-            transactionHash,
-            status: QueueStatus.DRAFT,
-            ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
-            amount: new BigNumber(transferAmount).toString(),
-            defichainAddress: toAddress,
-            expiryDate: new Date(expiryDate),
-            tokenSymbol: dTokenDetails.symbol,
-          },
-        });
-        return `Draft queue transaction created for ${transactionHash}`;
-      } 
+      if (!isValidTxn) {
         throw new Error(ErrorMsg);
-      
+      }
+
+      const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
+      const parsedTxnData = await this.verficationService.parseTxnHash(transactionHash, ContractType.queue);
+      const { params } = this.verficationService.decodeTxnData(parsedTxnData);
+      const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
+
+      const toAddress = ethers.utils.toUtf8String(defiAddress);
+
+      let transferAmount = new BigNumber(0);
+      let dTokenDetails;
+
+      // eth transfer
+      if (tokenAddress === ethers.constants.AddressZero) {
+        const ethAmount = EthBigNumber.from(onChainTxnDetail.value).toString();
+        transferAmount = new BigNumber(ethAmount).dividedBy(new BigNumber(10).pow(18));
+        dTokenDetails = getDTokenDetailsByWToken('ETH', this.network);
+      }
+      // wToken transfer
+      const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
+      const wTokenSymbol = await evmTokenContract.symbol();
+      const wTokenDecimals = await evmTokenContract.decimals();
+      transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
+      dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
+      // expiry date
+      const currentDate = new Date();
+      const expiryDate = currentDate.setDate(currentDate.getDate() + 3);
+
+      await this.prisma.ethereumQueue.create({
+        data: {
+          transactionHash,
+          status: QueueStatus.DRAFT,
+          ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
+          amount: new BigNumber(transferAmount).toString(),
+          defichainAddress: toAddress,
+          expiryDate: new Date(expiryDate),
+          tokenSymbol: dTokenDetails.symbol,
+        },
+      });
+      return `Draft queue transaction created for ${transactionHash}`;
     } catch (e: any) {
       throw new HttpException(
         {
@@ -104,56 +104,56 @@ export class QueueService {
       );
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
-      if (isValidTxn) {
-        const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-        const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
+      if (!isValidTxn) {
+        throw new Error(ErrorMsg);
+      }
 
-        if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
-          return { numberOfConfirmations, isConfirmed: false };
-        }
+      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+      const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
 
-        await this.prisma.$transaction(async (prisma) => {
-          const txHashFound = await prisma.ethereumQueue.findFirst({
-            where: {
-              transactionHash,
-            },
-          });
+      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
+        return { numberOfConfirmations, isConfirmed: false };
+      }
 
-          if (txHashFound) {
-            if (txHashFound?.status === QueueStatus.DRAFT) {
-              await prisma.ethereumQueue.update({
-                where: {
-                  transactionHash,
-                },
-                data: {
-                  ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-                  status: QueueStatus.IN_PROGRESS,
-                },
-              });
-            } else {
-              throw new Error('Queue status is not DRAFT & may be further down the approval flow');
-            }
-          }
-
-          const adminQueueTxn = await prisma.adminEthereumQueue.findFirst({
-            where: {
-              queueTransactionHash: transactionHash,
-            },
-          });
-          if (adminQueueTxn === null) {
-            await prisma.adminEthereumQueue.create({
-              data: {
-                queueTransactionHash: transactionHash,
-                defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
-              },
-            });
-          }
+      await this.prisma.$transaction(async (prisma) => {
+        const txHashFound = await prisma.ethereumQueue.findFirst({
+          where: {
+            transactionHash,
+          },
         });
 
-        return { numberOfConfirmations, isConfirmed: true };
-      } 
-        throw new Error(ErrorMsg);
-      
+        if (txHashFound) {
+          if (txHashFound?.status === QueueStatus.DRAFT) {
+            await prisma.ethereumQueue.update({
+              where: {
+                transactionHash,
+              },
+              data: {
+                ethereumStatus: EthereumTransactionStatus.CONFIRMED,
+                status: QueueStatus.IN_PROGRESS,
+              },
+            });
+          } else {
+            throw new Error('Queue status is not DRAFT & may be further down the approval flow');
+          }
+        }
+
+        const adminQueueTxn = await prisma.adminEthereumQueue.findFirst({
+          where: {
+            queueTransactionHash: transactionHash,
+          },
+        });
+        if (adminQueueTxn === null) {
+          await prisma.adminEthereumQueue.create({
+            data: {
+              queueTransactionHash: transactionHash,
+              defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+            },
+          });
+        }
+      });
+
+      return { numberOfConfirmations, isConfirmed: true };
     } catch (e: any) {
       throw new HttpException(
         {
