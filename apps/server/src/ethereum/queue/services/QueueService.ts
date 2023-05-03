@@ -57,7 +57,7 @@ export class QueueService {
   ): Promise<ApiPagedResponse<Queue>> {
     try {
       const next = query.next !== undefined ? BigInt(query.next) : undefined;
-      const size = Number(query.size ?? 10);
+      const size = Number(query.size);
 
       let orderById;
 

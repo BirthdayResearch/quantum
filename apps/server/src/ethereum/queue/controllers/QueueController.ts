@@ -41,7 +41,7 @@ export class QueueController {
    */
   @Get('list')
   @Throttle(20, 60)
-  @UsePipes(new ValidationPipe()) // this is required for validating and transforming the incoming request data based on the validation decorators for Pagination Query
+  @UsePipes(new ValidationPipe({ skipMissingProperties: true })) // this is required for validating and transforming the incoming request data based on the validation decorators for Pagination Query
   async listQueue(
     @Query('status', new EthereumQueueMultiStatusPipe(QueueStatus)) status: QueueStatus[],
     @Query() query?: PaginationQuery,

@@ -14,7 +14,7 @@ export class PaginationQuery {
   @Transform(({ value }) => (value > 200 ? 200 : value))
   @Min(1)
   @Type(() => Number)
-  size?: number;
+  size: number = 10;
 
   @IsOptional()
   @IsString()
