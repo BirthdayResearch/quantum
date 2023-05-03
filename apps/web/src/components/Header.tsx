@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useNetwork } from "wagmi";
@@ -6,6 +7,8 @@ import Banner from "./Banner";
 import Navigation from "./Navigation";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
+import { SearchQueuedTransactionButton } from "./SearchQueuedTransactionButton";
+import { SearchQueuedTransactionModal } from "./SearchQueuedTransactionModal";
 
 export default function Header({
   isBridgeUp,
@@ -13,6 +16,10 @@ export default function Header({
   isBridgeUp: boolean;
 }): JSX.Element {
   const { chain } = useNetwork();
+  const [
+    isSearchQueuedTransactionModalOpen,
+    setIsSearchQueuedTransactionModalOpen,
+  ] = useState(false);
 
   return (
     <div className="relative z-[1] flex flex-col">
@@ -35,8 +42,15 @@ export default function Header({
           </div>
         )}
         <div className="flex h-9 items-center md:h-10 lg:h-12">
+          <SearchQueuedTransactionButton
+            onClick={() => setIsSearchQueuedTransactionModalOpen(true)}
+          />
           <ConnectButton />
           {chain === undefined && <EnvironmentNetworkSwitch />}
+          <SearchQueuedTransactionModal
+            isOpen={isSearchQueuedTransactionModalOpen}
+            onClose={() => setIsSearchQueuedTransactionModalOpen(false)}
+          />
         </div>
       </div>
       {isBridgeUp && (
