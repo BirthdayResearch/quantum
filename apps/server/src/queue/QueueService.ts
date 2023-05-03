@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1, BridgeV1__factory, ERC20__factory } from 'smartcontracts';
 
-import { EVMTransactionConfirmerService } from '../ethereum/services/EVMTransactionConfirmerService';
+import { ContractType, VerificationService } from '../ethereum/services/VerificationService';
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
 import { getDTokenDetailsByWToken } from '../utils/TokensUtils';
@@ -25,22 +25,22 @@ export class QueueService {
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private configService: ConfigService,
-    private readonly evmTransactionConfirmerService: EVMTransactionConfirmerService,
+    private verficationService: VerificationService,
     private prisma: PrismaService,
   ) {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
-    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.bridgeProxy.address');
+    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.address');
     this.contract = BridgeV1__factory.connect(this.contractAddress, this.ethersRpcProvider);
   }
 
   async createQueueTransaction(transactionHash: string): Promise<string> {
     try {
-      const isValidTxn = await this.evmTransactionConfirmerService.verifyIfValidTxn(transactionHash);
+      const isValidTxn = this.verficationService.verifyIfValidTxn(transactionHash, ContractType.v2);
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-      const parsedTxnData = await this.evmTransactionConfirmerService.parseTxnHash(transactionHash);
-      const { params } = this.evmTransactionConfirmerService.decodeTxnData(parsedTxnData);
+      const parsedTxnData = await this.verficationService.parseTxnHash(transactionHash, ContractType.v2);
+      const { params } = this.verficationService.decodeTxnData(parsedTxnData);
       const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
 
       const toAddress = ethers.utils.toUtf8String(defiAddress);
@@ -108,7 +108,7 @@ export class QueueService {
 
   async verify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
     try {
-      const isValidTxn = await this.evmTransactionConfirmerService.verifyIfValidTxn(transactionHash);
+      const isValidTxn = await this.verficationService.verifyIfValidTxn(transactionHash, ContractType.v2);
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
       // if transaction is still pending
