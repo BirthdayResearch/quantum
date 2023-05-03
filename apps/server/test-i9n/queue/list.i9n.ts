@@ -5,6 +5,7 @@ import { QueueStatus } from '@prisma/client';
 
 import { Queue } from '../../src/ethereum/queue/model/Queue';
 import { PrismaService } from '../../src/PrismaService';
+import { sleep } from '../helper/sleep';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 
@@ -311,5 +312,17 @@ describe('Get and List from EthereumQueue table', () => {
     expect(page.next).toStrictEqual('15');
 
     expect(totalCount.count).toStrictEqual('20');
+  });
+
+  it('Should have an error when invalid orderBy param is provided', async () => {
+    // wait 1 min before continuing
+    await sleep(60000);
+    const resp = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/queue/list?size=5&status=DRAFT&orderBy=TEST`,
+    });
+
+    const data = JSON.parse(resp.body);
+    expect(data.message).toStrictEqual('Invalid query parameter value. See the acceptable values: ASC, DESC');
   });
 });
