@@ -140,7 +140,7 @@ export class QueueService {
         },
       });
 
-      if (txHashFound?.status === QueueStatus.DRAFT)
+      if (txHashFound?.status === QueueStatus.DRAFT) {
         await this.prisma.ethereumQueue.update({
           where: {
             transactionHash,
@@ -150,6 +150,9 @@ export class QueueService {
             status: QueueStatus.IN_PROGRESS,
           },
         });
+      } else {
+        throw new Error('Queue status is not DRAFT & may be further down the approval flow');
+      }
 
       const adminQueueTxn = await this.prisma.adminEthereumQueue.findFirst({
         where: {
