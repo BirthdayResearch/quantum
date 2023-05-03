@@ -9,7 +9,8 @@ export class EnumValidationPipe<T extends Record<string, string>> implements Pip
     }
     if (!value && !this.defaultValue) return undefined;
 
-    if (!Object.values(this.enumType).includes(value)) {
+    const doesEnumExist = this.enumType[value];
+    if (!doesEnumExist) {
       throw this.exceptionFactory
         ? this.exceptionFactory()
         : new BadRequestException(
