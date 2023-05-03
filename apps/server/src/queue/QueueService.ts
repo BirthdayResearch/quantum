@@ -134,10 +134,6 @@ export class QueueService {
         return { numberOfConfirmations, isConfirmed: false };
       }
 
-      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
-        return { numberOfConfirmations, isConfirmed: false };
-      }
-
       const txHashFound = await this.prisma.ethereumQueue.findFirst({
         where: {
           transactionHash,
