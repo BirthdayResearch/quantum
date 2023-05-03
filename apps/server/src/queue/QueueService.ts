@@ -37,6 +37,7 @@ export class QueueService {
     try {
       const { isValidTxn, ErrorMsg } = await this.verficationService.verifyIfValidTxn(
         transactionHash,
+        this.contractAddress,
         ContractType.queue,
       );
 
@@ -100,6 +101,7 @@ export class QueueService {
     try {
       const { isValidTxn, ErrorMsg } = await this.verficationService.verifyIfValidTxn(
         transactionHash,
+        this.contractAddress,
         ContractType.queue,
       );
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);

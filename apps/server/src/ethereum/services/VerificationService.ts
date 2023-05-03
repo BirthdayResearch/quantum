@@ -1,5 +1,4 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
@@ -31,16 +30,13 @@ export interface VerifyIfValidTxnDto {
 
 @Injectable()
 export class VerificationService {
-  private contractAddress: string;
+  constructor(@Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider) {}
 
-  constructor(
-    @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
-    private configService: ConfigService,
-  ) {
-    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.address');
-  }
-
-  async verifyIfValidTxn(transactionHash: string, contractType: ContractType): Promise<VerifyIfValidTxnDto> {
+  async verifyIfValidTxn(
+    transactionHash: string,
+    contractAddress: string,
+    contractType: ContractType,
+  ): Promise<VerifyIfValidTxnDto> {
     const { parsedTxnData } = await this.parseTxnHash(transactionHash, contractType);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
@@ -58,7 +54,7 @@ export class VerificationService {
     }
 
     // Sanity check that the contractAddress, decoded name and signature are correct
-    if (txReceipt.to !== this.contractAddress) {
+    if (txReceipt.to !== contractAddress) {
       return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateContractAddress };
     }
 
