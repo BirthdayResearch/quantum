@@ -15,7 +15,7 @@ export class QueueService {
       const queue = await this.prisma.ethereumQueue.findFirst({
         where: {
           transactionHash,
-          status: status || undefined,
+          status,
         },
         include: {
           adminQueue: {
@@ -57,7 +57,8 @@ export class QueueService {
   ): Promise<ApiPagedResponse<Queue> | []> {
     try {
       const next = query.next !== undefined ? BigInt(query.next) : undefined;
-      const size = Math.min(query.size ?? 10);
+      const size = Number(query.size ?? 10);
+
       let orderById;
 
       switch (orderBy) {
