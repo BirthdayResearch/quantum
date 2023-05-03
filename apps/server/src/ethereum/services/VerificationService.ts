@@ -1,4 +1,5 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
@@ -18,23 +19,58 @@ const contract = {
   },
 };
 
+export enum ErrorMsg {
+  InaccurateNameAndSignature = 'Decoded function name or signation is inaccurate',
+  PendingTxn = 'Transaction is still pending',
+  InaccurateContractAddress = 'Contract Address, decoded name, or signature is inaccurate',
+}
+export interface VerifyIfValidTxnDto {
+  isValidTxn: boolean;
+  ErrorMsg?: string;
+}
+
 @Injectable()
 export class VerificationService {
-  constructor(@Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider) {}
+  private contractAddress: string;
 
-  async verifyIfValidTxn(transactionHash: string, contractType: ContractType): Promise<boolean> {
+  constructor(
+    @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
+    private configService: ConfigService,
+  ) {
+    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.address');
+  }
+
+  async verifyIfValidTxn(transactionHash: string, contractType: ContractType): Promise<VerifyIfValidTxnDto> {
     const { parsedTxnData } = await this.parseTxnHash(transactionHash, contractType);
+    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+
     // Sanity check that the decoded function name and signature are correct
     if (
       parsedTxnData.name !== 'bridgeToDeFiChain' ||
       parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
     ) {
-      return false;
+      return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateNameAndSignature };
+    }
+
+    // if transaction is still pending
+    if (txReceipt === null) {
+      return { isValidTxn: false, ErrorMsg: ErrorMsg.PendingTxn };
+    }
+
+    // Sanity check that the contractAddress, decoded name and signature are correct
+    if (txReceipt.to !== this.contractAddress) {
+      return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateContractAddress };
+    }
+
+    // if transaction is reverted
+    const isReverted = txReceipt.status === 0;
+    if (isReverted === true) {
+      throw new BadRequestException(`Transaction Reverted`);
     }
 
     // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
 
-    return true;
+    return { isValidTxn: true };
   }
 
   async parseTxnHash(
