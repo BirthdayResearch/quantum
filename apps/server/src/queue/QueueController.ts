@@ -10,7 +10,7 @@ export class QueueController {
 
   @Post()
   @Throttle(35, 60)
-  order(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
+  queue(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.queueService.createQueueTransaction(transactionHash);
   }
 
