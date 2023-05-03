@@ -5,15 +5,15 @@ import { BridgeV1__factory } from 'smartcontracts';
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 
 export enum ContractType {
-  v1 = 'v1',
-  v2 = 'v2',
+  instant = 'instant',
+  queue = 'queue',
 }
 const contract = {
-  [ContractType.v1]: {
+  [ContractType.instant]: {
     interface: BridgeV1__factory.abi,
   },
   // Todo : update to phase 2 contract when ready
-  [ContractType.v2]: {
+  [ContractType.queue]: {
     interface: BridgeV1__factory.abi,
   },
 };

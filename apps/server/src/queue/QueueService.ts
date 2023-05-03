@@ -35,11 +35,11 @@ export class QueueService {
 
   async createQueueTransaction(transactionHash: string): Promise<string> {
     try {
-      const isValidTxn = this.verficationService.verifyIfValidTxn(transactionHash, ContractType.v2);
+      const isValidTxn = this.verficationService.verifyIfValidTxn(transactionHash, ContractType.queue);
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-      const parsedTxnData = await this.verficationService.parseTxnHash(transactionHash, ContractType.v2);
+      const parsedTxnData = await this.verficationService.parseTxnHash(transactionHash, ContractType.queue);
       const { params } = this.verficationService.decodeTxnData(parsedTxnData);
       const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
 
@@ -108,7 +108,7 @@ export class QueueService {
 
   async verify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
     try {
-      const isValidTxn = await this.verficationService.verifyIfValidTxn(transactionHash, ContractType.v2);
+      const isValidTxn = await this.verficationService.verifyIfValidTxn(transactionHash, ContractType.queue);
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
       // if transaction is still pending

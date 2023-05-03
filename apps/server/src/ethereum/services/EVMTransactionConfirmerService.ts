@@ -72,7 +72,7 @@ export class EVMTransactionConfirmerService {
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
-    const isValidTxn = await this.verificationService.verifyIfValidTxn(transactionHash, ContractType.v1);
+    const isValidTxn = await this.verificationService.verifyIfValidTxn(transactionHash, ContractType.instant);
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
     // if transaction is still pending
@@ -289,7 +289,7 @@ export class EVMTransactionConfirmerService {
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const isValidTxn = await this.verificationService.verifyIfValidTxn(transactionHash, ContractType.v1);
+      const isValidTxn = await this.verificationService.verifyIfValidTxn(transactionHash, ContractType.instant);
 
       if (!txReceipt) {
         throw new Error('Transaction is not yet available');
@@ -394,7 +394,7 @@ export class EVMTransactionConfirmerService {
     toAddress: string;
   }> {
     const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-    const parsedTxnData = await this.verificationService.parseTxnHash(transactionHash, ContractType.v1);
+    const parsedTxnData = await this.verificationService.parseTxnHash(transactionHash, ContractType.instant);
     const { params } = this.verificationService.decodeTxnData(parsedTxnData);
 
     const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
