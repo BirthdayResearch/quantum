@@ -32,7 +32,7 @@ export class QueueService {
 
       return {
         ...queue,
-        id: String(queue.id),
+        id: queue.id.toString(),
       };
     } catch (e: any) {
       throw new HttpException(
