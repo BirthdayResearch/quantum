@@ -45,7 +45,10 @@ export class BridgeServerApp<App extends NestFastifyApplication = NestFastifyApp
     app.useGlobalInterceptors(new LoggerErrorInterceptor());
     app.useLogger(app.get(Logger));
     app.enableCors({
-      origin: process.env.NODE_ENV === 'production' ? ['https://quantumbridge.app'] : '*',
+      origin:
+        process.env.NODE_ENV === 'production'
+          ? ['https://quantumbridge.app', '^(https:\\/\\/([^\\.]*\\.)?quantumbridge\\.app)$']
+          : '*',
       allowedHeaders: '*',
       methods: ['GET', 'PUT', 'POST', 'DELETE'],
       maxAge: 60 * 24 * 7,
