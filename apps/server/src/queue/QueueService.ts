@@ -134,39 +134,43 @@ export class QueueService {
         return { numberOfConfirmations, isConfirmed: false };
       }
 
-      const txHashFound = await this.prisma.ethereumQueue.findFirst({
-        where: {
-          transactionHash,
-        },
-      });
-
-      if (txHashFound?.status === QueueStatus.DRAFT) {
-        await this.prisma.ethereumQueue.update({
+      await this.prisma.$transaction(async (prisma) => {
+        const txHashFound = await prisma.ethereumQueue.findFirst({
           where: {
             transactionHash,
           },
-          data: {
-            ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-            status: QueueStatus.IN_PROGRESS,
-          },
         });
-      } else {
-        throw new Error('Queue status is not DRAFT & may be further down the approval flow');
-      }
 
-      const adminQueueTxn = await this.prisma.adminEthereumQueue.findFirst({
-        where: {
-          queueTransactionHash: transactionHash,
-        },
-      });
-      if (adminQueueTxn === null) {
-        await this.prisma.adminEthereumQueue.create({
-          data: {
+        if (txHashFound) {
+          if (txHashFound?.status === QueueStatus.DRAFT) {
+            await prisma.ethereumQueue.update({
+              where: {
+                transactionHash,
+              },
+              data: {
+                ethereumStatus: EthereumTransactionStatus.CONFIRMED,
+                status: QueueStatus.IN_PROGRESS,
+              },
+            });
+          } else {
+            throw new Error('Queue status is not DRAFT & may be further down the approval flow');
+          }
+        }
+
+        const adminQueueTxn = await prisma.adminEthereumQueue.findFirst({
+          where: {
             queueTransactionHash: transactionHash,
-            defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
           },
         });
-      }
+        if (adminQueueTxn === null) {
+          await prisma.adminEthereumQueue.create({
+            data: {
+              queueTransactionHash: transactionHash,
+              defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+            },
+          });
+        }
+      });
 
       return { numberOfConfirmations, isConfirmed: true };
     } catch (e: any) {
