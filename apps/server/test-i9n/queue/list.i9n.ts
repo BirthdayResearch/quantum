@@ -314,6 +314,16 @@ describe('Get and List from EthereumQueue table', () => {
     expect(totalCount.count).toStrictEqual('20');
   });
 
+  it('Should have an error when too many requests', async () => {
+    const resp = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/queue/list?size=5&status=DRAFT&orderBy=TEST`,
+    });
+
+    const data = JSON.parse(resp.body);
+    expect(data.message).toStrictEqual('ThrottlerException: Too Many Requests');
+  });
+
   it('Should have an error when invalid orderBy param is provided', async () => {
     // wait 1 min before continuing
     await sleep(60000);
