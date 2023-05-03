@@ -10,7 +10,8 @@
   "scripts": {
     "build": "pnpm run generate:contract-types && tsc -b ./tsconfig.build.json",
     "generate:contract-types": "hardhat compile --config ./src/hardhat.config.ts",
-    "clean": "rm -rf dist && rm -f tsconfig.build.tsbuildinfo && hardhat clean --config ./src/hardhat.config.ts"
+    "clean": "rm -rf dist && rm -f tsconfig.build.tsbuildinfo && hardhat clean --config ./src/hardhat.config.ts",
+    "test:hardhat": "pnpm run generate:contract-types && hardhat test --config ./src/hardhat.config.ts"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
