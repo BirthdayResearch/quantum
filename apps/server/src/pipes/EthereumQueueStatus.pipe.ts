@@ -11,7 +11,8 @@ export class EthereumQueueMultiStatusPipe<T extends Record<string, string>> impl
     const statusArray = value.split(',');
 
     statusArray.forEach((status: QueueStatus) => {
-      if (!Object.values(this.enumType).includes(status)) {
+      const doesStatusExist = this.enumType[status];
+      if (!doesStatusExist) {
         throw new BadRequestException(
           `Invalid query parameter value. See the acceptable values: ${Object.keys(this.enumType)
             .map((key) => this.enumType[key])
