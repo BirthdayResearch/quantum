@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Put } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
 import { EthereumTransactionValidationPipe } from '../pipes/EthereumTransactionValidation.pipe';
@@ -9,12 +9,12 @@ export class QueueController {
   constructor(private readonly queueService: QueueService) {}
 
   @Post()
-  @Throttle(35, 60)
+  @Throttle(5, 60)
   queue(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.queueService.createQueueTransaction(transactionHash);
   }
 
-  @Put('verify')
+  @Post('verify')
   @Throttle(35, 60)
   verify(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.queueService.verify(transactionHash);
