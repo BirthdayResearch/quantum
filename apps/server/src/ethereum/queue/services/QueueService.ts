@@ -17,17 +17,7 @@ export class QueueService {
           transactionHash,
           status: status || undefined,
         },
-        select: {
-          id: true,
-          transactionHash: true,
-          ethereumStatus: true,
-          status: true,
-          createdAt: true,
-          updatedAt: true,
-          amount: true,
-          tokenSymbol: true,
-          defichainAddress: true,
-          expiryDate: true,
+        include: {
           adminQueue: {
             select: {
               sendTransactionHash: true,
@@ -99,17 +89,7 @@ export class QueueService {
           orderBy: {
             id: orderById,
           },
-          select: {
-            id: true,
-            transactionHash: true,
-            ethereumStatus: true,
-            status: true,
-            updatedAt: true,
-            createdAt: true,
-            amount: true,
-            tokenSymbol: true,
-            defichainAddress: true,
-            expiryDate: true,
+          include: {
             adminQueue: {
               select: {
                 sendTransactionHash: true,
