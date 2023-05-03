@@ -60,7 +60,7 @@ export class QueueService {
 
   async listQueue(
     query: PaginationQuery = {
-      size: 30,
+      size: 10,
     },
     orderBy?: OrderBy,
     status?: QueueStatus[],
