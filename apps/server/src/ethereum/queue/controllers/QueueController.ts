@@ -22,7 +22,7 @@ export class QueueController {
    * @returns {Promise<Queue>}
    */
   @Get(':transactionHash')
-  @Throttle(20, 60)
+  @Throttle(5, 60)
   async getQueue(
     @Param('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
     @Query('status', new EnumValidationPipe(QueueStatus))
