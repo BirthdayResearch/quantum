@@ -335,4 +335,15 @@ describe('Get and List from EthereumQueue table', () => {
     const data = JSON.parse(resp.body);
     expect(data.message).toStrictEqual('Invalid query parameter value. See the acceptable values: ASC, DESC');
   });
+
+  it('Should have error when provided with invalid size in param', async () => {
+    const resp = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/queue/list?size=A`,
+    });
+
+    const data = JSON.parse(resp.body);
+    expect(data.message[0]).toStrictEqual('size must not be less than 1');
+    expect(data.message[1]).toStrictEqual('size must be an integer number');
+  });
 });

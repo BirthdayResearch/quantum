@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { QueueStatus } from '@prisma/client';
 
@@ -41,6 +41,7 @@ export class QueueController {
    */
   @Get('list')
   @Throttle(20, 60)
+  @UsePipes(new ValidationPipe()) // this is required for validating and transforming the incoming request data based on the validation decorators for Pagination Query
   async listQueue(
     @Query('status', new EthereumQueueMultiStatusPipe(QueueStatus)) status: QueueStatus[],
     @Query() query?: PaginationQuery,
