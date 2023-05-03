@@ -1,7 +1,13 @@
 import { CacheModule, Module } from '@nestjs/common';
 
+import { WhaleApiClientProvider } from '../defichain/providers/WhaleApiClientProvider';
+import { WhaleWalletProvider } from '../defichain/providers/WhaleWalletProvider';
+import { DeFiChainTransactionService } from '../defichain/services/DeFiChainTransactionService';
+import { SendService } from '../defichain/services/SendService';
+import { WhaleApiService } from '../defichain/services/WhaleApiService';
 import { SemaphoreCache } from '../libs/caches/SemaphoreCache';
 import { EthersModule } from '../modules/EthersModule';
+import { PrismaService } from '../PrismaService';
 import { QueueModule } from '../queue/QueueModule';
 import { EthereumController } from './controllers/EthereumController';
 import { StatsController } from './controllers/StatsController';
@@ -13,6 +19,12 @@ import { VerificationService } from './services/VerificationService';
 
 @Module({
   providers: [
+    SendService,
+    PrismaService,
+    WhaleApiService,
+    WhaleWalletProvider,
+    WhaleApiClientProvider,
+    DeFiChainTransactionService,
     EVMTransactionConfirmerService,
     EthereumStatsService,
     EthereumTransactionsService,
