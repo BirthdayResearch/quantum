@@ -123,35 +123,12 @@ export class QueueService {
         return [];
       }
 
-      const totalPage = Math.ceil(queueCount / size);
-
-      // Fetch the final page
-      const finalPage = await this.prisma.ethereumQueue.findMany({
-        where: {
-          status: {
-            in: status,
-          },
-        },
-        take: size,
-        skip: (totalPage - 1) * size,
-        orderBy: {
-          id: orderById,
-        },
-      });
-
-      // get first item of the final page and extract the id
-      const firstItem = finalPage[0];
-      const firstItemId = firstItem ? firstItem.id.toString() : undefined;
-
-      const totalPageObj =
-        firstItemId !== undefined ? { totalPage: totalPage.toString(), lastPageCursor: firstItemId } : undefined;
-
       const stringifiedQueueList = queueList.map((queue) => ({
         ...queue,
         id: queue.id.toString(),
       }));
 
-      return ApiPagedResponse.of(stringifiedQueueList, size, (queue) => queue.id, totalPageObj);
+      return ApiPagedResponse.of(stringifiedQueueList, size, (queue) => queue.id, queueCount.toString());
     } catch (e: any) {
       throw new HttpException(
         {

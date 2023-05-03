@@ -257,8 +257,7 @@ describe('Get and List from EthereumQueue table', () => {
       url: `/ethereum/queue/list?size=5&status=DRAFT`,
     });
 
-    const { data } = JSON.parse(resp.body);
-    const { page } = JSON.parse(resp.body);
+    const { data, page } = JSON.parse(resp.body);
 
     expect(page.next).toStrictEqual('6');
     expect(data.length).toStrictEqual(5);
@@ -267,28 +266,35 @@ describe('Get and List from EthereumQueue table', () => {
     });
   });
 
-  it('Should be able to get total pages and lastCursor', async () => {
+  it('Should have count of queues return', async () => {
     const resp = await testing.inject({
       method: 'GET',
       url: `/ethereum/queue/list?size=5&status=DRAFT`,
     });
 
-    const { totalPages } = JSON.parse(resp.body);
-    expect(totalPages.totalPage).toStrictEqual('4');
-    expect(totalPages.lastPageCursor).toStrictEqual('16');
+    const { totalCount } = JSON.parse(resp.body);
+    expect(totalCount.count).toStrictEqual('20');
   });
 
-  it('Should not have page or totalPages on the last page', async () => {
+  it('Should have count of queues return on the last page', async () => {
+    const lastPageResp = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/queue/list?size=5&status=DRAFT&next=${16}`,
+    });
+
+    const { totalCount } = JSON.parse(lastPageResp.body);
+    expect(totalCount.count).toStrictEqual('20');
+  });
+
+  it('Should not have page on the last page', async () => {
     // check that when next = lastPageCursor there should be no next page
     const lastPageResp = await testing.inject({
       method: 'GET',
       url: `/ethereum/queue/list?size=5&status=DRAFT&next=${16}`,
     });
     const { page } = JSON.parse(lastPageResp.body);
-    const { totalPages } = JSON.parse(lastPageResp.body);
 
     expect(page).toBeUndefined();
-    expect(totalPages).toBeUndefined();
   });
 
   it('Should be able to orderBy Desc', async () => {
@@ -297,15 +303,13 @@ describe('Get and List from EthereumQueue table', () => {
       url: `/ethereum/queue/list?size=5&status=DRAFT&orderBy=DESC`,
     });
 
-    const { data } = JSON.parse(resp.body);
-    const { page } = JSON.parse(resp.body);
-    const { totalPages } = JSON.parse(resp.body);
+    const { data, page, totalCount } = JSON.parse(resp.body);
+
     expect(data[0].id).toStrictEqual('20');
     expect(data[data.length - 1].id).toStrictEqual('16');
 
     expect(page.next).toStrictEqual('15');
 
-    expect(totalPages.totalPage).toStrictEqual('4');
-    expect(totalPages.lastPageCursor).toStrictEqual('5');
+    expect(totalCount.count).toStrictEqual('20');
   });
 });
