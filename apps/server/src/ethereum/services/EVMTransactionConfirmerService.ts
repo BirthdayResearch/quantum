@@ -72,7 +72,7 @@ export class EVMTransactionConfirmerService {
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
-    const parsedTxnData = await this.verificationService.verifyIfValidTxn(
+    const { parsedTxnData } = await this.verificationService.verifyIfValidTxn(
       transactionHash,
       this.contractAddress,
       ContractType.instant,
@@ -293,7 +293,7 @@ export class EVMTransactionConfirmerService {
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const parsedTxnData = await this.verificationService.verifyIfValidTxn(
+      const { parsedTxnData } = await this.verificationService.verifyIfValidTxn(
         transactionHash,
         this.contractAddress,
         ContractType.instant,
