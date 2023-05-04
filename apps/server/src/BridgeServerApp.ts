@@ -47,7 +47,11 @@ export class BridgeServerApp<App extends NestFastifyApplication = NestFastifyApp
     app.enableCors({
       origin:
         process.env.NODE_ENV === 'production'
-          ? ['https://quantumbridge.app', /https:\/\/([^.]*.)?quantumbridge\.app/g]
+          ? [
+              'https://quantumbridge.app',
+              /https:\/\/([^.]*.\.)*quantumbridge\.app/g, // allow all subdomains of quantumbridge
+              /https:\/\/([^.]*.)--quantumbridge\.netlify\.app/g, // allow all netlify preview deployments
+            ]
           : '*',
       allowedHeaders: '*',
       methods: ['GET', 'PUT', 'POST', 'DELETE'],
