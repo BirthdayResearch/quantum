@@ -42,7 +42,7 @@ function Tab({
     >
       <div
         className={clsx(
-          "py-[17px] bg-dark-100 border border-dark-200 lg:w-full md:w-[calc(100%+2px)] w-full relative",
+          "py-[17px] dark-card-bg-image backdrop-blur-[18px] border border-dark-200 lg:w-full md:w-[calc(100%+2px)] w-full relative",
           label === TabOptions.INSTANT
             ? "md:rounded-tl-[20px] rounded-tl-[15px] border-r-[0.5px]"
             : "md:rounded-tr-[20px] rounded-tr-[15px] border-l-[0.5px]"
