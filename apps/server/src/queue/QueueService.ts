@@ -25,7 +25,7 @@ export class QueueService {
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private configService: ConfigService,
-    private verficationService: VerificationService,
+    private verificationService: VerificationService,
     private prisma: PrismaService,
   ) {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
@@ -35,7 +35,7 @@ export class QueueService {
 
   async createQueueTransaction(transactionHash: string): Promise<string> {
     try {
-      const { isValidTxn, ErrorMsg } = await this.verficationService.verifyIfValidTxn(
+      const { isValidTxn, ErrorMsg } = await this.verificationService.verifyIfValidTxn(
         transactionHash,
         this.contractAddress,
         ContractType.queue,
@@ -46,8 +46,8 @@ export class QueueService {
       }
 
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-      const parsedTxnData = await this.verficationService.parseTxnHash(transactionHash, ContractType.queue);
-      const { params } = this.verficationService.decodeTxnData(parsedTxnData);
+      const parsedTxnData = await this.verificationService.parseTxnHash(transactionHash, ContractType.queue);
+      const { params } = this.verificationService.decodeTxnData(parsedTxnData);
       const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
 
       const toAddress = ethers.utils.toUtf8String(defiAddress);
@@ -99,7 +99,7 @@ export class QueueService {
 
   async verify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
     try {
-      const { isValidTxn, ErrorMsg } = await this.verficationService.verifyIfValidTxn(
+      const { isValidTxn, ErrorMsg } = await this.verificationService.verifyIfValidTxn(
         transactionHash,
         this.contractAddress,
         ContractType.queue,
