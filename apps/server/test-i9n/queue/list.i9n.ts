@@ -315,7 +315,7 @@ describe('Get and List from EthereumQueue table', () => {
   });
 
   it('Should have an error when too many requests', async () => {
-    await sleep(60000);
+    await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
 
     let count = 1;
     while (count <= 20) {
@@ -337,8 +337,7 @@ describe('Get and List from EthereumQueue table', () => {
   });
 
   it('Should have an error when invalid orderBy param is provided', async () => {
-    // wait 1 min before continuing
-    await sleep(60000);
+    await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
     const resp = await testing.inject({
       method: 'GET',
       url: `/ethereum/queue/list?size=5&status=DRAFT&orderBy=TEST`,

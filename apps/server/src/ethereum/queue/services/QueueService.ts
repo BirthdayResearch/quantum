@@ -71,20 +71,19 @@ export class QueueService {
           break;
       }
 
+      // condition for status filter for where clause
+      const condition = {
+        status: {
+          in: status,
+        },
+      };
+
       const [queueCount, queueList] = await this.prisma.$transaction([
         this.prisma.ethereumQueue.count({
-          where: {
-            status: {
-              in: status,
-            },
-          },
+          where: condition,
         }),
         this.prisma.ethereumQueue.findMany({
-          where: {
-            status: {
-              in: status,
-            },
-          },
+          where: condition,
           cursor: next ? { id: next } : undefined,
           take: size + 1, // to get extra 1 to check for next page
           orderBy: {

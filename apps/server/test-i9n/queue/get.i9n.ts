@@ -113,4 +113,24 @@ describe('Get and List from EthereumQueue table', () => {
       'Invalid query parameter value. See the acceptable values: DRAFT, IN_PROGRESS, COMPLETED, ERROR, REJECTED, EXPIRED, REFUND_REQUESTED, REFUNDED',
     );
   });
+
+  it('Should have error when too many request', async () => {
+    let count = 1;
+    while (count <= 5) {
+      await testing.inject({
+        method: 'GET',
+        url: `/ethereum/queue/${txnHash}`,
+      });
+      count += 1;
+    }
+
+    // should get throttling error on the 6th
+    const resp = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/queue/${txnHash}`,
+    });
+
+    const data = JSON.parse(resp.body);
+    expect(data.message).toStrictEqual('ThrottlerException: Too Many Requests');
+  });
 });
