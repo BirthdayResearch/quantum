@@ -71,6 +71,15 @@ export class QueueService {
       const currentDate = new Date();
       const expiryDate = currentDate.setDate(currentDate.getDate() + 3);
 
+      const txHashFound = await this.prisma.ethereumQueue.findFirst({
+        where: {
+          transactionHash,
+        },
+      });
+      if (txHashFound) {
+        throw new Error('Transaction Hash already exists');
+      }
+
       await this.prisma.ethereumQueue.create({
         data: {
           transactionHash,
@@ -129,6 +138,10 @@ export class QueueService {
         },
       });
 
+      if (!txHashFound) {
+        throw new Error('Transaction Hash does not exist');
+      }
+
       await this.prisma.$transaction(async (prisma) => {
         if (txHashFound) {
           if (txHashFound?.status !== QueueStatus.DRAFT) {
@@ -143,15 +156,15 @@ export class QueueService {
               status: QueueStatus.IN_PROGRESS,
             },
           });
-        }
 
-        if (adminQueueTxn === null) {
-          await prisma.adminEthereumQueue.create({
-            data: {
-              queueTransactionHash: transactionHash,
-              defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
-            },
-          });
+          if (adminQueueTxn === null) {
+            await prisma.adminEthereumQueue.create({
+              data: {
+                queueTransactionHash: transactionHash,
+                defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+              },
+            });
+          }
         }
       });
 
