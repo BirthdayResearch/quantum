@@ -347,8 +347,8 @@ describe('Get and List from EthereumQueue table', () => {
     expect(data.message[1]).toStrictEqual('size must be an integer number');
   });
 
-  it('Should have a max limit on size', async () => {
-    // create 20 items in database
+  it('Should have a max limit of 200 on size', async () => {
+    // create 200 items in database
     let count = 22;
     while (count <= 241) {
       await prismaService.ethereumQueue.create({
