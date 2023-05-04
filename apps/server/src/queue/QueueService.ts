@@ -131,8 +131,17 @@ export class QueueService {
           transactionHash,
         },
       });
+
       if (!txHashFound) {
         throw new Error('Transaction Hash does not exist');
+      }
+
+      if (txHashFound.status !== QueueStatus.DRAFT) {
+        throw new Error('Queue status is not DRAFT & may be further down the approval flow');
+      }
+
+      if (txHashFound.ethereumStatus === EthereumTransactionStatus.CONFIRMED) {
+        return { numberOfConfirmations, isConfirmed: true };
       }
 
       const adminQueueTxn = await this.prisma.adminEthereumQueue.findFirst({
@@ -142,10 +151,6 @@ export class QueueService {
       });
       if (adminQueueTxn) {
         throw new Error('Transaction Hash already exists in admin table');
-      }
-
-      if (txHashFound.status !== QueueStatus.DRAFT) {
-        throw new Error('Queue status is not DRAFT & may be further down the approval flow');
       }
 
       await this.prisma.$transaction(async (prisma) => {
