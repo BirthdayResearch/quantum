@@ -41,18 +41,24 @@ export class QueueService {
 
   async createQueueTransaction(transactionHash: string): Promise<string> {
     try {
-      const { isValidTxn, ErrorMsg } = await this.verificationService.verifyIfValidTxn(
+      const txHashFound = await this.prisma.ethereumQueue.findFirst({
+        where: {
+          transactionHash,
+        },
+      });
+      if (txHashFound) {
+        throw new Error('Transaction Hash already exists');
+      }
+
+      const { parsedTxnData, ErrorMsg } = await this.verificationService.verifyIfValidTxn(
         transactionHash,
         this.contractAddress,
         ContractType.queue,
       );
 
-      if (!isValidTxn) {
-        throw new Error(ErrorMsg);
-      }
+      if (!parsedTxnData) throw new Error(ErrorMsg);
 
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-      const parsedTxnData = await this.verificationService.parseTxnHash(transactionHash, ContractType.queue);
       const { params } = this.verificationService.decodeTxnData(parsedTxnData);
       const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
 
@@ -73,15 +79,6 @@ export class QueueService {
         const wTokenDecimals = await evmTokenContract.decimals();
         transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
         dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
-      }
-
-      const txHashFound = await this.prisma.ethereumQueue.findFirst({
-        where: {
-          transactionHash,
-        },
-      });
-      if (txHashFound) {
-        throw new Error('Transaction Hash already exists');
       }
 
       await this.prisma.ethereumQueue.create({
@@ -112,15 +109,13 @@ export class QueueService {
 
   async verify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
     try {
-      const { isValidTxn, ErrorMsg } = await this.verificationService.verifyIfValidTxn(
+      const { parsedTxnData, ErrorMsg } = await this.verificationService.verifyIfValidTxn(
         transactionHash,
         this.contractAddress,
         ContractType.queue,
       );
 
-      if (!isValidTxn) {
-        throw new Error(ErrorMsg);
-      }
+      if (!parsedTxnData) throw new Error(ErrorMsg);
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 

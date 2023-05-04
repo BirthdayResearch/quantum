@@ -72,7 +72,7 @@ export class EVMTransactionConfirmerService {
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
-    const isValidTxn = await this.verificationService.verifyIfValidTxn(
+    const parsedTxnData = await this.verificationService.verifyIfValidTxn(
       transactionHash,
       this.contractAddress,
       ContractType.instant,
@@ -85,7 +85,7 @@ export class EVMTransactionConfirmerService {
     }
 
     // Sanity check that the contractAddress, decoded name and signature are correct
-    if (txReceipt.to !== this.contractAddress || !isValidTxn) {
+    if (txReceipt.to !== this.contractAddress || !parsedTxnData) {
       return { numberOfConfirmations: 0, isConfirmed: false };
     }
 
@@ -293,7 +293,7 @@ export class EVMTransactionConfirmerService {
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const isValidTxn = await this.verificationService.verifyIfValidTxn(
+      const parsedTxnData = await this.verificationService.verifyIfValidTxn(
         transactionHash,
         this.contractAddress,
         ContractType.instant,
@@ -304,7 +304,7 @@ export class EVMTransactionConfirmerService {
       }
 
       // Sanity check that the contractAddress, decoded name and signature are correct
-      if (!isValidTxn || txReceipt.to !== this.contractAddress) {
+      if (!parsedTxnData || txReceipt.to !== this.contractAddress) {
         return {
           transactionHash: '',
           isConfirmed: false,

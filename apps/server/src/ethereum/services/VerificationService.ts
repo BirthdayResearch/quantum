@@ -30,7 +30,10 @@ export enum ErrorMsg {
   RevertedTxn = 'Transaction Reverted',
 }
 export interface VerifyIfValidTxnDto {
-  isValidTxn: boolean;
+  parsedTxnData?: {
+    etherInterface: ethers.utils.Interface;
+    parsedTxnData: ethers.utils.TransactionDescription;
+  };
   ErrorMsg?: string;
 }
 
@@ -43,38 +46,38 @@ export class VerificationService {
     contractAddress: string,
     contractType: ContractType,
   ): Promise<VerifyIfValidTxnDto> {
-    const [{ parsedTxnData }, txReceipt] = await Promise.all([
+    const [parsedTxnData, txReceipt] = await Promise.all([
       this.parseTxnHash(transactionHash, contractType),
       this.ethersRpcProvider.getTransactionReceipt(transactionHash),
     ]);
 
     // Sanity check that the decoded function name and signature are correct
     if (
-      parsedTxnData.name !== contract[contractType].name ||
-      parsedTxnData.signature !== contract[contractType].signature
+      parsedTxnData.parsedTxnData.name !== contract[contractType].name ||
+      parsedTxnData.parsedTxnData.signature !== contract[contractType].signature
     ) {
-      return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateNameAndSignature };
+      return { ErrorMsg: ErrorMsg.InaccurateNameAndSignature };
     }
 
     // if transaction is still pending
     if (txReceipt === null) {
-      return { isValidTxn: false, ErrorMsg: ErrorMsg.PendingTxn };
+      return { ErrorMsg: ErrorMsg.PendingTxn };
     }
 
     // Sanity check that the contractAddress is accurate in the Transaction Receipt
     if (txReceipt.to !== contractAddress) {
-      return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateContractAddress };
+      return { ErrorMsg: ErrorMsg.InaccurateContractAddress };
     }
 
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      return { isValidTxn: false, ErrorMsg: ErrorMsg.RevertedTxn };
+      return { ErrorMsg: ErrorMsg.RevertedTxn };
     }
 
     // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
 
-    return { isValidTxn: true };
+    return { parsedTxnData };
   }
 
   async parseTxnHash(
