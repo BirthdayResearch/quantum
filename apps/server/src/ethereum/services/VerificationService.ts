@@ -23,9 +23,9 @@ const contract = {
 };
 
 export enum ErrorMsg {
-  InaccurateNameAndSignature = 'Decoded function name or signation is inaccurate',
+  InaccurateNameAndSignature = 'Decoded function name or signature is inaccurate',
   PendingTxn = 'Transaction is still pending',
-  InaccurateContractAddress = 'Contract Address, decoded name, or signature is inaccurate',
+  InaccurateContractAddress = 'Contract Address in the Transaction Receipt is inaccurate',
   RevertedTxn = 'Transaction Reverted',
 }
 export interface VerifyIfValidTxnDto {
@@ -58,7 +58,7 @@ export class VerificationService {
       return { isValidTxn: false, ErrorMsg: ErrorMsg.PendingTxn };
     }
 
-    // Sanity check that the contractAddress, decoded name and signature are correct
+    // Sanity check that the contractAddress is accurate in the Transaction Receipt
     if (txReceipt.to !== contractAddress) {
       return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateContractAddress };
     }
