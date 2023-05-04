@@ -22,6 +22,12 @@ export class QueueService {
 
   private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
 
+  // expiry date
+  private readonly CURR_DATE = new Date();
+
+  // in days
+  private readonly EXPIRY_DATE = new Date(this.CURR_DATE.setDate(this.CURR_DATE.getDate() + 3));
+
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private configService: ConfigService,
@@ -60,16 +66,14 @@ export class QueueService {
         const ethAmount = EthBigNumber.from(onChainTxnDetail.value).toString();
         transferAmount = new BigNumber(ethAmount).dividedBy(new BigNumber(10).pow(18));
         dTokenDetails = getDTokenDetailsByWToken('ETH', this.network);
+      } else {
+        // wToken transfer
+        const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
+        const wTokenSymbol = await evmTokenContract.symbol();
+        const wTokenDecimals = await evmTokenContract.decimals();
+        transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
+        dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
       }
-      // wToken transfer
-      const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
-      const wTokenSymbol = await evmTokenContract.symbol();
-      const wTokenDecimals = await evmTokenContract.decimals();
-      transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
-      dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
-      // expiry date
-      const currentDate = new Date();
-      const expiryDate = currentDate.setDate(currentDate.getDate() + 3);
 
       const txHashFound = await this.prisma.ethereumQueue.findFirst({
         where: {
@@ -85,9 +89,9 @@ export class QueueService {
           transactionHash,
           status: QueueStatus.DRAFT,
           ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
-          amount: new BigNumber(transferAmount).toString(),
+          amount: transferAmount.toString(),
           defichainAddress: toAddress,
-          expiryDate: new Date(expiryDate),
+          expiryDate: this.EXPIRY_DATE,
           tokenSymbol: dTokenDetails.symbol,
         },
       });
