@@ -1,6 +1,48 @@
 import clsx from "clsx";
 import React, { Dispatch, SetStateAction } from "react";
 
+export enum TabOptions {
+  INSTANT = "Instant",
+  QUEUE = "Queue",
+}
+
+function Tab({
+  label,
+  activeTab,
+  setActiveTab,
+}: {
+  label: TabOptions;
+  activeTab: TabOptions;
+  setActiveTab: Dispatch<SetStateAction<TabOptions>>;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        setActiveTab(label);
+      }}
+      className={clsx(
+        "py-[17px] relative border-dark-200 w-full",
+        label === TabOptions.INSTANT ? "border-r-[0.5px]" : "border-l-[0.5px]"
+      )}
+    >
+      <span
+        className={clsx(
+          "text-dark-900 font-semibold lg:text-[14px] lg:leading-4 text-xs"
+        )}
+      >
+        {label}
+      </span>
+      <div
+        data-testid={`${activeTab}-tab-highlight`}
+        className={clsx("h-[1px] w-full absolute z-10 -bottom-[1px]", {
+          "fill-bg-gradient-1": activeTab === label,
+        })}
+      />
+    </button>
+  );
+}
+
 export function InstantQueueTab({
   activeTab,
   setActiveTab,
@@ -31,45 +73,4 @@ export function InstantQueueTab({
       />
     </section>
   );
-}
-
-function Tab({
-  label,
-  activeTab,
-  setActiveTab,
-}: {
-  label: TabOptions;
-  activeTab: TabOptions;
-  setActiveTab: Dispatch<SetStateAction<TabOptions>>;
-}) {
-  return (
-    <button
-      onClick={() => {
-        setActiveTab(label);
-      }}
-      className={clsx(
-        "py-[17px] relative border-dark-200 w-full",
-        label === TabOptions.INSTANT ? "border-r-[0.5px]" : "border-l-[0.5px]"
-      )}
-    >
-      <span
-        className={clsx(
-          "text-dark-900 font-semibold lg:text-[14px] lg:leading-4 text-xs"
-        )}
-      >
-        {label}
-      </span>
-      <div
-        data-testid={`${activeTab}-tab-highlight`}
-        className={clsx("h-[1px] w-full absolute z-10 -bottom-[1px]", {
-          "fill-bg-gradient-1": activeTab === label,
-        })}
-      />
-    </button>
-  );
-}
-
-export enum TabOptions {
-  INSTANT = "Instant",
-  QUEUE = "Queue",
 }
