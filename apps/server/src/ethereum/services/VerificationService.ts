@@ -11,10 +11,14 @@ export enum ContractType {
 const contract = {
   [ContractType.instant]: {
     interface: BridgeV1__factory.abi,
+    name: 'bridgeToDeFiChain',
+    signature: 'bridgeToDeFiChain(bytes,address,uint256)',
   },
   // Todo : update to phase 2 contract when ready
   [ContractType.queue]: {
     interface: BridgeV1__factory.abi,
+    name: 'bridgeToDeFiChain',
+    signature: 'bridgeToDeFiChain(bytes,address,uint256)',
   },
 };
 
@@ -43,8 +47,8 @@ export class VerificationService {
 
     // Sanity check that the decoded function name and signature are correct
     if (
-      parsedTxnData.name !== 'bridgeToDeFiChain' ||
-      parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
+      parsedTxnData.name !== contract[contractType].name ||
+      parsedTxnData.signature !== contract[contractType].signature
     ) {
       return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateNameAndSignature };
     }
