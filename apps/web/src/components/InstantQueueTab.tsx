@@ -9,13 +9,22 @@ export function InstantQueueTab({
   setActiveTab: Dispatch<SetStateAction<TabOptions>>;
 }) {
   return (
-    <section className={clsx("flex flex-row justify-evenly")}>
+    <section
+      data-testid="Instant-Queue-tab"
+      className={clsx(
+        "flex flex-row justify-evenly dark-card-bg-image backdrop-blur-[18px]",
+        "border border-dark-200 md:rounded-t-[20px] rounded-t-[15px]",
+        "lg:w-full md:w-[calc(100%+2px)] w-full"
+      )}
+    >
       <Tab
+        data-testid="Instant-tab"
         label={TabOptions.INSTANT}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
       <Tab
+        data-testid="Queue-tab"
         label={TabOptions.QUEUE}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -38,27 +47,24 @@ function Tab({
       onClick={() => {
         setActiveTab(label);
       }}
-      className="w-full"
+      className={clsx(
+        "py-[17px] relative border-dark-200 w-full",
+        label === TabOptions.INSTANT ? "border-r-[0.5px]" : "border-l-[0.5px]"
+      )}
     >
-      <div
+      <span
         className={clsx(
-          "py-[17px] dark-card-bg-image backdrop-blur-[18px] border border-dark-200 lg:w-full md:w-[calc(100%+2px)] w-full relative",
-          label === TabOptions.INSTANT
-            ? "md:rounded-tl-[20px] rounded-tl-[15px] border-r-[0.5px]"
-            : "md:rounded-tr-[20px] rounded-tr-[15px] border-l-[0.5px]"
+          "text-dark-900 font-semibold lg:text-[14px] lg:leading-4 text-xs"
         )}
       >
-        <span
-          className={clsx("text-dark-900 font-semibold text-[14px] leading-4")}
-        >
-          {label}
-        </span>
-        <div
-          className={clsx("h-[1px] w-full absolute z-10 -bottom-[1px]", {
-            "fill-bg-gradient-1": activeTab === label,
-          })}
-        />
-      </div>
+        {label}
+      </span>
+      <div
+        data-testid={`${activeTab}-tab-highlight`}
+        className={clsx("h-[1px] w-full absolute z-10 -bottom-[1px]", {
+          "fill-bg-gradient-1": activeTab === label,
+        })}
+      />
     </button>
   );
 }
