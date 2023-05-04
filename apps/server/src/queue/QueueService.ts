@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DeFiChainTransactionStatus, EthereumTransactionStatus, QueueStatus } from '@prisma/client';
+import { DeFiChainTransactionStatus, EthereumQueue, EthereumTransactionStatus, QueueStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
@@ -10,7 +10,7 @@ import { ContractType, VerificationService } from '../ethereum/services/Verifica
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
 import { getDTokenDetailsByWToken } from '../utils/TokensUtils';
-import { CreateQueueTransactionDto, VerifyQueueTransactionDto } from './QueueDto';
+import { VerifyQueueTransactionDto } from './QueueDto';
 
 @Injectable()
 export class QueueService {
@@ -35,7 +35,7 @@ export class QueueService {
     this.contract = BridgeV1__factory.connect(this.contractAddress, this.ethersRpcProvider);
   }
 
-  async createQueueTransaction(transactionHash: string): Promise<CreateQueueTransactionDto> {
+  async createQueueTransaction(transactionHash: string): Promise<EthereumQueue> {
     try {
       const txHashFound = await this.prisma.ethereumQueue.findFirst({
         where: {
@@ -81,7 +81,7 @@ export class QueueService {
         dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
       }
 
-      await this.prisma.ethereumQueue.create({
+      const queueRecord = await this.prisma.ethereumQueue.create({
         data: {
           transactionHash,
           status: QueueStatus.DRAFT,
@@ -92,7 +92,7 @@ export class QueueService {
           tokenSymbol: dTokenDetails.symbol,
         },
       });
-      return { result: `Draft queue transaction created for ${transactionHash}` };
+      return queueRecord;
     } catch (e: any) {
       throw new HttpException(
         {
