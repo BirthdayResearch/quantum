@@ -117,11 +117,12 @@ export class QueueService {
         this.contractAddress,
         ContractType.queue,
       );
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
       if (!isValidTxn) {
         throw new Error(ErrorMsg);
       }
+
+      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
       const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
       const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
