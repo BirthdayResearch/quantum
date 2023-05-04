@@ -43,8 +43,10 @@ export class VerificationService {
     contractAddress: string,
     contractType: ContractType,
   ): Promise<VerifyIfValidTxnDto> {
-    const { parsedTxnData } = await this.parseTxnHash(transactionHash, contractType);
-    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+    const [{ parsedTxnData }, txReceipt] = await Promise.all([
+      this.parseTxnHash(transactionHash, contractType),
+      this.ethersRpcProvider.getTransactionReceipt(transactionHash),
+    ]);
 
     // Sanity check that the decoded function name and signature are correct
     if (
