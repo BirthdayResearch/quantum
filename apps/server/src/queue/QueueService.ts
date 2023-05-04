@@ -10,7 +10,7 @@ import { ContractType, VerificationService } from '../ethereum/services/Verifica
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
 import { getDTokenDetailsByWToken } from '../utils/TokensUtils';
-import { VerifyQueueTransactionDto } from './QueueDto';
+import { CreateQueueTransactionDto,VerifyQueueTransactionDto } from './QueueDto';
 
 @Injectable()
 export class QueueService {
@@ -39,7 +39,7 @@ export class QueueService {
     this.contract = BridgeV1__factory.connect(this.contractAddress, this.ethersRpcProvider);
   }
 
-  async createQueueTransaction(transactionHash: string): Promise<string> {
+  async createQueueTransaction(transactionHash: string): Promise<CreateQueueTransactionDto> {
     try {
       const txHashFound = await this.prisma.ethereumQueue.findFirst({
         where: {
@@ -92,7 +92,7 @@ export class QueueService {
           tokenSymbol: dTokenDetails.symbol,
         },
       });
-      return `Draft queue transaction created for ${transactionHash}`;
+      return { result: `Draft queue transaction created for ${transactionHash}` };
     } catch (e: any) {
       throw new HttpException(
         {
