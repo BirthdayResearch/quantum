@@ -8,6 +8,7 @@ export enum ContractType {
   instant = 'instant',
   queue = 'queue',
 }
+
 const contract = {
   [ContractType.instant]: {
     interface: BridgeV1__factory.abi,
