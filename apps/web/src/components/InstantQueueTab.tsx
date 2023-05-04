@@ -54,10 +54,9 @@ function Tab({
           {label}
         </span>
         <div
-          className={clsx(
-            "h-[1px] lg:w-full md:w-[calc(100%+2px)] w-full absolute z-10 -bottom-[1px]",
-            { "fill-bg-gradient-1": activeTab === label }
-          )}
+          className={clsx("h-[1px] w-full absolute z-10 -bottom-[1px]", {
+            "fill-bg-gradient-1": activeTab === label,
+          })}
         />
       </div>
     </button>
