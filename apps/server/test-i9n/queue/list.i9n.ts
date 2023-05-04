@@ -346,4 +346,33 @@ describe('Get and List from EthereumQueue table', () => {
     expect(data.message[0]).toStrictEqual('size must not be less than 1');
     expect(data.message[1]).toStrictEqual('size must be an integer number');
   });
+
+  it('Should have a max limit on size', async () => {
+    // create 20 items in database
+    let count = 22;
+    while (count <= 241) {
+      await prismaService.ethereumQueue.create({
+        data: {
+          transactionHash: `0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5A3${count}`,
+          ethereumStatus: 'NOT_CONFIRMED',
+          status: QueueStatus.DRAFT,
+          createdAt: '2023-04-20T06:14:43.847Z',
+          updatedAt: '2023-04-20T06:28:17.185Z',
+          amount: null,
+          tokenSymbol: null,
+          defichainAddress: '',
+          expiryDate: '1970-01-01T00:00:00.000Z',
+        },
+      });
+      count += 1;
+    }
+
+    const resp = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/queue/list?size=300`,
+    });
+
+    const { data } = JSON.parse(resp.body);
+    expect(data.length).toStrictEqual(200);
+  });
 });
