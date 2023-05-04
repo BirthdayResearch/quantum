@@ -42,7 +42,7 @@ function Tab({
     >
       <div
         className={clsx(
-          "py-[17px] bg-dark-100 border border-b-0 border-dark-200 lg:w-full md:w-[calc(100%+2px)] w-full",
+          "py-[17px] bg-dark-100 border border-dark-200 lg:w-full md:w-[calc(100%+2px)] w-full relative",
           label === TabOptions.INSTANT
             ? "md:rounded-tl-[20px] rounded-tl-[15px] border-r-[0.5px]"
             : "md:rounded-tr-[20px] rounded-tr-[15px] border-l-[0.5px]"
@@ -53,14 +53,13 @@ function Tab({
         >
           {label}
         </span>
+        <div
+          className={clsx(
+            "h-[1px] lg:w-full md:w-[calc(100%+2px)] w-full absolute z-10 -bottom-[1px]",
+            { "fill-bg-gradient-1": activeTab === label }
+          )}
+        />
       </div>
-
-      <div
-        className={clsx(
-          "h-[1px] lg:w-full md:w-[calc(100%+2px)] w-full",
-          activeTab === label ? "fill-bg-gradient-1" : "bg-dark-200"
-        )}
-      />
     </button>
   );
 }
