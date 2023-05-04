@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import BigNumber from "bignumber.js";
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
@@ -14,6 +14,7 @@ import {
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
+import { InstantQueueTab, TabOptions } from "../components/InstantQueueTab";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
@@ -53,6 +54,8 @@ function Home() {
     return numOfConfirmations;
   };
 
+  const [activeTab, setActiveTab] = useState(TabOptions.INSTANT);
+
   return (
     <section className="relative flex flex-col" data-testid="homepage">
       <div className="flex flex-col justify-between md:flex-row w-full px-0 md:px-12 lg:px-[120px]">
@@ -87,6 +90,10 @@ function Home() {
               isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
             />
           )}
+          <InstantQueueTab activeTab={activeTab} setActiveTab={setActiveTab} />
+          {/*
+          // Todo : add condition for active tab to switch between <BridgeForm/> and <QueueForm/>
+          */}
           <BridgeForm
             hasPendingTxn={
               txnHash.unconfirmed !== undefined ||
