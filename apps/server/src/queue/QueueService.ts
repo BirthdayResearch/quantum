@@ -10,7 +10,7 @@ import { ContractType, VerificationService } from '../ethereum/services/Verifica
 import { ETHERS_RPC_PROVIDER } from '../modules/EthersModule';
 import { PrismaService } from '../PrismaService';
 import { getDTokenDetailsByWToken } from '../utils/TokensUtils';
-import { CreateQueueTransactionDto,VerifyQueueTransactionDto } from './QueueDto';
+import { CreateQueueTransactionDto, VerifyQueueTransactionDto } from './QueueDto';
 
 @Injectable()
 export class QueueService {
@@ -22,11 +22,7 @@ export class QueueService {
 
   private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
 
-  // expiry date
-  private readonly CURR_DATE = new Date();
-
-  // in days
-  private readonly EXPIRY_DATE = new Date(this.CURR_DATE.setDate(this.CURR_DATE.getDate() + 3));
+  private readonly DAYS_TO_EXPIRY = 3;
 
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
@@ -67,6 +63,10 @@ export class QueueService {
       let transferAmount = new BigNumber(0);
       let dTokenDetails;
 
+      // expiry date calculations
+      const currDate = new Date();
+      const expiryDate = new Date(currDate.setDate(currDate.getDate() + this.DAYS_TO_EXPIRY));
+
       // eth transfer
       if (tokenAddress === ethers.constants.AddressZero) {
         const ethAmount = EthBigNumber.from(onChainTxnDetail.value).toString();
@@ -88,7 +88,7 @@ export class QueueService {
           ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
           amount: transferAmount.toString(),
           defichainAddress: toAddress,
-          expiryDate: this.EXPIRY_DATE,
+          expiryDate,
           tokenSymbol: dTokenDetails.symbol,
         },
       });
