@@ -136,41 +136,42 @@ export class QueueService {
         throw new Error('Transaction Hash does not exist');
       }
 
-      if (txHashFound.status !== QueueStatus.DRAFT) {
-        throw new Error('Queue status is not DRAFT & may be further down the approval flow');
-      }
-
-      if (txHashFound.ethereumStatus === EthereumTransactionStatus.CONFIRMED) {
-        return { numberOfConfirmations, isConfirmed: true };
-      }
-
-      const adminQueueTxn = await this.prisma.adminEthereumQueue.findFirst({
-        where: {
-          queueTransactionHash: transactionHash,
-        },
-      });
-      if (adminQueueTxn) {
-        throw new Error('Transaction Hash already exists in admin table');
-      }
-
-      await this.prisma.$transaction(async (prisma) => {
-        await prisma.ethereumQueue.update({
+      if (txHashFound.status === QueueStatus.DRAFT) {
+        const adminQueueTxn = await this.prisma.adminEthereumQueue.findFirst({
           where: {
-            transactionHash,
-          },
-          data: {
-            ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-            status: QueueStatus.IN_PROGRESS,
-          },
-        });
-
-        await prisma.adminEthereumQueue.create({
-          data: {
             queueTransactionHash: transactionHash,
-            defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
           },
         });
-      });
+        if (adminQueueTxn) {
+          throw new Error('Transaction Hash already exists in admin table');
+        }
+
+        await this.prisma.$transaction(async (prisma) => {
+          await prisma.ethereumQueue.update({
+            where: {
+              transactionHash,
+            },
+            data: {
+              ethereumStatus: EthereumTransactionStatus.CONFIRMED,
+              status: QueueStatus.IN_PROGRESS,
+            },
+          });
+
+          await prisma.adminEthereumQueue.create({
+            data: {
+              queueTransactionHash: transactionHash,
+              defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+            },
+          });
+        });
+      }
+
+      if (txHashFound.ethereumStatus !== EthereumTransactionStatus.CONFIRMED) {
+        return {
+          numberOfConfirmations,
+          isConfirmed: false,
+        };
+      }
 
       return { numberOfConfirmations, isConfirmed: true };
     } catch (e: any) {
