@@ -1,7 +1,7 @@
 import { describe } from 'node:test';
 
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
-import { QueueStatus } from '@prisma/client';
+import { EthereumTransactionStatus, QueueStatus } from '@prisma/client';
 
 import { Queue } from '../../src/ethereum/queue/model/Queue';
 import { PrismaService } from '../../src/PrismaService';
@@ -315,9 +315,21 @@ describe('Get and List from EthereumQueue table', () => {
   });
 
   it('Should have an error when too many requests', async () => {
+    await sleep(60000);
+
+    let count = 1;
+    while (count <= 20) {
+      await testing.inject({
+        method: 'GET',
+        url: `/ethereum/queue/list?size=5&status=DRAFT`,
+      });
+      count += 1;
+    }
+
+    // should get throttling error on the 21st
     const resp = await testing.inject({
       method: 'GET',
-      url: `/ethereum/queue/list?size=5&status=DRAFT&orderBy=TEST`,
+      url: `/ethereum/queue/list?size=5&status=DRAFT`,
     });
 
     const data = JSON.parse(resp.body);
@@ -350,22 +362,24 @@ describe('Get and List from EthereumQueue table', () => {
   it('Should have a max limit of 200 on size', async () => {
     // create 200 items in database
     let count = 22;
+    const queues = [];
     while (count <= 241) {
-      await prismaService.ethereumQueue.create({
-        data: {
-          transactionHash: `0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5A3${count}`,
-          ethereumStatus: 'NOT_CONFIRMED',
-          status: QueueStatus.DRAFT,
-          createdAt: '2023-04-20T06:14:43.847Z',
-          updatedAt: '2023-04-20T06:28:17.185Z',
-          amount: null,
-          tokenSymbol: null,
-          defichainAddress: '',
-          expiryDate: '1970-01-01T00:00:00.000Z',
-        },
+      queues.push({
+        transactionHash: `0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5A3${count}`,
+        ethereumStatus: EthereumTransactionStatus.NOT_CONFIRMED,
+        status: QueueStatus.DRAFT,
+        createdAt: '2023-04-20T06:14:43.847Z',
+        updatedAt: '2023-04-20T06:28:17.185Z',
+        amount: null,
+        tokenSymbol: null,
+        defichainAddress: '',
+        expiryDate: '1970-01-01T00:00:00.000Z',
       });
       count += 1;
     }
+    await prismaService.ethereumQueue.createMany({
+      data: queues,
+    });
 
     const resp = await testing.inject({
       method: 'GET',
