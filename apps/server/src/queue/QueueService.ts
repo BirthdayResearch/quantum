@@ -136,41 +136,40 @@ export class QueueService {
           transactionHash,
         },
       });
+      if (!txHashFound) {
+        throw new Error('Transaction Hash does not exist');
+      }
 
       const adminQueueTxn = await this.prisma.adminEthereumQueue.findFirst({
         where: {
           queueTransactionHash: transactionHash,
         },
       });
+      if (adminQueueTxn) {
+        throw new Error('Transaction Hash already exists in admin table');
+      }
 
-      if (!txHashFound) {
-        throw new Error('Transaction Hash does not exist');
+      if (txHashFound.status !== QueueStatus.DRAFT) {
+        throw new Error('Queue status is not DRAFT & may be further down the approval flow');
       }
 
       await this.prisma.$transaction(async (prisma) => {
-        if (txHashFound) {
-          if (txHashFound?.status !== QueueStatus.DRAFT) {
-            throw new Error('Queue status is not DRAFT & may be further down the approval flow');
-          }
-          await prisma.ethereumQueue.update({
-            where: {
-              transactionHash,
-            },
-            data: {
-              ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-              status: QueueStatus.IN_PROGRESS,
-            },
-          });
+        await prisma.ethereumQueue.update({
+          where: {
+            transactionHash,
+          },
+          data: {
+            ethereumStatus: EthereumTransactionStatus.CONFIRMED,
+            status: QueueStatus.IN_PROGRESS,
+          },
+        });
 
-          if (adminQueueTxn === null) {
-            await prisma.adminEthereumQueue.create({
-              data: {
-                queueTransactionHash: transactionHash,
-                defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
-              },
-            });
-          }
-        }
+        await prisma.adminEthereumQueue.create({
+          data: {
+            queueTransactionHash: transactionHash,
+            defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+          },
+        });
       });
 
       return { numberOfConfirmations, isConfirmed: true };
