@@ -39,9 +39,7 @@ import {
   FEES_INFO,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
-import QueryTransactionModal, {
-  ContractType,
-} from "./erc-transfer/QueryTransactionModal";
+import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 
 function SwitchButton({
   onClick,
