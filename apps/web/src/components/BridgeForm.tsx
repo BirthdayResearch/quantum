@@ -416,7 +416,13 @@ export default function BridgeForm({
     "block text-xs text-warning text-center lg:px-6 lg:text-sm";
 
   return (
-    <div className="w-full md:w-[calc(100%+2px)] lg:w-full dark-card-bg-image p-6 md:pt-8 pb-16 lg:p-10 rounded-lg lg:rounded-xl border border-dark-200 backdrop-blur-[18px]">
+    <div
+      className={clsx(
+        "w-full md:w-[calc(100%+2px)] lg:w-full p-6 md:pt-8 pb-16 lg:p-10",
+        "dark-card-bg-image backdrop-blur-[18px]",
+        "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl"
+      )}
+    >
       <div className="flex flex-row items-center" ref={reference}>
         <div className="w-1/2">
           <InputSelector
