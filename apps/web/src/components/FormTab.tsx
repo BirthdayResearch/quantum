@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import React, { Dispatch, SetStateAction } from "react";
 
+// queue and instant tab options
 export enum TabOptions {
   INSTANT = "Instant",
   QUEUE = "Queue",
