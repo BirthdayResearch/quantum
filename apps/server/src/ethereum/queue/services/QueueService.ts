@@ -181,7 +181,7 @@ export class QueueService {
       // expiry date calculations
       const currDate = new Date();
       const expiryDate = new Date(currDate.setDate(currDate.getDate() + this.DAYS_TO_EXPIRY));
-      expiryDate.setUTCHours(0, 0, 0, 0); // set to UTC +0
+      expiryDate.toISOString();
 
       // eth transfer
       if (tokenAddress === ethers.constants.AddressZero) {
@@ -288,11 +288,11 @@ export class QueueService {
           });
         });
       } else if (txHashFound.ethereumStatus !== EthereumTransactionStatus.CONFIRMED) {
-          return {
-            numberOfConfirmations,
-            isConfirmed: false,
-          };
-        }
+        return {
+          numberOfConfirmations,
+          isConfirmed: false,
+        };
+      }
 
       return { numberOfConfirmations, isConfirmed: true };
     } catch (e: any) {
