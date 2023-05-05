@@ -15,7 +15,6 @@ import {
 } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 import { FormTab, TabOptions } from "../components/FormTab";
-import QueueForm from "../components/QueueForm";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
