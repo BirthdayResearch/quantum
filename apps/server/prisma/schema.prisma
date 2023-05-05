@@ -55,7 +55,7 @@ model BridgeEventTransactions {
   blockHeight                    String?
 }
 
-enum OrderStatus {
+enum QueueStatus {
   DRAFT
   IN_PROGRESS
   COMPLETED
@@ -71,35 +71,31 @@ enum DeFiChainTransactionStatus {
   CONFIRMED
 }
 
-model EthereumOrders {
+model EthereumQueue {
   id               BigInt                    @id @default(autoincrement())
-  transactionHash  String                    @unique
+  transactionHash  String                    @unique // when user sends funds to smart contract
   ethereumStatus   EthereumTransactionStatus
-  status           OrderStatus
+  status           QueueStatus
   createdAt        DateTime                  @default(now())
   updatedAt        DateTime?                 @updatedAt
   amount           String?
   tokenSymbol      String?
   defichainAddress String
   expiryDate       DateTime
-  adminOrder       AdminEthereumOrders?
+  adminQueue       AdminEthereumQueue?
 }
 
-model AdminEthereumOrders {
-  id                  BigInt                     @id @default(autoincrement())
-  order               EthereumOrders             @relation(fields: [orderId], references: [id])
-  orderId             BigInt                     @unique
-  lastUpdatedBy       String?
-  hotWalletAddress    String?
-  hotWalletIndex      Int?
-  generatedAddress    String?                    @unique
-  sendTransactionHash String?
-  defichainStatus     DeFiChainTransactionStatus
-  hasVerified         Boolean?
-  blockHash           String?
-  blockHeight         String?
-  createdAt           DateTime                   @default(now())
-  updatedAt           DateTime?                  @updatedAt
-
-  @@unique([hotWalletAddress, hotWalletIndex])
+model AdminEthereumQueue {
+  id                   BigInt                     @id @default(autoincrement())
+  queue                EthereumQueue              @relation(fields: [queueTransactionHash], references: [transactionHash])
+  queueTransactionHash String                     @unique
+  lastUpdatedBy        String?
+  hotWalletAddress     String?    
+  sendTransactionHash  String?                    @unique // when admin send funds to generated address / hot wallet address 
+  defichainStatus      DeFiChainTransactionStatus
+  hasVerified          Boolean?
+  blockHash            String?
+  blockHeight          String?
+  createdAt            DateTime                   @default(now())
+  updatedAt            DateTime?                  @updatedAt  
 }
