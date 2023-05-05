@@ -35,7 +35,7 @@ function Tab({
       </span>
       <div
         data-testid={`${activeTab}-tab-highlight`}
-        className={clsx("h-[1px] w-full absolute z-10 -bottom-[1px]", {
+        className={clsx("h-px w-full absolute z-10 -bottom-px", {
           "fill-bg-gradient-1": activeTab === label,
         })}
       />
@@ -43,7 +43,7 @@ function Tab({
   );
 }
 
-export function InstantQueueTab({
+export function FormTab({
   activeTab,
   setActiveTab,
 }: {
@@ -52,7 +52,7 @@ export function InstantQueueTab({
 }) {
   return (
     <section
-      data-testid="Instant-Queue-tab"
+      data-testid="form-tab"
       className={clsx(
         "flex flex-row justify-evenly dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 md:rounded-t-[20px] rounded-t-[15px]",
@@ -60,13 +60,13 @@ export function InstantQueueTab({
       )}
     >
       <Tab
-        data-testid="Instant-tab"
+        data-testid="instant-tab"
         label={TabOptions.INSTANT}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
       <Tab
-        data-testid="Queue-tab"
+        data-testid="queue-tab"
         label={TabOptions.QUEUE}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
