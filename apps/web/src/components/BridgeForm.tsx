@@ -40,7 +40,6 @@ import {
   FEES_INFO,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
-import { TabOptions } from "./FormTab";
 
 function SwitchButton({
   onClick,
