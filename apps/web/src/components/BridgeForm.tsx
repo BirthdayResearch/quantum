@@ -40,6 +40,7 @@ import {
   FEES_INFO,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
+import { TabOptions } from "./FormTab";
 
 function SwitchButton({
   onClick,
@@ -418,7 +419,7 @@ export default function BridgeForm({
       className={clsx(
         "w-full md:w-[calc(100%+2px)] lg:w-full p-6 md:pt-8 pb-16 lg:p-10",
         "dark-card-bg-image backdrop-blur-[18px]",
-        "border border-dark-200 rounded-lg border-t-0 lg:rounded-tr-none lg:rounded-tl-none rounded-tr-none rounded-tl-none lg:rounded-xl"
+        "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl"
       )}
     >
       <div className="flex flex-row items-center" ref={reference}>

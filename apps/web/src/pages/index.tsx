@@ -14,7 +14,8 @@ import {
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
-import { InstantQueueTab, TabOptions } from "../components/InstantQueueTab";
+import { FormTab, TabOptions } from "../components/FormTab";
+import QueueForm from "../components/QueueForm";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
@@ -90,7 +91,7 @@ function Home() {
               isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
             />
           )}
-          <InstantQueueTab activeTab={activeTab} setActiveTab={setActiveTab} />
+          <FormTab activeTab={activeTab} setActiveTab={setActiveTab} />
           {/*
           // Todo : add condition for active tab to switch between <BridgeForm/> and <QueueForm/>
           */}
