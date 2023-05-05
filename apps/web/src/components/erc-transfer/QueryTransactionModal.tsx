@@ -18,7 +18,7 @@ export interface ModalConfigType {
   inputPlaceholder: string;
   buttonLabel: string;
   inputErrorMessage: string;
-  contractType: ContractType;
+  // contractType: ContractType; // TODO: handle type when new SC is merged
   onClose: () => void;
 }
 

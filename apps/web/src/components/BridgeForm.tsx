@@ -644,7 +644,7 @@ export default function BridgeForm({
           inputPlaceholder="Enter transaction hash"
           buttonLabel="Restore transaction"
           onClose={() => setShowErcToDfcRestoreModal(false)}
-          contractType={ContractType.Instant}
+          // contractType={ContractType.Instant}
           inputErrorMessage="Enter a valid transaction hash for Ethereum"
         />
       )}
