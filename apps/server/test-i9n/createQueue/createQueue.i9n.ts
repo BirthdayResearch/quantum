@@ -58,8 +58,6 @@ describe('Create Queue Service Integration Tests', () => {
   afterAll(async () => {
     // teardown database
     await prismaService.bridgeEventTransactions.deleteMany({});
-    await prismaService.ethereumQueue.deleteMany({});
-    await prismaService.adminEthereumQueue.deleteMany({});
     await startedPostgresContainer.stop();
     await hardhatNetwork.stop();
     await testing.stop();
@@ -81,7 +79,8 @@ describe('Create Queue Service Integration Tests', () => {
   it('Check if create queue transaction is stored in database', async () => {
     // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function (bridge 100 USDC) and mine the block
     const transactionCall = await bridgeContract.bridgeToDeFiChain(
-      ethers.constants.AddressZero,
+      // ethers.constants.AddressZero,
+      ethers.utils.toUtf8Bytes('df1q4q49nwn7s8l6fsdpkmhvf0als6jawktg8urd3u'),
       musdcContract.address,
       5,
     );
@@ -149,7 +148,7 @@ describe('Create Queue Service Integration Tests', () => {
       where: { transactionHash: transactionCall.hash },
     });
     expect(transactionDbRecord?.status).toStrictEqual(QueueStatus.DRAFT);
-    expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.NOT_CONFIRMED);
+    expect(transactionDbRecord?.ethereumStatus).toStrictEqual(EthereumTransactionStatus.NOT_CONFIRMED);
 
     // Step 4: mine 65 blocks to make the transaction confirmed
     await hardhatNetwork.generate(65);
@@ -168,6 +167,6 @@ describe('Create Queue Service Integration Tests', () => {
       where: { transactionHash: transactionCall.hash },
     });
     expect(transactionDbRecord?.status).toStrictEqual(QueueStatus.IN_PROGRESS);
-    expect(transactionDbRecord?.status).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
+    expect(transactionDbRecord?.ethereumStatus).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
   });
 });

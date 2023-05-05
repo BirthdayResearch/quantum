@@ -53,6 +53,10 @@ export function buildTestConfig({
         bridgeProxy: {
           address: testnet?.bridgeContractAddress ?? '',
         },
+        // to be updated to the accurate address once deployed
+        queueBridgeProxy: {
+          address: testnet?.bridgeContractAddress ?? '',
+        },
         USDC: {
           address: usdcAddress,
         },
