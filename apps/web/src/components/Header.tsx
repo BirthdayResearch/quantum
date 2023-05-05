@@ -57,7 +57,7 @@ export default function Header({
               inputPlaceholder="Enter transaction hash"
               buttonLabel="Track status"
               onClose={() => setIsSearchQueuedTransactionModalOpen(false)}
-              contractType={ContractType.Queue}
+              // contractType={ContractType.Queue}
               inputErrorMessage="Enter a valid transaction hash for Ethereum"
             />
           )}
