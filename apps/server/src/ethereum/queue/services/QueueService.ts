@@ -268,24 +268,19 @@ export class QueueService {
         if (adminQueueTxn) {
           throw new Error('Transaction Hash already exists in admin table');
         }
-
-        await this.prisma.$transaction(async (prisma) => {
-          await prisma.ethereumQueue.update({
-            where: {
-              transactionHash,
+        await this.prisma.ethereumQueue.update({
+          where: {
+            transactionHash,
+          },
+          data: {
+            ethereumStatus: EthereumTransactionStatus.CONFIRMED,
+            status: QueueStatus.IN_PROGRESS,
+            adminQueue: {
+              create: {
+                defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+              },
             },
-            data: {
-              ethereumStatus: EthereumTransactionStatus.CONFIRMED,
-              status: QueueStatus.IN_PROGRESS,
-            },
-          });
-
-          await prisma.adminEthereumQueue.create({
-            data: {
-              queueTransactionHash: transactionHash,
-              defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
-            },
-          });
+          },
         });
       } else if (txHashFound.ethereumStatus !== EthereumTransactionStatus.CONFIRMED) {
         return {
