@@ -191,8 +191,10 @@ export class QueueService {
       } else {
         // wToken transfer
         const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
-        const wTokenSymbol = await evmTokenContract.symbol();
-        const wTokenDecimals = await evmTokenContract.decimals();
+        const [wTokenSymbol, wTokenDecimals] = await Promise.all([
+          evmTokenContract.symbol(),
+          evmTokenContract.decimals(),
+        ]);
         transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
         dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
       }
@@ -237,9 +239,10 @@ export class QueueService {
 
       if (!parsedTxnData) throw new Error(ErrorMsg);
 
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-
-      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+      const [txReceipt, currentBlockNumber] = await Promise.all([
+        this.ethersRpcProvider.getTransactionReceipt(transactionHash),
+        this.ethersRpcProvider.getBlockNumber(),
+      ]);
       const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
 
       if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
@@ -284,14 +287,12 @@ export class QueueService {
             },
           });
         });
-      }
-
-      if (txHashFound.ethereumStatus !== EthereumTransactionStatus.CONFIRMED) {
-        return {
-          numberOfConfirmations,
-          isConfirmed: false,
-        };
-      }
+      } else if (txHashFound.ethereumStatus !== EthereumTransactionStatus.CONFIRMED) {
+          return {
+            numberOfConfirmations,
+            isConfirmed: false,
+          };
+        }
 
       return { numberOfConfirmations, isConfirmed: true };
     } catch (e: any) {
