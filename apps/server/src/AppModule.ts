@@ -10,7 +10,6 @@ import { EthereumModule } from './ethereum/EthereumModule';
 import { QueueModule } from './ethereum/queue/QueueModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
-import { QueueModule } from './queue/QueueModule';
 import { SettingsModule } from './settings/SettingsModule';
 import { VersionModule } from './version/VersionModule';
 

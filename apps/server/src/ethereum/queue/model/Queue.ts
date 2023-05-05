@@ -20,3 +20,8 @@ export enum OrderBy {
   ASC = 'ASC',
   DESC = 'DESC',
 }
+
+export interface VerifyQueueTransactionDto {
+  numberOfConfirmations: number;
+  isConfirmed: boolean;
+}
