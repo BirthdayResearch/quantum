@@ -11,7 +11,7 @@ export interface Queue {
   tokenSymbol: string | null;
   defichainAddress: string;
   expiryDate: Date;
-  adminQueue: null | {
+  adminQueue?: null | {
     sendTransactionHash: string | null;
   };
 }

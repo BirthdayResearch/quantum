@@ -1,12 +1,6 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {
-  DeFiChainTransactionStatus,
-  EthereumQueue,
-  EthereumTransactionStatus,
-  Prisma,
-  QueueStatus,
-} from '@prisma/client';
+import { DeFiChainTransactionStatus, EthereumTransactionStatus, Prisma, QueueStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
@@ -17,7 +11,7 @@ import { ApiPagedResponse } from '../../../pagination/ApiPagedResponse';
 import { PaginationQuery } from '../../../pagination/ApiQuery';
 import { PrismaService } from '../../../PrismaService';
 import { getDTokenDetailsByWToken } from '../../../utils/TokensUtils';
-import { ContractType, VerificationService } from "../../services/VerificationService";
+import { ContractType, VerificationService } from '../../services/VerificationService';
 import { OrderBy, Queue, VerifyQueueTransactionDto } from '../model/Queue';
 
 @Injectable()
@@ -156,7 +150,7 @@ export class QueueService {
     }
   }
 
-  async createQueueTransaction(transactionHash: string): Promise<EthereumQueue> {
+  async createQueueTransaction(transactionHash: string): Promise<Queue> {
     try {
       const txHashFound = await this.prisma.ethereumQueue.findFirst({
         where: {
@@ -214,7 +208,11 @@ export class QueueService {
           tokenSymbol: dTokenDetails.symbol,
         },
       });
-      return queueRecord;
+
+      return {
+        ...queueRecord,
+        id: queueRecord.id.toString(),
+      };
     } catch (e: any) {
       throw new HttpException(
         {
