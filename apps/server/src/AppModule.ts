@@ -7,6 +7,7 @@ import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
 import { BalancesModule } from './balances/BalancesModule';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
 import { EthereumModule } from './ethereum/EthereumModule';
+import { QueueModule } from './ethereum/queue/QueueModule';
 import { EthersModule } from './modules/EthersModule';
 import { HealthModule } from './modules/HealthModule';
 import { QueueModule } from './queue/QueueModule';

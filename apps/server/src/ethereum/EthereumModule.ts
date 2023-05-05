@@ -12,6 +12,7 @@ import { QueueModule } from '../queue/QueueModule';
 import { EthereumController } from './controllers/EthereumController';
 import { StatsController } from './controllers/StatsController';
 import { TransactionsController } from './controllers/TransactionsController';
+import { QueueModule } from './queue/QueueModule';
 import { EthereumStatsService } from './services/EthereumStatsService';
 import { EthereumTransactionsService } from './services/EthereumTransactionsService';
 import { EVMTransactionConfirmerService } from './services/EVMTransactionConfirmerService';
