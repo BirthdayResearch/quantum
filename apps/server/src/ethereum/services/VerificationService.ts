@@ -23,7 +23,7 @@ const contract = {
   },
 };
 
-export enum ErrorMsg {
+export enum ErrorMsgTypes {
   InaccurateNameAndSignature = 'Decoded function name or signature is inaccurate',
   PendingTxn = 'Transaction is still pending',
   InaccurateContractAddress = 'Contract Address in the Transaction Receipt is inaccurate',
@@ -34,7 +34,7 @@ export interface VerifyIfValidTxnDto {
     etherInterface: ethers.utils.Interface;
     parsedTxnData: ethers.utils.TransactionDescription;
   };
-  ErrorMsg?: string;
+  errorMsg?: string;
 }
 
 @Injectable()
@@ -56,23 +56,23 @@ export class VerificationService {
       parsedTxnData.parsedTxnData.name !== contract[contractType].name ||
       parsedTxnData.parsedTxnData.signature !== contract[contractType].signature
     ) {
-      return { ErrorMsg: ErrorMsg.InaccurateNameAndSignature };
+      return { errorMsg: ErrorMsgTypes.InaccurateNameAndSignature };
     }
 
     // if transaction is still pending
     if (txReceipt === null) {
-      return { ErrorMsg: ErrorMsg.PendingTxn };
+      return { errorMsg: ErrorMsgTypes.PendingTxn };
     }
 
     // Sanity check that the contractAddress is accurate in the Transaction Receipt
     if (txReceipt.to !== contractAddress) {
-      return { ErrorMsg: ErrorMsg.InaccurateContractAddress };
+      return { errorMsg: ErrorMsgTypes.InaccurateContractAddress };
     }
 
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      return { ErrorMsg: ErrorMsg.RevertedTxn };
+      return { errorMsg: ErrorMsgTypes.RevertedTxn };
     }
 
     // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()

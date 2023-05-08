@@ -161,14 +161,14 @@ export class QueueService {
         throw new Error('Transaction Hash already exists');
       }
 
-      const { parsedTxnData, ErrorMsg } = await this.verificationService.verifyIfValidTxn(
+      const { parsedTxnData, errorMsg } = await this.verificationService.verifyIfValidTxn(
         transactionHash,
         this.contractAddress,
         ContractType.queue,
       );
 
       if (!parsedTxnData) {
-        throw new Error(ErrorMsg);
+        throw new Error(errorMsg);
       }
 
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
@@ -237,14 +237,14 @@ export class QueueService {
 
   async verify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
     try {
-      const { parsedTxnData, ErrorMsg } = await this.verificationService.verifyIfValidTxn(
+      const { parsedTxnData, errorMsg } = await this.verificationService.verifyIfValidTxn(
         transactionHash,
         this.contractAddress,
         ContractType.queue,
       );
 
       if (!parsedTxnData) {
-        throw new Error(ErrorMsg);
+        throw new Error(errorMsg);
       }
 
       const [txReceipt, currentBlockNumber] = await Promise.all([
