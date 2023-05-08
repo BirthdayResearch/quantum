@@ -49,7 +49,7 @@ jobs:
 
       ## Implement ping on server side to do full e2e
 
-      - uses: cypress-io/github-action@ecd4b8bc2aa1732173acf612ac7894ca0d204774 # v5.6.2
+      - uses: cypress-io/github-action@dfda9365a4881a8521b8e3c3538275242aae9151 # v5.7.1
         with:
           config-file: cypress.config.js
           install: false
