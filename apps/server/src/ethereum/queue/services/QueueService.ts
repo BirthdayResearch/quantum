@@ -167,7 +167,9 @@ export class QueueService {
         ContractType.queue,
       );
 
-      if (!parsedTxnData) throw new Error(ErrorMsg);
+      if (!parsedTxnData) {
+        throw new Error(ErrorMsg);
+      }
 
       const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
       const { params } = this.verificationService.decodeTxnData(parsedTxnData);
@@ -237,7 +239,9 @@ export class QueueService {
         ContractType.queue,
       );
 
-      if (!parsedTxnData) throw new Error(ErrorMsg);
+      if (!parsedTxnData) {
+        throw new Error(ErrorMsg);
+      }
 
       const [txReceipt, currentBlockNumber] = await Promise.all([
         this.ethersRpcProvider.getTransactionReceipt(transactionHash),
