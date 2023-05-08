@@ -29,7 +29,6 @@ import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
-import RestoreTransactionModal from "@components/erc-transfer/RestoreTransactionModal";
 import debounce from "@utils/debounce";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
@@ -40,6 +39,7 @@ import {
   FEES_INFO,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
+import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 
 function SwitchButton({
   onClick,
@@ -635,10 +635,15 @@ export default function BridgeForm({
         />
       )}
       {showErcToDfcRestoreModal && (
-        <RestoreTransactionModal
+        <QueryTransactionModal
           title="Recover transaction"
-          message="Enter your Ethereum transaction ID to load your transaction again for review"
+          message="Enter your Ethereum transaction hash to load your transaction again for review"
+          inputLabel="Transaction hash"
+          inputPlaceholder="Enter transaction hash"
+          buttonLabel="Restore transaction"
           onClose={() => setShowErcToDfcRestoreModal(false)}
+          // contractType={ContractType.Instant}
+          inputErrorMessage="Enter a valid transaction hash for Ethereum"
         />
       )}
     </div>

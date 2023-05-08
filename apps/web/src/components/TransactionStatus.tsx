@@ -82,7 +82,7 @@ export default function TransactionStatus({
     } else {
       setTitle("Awaiting confirmation");
       setDescription(
-        "Your transaction is being processed. We recommend keeping your tab open to ensure you receive your funds. Please only close the tab after your DFI transaction ID is displayed."
+        "Your transaction is being processed. We recommend keeping your tab open to ensure you receive your funds. Please only close the tab after your DFI transaction hash is displayed."
       );
     }
   }, [isConfirmed, isReverted, isUnsentFund]);
