@@ -84,14 +84,6 @@ describe('Create Queue Service Integration Tests', () => {
       5,
     );
 
-    let txReceipt = await testing.inject({
-      method: 'POST',
-      url: `/ethereum/queue`,
-      payload: {
-        transactionHash: transactionCall.hash,
-      },
-    });
-
     await hardhatNetwork.generate(1);
 
     // Step 2: db should not have record of transaction
@@ -101,7 +93,7 @@ describe('Create Queue Service Integration Tests', () => {
 
     expect(transactionDbRecord).toStrictEqual(null);
 
-    txReceipt = await testing.inject({
+    const txReceipt = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue`,
       payload: {
@@ -114,14 +106,14 @@ describe('Create Queue Service Integration Tests', () => {
     expect(JSON.parse(txReceipt.body).ethereumStatus).toStrictEqual(EthereumTransactionStatus.NOT_CONFIRMED);
 
     // to test pending transaction (unmined block)
-    txReceipt = await testing.inject({
+    let txnResponse = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue/verify`,
       payload: {
         transactionHash: transactionCall.hash,
       },
     });
-    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 0, isConfirmed: false });
+    expect(JSON.parse(txnResponse.body)).toStrictEqual({ numberOfConfirmations: 0, isConfirmed: false });
 
     // Step 3: db should create a record of transaction with status='NOT_CONFIRMED', as number of confirmations = 0.
     transactionDbRecord = await prismaService.ethereumQueue.findFirst({
@@ -134,14 +126,14 @@ describe('Create Queue Service Integration Tests', () => {
     await hardhatNetwork.generate(65);
 
     // Step 5: service should update record in db with status='CONFIRMED', as number of confirmations now hit 65.
-    txReceipt = await testing.inject({
+    txnResponse = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue/verify`,
       payload: {
         transactionHash: transactionCall.hash,
       },
     });
-    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 65, isConfirmed: true });
+    expect(JSON.parse(txnResponse.body)).toStrictEqual({ numberOfConfirmations: 65, isConfirmed: true });
 
     transactionDbRecord = await prismaService.ethereumQueue.findFirst({
       where: { transactionHash: transactionCall.hash },
