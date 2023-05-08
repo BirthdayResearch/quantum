@@ -201,6 +201,10 @@ export class QueueService {
         dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
       }
 
+      if (transferAmount.isNaN() || transferAmount.isLessThanOrEqualTo(0)) {
+        throw new Error('Transfer amount is less than or equal to zero');
+      }
+
       const queueRecord = await this.prisma.ethereumQueue.create({
         data: {
           transactionHash,
