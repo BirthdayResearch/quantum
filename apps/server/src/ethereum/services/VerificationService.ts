@@ -34,7 +34,7 @@ export interface VerifyIfValidTxnDto {
     etherInterface: ethers.utils.Interface;
     parsedTxnData: ethers.utils.TransactionDescription;
   };
-  errorMsg?: string;
+  errorMsg?: ErrorMsgTypes;
 }
 
 @Injectable()
