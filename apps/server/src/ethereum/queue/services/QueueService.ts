@@ -152,6 +152,8 @@ export class QueueService {
 
   async createQueueTransaction(transactionHash: string): Promise<Queue> {
     try {
+      const queueTokensMinAmt = this.configService.getOrThrow('ethereum.queueTokensMinAmt', {});
+
       const txHashFound = await this.prisma.ethereumQueue.findFirst({
         where: {
           transactionHash,
@@ -179,6 +181,7 @@ export class QueueService {
 
       let transferAmount = new BigNumber(0);
       let dTokenDetails;
+      let tokenMinAmt;
 
       // expiry date calculations
       const currDate = new Date();
@@ -189,6 +192,7 @@ export class QueueService {
         const ethAmount = EthBigNumber.from(onChainTxnDetail.value).toString();
         transferAmount = new BigNumber(ethAmount).dividedBy(new BigNumber(10).pow(18));
         dTokenDetails = getDTokenDetailsByWToken('ETH', this.network);
+        tokenMinAmt = queueTokensMinAmt.ETH;
       } else {
         // wToken transfer
         const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
@@ -198,6 +202,10 @@ export class QueueService {
         ]);
         transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
         dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
+        tokenMinAmt = queueTokensMinAmt[dTokenDetails.symbol];
+      }
+      if (transferAmount.isLessThan(tokenMinAmt)) {
+        throw new Error('Transfer amount is less than or equal to the minimum amoubt');
       }
 
       if (transferAmount.isNaN() || transferAmount.isLessThanOrEqualTo(0)) {
