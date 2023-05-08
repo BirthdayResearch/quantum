@@ -77,7 +77,7 @@ describe('Create Queue Service Integration Tests', () => {
   });
 
   it('Check if create queue transaction is stored in database', async () => {
-    // Step 1: Call bridgeToDeFiChain(_defiAddress, _tokenAddress, _amount) function (bridge 100 USDC) and mine the block
+    // Step 1: Call bridgeToDeFiChain( test defi wallet address, _tokenAddress, _amount) function (bridge 5 USDC) and mine the block
     const transactionCall = await bridgeContract.bridgeToDeFiChain(
       ethers.utils.toUtf8Bytes('df1q4q49nwn7s8l6fsdpkmhvf0als6jawktg8urd3u'),
       musdcContract.address,
@@ -108,6 +108,10 @@ describe('Create Queue Service Integration Tests', () => {
         transactionHash: transactionCall.hash,
       },
     });
+
+    expect(txReceipt.statusCode).toStrictEqual(201);
+    expect(JSON.parse(txReceipt.body).status).toStrictEqual(QueueStatus.DRAFT);
+    expect(JSON.parse(txReceipt.body).ethereumStatus).toStrictEqual(EthereumTransactionStatus.NOT_CONFIRMED);
 
     // to test pending transaction (unmined block)
     txReceipt = await testing.inject({
