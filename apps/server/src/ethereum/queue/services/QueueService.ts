@@ -182,8 +182,7 @@ export class QueueService {
 
       // expiry date calculations
       const currDate = new Date();
-      const expiryDate = new Date(currDate.setDate(currDate.getDate() + this.DAYS_TO_EXPIRY));
-      expiryDate.toISOString();
+      const expiryDate = new Date(currDate.setDate(currDate.getDate() + this.DAYS_TO_EXPIRY)).toISOString();
 
       // eth transfer
       if (tokenAddress === ethers.constants.AddressZero) {

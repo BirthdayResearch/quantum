@@ -1,5 +1,5 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
-import { EthereumTransactionStatus, QueueStatus } from '@prisma/client';
+import { DeFiChainTransactionStatus,EthereumTransactionStatus, QueueStatus } from '@prisma/client';
 import { ethers } from 'ethers';
 import {
   BridgeV1,
@@ -93,6 +93,11 @@ describe('Create Queue Service Integration Tests', () => {
 
     expect(transactionDbRecord).toStrictEqual(null);
 
+    let transactionAdminDbRecord = await prismaService.adminEthereumQueue.findFirst({
+      where: { queueTransactionHash: transactionCall.hash },
+    });
+    expect(transactionAdminDbRecord).toStrictEqual(null);
+
     const txReceipt = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue`,
@@ -140,5 +145,11 @@ describe('Create Queue Service Integration Tests', () => {
     });
     expect(transactionDbRecord?.status).toStrictEqual(QueueStatus.IN_PROGRESS);
     expect(transactionDbRecord?.ethereumStatus).toStrictEqual(EthereumTransactionStatus.CONFIRMED);
+
+    transactionAdminDbRecord = await prismaService.adminEthereumQueue.findFirst({
+      where: { queueTransactionHash: transactionCall.hash },
+    });
+    expect(transactionAdminDbRecord?.queueTransactionHash).toStrictEqual(transactionCall.hash);
+    expect(transactionAdminDbRecord?.defichainStatus).toStrictEqual(DeFiChainTransactionStatus.NOT_CONFIRMED);
   });
 });
