@@ -1,6 +1,5 @@
 import '@nomicfoundation/hardhat-chai-matchers';
 import '@nomicfoundation/hardhat-toolbox';
-import '@nomiclabs/hardhat-etherscan';
 
 import { HardhatUserConfig, task, types } from 'hardhat/config';
 
