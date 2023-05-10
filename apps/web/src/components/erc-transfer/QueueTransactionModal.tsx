@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import ActionButton from "@components/commons/ActionButton";
 import Modal from "@components/commons/Modal";
 import SearchQueuedTransactionButton from "@components/SearchQueuedTransactionButton";
-import IconTooltip from "@components/commons/IconTooltip";
 
 export interface ModalConfigType {
   title: string;
@@ -67,11 +66,8 @@ export default function QueueTransactionModal({
             </div>
             <div className="flex flex-row justify-between">
               <div className="flex flex-row">
-                <span className="text-dark-700 text-sm lg:text-base leading-5">
+                <div className="text-dark-700 text-sm lg:text-base leading-5">
                   Transaction hash
-                </span>
-                <div className="ml-2 mt-0.5">
-                  <IconTooltip title="" content="" />
                 </div>
               </div>
               <div className="text-dark-1000 text-right w-5/12 lg:w-[220px] break-all">
