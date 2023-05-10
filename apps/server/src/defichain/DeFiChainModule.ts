@@ -8,7 +8,7 @@ import { TransactionsController } from './controllers/TransactionController';
 import { WhaleWalletController } from './controllers/WhaleWalletController';
 import { WhaleApiClientProvider } from './providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from './providers/WhaleWalletProvider';
-import { QueueModule } from './queue/QueueModule';
+import { DfcQueueModule } from './queue/QueueModule';
 import { DeFiChainStatsService } from './services/DeFiChainStatsService';
 import { DeFiChainTransactionService } from './services/DeFiChainTransactionService';
 import { SendService } from './services/SendService';
@@ -16,7 +16,7 @@ import { WhaleApiService } from './services/WhaleApiService';
 import { WhaleWalletService } from './services/WhaleWalletService';
 
 @Module({
-  imports: [CacheModule.register({ max: 10_000 }), EthereumModule, QueueModule],
+  imports: [CacheModule.register({ max: 10_000 }), EthereumModule, DfcQueueModule],
   providers: [
     WhaleApiClientProvider,
     WhaleApiService,
@@ -27,7 +27,7 @@ import { WhaleWalletService } from './services/WhaleWalletService';
     PrismaService,
     SendService,
     DeFiChainStatsService,
-    QueueModule,
+    DfcQueueModule,
   ],
   controllers: [StatsController, WhaleWalletController, TransactionsController],
   exports: [WhaleWalletService],
