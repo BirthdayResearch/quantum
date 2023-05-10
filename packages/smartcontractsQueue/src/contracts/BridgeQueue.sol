@@ -3,7 +3,8 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeab
 import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
-error ETH_TRANSFER_FAILED();
+error ETH_TRANSFER_FAILED_TO_COMMUNITY_WALLET();
+error ETH_TRANSFER_FAILED_TO_COLD_WALLET();
 error AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
 error MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
 error REQUESTED_BRIDGE_AMOUNT_IS_ZERO();
@@ -149,9 +150,9 @@ contract BridgeQueue is
         emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmount);
         if (_tokenAddress == ETH) {
             (bool sentTxFee, ) = communityWallet.call{value: txFee}("");
-            if (!sentTxFee) revert ETH_TRANSFER_FAILED();
+            if (!sentTxFee) revert ETH_TRANSFER_FAILED_TO_COMMUNITY_WALLET();
             (bool sentNetAmount, ) = coldWallet.call{value: netAmount}("");
-            if (!sentNetAmount) revert ETH_TRANSFER_FAILED();
+            if (!sentNetAmount) revert ETH_TRANSFER_FAILED_TO_COLD_WALLET();
         } else {
             IERC20Upgradeable(_tokenAddress).safeTransferFrom(
                 msg.sender,
