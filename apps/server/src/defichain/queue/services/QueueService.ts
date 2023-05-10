@@ -37,12 +37,8 @@ export class QueueService {
 
       if (adminQueueTxn) {
         await this.prisma.adminEthereumQueue.update({
-          where: {
-            sendTransactionHash: transactionHash,
-          },
-          data: {
-            defichainStatus: DeFiChainTransactionStatus.CONFIRMED,
-          },
+          where: { sendTransactionHash: transactionHash },
+          data: { defichainStatus: DeFiChainTransactionStatus.CONFIRMED },
         });
       }
 
