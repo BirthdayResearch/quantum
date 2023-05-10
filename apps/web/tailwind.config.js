@@ -10,6 +10,7 @@ module.exports = {
     fontFamily: {
       sans: ['"Space Grotesk"', "sans-serif"],
       mono: ['"Raleway"'],
+      desc: ['"Montserrat"', "sans-serif"],
     },
     screens: {
       xs: "390px", // Mobile - Large

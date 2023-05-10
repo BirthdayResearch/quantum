@@ -1,5 +1,9 @@
 import clsx from "clsx";
 import React, { Dispatch, SetStateAction } from "react";
+import {
+  FormContext,
+  useNetworkContext,
+} from "../layouts/contexts/NetworkContext";
 
 // queue and instant tab options
 export enum TabOptions {
@@ -16,11 +20,21 @@ function Tab({
   activeTab: TabOptions;
   setActiveTab: Dispatch<SetStateAction<TabOptions>>;
 }) {
+  const { setTypeOfTransaction } = useNetworkContext();
+  function setFormTransactionType(formTabOptions: TabOptions) {
+    setTypeOfTransaction(
+      TabOptions.INSTANT === formTabOptions
+        ? FormContext.INSTANT
+        : FormContext.QUEUE
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={() => {
         setActiveTab(label);
+        setFormTransactionType(label);
       }}
       className={clsx(
         "py-[17px] relative border-dark-200 w-full",

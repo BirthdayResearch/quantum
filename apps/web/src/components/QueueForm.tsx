@@ -5,32 +5,22 @@ import { FiRefreshCw } from "react-icons/fi";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
-import { networks, useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import {
-  Network,
-  NetworkOptionsI,
-  SelectionType,
-  TokenBalances,
-  TokensI,
-} from "types";
-import SwitchIcon from "@components/icons/SwitchIcon";
+import { Network, TokenBalances } from "types";
 import UtilityModal, {
   ModalConfigType,
 } from "@components/commons/UtilityModal";
-import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
 import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
 import { useContractContext } from "@contexts/ContractContext";
-import { useStorageContext } from "@contexts/StorageContext";
+import { useQueueStorageContext } from "@contexts/QueueStorageContext";
 import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
 import debounce from "@utils/debounce";
-import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
@@ -38,45 +28,11 @@ import {
   ETHEREUM_SYMBOL,
   FEES_INFO,
 } from "../constants";
-import Tooltip from "./commons/Tooltip";
-import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import { TabOptions } from "./FormTab";
+import { useNetworkContext } from "../layouts/contexts/NetworkContext";
+import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 
-function SwitchButton({
-  onClick,
-  disabled = false,
-}: {
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="my-4 flex flex-row rounded">
-      <div className="mt-5 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-      <Tooltip content="Switch source" containerClass="py-0">
-        <button
-          title="switch-source-button"
-          type="button"
-          onClick={onClick}
-          disabled={disabled}
-          className={clsx(
-            "dark-card-bg dark-bg-card-section group flex h-10 w-10 items-center justify-center rounded-full",
-            { "pointer-events-none": disabled }
-          )}
-        >
-          <div className="hidden group-hover:hidden lg:block">
-            <ArrowDownIcon size={20} className="fill-dark-700" />
-          </div>
-          <div className="group-hover:block lg:hidden">
-            <SwitchIcon size={20} className="fill-dark-700" />
-          </div>
-        </button>
-      </Tooltip>
-      <div className="mt-5 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-    </div>
-  );
-}
-
-export default function BridgeForm({
+export default function QueueForm({
   hasPendingTxn,
   activeTab,
 }: {
@@ -84,14 +40,14 @@ export default function BridgeForm({
   activeTab: TabOptions;
 }) {
   const {
-    selectedNetworkA,
-    selectedTokensA,
-    selectedNetworkB,
-    selectedTokensB,
-    setSelectedNetworkA,
-    setSelectedTokensA,
-    setSelectedNetworkB,
-    setSelectedTokensB,
+    selectedQueueNetworkA,
+    selectedQueueTokensA,
+    selectedQueueNetworkB,
+    selectedQueueTokensB,
+    setSelectedQueueNetworkA,
+    setSelectedQueueTokensA,
+    setSelectedQueueNetworkB,
+    setSelectedQueueTokensB,
     resetNetworkSelection,
   } = useNetworkContext();
 
@@ -99,7 +55,7 @@ export default function BridgeForm({
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
   const { dfcAddress, dfcAddressDetails, txnForm, setStorage, txnHash } =
-    useStorageContext();
+    useQueueStorageContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -115,7 +71,8 @@ export default function BridgeForm({
   const [fee, feeSymbol] = useTransferFee(amount);
 
   const { address, isConnected } = useAccount();
-  const isSendingFromEthNetwork = selectedNetworkA.name === Network.Ethereum;
+  const isSendingFromEthNetwork =
+    selectedQueueNetworkA.name === Network.Ethereum;
   const {
     data: evmBalance,
     refetch: refetchEvmBalance,
@@ -125,8 +82,8 @@ export default function BridgeForm({
     enabled: isSendingFromEthNetwork,
     watch: false,
     ...(isSendingFromEthNetwork &&
-      selectedTokensA.tokenA.name !== ETHEREUM_SYMBOL && {
-        token: Erc20Tokens[selectedTokensA.tokenA.name].address,
+      selectedQueueTokensA.tokenA.name !== ETHEREUM_SYMBOL && {
+        token: Erc20Tokens[selectedQueueTokensA.tokenA.name].address,
       }),
   });
 
@@ -142,8 +99,8 @@ export default function BridgeForm({
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
 
   async function getBalanceFn(): Promise<TokenBalances | {}> {
-    const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
-    const balance = await getBalance(selectedTokensA.tokenB.symbol);
+    const key = `${selectedQueueNetworkA.name}-${selectedQueueTokensA.tokenB.symbol}`;
+    const balance = await getBalance(selectedQueueTokensA.tokenB.symbol);
     const updatedBalances = {
       ...tokenBalances,
       [key]: balance,
@@ -160,7 +117,7 @@ export default function BridgeForm({
   async function verifySufficientHWBalance(
     refetch?: boolean
   ): Promise<boolean | undefined> {
-    const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
+    const key = `${selectedQueueNetworkA.name}-${selectedQueueTokensA.tokenB.symbol}`;
     const balance = (refetch ? await getBalanceFn() : tokenBalances)[key];
 
     if (balance === null || new BigNumber(balance).lte(0)) {
@@ -182,21 +139,23 @@ export default function BridgeForm({
 
   useEffect(() => {
     verifySufficientHWBalance();
-  }, [selectedNetworkA, selectedTokensA, networkEnv, tokenBalances, amount]);
+  }, [
+    selectedQueueNetworkA,
+    selectedQueueTokensA,
+    networkEnv,
+    tokenBalances,
+    amount,
+  ]);
 
   useEffect(() => {
     checkBalance();
-  }, [selectedNetworkA, selectedTokensA, networkEnv]);
+  }, [selectedQueueNetworkA, selectedQueueTokensA, networkEnv]);
 
   const isFormValid =
     amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
 
-  const switchNetwork = () => {
-    setSelectedNetworkA(selectedNetworkB);
-  };
-
   const validateAmountInput = (value: string, maxValue: BigNumber) => {
-    const isSendingToDFC = selectedNetworkB.name === Network.DeFiChain;
+    const isSendingToDFC = selectedQueueNetworkB.name === Network.DeFiChain;
     let err = "";
     if (isSendingToDFC && new BigNumber(value).gt(maxValue.toFixed(8))) {
       err = "Insufficient Funds";
@@ -246,16 +205,16 @@ export default function BridgeForm({
       }
       if (!hasUnconfirmedTxn) {
         const newTxn = {
-          selectedNetworkA,
-          selectedTokensA,
-          selectedNetworkB,
-          selectedTokensB,
+          selectedQueueNetworkA,
+          selectedQueueTokensA,
+          selectedQueueNetworkB,
+          selectedQueueTokensB,
           networkEnv,
           amount,
           fromAddress,
           toAddress: addressInput,
         };
-        setStorage("txn-form", JSON.stringify(newTxn));
+        setStorage("txn-form-queue", JSON.stringify(newTxn));
       }
       setShowConfirmModal(true);
     }
@@ -264,9 +223,9 @@ export default function BridgeForm({
 
   const onResetTransferForm = () => {
     setUtilityModalData(null);
-    setStorage("txn-form", null);
-    setStorage("dfc-address", null);
-    setStorage("dfc-address-details", null);
+    setStorage("txn-form-queue", null);
+    setStorage("dfc-address-queue", null);
+    setStorage("dfc-address-details-queue", null);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
@@ -346,10 +305,10 @@ export default function BridgeForm({
       setAmount(localData.amount);
       setAddressInput(localData.toAddress);
       setFromAddress(localData.fromAddress ?? address);
-      setSelectedNetworkA(localData.selectedNetworkA);
-      setSelectedTokensA(localData.selectedTokensA);
-      setSelectedNetworkB(localData.selectedNetworkB);
-      setSelectedTokensB(localData.selectedTokensB);
+      setSelectedQueueNetworkA(localData.selectedQueueNetworkA);
+      setSelectedQueueTokensA(localData.selectedQueueTokensA);
+      setSelectedQueueNetworkB(localData.selectedQueueNetworkB);
+      setSelectedQueueTokensB(localData.selectedQueueTokensB);
       updateNetworkEnv(localData.networkEnv);
     } else {
       setHasUnconfirmedTxn(false);
@@ -367,17 +326,20 @@ export default function BridgeForm({
         }).unwrap();
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
-          setStorage("txn-form", null);
-          setStorage("dfc-address", null);
+          setStorage("txn-form-queue", null);
+          setStorage("dfc-address-queue", null);
         } else {
           // TODO: Improve setStorage by not forcing stringified JSON
-          setStorage("dfc-address-details", JSON.stringify(addressDetailRes));
+          setStorage(
+            "dfc-address-details-queue",
+            JSON.stringify(addressDetailRes)
+          );
         }
       } else {
-        setStorage("dfc-address-details", null);
+        setStorage("dfc-address-details-queue", null);
       }
     } catch {
-      setStorage("dfc-address-details", null);
+      setStorage("dfc-address-details-queue", null);
     }
   };
 
@@ -385,12 +347,12 @@ export default function BridgeForm({
     fetchAddressDetail(dfcAddress);
   }, [networkEnv, dfcAddress]);
 
-  const { y, reference, floating, strategy, refs } = useFloating({
+  const { y, floating, strategy, refs } = useFloating({
     placement: "bottom-end",
     middleware: [
       shift(),
       size({
-        apply({ rects }) {
+        apply() {
           if (
             refs.floating.current !== null &&
             refs.floating.current !== undefined
@@ -398,7 +360,7 @@ export default function BridgeForm({
             Object.assign(refs.floating.current.style, {
               minWidth: "225px",
               maxWidth: "368px",
-              width: `${rects.reference.width}px`,
+              width: `400px !important`,
             });
           }
         },
@@ -422,35 +384,19 @@ export default function BridgeForm({
         "w-full md:w-[calc(100%+2px)] lg:w-full p-6 md:pt-8 pb-16 lg:p-10",
         "dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 rounded-lg border-t-0 lg:rounded-tr-none lg:rounded-tl-none rounded-tr-none rounded-tl-none lg:rounded-xl",
-        activeTab === TabOptions.INSTANT ? "block" : "hidden"
+        activeTab === TabOptions.QUEUE ? "block" : "hidden"
       )}
     >
-      <div className="flex flex-row items-center" ref={reference}>
-        <div className="w-1/2">
-          <InputSelector
-            label="Source Network"
-            popUpLabel="Select source"
-            options={networks}
-            floatingObj={floatingObj}
-            type={SelectionType.Network}
-            onSelect={(value: NetworkOptionsI) => setSelectedNetworkA(value)}
-            value={selectedNetworkA}
-            disabled={hasUnconfirmedTxn}
-          />
-        </div>
-        <div className="w-1/2">
-          <InputSelector
-            label="Token"
-            popUpLabel="Select token"
-            options={selectedNetworkA.tokens}
-            floatingObj={floatingObj}
-            type={SelectionType.Token}
-            onSelect={(value: TokensI) => setSelectedTokensA(value)}
-            value={selectedTokensA}
-            disabled={hasUnconfirmedTxn}
-          />
-        </div>
-      </div>
+      <section className="flex flex-col lg:px-5 px-4 gap-y-1">
+        <span className="text-dark-900 lg:font-bold font-semibold lg:text-xl text-[16px] leading-5">
+          Queue beyond active liquidity
+        </span>
+        <span className="lg:text-[16px] lg:leading-5 text-sm text-dark-700 font-desc">
+          Transactions will be queued and may take up to 72 hours to be
+          fulfilled.
+        </span>
+      </section>
+
       <div className="mt-4">
         <span className="pl-4 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-sm">
           Amount to transfer
@@ -460,15 +406,20 @@ export default function BridgeForm({
           onChange={onInputChange}
           value={amount}
           error={amountErr}
-          showAmountsBtn={selectedNetworkA.name === Network.Ethereum}
+          showAmountsBtn={selectedQueueNetworkA.name === Network.Ethereum}
           disabled={hasUnconfirmedTxn}
+          floatingObj={floatingObj}
+          showTokenDropdown
+          tokenDropDownValue={selectedQueueTokensA}
+          options={selectedQueueNetworkA.tokens}
+          setSelectedTokens={setSelectedQueueTokensA}
         />
         {isConnected && (
           <div className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2 items-center">
             {amountErr ? (
               <span className="text-xs lg:text-sm text-error">{amountErr}</span>
             ) : (
-              selectedNetworkA.name === Network.Ethereum && (
+              selectedQueueNetworkA.name === Network.Ethereum && (
                 <>
                   <span className="text-xs lg:text-sm text-dark-700">
                     Available:
@@ -478,7 +429,7 @@ export default function BridgeForm({
                     value={maxAmount.toFixed(5, BigNumber.ROUND_FLOOR)}
                     decimalScale={5}
                     thousandSeparator
-                    suffix={` ${selectedTokensA.tokenA.name}`}
+                    suffix={` ${selectedQueueTokensA.tokenA.name}`}
                   />
                   <FiRefreshCw
                     onClick={onRefreshEvmBalance}
@@ -493,34 +444,10 @@ export default function BridgeForm({
           </div>
         )}
       </div>
-      <SwitchButton onClick={switchNetwork} disabled={hasUnconfirmedTxn} />
-
-      <div className="flex flex-row items-end mb-4">
-        <div className="w-1/2">
-          <InputSelector
-            label="Destination Network"
-            disabled
-            popUpLabel="Select destination"
-            floatingObj={floatingObj}
-            type={SelectionType.Network}
-            value={selectedNetworkB}
-          />
-        </div>
-        <div className="w-1/2">
-          <InputSelector
-            disabled
-            label="Token to Receive"
-            popUpLabel="Select token"
-            floatingObj={floatingObj}
-            type={SelectionType.Token}
-            value={selectedTokensB}
-          />
-        </div>
-      </div>
-      <div className="mb-6">
+      <div className="mb-6 mt-8 md:mt-6 lg:mt-7">
         <WalletAddressInput
-          label="Address"
-          blockchain={selectedNetworkB.name as Network}
+          label="Destination Address"
+          blockchain={selectedQueueNetworkB.name as Network}
           addressInput={addressInput}
           onAddressInputChange={(addrInput) => setAddressInput(addrInput)}
           onAddressInputError={(hasError) => setHasAddressInputErr(hasError)}
@@ -556,7 +483,7 @@ export default function BridgeForm({
             0
           ).toFixed(6, BigNumber.ROUND_FLOOR)}
           thousandSeparator
-          suffix={` ${selectedTokensB.tokenA.name}`}
+          suffix={` ${selectedQueueTokensB.tokenA.name}`}
           trimTrailingZeros
         />
       </div>
@@ -567,17 +494,13 @@ export default function BridgeForm({
               testId="transfer-btn"
               label={getActionBtnLabel()}
               isLoading={hasPendingTxn || isVerifyingTransaction}
-              disabled={
-                (isConnected && !isFormValid) ||
-                hasPendingTxn ||
-                !isBalanceSufficient
-              }
+              disabled={(isConnected && !isFormValid) || hasPendingTxn}
               onClick={!isConnected ? show : () => onTransferTokens()}
             />
           )}
         </ConnectKitButton.Custom>
         {isConnected &&
-          selectedNetworkA.name === Network.Ethereum &&
+          selectedQueueNetworkA.name === Network.Ethereum &&
           !amount &&
           !addressInput &&
           !hasPendingTxn &&
@@ -611,10 +534,17 @@ export default function BridgeForm({
           </div>
         )}
 
-        {!isBalanceSufficient && !hasPendingTxn && (
-          <div className={clsx("pt-3", warningTextStyle)}>
-            Unable to process due to liquidity cap, please try again in a few
-            hours
+        {isBalanceSufficient && !hasPendingTxn && amount !== "" && (
+          <div
+            className={clsx(
+              "lg:pt-5 md:pt-4 pt-[15px] text-center lg:text-sm text-xs"
+            )}
+          >
+            <span className="text-dark-700">
+              Amount entered is within the active limit. Use&nbsp;
+            </span>
+            <span className="text-dark-1000 font-semibold">Instant</span>
+            <span className="text-dark-700">&nbsp;for faster processing.</span>
           </div>
         )}
       </div>

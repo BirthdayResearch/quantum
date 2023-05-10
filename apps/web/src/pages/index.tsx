@@ -15,6 +15,7 @@ import {
 } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 import { FormTab, TabOptions } from "../components/FormTab";
+import QueueForm from "../components/QueueForm";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
@@ -95,6 +96,14 @@ function Home() {
           // Todo : add condition for active tab to switch between <BridgeForm/> and <QueueForm/>
           */}
           <BridgeForm
+            activeTab={activeTab}
+            hasPendingTxn={
+              txnHash.unconfirmed !== undefined ||
+              txnHash.unsentFund !== undefined
+            }
+          />
+          <QueueForm
+            activeTab={activeTab}
             hasPendingTxn={
               txnHash.unconfirmed !== undefined ||
               txnHash.unsentFund !== undefined
