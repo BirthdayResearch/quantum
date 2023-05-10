@@ -261,7 +261,7 @@ export default function InputSelector({
                     "absolute z-10 mt-2 overflow-auto rounded-lg p-px outline-0",
                     { "right-0": type !== SelectionType.Network },
                     open ? "bg-gradient-2" : "bg-dark-200",
-                    isWithQuickInputCard ? "w-5/6" : "w-full"
+                    isWithQuickInputCard ? "md:w-5/6 w-full" : "w-full"
                   )}
                 >
                   <div className="rounded-lg bg-dark-00 pt-4 pb-2">

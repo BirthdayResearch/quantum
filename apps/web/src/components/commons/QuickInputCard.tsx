@@ -126,7 +126,11 @@ export function QuickInputCard({
       )}
     >
       <div className="flex">
-        <div className="flex flex-row px-4 lg:px-5 py-3.5 w-full">
+        <div
+          className={clsx("flex flex-row px-4 lg:px-5 py-3.5 w-full", {
+            "pr-0 lg:pr-0": showTokenDropdown,
+          })}
+        >
           <input
             data-testid="amount"
             className={clsx(
