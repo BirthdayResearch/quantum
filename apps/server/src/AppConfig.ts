@@ -22,6 +22,9 @@ export function appConfig() {
         bridgeProxy: {
           address: process.env.BRIDGE_PROXY_ADDRESS,
         },
+        queueBridgeProxy: {
+          address: process.env.QUANTUM_QUEUE_PROXY_ADDRESS,
+        },
         [SupportedEVMTokenSymbols.USDT]: {
           address: process.env.USDT_ADDRESS,
         },

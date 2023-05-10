@@ -1,5 +1,4 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 
@@ -9,68 +8,76 @@ export enum ContractType {
   instant = 'instant',
   queue = 'queue',
 }
+
 const contract = {
   [ContractType.instant]: {
     interface: BridgeV1__factory.abi,
+    name: 'bridgeToDeFiChain',
+    signature: 'bridgeToDeFiChain(bytes,address,uint256)',
   },
   // Todo : update to phase 2 contract when ready
   [ContractType.queue]: {
     interface: BridgeV1__factory.abi,
+    name: 'bridgeToDeFiChain',
+    signature: 'bridgeToDeFiChain(bytes,address,uint256)',
   },
 };
 
-export enum ErrorMsg {
-  InaccurateNameAndSignature = 'Decoded function name or signation is inaccurate',
+export enum ErrorMsgTypes {
+  InaccurateNameAndSignature = 'Decoded function name or signature is inaccurate',
   PendingTxn = 'Transaction is still pending',
-  InaccurateContractAddress = 'Contract Address, decoded name, or signature is inaccurate',
+  InaccurateContractAddress = 'Contract Address in the Transaction Receipt is inaccurate',
+  RevertedTxn = 'Transaction Reverted',
 }
 export interface VerifyIfValidTxnDto {
-  isValidTxn: boolean;
-  ErrorMsg?: string;
+  parsedTxnData?: {
+    etherInterface: ethers.utils.Interface;
+    parsedTxnData: ethers.utils.TransactionDescription;
+  };
+  errorMsg?: ErrorMsgTypes;
 }
 
 @Injectable()
 export class VerificationService {
-  private contractAddress: string;
+  constructor(@Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider) {}
 
-  constructor(
-    @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
-    private configService: ConfigService,
-  ) {
-    this.contractAddress = this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.address');
-  }
-
-  async verifyIfValidTxn(transactionHash: string, contractType: ContractType): Promise<VerifyIfValidTxnDto> {
-    const { parsedTxnData } = await this.parseTxnHash(transactionHash, contractType);
-    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+  async verifyIfValidTxn(
+    transactionHash: string,
+    contractAddress: string,
+    contractType: ContractType,
+  ): Promise<VerifyIfValidTxnDto> {
+    const [parsedTxnData, txReceipt] = await Promise.all([
+      this.parseTxnHash(transactionHash, contractType),
+      this.ethersRpcProvider.getTransactionReceipt(transactionHash),
+    ]);
 
     // Sanity check that the decoded function name and signature are correct
     if (
-      parsedTxnData.name !== 'bridgeToDeFiChain' ||
-      parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
+      parsedTxnData.parsedTxnData.name !== contract[contractType].name ||
+      parsedTxnData.parsedTxnData.signature !== contract[contractType].signature
     ) {
-      return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateNameAndSignature };
+      return { errorMsg: ErrorMsgTypes.InaccurateNameAndSignature };
     }
 
     // if transaction is still pending
     if (txReceipt === null) {
-      return { isValidTxn: false, ErrorMsg: ErrorMsg.PendingTxn };
+      return { errorMsg: ErrorMsgTypes.PendingTxn };
     }
 
-    // Sanity check that the contractAddress, decoded name and signature are correct
-    if (txReceipt.to !== this.contractAddress) {
-      return { isValidTxn: false, ErrorMsg: ErrorMsg.InaccurateContractAddress };
+    // Sanity check that the contractAddress is accurate in the Transaction Receipt
+    if (txReceipt.to !== contractAddress) {
+      return { errorMsg: ErrorMsgTypes.InaccurateContractAddress };
     }
 
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      throw new BadRequestException(`Transaction Reverted`);
+      return { errorMsg: ErrorMsgTypes.RevertedTxn };
     }
 
     // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
 
-    return { isValidTxn: true };
+    return { parsedTxnData };
   }
 
   async parseTxnHash(
