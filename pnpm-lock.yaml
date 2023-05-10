@@ -323,7 +323,7 @@ importers:
         specifier: 10.9.1
         version: 10.9.1(@types/node@18.16.1)(typescript@4.9.5)
 
-  packages/smartcontractsQueue:
+  packages/smartcontracts-queue:
     devDependencies:
       '@birthdayresearch/sticky-typescript':
         specifier: ^0.5.7
