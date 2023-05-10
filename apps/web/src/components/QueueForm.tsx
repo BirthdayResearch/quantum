@@ -354,7 +354,7 @@ export default function QueueForm({
     middleware: [
       shift(),
       size({
-        apply() {
+        apply({ rects }) {
           if (
             refs.floating.current !== null &&
             refs.floating.current !== undefined
@@ -362,7 +362,7 @@ export default function QueueForm({
             Object.assign(refs.floating.current.style, {
               minWidth: "225px",
               maxWidth: "368px",
-              width: `400px !important`,
+              width: `${rects.reference.width}px`,
             });
           }
         },
