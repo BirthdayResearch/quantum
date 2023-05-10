@@ -14,49 +14,65 @@ import { useStorageContext } from "@contexts/StorageContext";
 export interface ModalConfigType {
   title: string;
   message: string;
+  inputLabel: string;
+  inputPlaceholder: string;
+  buttonLabel: string;
+  inputErrorMessage: string;
+  // contractType: ContractType; // TODO: handle type when new SC is merged
   onClose: () => void;
 }
 
-export default function RestoreTransactionModal({
+export enum ContractType {
+  Instant,
+  Queue,
+}
+
+export default function QueryTransactionModal({
   title,
   message,
+  inputLabel,
+  inputPlaceholder,
+  buttonLabel,
+  inputErrorMessage,
   onClose,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
   const { BridgeV1, EthereumRpcUrl } = useContractContext();
 
-  const [txnAddress, setTxnAddress] = useState<string>("");
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [isNotValidTxn, setIsNotValidTxn] = useState<boolean>(false);
+  const [transactionInput, setTransactionInput] = useState<string>("");
+  const [isFocused, setIsFocused] = useState(false);
+  const [isValidTransaction, setIsValidTransaction] = useState(true);
   const [copiedFromClipboard, setCopiedFromClipboard] =
     useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  useAutoResizeTextArea(textAreaRef.current, [
-    txnAddress,
-    "Enter Transaction ID",
-  ]);
+  useAutoResizeTextArea(textAreaRef.current, [transactionInput]);
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
-  const bridgeIface = new ethers.utils.Interface(BridgeV1.abi);
+  const bridgeIface = new ethers.utils.Interface(BridgeV1.abi); // TODO: use new abi from new SC
 
   const checkTXnHash = async () => {
     try {
-      const receipt = await provider.getTransaction(txnAddress);
+      setIsLoading(true);
+      const receipt = await provider.getTransaction(transactionInput);
       const decodedData = bridgeIface.parseTransaction({ data: receipt.data });
       if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
-        setIsNotValidTxn(true);
+        // TODO: add condition to check decodedData.name of new SC
+        setIsValidTransaction(false);
         return;
       }
       if (receipt) {
-        setStorage("unconfirmed", txnAddress);
-        setIsNotValidTxn(false);
+        setStorage("unconfirmed", transactionInput);
+        setIsValidTransaction(true);
         onClose();
         return;
       }
-      setIsNotValidTxn(true);
+      setIsValidTransaction(false);
     } catch (error) {
-      setIsNotValidTxn(true);
+      setIsValidTransaction(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -65,7 +81,7 @@ export default function RestoreTransactionModal({
     setTimeout(() => {
       // Only added timeout for ref's unexplained delay
       const textArea = textAreaRef.current;
-      const cursorPosition = txnAddress.length;
+      const cursorPosition = transactionInput.length;
       if (textArea) {
         textArea.setSelectionRange(cursorPosition, cursorPosition);
         textArea.focus();
@@ -73,13 +89,13 @@ export default function RestoreTransactionModal({
     }, 0);
   };
 
-  const invalidTxnHash = txnAddress && isNotValidTxn;
+  const invalidTxnHash = !!transactionInput && !isValidTransaction;
 
   const handlePasteBtnClick = async () => {
-    setIsNotValidTxn(false);
+    setIsValidTransaction(true);
     const copiedText = await navigator.clipboard.readText();
     if (copiedText) {
-      setTxnAddress(copiedText);
+      setTransactionInput(copiedText);
       setCopiedFromClipboard(true);
     }
   };
@@ -92,7 +108,7 @@ export default function RestoreTransactionModal({
 
   return (
     <Modal isOpen onClose={onClose}>
-      <div className="flex flex-col mt-6 mb-14 w-full px-6">
+      <div className="flex flex-col mt-6 mb-4 w-full md:px-6">
         <div className="font-bold text-xl lg:text-2xl text-dark-900">
           {title}
         </div>
@@ -102,7 +118,7 @@ export default function RestoreTransactionModal({
 
         <div className="md:h-5 lg:h-7 group relative flex items-center mt-8">
           <span className="text-xs font-semibold xl:tracking-wider lg:text-base text-dark-900">
-            Transaction ID
+            {inputLabel}
           </span>
           <div
             className={clsx(
@@ -130,7 +146,7 @@ export default function RestoreTransactionModal({
           {/* Paste icon with tooltip */}
           <Tooltip
             content="Paste from clipboard"
-            containerClass="mr-3 lg:mr-6 shrink-0 cursor-pointer hover:bg-dark-200 active:dark-btn-pressed"
+            containerClass="mr-3 shrink-0 cursor-pointer hover:bg-dark-200 active:dark-btn-pressed"
             disableTooltip={isMobile}
           >
             <FiClipboard
@@ -149,11 +165,11 @@ export default function RestoreTransactionModal({
                 ? "placeholder:text-dark-300"
                 : "placeholder:text-dark-500"
             )}
-            placeholder="Enter Transaction ID"
-            value={txnAddress}
+            placeholder={inputPlaceholder}
+            value={transactionInput}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            onChange={(e) => setTxnAddress(e.target.value)}
+            onChange={(e) => setTransactionInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") e.preventDefault();
             }}
@@ -161,13 +177,13 @@ export default function RestoreTransactionModal({
           />
 
           {/* Clear icon */}
-          {((isFocused && txnAddress) || (txnAddress && isNotValidTxn)) && (
+          {transactionInput.length > 0 && (
             <IoCloseCircle
               size={20}
               className="ml-2 mr-1 shrink-0 cursor-pointer fill-dark-500"
               onMouseDown={() => {
-                setTxnAddress("");
-                setIsNotValidTxn(false);
+                setTransactionInput("");
+                setIsValidTransaction(true);
                 handleFocusWithCursor();
               }}
             />
@@ -176,17 +192,20 @@ export default function RestoreTransactionModal({
 
         {/* Error messages */}
         {invalidTxnHash && (
-          <span className="block px-4 pt-2 text-xs lg:px-6 lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
-            Enter a valid Ethereum txid performed on Quantum
+          <span className="block pt-2 text-xs lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
+            {inputErrorMessage}
+            {invalidTxnHash}
+            {isValidTransaction}
           </span>
         )}
 
-        <div className="mt-8 lg:px-[31px]">
+        <div className="mt-12 md:mt-8 lg:mt-10 flex justify-center">
           <ActionButton
-            label="Restore transaction"
-            customStyle="bg-dark-1000 md:px-6 text-lg lg:!py-3 lg:px-8 xl:px-14"
-            disabled={txnAddress === ""}
+            label={isLoading ? "" : buttonLabel}
+            customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[240px] min-h-[48px] lg:min-h-[52px]"
+            disabled={transactionInput === "" || isLoading}
             onClick={checkTXnHash}
+            isLoading={isLoading}
           />
         </div>
       </div>
