@@ -1,18 +1,29 @@
+import clsx from "clsx";
 import Image from "next/image";
 
 export default function SearchQueuedTransactionButton({
   onClick,
+  hasQueuedTransaction,
+  customImageSize,
+  customStyle,
 }: {
   onClick: () => void;
+  hasQueuedTransaction: boolean;
+  customImageSize?: string;
+  customStyle?: string;
 }) {
-  const hasQueuedTransaction = true; // TODO: add logic to get if any queued tx in local storage
   return (
     <button
-      className="relative mr-2 p-3 rounded-full border-[1px] border-dark-300/50 bg-dark-00"
+      className={clsx(
+        "relative mr-2 p-3 rounded-full border-[1px] border-dark-300/50 bg-dark-00",
+        customStyle
+      )}
       onClick={onClick}
       type="button"
     >
-      <div className="relative md:w-6 md:h-6 w-4 h-4">
+      <div
+        className={clsx("relative", customImageSize ?? "md:w-6 md:h-6 w-4 h-4")}
+      >
         <Image
           fill
           data-testid="search-queued-transaction"
