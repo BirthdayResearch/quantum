@@ -11,7 +11,7 @@ import { VerifyQueueTransactionDto } from '../model/Queue';
 export class DfcQueueService {
   private network: EnvironmentNetwork;
 
-  private readonly MIN_REQUIRED_DFC_CONFIRMATION = 65;
+  private readonly MIN_REQUIRED_DFC_CONFIRMATION = 35;
 
   constructor(
     private configService: ConfigService,
