@@ -26,13 +26,13 @@ export interface NetworkContextI {
   selectedQueueNetworkA: NetworkOptionsI;
   selectedQueueTokensA: TokensI;
   selectedQueueNetworkB: NetworkOptionsI;
-  typeOfTransaction: FormContext;
+  typeOfTransaction: FormOptions;
   selectedQueueTokensB: TokensI;
   setSelectedQueueNetworkA: (networkA: NetworkOptionsI) => void;
   setSelectedQueueTokensA: (tokenA: TokensI) => void;
   setSelectedQueueNetworkB: (networkB: NetworkOptionsI) => void;
   setSelectedQueueTokensB: (tokenB: TokensI) => void;
-  setTypeOfTransaction: (transactionType: FormContext) => void;
+  setTypeOfTransaction: (transactionType: FormOptions) => void;
 
   resetNetworkSelection: () => void;
 }
@@ -213,16 +213,16 @@ export function useNetworkContext(): NetworkContextI {
   return useContext(NetworkContext);
 }
 
-export enum FormContext {
-  INSTANT,
-  QUEUE,
+export enum FormOptions {
+  INSTANT = "Instant",
+  QUEUE = "Queue",
 }
 
 export function NetworkProvider({
   children,
 }: PropsWithChildren<{}>): JSX.Element | null {
-  const [typeOfTransaction, setTypeOfTransaction] = useState<FormContext>(
-    FormContext.INSTANT
+  const [typeOfTransaction, setTypeOfTransaction] = useState<FormOptions>(
+    FormOptions.INSTANT
   );
 
   const [defaultNetworkA, defaultNetworkB] = networks;
@@ -252,19 +252,19 @@ export function NetworkProvider({
 
   useEffect(() => {
     const selectedFormNetworkA =
-      typeOfTransaction === FormContext.INSTANT
+      typeOfTransaction === FormOptions.INSTANT
         ? selectedNetworkA
         : selectedQueueNetworkA;
     const setFormSelectedNetworkB =
-      typeOfTransaction === FormContext.INSTANT
+      typeOfTransaction === FormOptions.INSTANT
         ? setSelectedNetworkB
         : setSelectedQueueNetworkB;
     const setFormSelectedTokensA =
-      typeOfTransaction === FormContext.INSTANT
+      typeOfTransaction === FormOptions.INSTANT
         ? setSelectedTokensA
         : setSelectedQueueTokensA;
     const selectedFormTokensB =
-      typeOfTransaction === FormContext.INSTANT
+      typeOfTransaction === FormOptions.INSTANT
         ? selectedTokensB
         : selectedQueueTokensB;
 
@@ -284,17 +284,17 @@ export function NetworkProvider({
 
   useEffect(() => {
     const selectedFormNetworkB =
-      typeOfTransaction === FormContext.INSTANT
+      typeOfTransaction === FormOptions.INSTANT
         ? selectedNetworkB
         : selectedQueueNetworkB;
 
     const selectedFormTokensA =
-      typeOfTransaction === FormContext.INSTANT
+      typeOfTransaction === FormOptions.INSTANT
         ? selectedTokensA
         : selectedQueueTokensA;
 
     const setFormSelectedTokensB =
-      typeOfTransaction === FormContext.INSTANT
+      typeOfTransaction === FormOptions.INSTANT
         ? setSelectedTokensB
         : setSelectedQueueTokensB;
 

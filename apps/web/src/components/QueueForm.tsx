@@ -28,8 +28,10 @@ import {
   ETHEREUM_SYMBOL,
   FEES_INFO,
 } from "../constants";
-import { TabOptions } from "./FormTab";
-import { useNetworkContext } from "../layouts/contexts/NetworkContext";
+import {
+  useNetworkContext,
+  FormOptions,
+} from "../layouts/contexts/NetworkContext";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 
 export default function QueueForm({
@@ -37,7 +39,7 @@ export default function QueueForm({
   activeTab,
 }: {
   hasPendingTxn: boolean;
-  activeTab: TabOptions;
+  activeTab: FormOptions;
 }) {
   const {
     selectedQueueNetworkA,
@@ -384,7 +386,7 @@ export default function QueueForm({
         "w-full md:w-[calc(100%+2px)] lg:w-full p-6 md:pt-8 pb-16 lg:p-10",
         "dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 rounded-lg border-t-0 lg:rounded-tr-none lg:rounded-tl-none rounded-tr-none rounded-tl-none lg:rounded-xl",
-        activeTab === TabOptions.QUEUE ? "block" : "hidden"
+        activeTab === FormOptions.QUEUE ? "block" : "hidden"
       )}
     >
       <section className="flex flex-col lg:px-5 px-4 gap-y-1">

@@ -5,7 +5,11 @@ import { FiRefreshCw } from "react-icons/fi";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
-import { networks, useNetworkContext } from "@contexts/NetworkContext";
+import {
+  networks,
+  useNetworkContext,
+  FormOptions,
+} from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import {
   Network,
@@ -40,7 +44,6 @@ import {
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
-import { TabOptions } from "./FormTab";
 
 function SwitchButton({
   onClick,
@@ -81,7 +84,7 @@ export default function BridgeForm({
   activeTab,
 }: {
   hasPendingTxn: boolean;
-  activeTab: TabOptions;
+  activeTab: FormOptions;
 }) {
   const {
     selectedNetworkA,
@@ -422,7 +425,7 @@ export default function BridgeForm({
         "w-full md:w-[calc(100%+2px)] lg:w-full p-6 md:pt-8 pb-16 lg:p-10",
         "dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 rounded-lg border-t-0 lg:rounded-tr-none lg:rounded-tl-none rounded-tr-none rounded-tl-none lg:rounded-xl",
-        activeTab === TabOptions.INSTANT ? "block" : "hidden"
+        activeTab === FormOptions.INSTANT ? "block" : "hidden"
       )}
     >
       <div className="flex flex-row items-center" ref={reference}>

@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
-import { useNetworkContext, FormContext } from "@contexts/NetworkContext";
+import { useNetworkContext, FormOptions } from "@contexts/NetworkContext";
 import { useLazyBridgeSettingsQuery } from "@store/index";
 import { Network } from "types";
 
@@ -31,12 +31,12 @@ export default function useTransferFee(transferAmount: string | number) {
   }, [selectedTokensA, selectedQueueTokensA]);
 
   const selectedNetwork =
-    typeOfTransaction === FormContext.INSTANT
+    typeOfTransaction === FormOptions.INSTANT
       ? selectedNetworkA
       : selectedQueueNetworkA;
 
   const selectedTokens =
-    typeOfTransaction === FormContext.INSTANT
+    typeOfTransaction === FormOptions.INSTANT
       ? selectedTokensA
       : selectedQueueTokensA;
 

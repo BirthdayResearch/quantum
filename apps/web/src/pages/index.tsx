@@ -6,6 +6,7 @@ import MobileBottomMenu from "@components/MobileBottomMenu";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
+import { FormOptions } from "@contexts/NetworkContext";
 import Logging from "@api/logging";
 import { getStorageItem } from "@utils/localStorage";
 import { DEFICHAIN_WALLET_URL } from "config/networkUrl";
@@ -14,8 +15,8 @@ import {
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
-import { FormTab, TabOptions } from "../components/FormTab";
 import QueueForm from "../components/QueueForm";
+import FormTab from "../components/FormTab";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
@@ -55,7 +56,7 @@ function Home() {
     return numOfConfirmations;
   };
 
-  const [activeTab, setActiveTab] = useState(TabOptions.INSTANT);
+  const [activeTab, setActiveTab] = useState(FormOptions.INSTANT);
 
   return (
     <section className="relative flex flex-col" data-testid="homepage">
