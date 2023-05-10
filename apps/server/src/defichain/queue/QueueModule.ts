@@ -6,12 +6,12 @@ import { WhaleWalletProvider } from '../providers/WhaleWalletProvider';
 import { DeFiChainTransactionService } from '../services/DeFiChainTransactionService';
 import { WhaleApiService } from '../services/WhaleApiService';
 import { QueueController } from './controllers/QueueController';
-import { QueueService } from './services/QueueService';
+import { DfcQueueService } from './services/QueueService';
 
 @Module({
   providers: [
     PrismaService,
-    QueueService,
+    DfcQueueService,
     DeFiChainTransactionService,
     WhaleWalletProvider,
     WhaleApiClientProvider,
@@ -19,4 +19,4 @@ import { QueueService } from './services/QueueService';
   ],
   controllers: [QueueController],
 })
-export class QueueModule {}
+export class DfcQueueModule {}

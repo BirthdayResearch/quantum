@@ -8,7 +8,7 @@ import { DeFiChainTransactionService } from '../../services/DeFiChainTransaction
 import { VerifyQueueTransactionDto } from '../model/Queue';
 
 @Injectable()
-export class QueueService {
+export class DfcQueueService {
   private network: EnvironmentNetwork;
 
   private readonly MIN_REQUIRED_DFC_CONFIRMATION = 65;

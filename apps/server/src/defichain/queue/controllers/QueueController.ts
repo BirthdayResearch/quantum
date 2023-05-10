@@ -1,11 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 
-import { QueueService } from '../services/QueueService';
+import { DfcQueueService } from '../services/QueueService';
 
-@Controller('defichain/queue')
+@Controller()
 export class QueueController {
-  constructor(private readonly queueService: QueueService) {}
+  constructor(private readonly queueService: DfcQueueService) {}
 
   /**
    * Verify a queue transaction with given transactionHash and update the defichainStatus.

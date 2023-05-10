@@ -6,6 +6,7 @@ import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { appConfig, ENV_VALIDATION_SCHEMA } from './AppConfig';
 import { BalancesModule } from './balances/BalancesModule';
 import { DeFiChainModule } from './defichain/DeFiChainModule';
+import { DfcQueueModule } from './defichain/queue/QueueModule';
 import { EthereumModule } from './ethereum/EthereumModule';
 import { QueueModule } from './ethereum/queue/QueueModule';
 import { EthersModule } from './modules/EthersModule';
@@ -31,6 +32,12 @@ import { VersionModule } from './version/VersionModule';
       {
         path: 'defichain',
         module: DeFiChainModule,
+        children: [
+          {
+            path: 'queue',
+            module: DfcQueueModule,
+          },
+        ],
       },
       {
         path: 'ethereum',
