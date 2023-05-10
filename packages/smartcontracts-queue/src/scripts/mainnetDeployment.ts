@@ -1,10 +1,10 @@
 import { bridgeImplementation } from "./deployBridgeImplementation";
 import { deployBridgeProxy } from "./deployBridgeProxy";
 
-const TIMELOCK_CONTRACT_ADDRESS = "0x17D6bb95cCF124324995F08204132cdf75048284";
-const COLD_WALLET_ADDRESS = "0x17D6bb95cCF124324995F08204132cdf75048284";
-const FEE = "100";
-const COMMUNITY_WALLET_ADDRESS = "0x17D6bb95cCF124324995F08204132cdf75048284";
+const TIMELOCK_CONTRACT_ADDRESS = "";
+const COLD_WALLET_ADDRESS = "";
+const FEE = "";
+const COMMUNITY_WALLET_ADDRESS = "";
 
 // npx hardhat run --network sepolia ./scripts/mainnetDeployment.ts
 async function main() {

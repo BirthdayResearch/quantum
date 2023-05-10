@@ -1,6 +1,5 @@
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/ReentrancyGuardUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 
 error ETH_TRANSFER_FAILED_TO_COMMUNITY_WALLET();
@@ -14,11 +13,7 @@ error MORE_THAN_MAX_FEE();
 error INVALID_COLD_WALLET();
 error INVALID_COMMUNITY_WALLET();
 
-contract BridgeQueue is
-    UUPSUpgradeable,
-    ReentrancyGuardUpgradeable,
-    AccessControlUpgradeable
-{
+contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     address public constant ETH = address(0);
