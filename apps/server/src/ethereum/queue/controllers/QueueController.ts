@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { QueueStatus } from '@prisma/client';
 
@@ -49,5 +49,29 @@ export class QueueController {
     orderBy?: OrderBy,
   ): Promise<ApiPagedResponse<Queue>> {
     return this.queueService.listQueue(query, orderBy, status);
+  }
+
+  /**
+   * Create a queue transaction with given transactionHash.
+   *
+   * @Body {string} transactionHash transactionHash
+   * @returns {Promise<EthereumQueue>}
+   */
+  @Post()
+  @Throttle(5, 60)
+  queue(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
+    return this.queueService.createQueueTransaction(transactionHash);
+  }
+
+  /**
+   * Verify a queue transaction with given transactionHash.
+   *
+   * @Body {string} transactionHash transactionHash
+   * @returns {Promise<VerifyQueueTransactionDto>}
+   */
+  @Post('verify')
+  @Throttle(35, 60)
+  verify(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
+    return this.queueService.verify(transactionHash);
   }
 }
