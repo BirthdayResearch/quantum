@@ -10,7 +10,7 @@
     "playground:start": "turbo run playground:start",
     "build:docker": "turbo run build:docker",
     "test": "turbo run test",
-    "test:hardhat": "turbo run test:hardhat --filter=./packages/smartcontracts",
+    "test:hardhat": "turbo run test:hardhat",
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint -- --fix",
     "format": "prettier --write .",
