@@ -43,7 +43,6 @@ export default function Header({
         )}
         <div className="flex h-9 items-center md:h-10 lg:h-12">
           <SearchQueuedTransactionButton
-            hasQueuedTransaction
             onClick={() => setIsSearchQueuedTransactionModalOpen(true)}
           />
           <ConnectButton />
