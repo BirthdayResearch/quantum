@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import ActionButton from "@components/commons/ActionButton";
 import Modal from "@components/commons/Modal";
-import SearchQueuedTransactionButton from "@components/SearchQueuedTransactionButton";
 import { useContractContext } from "@contexts/ContractContext";
 import { SuccessCopy } from "@components/QrAddress";
 import useCopyToClipboard from "@hooks/useCopyToClipboard";
+import SearchTransactionIcon from "@components/icons/SearchTransactionIcon";
 
 export interface ModalConfigType {
   title: string;
@@ -52,12 +52,7 @@ export default function QueueTransactionModal({
         />
         <div>
           <div className="flex flex-col mb-6 md:mb-5 w-full md:px-6 md:items-center pb-[32px] md:pb-9 border-b border-dark-300 border-opacity-50">
-            <SearchQueuedTransactionButton
-              hasQueuedTransaction={false} // TODO get from local storage instead
-              onClick={() => {}}
-              customImageSize="w-[33px] h-[33px]"
-              customStyle="items-center flex justify-center w-[66px] h-[66px] -mt-14 md:mt-0"
-            />
+            <SearchTransactionIcon />
             <div className="font-bold text-xl lg:text-2xl text-dark-900 mt-4">
               {title}
             </div>
