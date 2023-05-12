@@ -490,7 +490,7 @@ export default function QueueForm({
         />
       </div>
       <div className="mt-8 px-6 md:px-4 lg:mt-12 lg:mb-0 lg:px-0 xl:px-20">
-        {/* Todo: to update the button when Review modal is ready*/}
+        {/* Todo: to update the button when Review modal is ready */}
         <ConnectKitButton.Custom>
           {({ show }) => (
             <ActionButton
