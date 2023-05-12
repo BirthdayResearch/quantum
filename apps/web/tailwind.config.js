@@ -9,7 +9,6 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ['"Space Grotesk"', "sans-serif"],
-      mono: ['"Raleway"'],
       desc: ['"Montserrat"', "sans-serif"],
     },
     screens: {
