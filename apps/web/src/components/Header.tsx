@@ -9,6 +9,7 @@ import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
+import QueueTransactionModal from "./erc-transfer/QueueTransactionModal";
 
 export default function Header({
   isBridgeUp,
@@ -43,21 +44,20 @@ export default function Header({
         )}
         <div className="flex h-9 items-center md:h-10 lg:h-12">
           <SearchQueuedTransactionButton
-            hasQueuedTransaction
             onClick={() => setIsSearchQueuedTransactionModalOpen(true)}
           />
           <ConnectButton />
           {chain === undefined && <EnvironmentNetworkSwitch />}
           {isSearchQueuedTransactionModalOpen && (
-            <QueryTransactionModal
-              title="Track transaction"
-              message="Enter transaction hash of a queue transaction to track its status"
-              inputLabel="Transaction hash"
-              inputPlaceholder="Enter transaction hash"
-              buttonLabel="Track status"
+            <QueueTransactionModal
+              amount="150"
+              symbol="dBTC"
+              transactionHash="0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
+              destinationAddress="dfa1123ZAaklz9012ZLasdalax1"
+              title="Transaction in queue"
+              message="Track your transaction via the status icon (top-right corner) using your transaction hash."
+              buttonLabel="View on Etherscan"
               onClose={() => setIsSearchQueuedTransactionModalOpen(false)}
-              // contractType={ContractType.Queue}
-              inputErrorMessage="Enter a valid transaction hash for Ethereum"
             />
           )}
         </div>
