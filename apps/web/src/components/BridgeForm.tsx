@@ -23,10 +23,12 @@ import ActionButton from "@components/commons/ActionButton";
 import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
+import TransactionStatus from "@components/TransactionStatus";
 import { useContractContext } from "@contexts/ContractContext";
 import { useStorageContext } from "@contexts/StorageContext";
 import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
+import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
 import debounce from "@utils/debounce";
@@ -37,6 +39,8 @@ import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
   ETHEREUM_SYMBOL,
   FEES_INFO,
+  CONFIRMATIONS_BLOCK_TOTAL,
+  EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
@@ -111,6 +115,7 @@ export default function BridgeForm({
 
   const [fee, feeSymbol] = useTransferFee(amount);
 
+  const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
   const { address, isConnected } = useAccount();
   const isSendingFromEthNetwork = selectedNetworkA.name === Network.Ethereum;
   const {
@@ -284,7 +289,7 @@ export default function BridgeForm({
       case hasUnconfirmedTxn:
         return "Retry transfer";
       case isConnected:
-        return "Review transaction";
+        return "Close";
       default:
         return "Connect wallet";
     }
@@ -413,6 +418,20 @@ export default function BridgeForm({
   const warningTextStyle =
     "block text-xs text-warning text-center lg:px-6 lg:text-sm";
 
+  const getNumberOfConfirmations = () => {
+    let numOfConfirmations = BigNumber.min(
+      ethTxnStatus?.numberOfConfirmations,
+      EVM_CONFIRMATIONS_BLOCK_TOTAL
+    ).toString();
+
+    if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
+      numOfConfirmations = CONFIRMATIONS_BLOCK_TOTAL.toString();
+    } else if (txnHash.reverted !== undefined) {
+      numOfConfirmations = "0";
+    }
+
+    return numOfConfirmations;
+  };
   return (
     <div
       className={clsx(
@@ -421,6 +440,33 @@ export default function BridgeForm({
         "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl"
       )}
     >
+      {(txnHash.unconfirmed ||
+        txnHash.confirmed ||
+        txnHash.reverted ||
+        txnHash.unsentFund) && (
+        <TransactionStatus
+          onClose={() => {
+            setStorage("confirmed", null);
+            setStorage("allocationTxnHash", null);
+            setStorage("reverted", null);
+          }}
+          txnHash={
+            txnHash.unsentFund ??
+            txnHash.reverted ??
+            txnHash.confirmed ??
+            txnHash.unconfirmed
+          }
+          allocationTxnHash={txnHash.allocationTxn}
+          isReverted={txnHash.reverted !== undefined}
+          isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both EVM and DFC
+          isUnsentFund={txnHash.unsentFund !== undefined}
+          ethTxnStatusIsConfirmed={ethTxnStatus.isConfirmed}
+          dfcTxnStatusIsConfirmed={dfcTxnStatus.isConfirmed}
+          numberOfEvmConfirmations={getNumberOfConfirmations()}
+          numberOfDfcConfirmations={dfcTxnStatus.numberOfConfirmations}
+          isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
+        />
+      )}
       <div className="flex flex-row items-center" ref={reference}>
         <div className="w-1/2">
           <InputSelector
