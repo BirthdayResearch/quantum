@@ -61,7 +61,7 @@ export default function QueueTransactionModal({
             <div className="font-bold text-xl lg:text-2xl text-dark-900 mt-4">
               {title}
             </div>
-            <div className="text-sm lg:text-base lg:leading-5 text-dark-700 md:mt-2 md:text-center md:w-11/12">
+            <div className="text-sm lg:text-base lg:leading-5 text-dark-700 mt-2 md:text-center md:w-11/12">
               {message}
             </div>
           </div>
