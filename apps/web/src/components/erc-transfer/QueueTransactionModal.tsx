@@ -44,12 +44,16 @@ export default function QueueTransactionModal({
   }, [showSuccessCopy]);
 
   return (
-    <Modal isOpen onClose={onClose}>
-      <div className="flex flex-col md:mb-[46px] lg:mb-[80px] w-full justify-between h-full">
-        <SuccessCopy
-          containerClass="m-auto right-0 left-0 top-2"
-          show={showSuccessCopy}
-        />
+    <Modal
+      isOpen
+      onClose={onClose}
+      customStyle="grid grid-rows-max-content-1fr"
+    >
+      <SuccessCopy
+        containerClass="m-auto right-0 left-0 top-2"
+        show={showSuccessCopy}
+      />
+      <div className="flex flex-col w-full justify-between">
         <div>
           <div className="flex flex-col mb-6 md:mb-5 w-full md:px-6 md:items-center pb-[32px] md:pb-9 border-b border-dark-300 border-opacity-50">
             <SearchTransactionIcon />
@@ -60,39 +64,40 @@ export default function QueueTransactionModal({
               {message}
             </div>
           </div>
-
-          <div className="grid gap-y-8 w-full text-sm lg:text-lg">
-            <div className="text-dark-900 font-semibold text-xl tracking-[0.01em]">
-              Transaction details
-            </div>
-            <div className="flex flex-row justify-between">
-              <div className="text-dark-700 text-sm lg:text-base leading-5">
-                Amount to receive
+          <div>
+            <div className="grid gap-y-8 w-full text-sm lg:text-lg">
+              <div className="text-dark-900 font-semibold text-xl tracking-[0.01em]">
+                Transaction details
               </div>
-              <div className="text-dark-1000 text-right">
-                {amount} {symbol}
+              <div className="flex flex-row justify-between">
+                <div className="text-dark-700 text-sm lg:text-base leading-5">
+                  Amount to receive
+                </div>
+                <div className="text-dark-1000 text-right">
+                  {amount} {symbol}
+                </div>
               </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div className="text-dark-700 text-sm lg:text-base leading-5">
-                Destination address
+              <div className="flex flex-row justify-between">
+                <div className="text-dark-700 text-sm lg:text-base leading-5">
+                  Destination address
+                </div>
+                <div className="text-dark-1000 w-6/12 break-words text-right">
+                  {destinationAddress}
+                </div>
               </div>
-              <div className="text-dark-1000 w-6/12 break-words text-right">
-                {destinationAddress}
-              </div>
-            </div>
-            <div className="flex flex-row justify-between">
-              <div className="text-dark-700 text-sm lg:text-base leading-5">
-                Transaction hash
-              </div>
-              <div className="text-dark-1000 text-right w-5/12 lg:w-[220px] break-all">
-                {transactionHash}
+              <div className="flex flex-row justify-between">
+                <div className="text-dark-700 text-sm lg:text-base leading-5">
+                  Transaction hash
+                </div>
+                <div className="text-dark-1000 text-right w-5/12 lg:w-[220px] break-all">
+                  {transactionHash}
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="md:mt-[40px] lg:mt-10 flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center pt-2 md:pt-[40px]">
           <ActionButton
             isExternalArrowIcon
             label={buttonLabel}
