@@ -51,11 +51,11 @@
     "pg": "^8.10.0"
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.5.11",
-    "@birthdayresearch/sticky-prettier": "^0.5.11",
-    "@birthdayresearch/sticky-testcontainers": "^0.5.11",
-    "@birthdayresearch/sticky-turbo-jest": "^0.5.11",
-    "@birthdayresearch/sticky-typescript": "^0.5.11",
+    "@birthdayresearch/eslint-config": "^0.5.13",
+    "@birthdayresearch/sticky-prettier": "^0.5.13",
+    "@birthdayresearch/sticky-testcontainers": "^0.5.13",
+    "@birthdayresearch/sticky-turbo-jest": "^0.5.13",
+    "@birthdayresearch/sticky-typescript": "^0.5.13",
     "@nestjs/cli": "^9.4.2",
     "@nestjs/schematics": "^9.1.0",
     "@nestjs/testing": "^9.4.0",
