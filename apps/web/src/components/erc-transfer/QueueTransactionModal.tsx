@@ -9,10 +9,8 @@ import useCopyToClipboard from "@hooks/useCopyToClipboard";
 export interface ModalConfigType {
   title: string;
   message: string;
-
   buttonLabel: string;
   onClose: () => void;
-
   transactionHash: string;
   destinationAddress: string;
   amount: string;
@@ -55,7 +53,7 @@ export default function QueueTransactionModal({
         <div>
           <div className="flex flex-col mb-6 md:mb-5 w-full md:px-6 md:items-center pb-[32px] md:pb-9 border-b border-dark-300 border-opacity-50">
             <SearchQueuedTransactionButton
-              hasQueuedTransaction={false}
+              hasQueuedTransaction={false} // TODO get from local storage instead
               onClick={() => {}}
               customImageSize="w-[33px] h-[33px]"
               customStyle="items-center flex justify-center w-[66px] h-[66px] -mt-14 md:mt-0"
@@ -89,10 +87,8 @@ export default function QueueTransactionModal({
               </div>
             </div>
             <div className="flex flex-row justify-between">
-              <div className="flex flex-row">
-                <div className="text-dark-700 text-sm lg:text-base leading-5">
-                  Transaction hash
-                </div>
+              <div className="text-dark-700 text-sm lg:text-base leading-5">
+                Transaction hash
               </div>
               <div className="text-dark-1000 text-right w-5/12 lg:w-[220px] break-all">
                 {transactionHash}
@@ -112,8 +108,7 @@ export default function QueueTransactionModal({
           <ActionButton
             variant="secondary"
             label="Copy transaction hash"
-            customStyle="text-sm lg:text-lg lg:px-[72px] max-w-[418px] pt-[24px] pb-3.5"
-            responsiveStyle=""
+            customStyle="text-sm lg:text-lg lg:px-[72px] max-w-[418px] pb-3.5 mt-2"
             onClick={() => handleOnCopy(transactionHash)}
           />
         </div>
