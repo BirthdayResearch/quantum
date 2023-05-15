@@ -325,7 +325,7 @@ export class QueueService {
         return { numberOfConfirmations, isConfirmed: false };
       }
 
-      const adminQueueTxnExist = await this.prisma.adminEthereumQueue.findFirst({
+      const adminQueueTxnExist = await this.prisma.adminEthereumQueue.findUnique({
         where: {
           sendTransactionHash: transactionHash,
         },
@@ -335,13 +335,12 @@ export class QueueService {
         throw new Error('Transaction Hash does not exists in admin table');
       }
 
-      await this.prisma.adminEthereumQueue.updateMany({
-        where: {
-          sendTransactionHash: transactionHash,
-          defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
-        },
-        data: { defichainStatus: DeFiChainTransactionStatus.CONFIRMED, blockHash, blockHeight },
-      });
+      if (adminQueueTxnExist.defichainStatus === DeFiChainTransactionStatus.NOT_CONFIRMED) {
+        await this.prisma.adminEthereumQueue.update({
+          where: { sendTransactionHash: transactionHash },
+          data: { defichainStatus: DeFiChainTransactionStatus.CONFIRMED, blockHash, blockHeight },
+        });
+      }
 
       return { numberOfConfirmations, isConfirmed: true };
     } catch (e: any) {
