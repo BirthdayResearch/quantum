@@ -317,7 +317,9 @@ export class QueueService {
 
   async defichainVerify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
     try {
-      const { numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(transactionHash);
+      const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(
+        transactionHash,
+      );
 
       if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
         return { numberOfConfirmations, isConfirmed: false };
@@ -333,9 +335,12 @@ export class QueueService {
         throw new Error('Transaction Hash does not exists in admin table');
       }
 
-      await this.prisma.adminEthereumQueue.update({
-        where: { sendTransactionHash: transactionHash },
-        data: { defichainStatus: DeFiChainTransactionStatus.CONFIRMED },
+      await this.prisma.adminEthereumQueue.updateMany({
+        where: {
+          sendTransactionHash: transactionHash,
+          defichainStatus: DeFiChainTransactionStatus.NOT_CONFIRMED,
+        },
+        data: { defichainStatus: DeFiChainTransactionStatus.CONFIRMED, blockHash, blockHeight },
       });
 
       return { numberOfConfirmations, isConfirmed: true };

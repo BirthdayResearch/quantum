@@ -81,7 +81,7 @@ export class QueueController {
    * @Body {string} transactionHash transactionHash
    * @returns {Promise<VerifyQueueTransactionDto>}
    */
-  @Post('defichain/verify')
+  @Post('/verifyDefichain')
   @Throttle(35, 60)
   defichainVerify(@Body('transactionHash') transactionHash: string) {
     return this.queueService.defichainVerify(transactionHash);
