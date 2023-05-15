@@ -233,7 +233,7 @@ describe("Bridge order tests", () => {
         );
       });
 
-      it("Should not be able to chagne community wallet because of being unauthorized", async () => {
+      it("Should not be able to change community wallet because of being unauthorized", async () => {
         let communityWalletSigner: SignerWithAddress;
         ({ proxyBridge, arbitrarySigner, communityWalletSigner } =
           await loadFixture(deployContracts));
