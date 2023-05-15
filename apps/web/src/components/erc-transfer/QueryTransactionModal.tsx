@@ -70,7 +70,7 @@ export default function QueryTransactionModal({
       if (receipt) {
         setStorage("unconfirmed", transactionInput);
         setIsValidTransaction(true);
-        onClose();
+        // TODO: add logic to call get queue tx from db and navigate to corresponding modal
         return;
       }
       setIsValidTransaction(false);
@@ -114,10 +114,10 @@ export default function QueryTransactionModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col mt-6 mb-4 w-full md:px-6">
-        <div className="font-bold text-xl lg:text-2xl text-dark-900">
+        <div className="font-bold text-2xl md:text-xl lg:text-2xl text-dark-900">
           {title}
         </div>
-        <div className="text-sm lg:text-base lg:leading-5 w-full text-dark-700 mt-2">
+        <div className="text-sm lg:text-base lg:leading-5 w-full text-dark-700 mt-1">
           {message}
         </div>
 
@@ -199,25 +199,23 @@ export default function QueryTransactionModal({
         {invalidTxnHash && (
           <span className="block pt-2 text-xs lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
             {inputErrorMessage}
-            {invalidTxnHash}
-            {isValidTransaction}
           </span>
         )}
 
         <div className="mt-12 md:mt-8 lg:mt-10 flex justify-center">
           <ActionButton
             label={isLoading ? "" : buttonLabel}
-            customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[240px] min-h-[48px] lg:min-h-[52px]"
-            // disabled={transactionInput === "" || isLoading} // TODO: comment to test different modal
-            // onClick={checkTXnHash} // TODO: uncomment when phase 2 SC is ready
-            onClick={() => {
-              if (!onTransactionFound) {
-                return;
-              }
-              onTransactionFound(ModalTypeToDisplay.RefundInProgress);
-              //onTransactionFound(ModalTypeToDisplay.Pending)}
-              //onTransactionFound(ModalTypeToDisplay.Unsuccessful)}
-            }}
+            customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[251.72px] min-h-[48px] lg:min-h-[52px]"
+            disabled={transactionInput === "" || isLoading} // TODO: comment to test different modal
+            onClick={checkTXnHash} // TODO: comment to test different modal
+            // onClick={() => { // TODO: remove after testing, uncomment to test different modal
+            //   if (!onTransactionFound) {
+            //     return;
+            //   }
+            //   onTransactionFound(ModalTypeToDisplay.Pending);
+            //   // onTransactionFound(ModalTypeToDisplay.RefundInProgress);
+            //   // onTransactionFound(ModalTypeToDisplay.Unsuccessful);
+            // }}
             isLoading={isLoading}
           />
         </div>

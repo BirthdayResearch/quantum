@@ -57,7 +57,7 @@ export default function Header({
             onClose={() => setModalToDisplay(undefined)}
             // contractType={ContractType.Queue}
             isOpen={modalToDisplay === ModalTypeToDisplay.Search}
-            inputErrorMessage="Enter a valid transaction hash for Ethereum"
+            inputErrorMessage="Invalid transaction hash. Please only enter queued transaction hashes."
             onTransactionFound={(modalTypeToDisplay) => {
               setModalToDisplay(modalTypeToDisplay);
             }}
