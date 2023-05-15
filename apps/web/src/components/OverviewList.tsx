@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
-import { NetworkI, networks } from "@contexts/NetworkContext";
+import { NetworkI, useNetworkContext } from "@contexts/NetworkContext";
 import Image from "next/image";
 import NumericFormat from "@components/commons/NumericFormat";
 import BigNumber from "bignumber.js";
@@ -188,6 +188,7 @@ function TokenDetails({
 }
 
 export default function OverviewList({ balances }) {
+  const { networks } = useNetworkContext();
   const [firstNetwork, secondNetwork] = networks;
   const { isMobile } = useResponsive();
 

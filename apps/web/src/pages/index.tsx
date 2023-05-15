@@ -8,7 +8,8 @@ import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
 import Logging from "@api/logging";
 import { getStorageItem } from "@utils/localStorage";
-import { DEFICHAIN_WALLET_URL } from "config/networkUrl";
+import BASE_URLS, { DEFICHAIN_WALLET_URL } from "config/networkUrl";
+import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 import {
   CONFIRMATIONS_BLOCK_TOTAL,
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
@@ -102,16 +103,30 @@ function Home() {
   );
 }
 
-export async function getServerSideProps() {
-  const props = { isBridgeUp: true };
+export async function getServerSideProps({ query }) {
+  const props = { isBridgeUp: true, supportedTokens: {} };
 
   try {
+    const baseUrl =
+      BASE_URLS[query.network] ?? BASE_URLS[EnvironmentNetwork.MainNet];
     const res = await fetch(`${DEFICHAIN_WALLET_URL}/bridge/status`);
+
+    const supportedTokensRes = await fetch(
+      `${baseUrl}/settings/bridgeSupportedTokens`
+    );
+
     const data = await res.json();
     if (res.status === 200) {
       props.isBridgeUp = data?.isUp;
     } else {
       Logging.error("Get bridge status API error.");
+    }
+
+    const tokensData = await supportedTokensRes.json();
+    if (supportedTokensRes.status === 200) {
+      props.supportedTokens = tokensData;
+    } else {
+      Logging.error("Get bridge supported tokens API error.");
     }
   } catch (e) {
     Logging.error(`${e}`);

@@ -130,3 +130,12 @@ export interface BridgeAnnouncement {
   version: string;
   url?: string;
 }
+
+export interface NetworkI<T> {
+  name: Network;
+  icon: string;
+  tokens: {
+    tokenA: TokenDetailI<T>;
+    tokenB: TokenDetailI<string>;
+  }[];
+}

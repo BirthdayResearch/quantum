@@ -5,7 +5,7 @@ import { FiRefreshCw } from "react-icons/fi";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
-import { networks, useNetworkContext } from "@contexts/NetworkContext";
+import { useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import {
   Network,
@@ -81,6 +81,7 @@ export default function BridgeForm({
   hasPendingTxn: boolean;
 }) {
   const {
+    networks,
     selectedNetworkA,
     selectedTokensA,
     selectedNetworkB,
