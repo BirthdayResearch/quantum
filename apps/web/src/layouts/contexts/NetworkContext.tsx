@@ -250,6 +250,7 @@ export function NetworkProvider({
     defaultQueueNetworkB.tokens[0]
   );
 
+  // To get form config depending on the FormOption if its Instant or Queue
   function getFormConfigs() {
     let selectedFormNetworkA;
     let setFormSelectedNetworkB;
