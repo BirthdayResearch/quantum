@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
+import { RiLoader2Line } from "react-icons/ri";
 import { IoCloseOutline, IoCheckmarkCircle } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
@@ -158,13 +159,20 @@ export default function TransactionStatus({
             })}
           >
             <div className="flex whitespace-nowrap items-center">
-              <IoCheckmarkCircle
-                size={16}
-                className={clsx("inline-block ml-1 mr-1.5", {
-                  "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
-                  "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
-                })}
-              />
+              {ethTxnStatusIsConfirmed || allocationTxnHash || isConfirmed ? (
+                <IoCheckmarkCircle
+                  size={16}
+                  className={clsx("inline-block ml-1 mr-1.5", {
+                    "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
+                    "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
+                  })}
+                />
+              ) : (
+                <RiLoader2Line
+                  size={16}
+                  className="inline-block animate-spin mr-1"
+                />
+              )}
 
               {(!ethTxnStatusIsConfirmed && !allocationTxnHash) ||
               !isConfirmed ? (
@@ -197,13 +205,21 @@ export default function TransactionStatus({
             </div>
             <span className="text-dark-300 mx-2">•</span>
             <div className="flex whitespace-nowrap items-center">
-              <IoCheckmarkCircle
-                size={16}
-                className={clsx("inline-block ml-1 mr-1.5", {
-                  "text-valid": dfcTxnStatusIsConfirmed || isConfirmed,
-                  "text-dark-300": !(dfcTxnStatusIsConfirmed || isConfirmed),
-                })}
-              />
+              {!(ethTxnStatusIsConfirmed || isConfirmed) ||
+              allocationTxnHash ? (
+                <IoCheckmarkCircle
+                  size={16}
+                  className={clsx("inline-block ml-1 mr-1.5", {
+                    "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
+                    "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
+                  })}
+                />
+              ) : (
+                <RiLoader2Line
+                  size={16}
+                  className="inline-block animate-spin mr-1"
+                />
+              )}
 
               {(dfcTxnStatusIsConfirmed && allocationTxnHash) || isConfirmed ? (
                 <a
@@ -234,6 +250,14 @@ export default function TransactionStatus({
               )}
             </div>
           </div>
+          {(isConfirmed || isReverted) && (
+            <ActionButton
+              label="Close"
+              variant="secondary"
+              customStyle="mt-6 dark-section-bg"
+              onClick={onClose}
+            />
+          )}
         </div>
         {isUnsentFund && (
           <ActionButton
@@ -246,6 +270,7 @@ export default function TransactionStatus({
             isLoading={isRetrying}
           />
         )}
+
         {isLg && !isUnsentFund && (
           <div className="flex flex-row pl-8">
             <ConfirmationProgress

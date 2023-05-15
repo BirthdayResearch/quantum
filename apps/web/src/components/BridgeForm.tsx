@@ -289,7 +289,7 @@ export default function BridgeForm({
       case hasUnconfirmedTxn:
         return "Retry transfer";
       case isConnected:
-        return "Close";
+        return "Review transaction";
       default:
         return "Connect wallet";
     }
