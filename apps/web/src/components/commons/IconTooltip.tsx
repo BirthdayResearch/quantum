@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { FiInfo } from "react-icons/fi";
 import useResponsive from "@hooks/useResponsive";
 import BottomModal from "./BottomModal";
+import { useNetworkContext } from "../../layouts/contexts/NetworkContext";
 
 interface Props {
   content: string;
@@ -25,13 +26,15 @@ export default function IconTooltip({
   const tooltipRef = useRef<HTMLDivElement>(null);
   const { isLg: isWeb } = useResponsive();
 
+  const { typeOfTransaction } = useNetworkContext();
+
   useEffect(() => {
     if (tooltipRef.current) {
       if (position === "top") {
         setTooltipOffset(`-${tooltipRef.current.offsetHeight}px`);
       }
     }
-  }, [tooltipRef]);
+  }, [tooltipRef, typeOfTransaction]);
 
   return (
     <div className="relative flex focus:outline-none group cursor-pointer">
