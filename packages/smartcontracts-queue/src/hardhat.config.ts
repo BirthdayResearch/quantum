@@ -7,7 +7,7 @@ require('dotenv').config({
 });
 
 const config: HardhatUserConfig = {
-  solidity: '0.8.16',
+  solidity: '0.8.17',
   typechain: {
     outDir: './generated',
     target: 'ethers-v5',
