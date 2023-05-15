@@ -51,6 +51,7 @@ export class BridgeServerApp<App extends NestFastifyApplication = NestFastifyApp
               'https://quantumbridge.app',
               /https:\/\/([^.]*.\.)*quantumbridge\.app/g, // allow all subdomains of quantumbridge
               /https:\/\/([^.]*.)--quantumbridge\.netlify\.app/g, // allow all netlify preview deployments
+              /https:\/\/([^.]*.)--admin-quantum\.netlify\.app/g, // allow all netlify preview deployments from admin
               /https?:\/\/localhost(:\d+)?/g, // allow localhost connection
             ]
           : '*',
