@@ -173,7 +173,6 @@ export default function TransactionStatus({
                   className="inline-block animate-spin mr-1"
                 />
               )}
-
               {(!ethTxnStatusIsConfirmed && !allocationTxnHash) ||
               !isConfirmed ? (
                 `Ethereum (${numberOfEvmConfirmations}/${EVM_CONFIRMATIONS_BLOCK_TOTAL})`
@@ -250,14 +249,6 @@ export default function TransactionStatus({
               )}
             </div>
           </div>
-          {(isConfirmed || isReverted) && (
-            <ActionButton
-              label="Close"
-              variant="secondary"
-              customStyle="mt-6 dark-section-bg"
-              onClick={onClose}
-            />
-          )}
         </div>
         {isUnsentFund && (
           <ActionButton
