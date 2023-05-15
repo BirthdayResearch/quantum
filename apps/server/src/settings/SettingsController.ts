@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SkipThrottle } from '@nestjs/throttler';
-import { SupportedDFCTokenSymbols, SupportedEVMTokenSymbols } from 'src/AppConfig';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { Network, SupportedDFCTokenSymbols, SupportedEVMTokenSymbols, SupportedNetworkTokens } from 'src/AppConfig';
 
 import { SettingsModel } from './SettingsInterface';
 
@@ -11,21 +11,60 @@ export class SettingsController {
 
   @SkipThrottle()
   @Get()
-  public getSettings(): SettingsModel {
-    const supportedDfcTokens = this.configService.getOrThrow('defichain.supportedTokens');
-    const supportedEvmTokens = this.configService.getOrThrow('ethereum.supportedTokens');
+  async getSettings(): Promise<SettingsModel> {
+    const supportedTokens = this.getSupportedTokens();
+
     const settings = {
       defichain: {
         transferFee: this.configService.getOrThrow('defichain.transferFee') as `${number}`,
-        supportedTokens: supportedDfcTokens.split(',') as Array<keyof typeof SupportedDFCTokenSymbols>,
+        supportedTokens: supportedTokens.defichain,
         network: this.configService.getOrThrow('defichain.network'),
       },
       ethereum: {
         transferFee: this.configService.getOrThrow('ethereum.transferFee') as `${number}`,
-        supportedTokens: supportedEvmTokens.split(',') as Array<keyof typeof SupportedEVMTokenSymbols>,
+        supportedTokens: supportedTokens.ethereum,
       },
     };
-
     return settings;
+  }
+
+  @Get('bridgeSupportedTokens')
+  @Throttle(35, 60)
+  async getSupportedToken(): Promise<any> {
+    const supportedTokens = this.getSupportedTokens();
+    return this.filterSupportedNetworkTokens(supportedTokens);
+  }
+
+  private getSupportedTokens(): {
+    defichain: Array<keyof typeof SupportedDFCTokenSymbols>;
+    ethereum: Array<keyof typeof SupportedEVMTokenSymbols>;
+  } {
+    const supportedDfcTokens = this.configService.getOrThrow('defichain.supportedTokens').split(',') as Array<
+      keyof typeof SupportedDFCTokenSymbols
+    >;
+    const supportedEvmTokens = this.configService.getOrThrow('ethereum.supportedTokens').split(',') as Array<
+      keyof typeof SupportedEVMTokenSymbols
+    >;
+
+    return { defichain: supportedDfcTokens, ethereum: supportedEvmTokens };
+  }
+
+  private filterSupportedNetworkTokens(supportedTokens: {
+    defichain: Array<keyof typeof SupportedDFCTokenSymbols>;
+    ethereum: Array<keyof typeof SupportedEVMTokenSymbols>;
+  }): any {
+    return SupportedNetworkTokens.map((network: any) => {
+      const supportedNetworkTokens =
+        network.name === Network.DeFiChain ? supportedTokens.defichain : supportedTokens.ethereum;
+
+      const tokenMatcher: any[] = network.tokens.filter((token: any) =>
+        supportedNetworkTokens.includes(token.tokenA.symbol),
+      );
+
+      return {
+        ...network,
+        tokens: tokenMatcher,
+      };
+    });
   }
 }

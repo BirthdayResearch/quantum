@@ -5,7 +5,7 @@ import { FiRefreshCw } from "react-icons/fi";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
-import { networks, useNetworkContext } from "@contexts/NetworkContext";
+import { useNetworkContext } from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import {
   Network,
@@ -81,6 +81,7 @@ export default function BridgeForm({
   hasPendingTxn: boolean;
 }) {
   const {
+    supportedTokens,
     selectedNetworkA,
     selectedTokensA,
     selectedNetworkB,
@@ -420,7 +421,7 @@ export default function BridgeForm({
           <InputSelector
             label="Source Network"
             popUpLabel="Select source"
-            options={networks}
+            options={supportedTokens}
             floatingObj={floatingObj}
             type={SelectionType.Network}
             onSelect={(value: NetworkOptionsI) => setSelectedNetworkA(value)}

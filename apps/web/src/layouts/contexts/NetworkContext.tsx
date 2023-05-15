@@ -3,18 +3,12 @@ import React, {
   useContext,
   useMemo,
   useState,
-  PropsWithChildren,
   useEffect,
 } from "react";
-import {
-  Erc20Token,
-  Network,
-  NetworkOptionsI,
-  TokenDetailI,
-  TokensI,
-} from "types";
+import { Network, NetworkOptionsI, TokenDetailI, TokensI } from "types";
 
 interface NetworkContextI {
+  supportedTokens: any; // TODO:FIX type
   selectedNetworkA: NetworkOptionsI;
   selectedTokensA: TokensI;
   selectedNetworkB: NetworkOptionsI;
@@ -35,177 +29,22 @@ export interface NetworkI<T> {
   }[];
 }
 
-export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
-  {
-    name: Network.Ethereum,
-    icon: "/tokens/Ethereum.svg",
-    tokens: [
-      {
-        tokenA: {
-          name: "DFI",
-          subtitle: "(Ethereum)",
-          symbol: "DFI",
-          icon: "/tokens/DFI.svg",
-        },
-        tokenB: {
-          name: "DFI",
-          symbol: "DFI",
-          icon: "/tokens/DFI.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "WBTC",
-          symbol: "WBTC",
-          icon: "/tokens/wBTC.svg",
-        },
-        tokenB: {
-          name: "dBTC",
-          symbol: "BTC",
-          icon: "/tokens/dBTC.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "ETH",
-          symbol: "ETH",
-          icon: "/tokens/ETH.svg",
-        },
-        tokenB: {
-          name: "dETH",
-          symbol: "ETH",
-          icon: "/tokens/dETH.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "USDT",
-          symbol: "USDT",
-          icon: "/tokens/USDT.svg",
-        },
-        tokenB: {
-          name: "dUSDT",
-          symbol: "USDT",
-          icon: "/tokens/dUSDT.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "USDC",
-          symbol: "USDC",
-          icon: "/tokens/USDC.svg",
-        },
-        tokenB: {
-          name: "dUSDC",
-          symbol: "USDC",
-          icon: "/tokens/dUSDC.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "EUROC",
-          symbol: "EUROC",
-          icon: "/tokens/EUROC.svg",
-        },
-        tokenB: {
-          name: "dEUROC",
-          symbol: "EUROC",
-          icon: "/tokens/dEUROC.svg",
-        },
-      },
-    ],
-  },
-  {
-    name: Network.DeFiChain,
-    icon: "/tokens/DeFichain.svg",
-    tokens: [
-      {
-        tokenA: {
-          name: "DFI",
-          symbol: "DFI",
-          icon: "/tokens/DFI.svg",
-        },
-        tokenB: {
-          name: "DFI",
-          subtitle: "(Ethereum)",
-          symbol: "DFI",
-          icon: "/tokens/DFI.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "dBTC",
-          symbol: "BTC",
-          icon: "/tokens/dBTC.svg",
-        },
-        tokenB: {
-          name: "WBTC",
-          symbol: "WBTC",
-          icon: "/tokens/wBTC.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "dETH",
-          symbol: "ETH",
-          icon: "/tokens/dETH.svg",
-        },
-        tokenB: {
-          name: "ETH",
-          symbol: "ETH",
-          icon: "/tokens/ETH.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "dUSDT",
-          symbol: "USDT",
-          icon: "/tokens/dUSDT.svg",
-        },
-        tokenB: {
-          name: "USDT",
-          symbol: "USDT",
-          icon: "/tokens/USDT.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "dUSDC",
-          symbol: "USDC",
-          icon: "/tokens/dUSDC.svg",
-        },
-        tokenB: {
-          name: "USDC",
-          symbol: "USDC",
-          icon: "/tokens/USDC.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "dEUROC",
-          symbol: "EUROC",
-          icon: "/tokens/dEUROC.svg",
-        },
-        tokenB: {
-          name: "EUROC",
-          symbol: "EUROC",
-          icon: "/tokens/EUROC.svg",
-        },
-      },
-    ],
-  },
-];
-
 const NetworkContext = createContext<NetworkContextI>(undefined as any);
 
 export function useNetworkContext(): NetworkContextI {
   return useContext(NetworkContext);
 }
 
+interface NetworkProviderProps {
+  children: React.ReactNode;
+  supportedTokens: NetworkOptionsI[];
+}
+
 export function NetworkProvider({
   children,
-}: PropsWithChildren<{}>): JSX.Element | null {
-  const [defaultNetworkA, defaultNetworkB] = networks;
+  supportedTokens,
+}: NetworkProviderProps): JSX.Element | null {
+  const [defaultNetworkA, defaultNetworkB] = supportedTokens;
   const [selectedNetworkA, setSelectedNetworkA] =
     useState<NetworkOptionsI>(defaultNetworkA);
   const [selectedTokensA, setSelectedTokensA] = useState<TokensI>(
@@ -218,7 +57,7 @@ export function NetworkProvider({
   );
 
   useEffect(() => {
-    const networkB = networks.find(
+    const networkB = supportedTokens.find(
       (network) => network.name !== selectedNetworkA.name
     );
     if (networkB !== undefined) {
@@ -250,6 +89,7 @@ export function NetworkProvider({
 
   const context: NetworkContextI = useMemo(
     () => ({
+      supportedTokens,
       selectedNetworkA,
       selectedTokensA,
       selectedNetworkB,
