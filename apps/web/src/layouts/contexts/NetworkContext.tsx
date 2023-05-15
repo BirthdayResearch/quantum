@@ -250,23 +250,54 @@ export function NetworkProvider({
     defaultQueueNetworkB.tokens[0]
   );
 
+  function getFormConfigs() {
+    let selectedFormNetworkA;
+    let setFormSelectedNetworkB;
+    let setFormSelectedTokensA;
+    let selectedFormTokensB;
+
+    let selectedFormNetworkB;
+    let selectedFormTokensA;
+    let setFormSelectedTokensB;
+
+    if (typeOfTransaction === FormOptions.INSTANT) {
+      selectedFormNetworkA = selectedNetworkA;
+      setFormSelectedNetworkB = setSelectedNetworkB;
+      setFormSelectedTokensA = setSelectedTokensA;
+      selectedFormTokensB = selectedTokensB;
+
+      selectedFormNetworkB = selectedNetworkB;
+      selectedFormTokensA = selectedTokensA;
+      setFormSelectedTokensB = setSelectedTokensB;
+    } else {
+      selectedFormNetworkA = selectedQueueNetworkA;
+      setFormSelectedNetworkB = setSelectedQueueNetworkB;
+      setFormSelectedTokensA = setSelectedQueueTokensA;
+      selectedFormTokensB = selectedQueueTokensB;
+
+      selectedFormNetworkB = selectedQueueNetworkB;
+      selectedFormTokensA = selectedQueueTokensA;
+      setFormSelectedTokensB = setSelectedQueueTokensB;
+    }
+
+    return {
+      selectedFormNetworkA,
+      setFormSelectedNetworkB,
+      setFormSelectedTokensA,
+      selectedFormTokensB,
+      selectedFormNetworkB,
+      selectedFormTokensA,
+      setFormSelectedTokensB,
+    };
+  }
+
   useEffect(() => {
-    const selectedFormNetworkA =
-      typeOfTransaction === FormOptions.INSTANT
-        ? selectedNetworkA
-        : selectedQueueNetworkA;
-    const setFormSelectedNetworkB =
-      typeOfTransaction === FormOptions.INSTANT
-        ? setSelectedNetworkB
-        : setSelectedQueueNetworkB;
-    const setFormSelectedTokensA =
-      typeOfTransaction === FormOptions.INSTANT
-        ? setSelectedTokensA
-        : setSelectedQueueTokensA;
-    const selectedFormTokensB =
-      typeOfTransaction === FormOptions.INSTANT
-        ? selectedTokensB
-        : selectedQueueTokensB;
+    const {
+      selectedFormNetworkA,
+      setFormSelectedNetworkB,
+      setFormSelectedTokensA,
+      selectedFormTokensB,
+    } = getFormConfigs();
 
     const networkB = networks.find(
       (network) => network.name !== selectedFormNetworkA.name
@@ -283,20 +314,11 @@ export function NetworkProvider({
   }, [selectedNetworkA, selectedQueueNetworkA, typeOfTransaction]);
 
   useEffect(() => {
-    const selectedFormNetworkB =
-      typeOfTransaction === FormOptions.INSTANT
-        ? selectedNetworkB
-        : selectedQueueNetworkB;
-
-    const selectedFormTokensA =
-      typeOfTransaction === FormOptions.INSTANT
-        ? selectedTokensA
-        : selectedQueueTokensA;
-
-    const setFormSelectedTokensB =
-      typeOfTransaction === FormOptions.INSTANT
-        ? setSelectedTokensB
-        : setSelectedQueueTokensB;
+    const {
+      selectedFormNetworkB,
+      selectedFormTokensA,
+      setFormSelectedTokensB,
+    } = getFormConfigs();
 
     const tokens = selectedFormNetworkB.tokens.find(
       (item) => item.tokenA.name === selectedFormTokensA.tokenB.name

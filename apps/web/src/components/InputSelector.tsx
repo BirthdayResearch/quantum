@@ -184,7 +184,7 @@ export default function InputSelector({
   return (
     <div>
       {label && (
-        <span className="text-dark-900 pl-4 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider">
+        <span className="text-dark-900 pl-3 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider">
           {label}
         </span>
       )}
