@@ -261,7 +261,6 @@ export default function TransactionStatus({
             isLoading={isRetrying}
           />
         )}
-
         {isLg && !isUnsentFund && (
           <div className="flex flex-row pl-8">
             <ConfirmationProgress

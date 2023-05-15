@@ -470,7 +470,7 @@ export default function BridgeForm({
           <div className="flex flex-col space-y-7">
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-row items-center">
-                <span className="text-dark-700 text-xs lg:text-base lg:leading-5 font-semibold md:font-normal">
+                <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   Amount to transfer
                 </span>
               </div>
@@ -487,17 +487,17 @@ export default function BridgeForm({
             </div>
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-row items-center">
-                <span className="text-dark-700 text-xs lg:text-base lg:leading-5 font-semibold md:font-normal">
+                <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   Destination address
                 </span>
               </div>
-              <span className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
+              <span className="max-w-[50%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
                 {addressInput}
               </span>
             </div>
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-row items-center">
-                <span className="text-dark-700 text-xs lg:text-base lg:leading-5 font-semibold md:font-normal">
+                <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   Fees
                 </span>
                 <div className="ml-2">
@@ -508,7 +508,7 @@ export default function BridgeForm({
                 </div>
               </div>
               <NumericFormat
-                className="block break-words text-right text-xs text-dark-1000 leading-5 lg:text-base"
+                className="block break-words text-right text-sm text-dark-1000 leading-5 lg:text-base"
                 value={fee}
                 thousandSeparator
                 suffix={` ${feeSymbol}`}
@@ -517,7 +517,7 @@ export default function BridgeForm({
             </div>
             <div className="flex flex-row justify-between items-center">
               <div className="flex flex-row items-center">
-                <span className="text-dark-700 text-xs lg:text-base lg:leading-5 font-semibold md:font-normal">
+                <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   To receive
                 </span>
               </div>
@@ -682,7 +682,7 @@ export default function BridgeForm({
           </div>
         </>
       )}
-      <div className="mt-8 px-6 md:px-4 lg:mt-12 lg:mb-0 lg:px-0 xl:px-20">
+      <div className="mt-[50px] mx-auto w-[290px] lg:w-[344px]">
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <ActionButton
             label="Close"
