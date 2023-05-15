@@ -60,38 +60,36 @@ export default function QueueTransactionModal({
             <div className="font-bold text-xl lg:text-2xl text-dark-900 mt-4">
               {title}
             </div>
-            <div className="text-sm lg:text-base lg:leading-5 text-dark-700 mt-2 md:text-center md:w-11/12">
+            <div className="text-sm lg:text-base lg:leading-5 text-dark-700 mt-1 md:text-center md:w-11/12">
               {message}
             </div>
           </div>
-          <div>
-            <div className="grid gap-y-8 w-full text-sm lg:text-lg">
-              <div className="text-dark-900 font-semibold text-xl tracking-[0.01em]">
-                Transaction details
+          <div className="w-full">
+            <div className="text-dark-900 font-semibold text-xl tracking-[0.01em] mb-8 md:mb-6">
+              Transaction details
+            </div>
+            <div className="flex flex-row justify-between mb-10 md:mb-8">
+              <div className="text-dark-700 text-sm lg:text-base leading-5">
+                Amount to receive
               </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-dark-700 text-sm lg:text-base leading-5">
-                  Amount to receive
-                </div>
-                <div className="text-dark-1000 text-right">
-                  {amount} {symbol}
-                </div>
+              <div className="text-dark-1000 text-right">
+                {amount} {symbol}
               </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-dark-700 text-sm lg:text-base leading-5">
-                  Destination address
-                </div>
-                <div className="text-dark-1000 w-6/12 break-words text-right">
-                  {destinationAddress}
-                </div>
+            </div>
+            <div className="flex flex-row justify-between mb-10 md:mb-8">
+              <div className="text-dark-700 text-sm lg:text-base leading-5">
+                Destination address
               </div>
-              <div className="flex flex-row justify-between">
-                <div className="text-dark-700 text-sm lg:text-base leading-5">
-                  Transaction hash
-                </div>
-                <div className="text-dark-1000 text-right w-5/12 lg:w-[220px] break-all">
-                  {transactionHash}
-                </div>
+              <div className="text-dark-1000 w-6/12 break-words text-right">
+                {destinationAddress}
+              </div>
+            </div>
+            <div className="flex flex-row justify-between">
+              <div className="text-dark-700 text-sm lg:text-base leading-5">
+                Transaction hash
+              </div>
+              <div className="text-dark-1000 text-right w-5/12 lg:w-[220px] break-all">
+                {transactionHash}
               </div>
             </div>
           </div>
@@ -101,14 +99,14 @@ export default function QueueTransactionModal({
           <ActionButton
             isExternalArrowIcon
             label={buttonLabel}
-            customStyle="bg-dark-1000 text-sm lg:text-lg lg:px-[72px] max-w-[418px] min-h-[44px] max-h-[56px]"
+            customStyle="bg-dark-1000 text-sm lg:text-base lg:px-[72px] max-w-[418px] min-h-[44px] max-h-[56px]"
             customIconStyle="ml-2"
             onClick={() => window.open(`${ExplorerURL}/tx/${transactionHash}`)}
           />
           <ActionButton
             variant="secondary"
             label="Copy transaction hash"
-            customStyle="text-sm lg:text-lg lg:px-[72px] max-w-[418px] pb-3.5 mt-2"
+            customStyle="text-sm lg:text-base lg:px-[72px] max-w-[418px] pb-3.5 mt-2"
             onClick={() => handleOnCopy(transactionHash)}
           />
         </div>
