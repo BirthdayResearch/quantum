@@ -10,6 +10,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
+import { ModalTypeToDisplay } from "types";
 
 export interface ModalConfigType {
   title: string;
@@ -19,7 +20,9 @@ export interface ModalConfigType {
   buttonLabel: string;
   inputErrorMessage: string;
   // contractType: ContractType; // TODO: handle type when new SC is merged
+  isOpen: boolean;
   onClose: () => void;
+  onTransactionFound?: (modalTypeToDisplay: any) => void;
 }
 
 export enum ContractType {
@@ -34,7 +37,9 @@ export default function QueryTransactionModal({
   inputPlaceholder,
   buttonLabel,
   inputErrorMessage,
+  isOpen,
   onClose,
+  onTransactionFound,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
@@ -107,7 +112,7 @@ export default function QueryTransactionModal({
   }, [copiedFromClipboard]);
 
   return (
-    <Modal isOpen onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col mt-6 mb-4 w-full md:px-6">
         <div className="font-bold text-xl lg:text-2xl text-dark-900">
           {title}
@@ -203,8 +208,16 @@ export default function QueryTransactionModal({
           <ActionButton
             label={isLoading ? "" : buttonLabel}
             customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[240px] min-h-[48px] lg:min-h-[52px]"
-            disabled={transactionInput === "" || isLoading}
-            onClick={checkTXnHash}
+            // disabled={transactionInput === "" || isLoading} // TODO: comment to test different modal
+            // onClick={checkTXnHash} // TODO: uncomment when phase 2 SC is ready
+            onClick={() => {
+              if (!onTransactionFound) {
+                return;
+              }
+              onTransactionFound(ModalTypeToDisplay.RefundInProgress);
+              //onTransactionFound(ModalTypeToDisplay.Pending)}
+              //onTransactionFound(ModalTypeToDisplay.Unsuccessful)}
+            }}
             isLoading={isLoading}
           />
         </div>
