@@ -74,4 +74,16 @@ export class QueueController {
   verify(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.queueService.verify(transactionHash);
   }
+
+  /**
+   * Verify a queue transaction with given transactionHash and update the defichainStatus.
+   *
+   * @Body {string} transactionHash transactionHash
+   * @returns {Promise<VerifyQueueTransactionDto>}
+   */
+  @Post('/verifyDefichain')
+  @Throttle(35, 60)
+  defichainVerify(@Body('transactionHash') transactionHash: string) {
+    return this.queueService.defichainVerify(transactionHash);
+  }
 }
