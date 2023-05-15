@@ -8,6 +8,7 @@ interface Props {
   isOpen: boolean;
   onClose?: () => void;
   title?: string;
+  subtitle?: string;
 }
 
 export default function Modal({
@@ -15,6 +16,7 @@ export default function Modal({
   isOpen,
   title,
   onClose,
+  subtitle,
 }: PropsWithChildren<Props>) {
   const { isMobile } = useResponsive();
 
@@ -34,7 +36,10 @@ export default function Modal({
         >
           <Dialog.Title
             as="div"
-            className="flex items-center justify-between mb-8 md:mb-6"
+            className={clsx(
+              "flex items-center justify-between",
+              subtitle ? "mb-2" : "mb-8 md:mb-6"
+            )}
           >
             <h3
               className={clsx(
@@ -52,6 +57,13 @@ export default function Modal({
               />
             )}
           </Dialog.Title>
+          {subtitle && (
+            <Dialog.Description as="div">
+              <div className="lg:text-[16px] lg:leading-5 md:text-base text-sm text-dark-700 md:mb-6 mb-9">
+                {subtitle}
+              </div>
+            </Dialog.Description>
+          )}
           {children}
         </div>
       </Dialog.Panel>
