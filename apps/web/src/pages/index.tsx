@@ -22,8 +22,8 @@ import { useQueueStorageContext } from "../layouts/contexts/QueueStorageContext"
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
   const { txnHash, setStorage } = useStorageContext();
-  const { txnHash: txnHashQueue, setStorage: setQueueStorage } =
-    useQueueStorageContext();
+  // Todo: update to useQueueStorageContext to get the storage for queue
+  const { txnHash: txnHashQueue } = useQueueStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
     useBridgeFormStorageKeys();
 
