@@ -17,10 +17,13 @@ import {
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 import QueueForm from "../components/QueueForm";
 import FormTab from "../components/FormTab";
+import { useQueueStorageContext } from "../layouts/contexts/QueueStorageContext";
 
 function Home() {
   const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
   const { txnHash, setStorage } = useStorageContext();
+  const { txnHash: txnHashQueue, setStorage: setQueueStorage } =
+    useQueueStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
     useBridgeFormStorageKeys();
 
@@ -106,8 +109,8 @@ function Home() {
           <QueueForm
             activeTab={activeTab}
             hasPendingTxn={
-              txnHash.unconfirmed !== undefined ||
-              txnHash.unsentFund !== undefined
+              txnHashQueue.unconfirmed !== undefined ||
+              txnHashQueue.unsentFund !== undefined
             }
           />
         </div>
