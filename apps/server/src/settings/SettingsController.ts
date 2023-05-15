@@ -1,7 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
-import { Network, SupportedDFCTokenSymbols, SupportedEVMTokenSymbols, SupportedNetworkTokens } from 'src/AppConfig';
+import {
+  Erc20Token,
+  Network,
+  NetworkI,
+  NetworkOptionsI,
+  SupportedDFCTokenSymbols,
+  SupportedEVMTokenSymbols,
+  SupportedNetworkTokens,
+} from 'src/AppConfig';
 
 import { SettingsModel } from './SettingsInterface';
 
@@ -30,14 +38,14 @@ export class SettingsController {
 
   @Get('bridgeSupportedTokens')
   @Throttle(35, 60)
-  async getSupportedToken(): Promise<any> {
+  async getSupportedToken(): Promise<[NetworkI<Erc20Token>, NetworkI<string>]> {
     const supportedTokens = this.getSupportedTokens();
     return this.filterSupportedNetworkTokens(supportedTokens);
   }
 
   private getSupportedTokens(): {
-    defichain: Array<keyof typeof SupportedDFCTokenSymbols>;
-    ethereum: Array<keyof typeof SupportedEVMTokenSymbols>;
+    defichain: SupportedDFCTokenSymbols;
+    ethereum: SupportedEVMTokenSymbols;
   } {
     const supportedDfcTokens = this.configService.getOrThrow('defichain.supportedTokens').split(',') as Array<
       keyof typeof SupportedDFCTokenSymbols
@@ -53,13 +61,11 @@ export class SettingsController {
     defichain: Array<keyof typeof SupportedDFCTokenSymbols>;
     ethereum: Array<keyof typeof SupportedEVMTokenSymbols>;
   }): any {
-    return SupportedNetworkTokens.map((network: any) => {
+    return SupportedNetworkTokens.map((network: NetworkOptionsI) => {
       const supportedNetworkTokens =
         network.name === Network.DeFiChain ? supportedTokens.defichain : supportedTokens.ethereum;
 
-      const tokenMatcher: any[] = network.tokens.filter((token: any) =>
-        supportedNetworkTokens.includes(token.tokenA.symbol),
-      );
+      const tokenMatcher = network.tokens.filter((token: any) => supportedNetworkTokens.includes(token.tokenA.symbol));
 
       return {
         ...network,

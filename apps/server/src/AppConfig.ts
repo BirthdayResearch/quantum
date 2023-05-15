@@ -88,7 +88,35 @@ export enum Network {
   DeFiChain = 'DeFiChain',
 }
 
-export const SupportedNetworkTokens: any = [
+export interface TokenDetailI<T> {
+  name: T;
+  subtitle?: string;
+  symbol: string;
+  icon: string;
+}
+
+export interface TokensI {
+  tokenA: TokenDetailI<string>;
+  tokenB: TokenDetailI<string>;
+}
+
+export interface NetworkOptionsI {
+  name: Network;
+  icon: string;
+  tokens: TokensI[];
+}
+
+export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI';
+export interface NetworkI<T> {
+  name: Network;
+  icon: string;
+  tokens: {
+    tokenA: TokenDetailI<T>;
+    tokenB: TokenDetailI<string>;
+  }[];
+}
+
+export const SupportedNetworkTokens: [NetworkI<Erc20Token>, NetworkI<string>] = [
   {
     name: Network.Ethereum,
     icon: '/tokens/Ethereum.svg',
