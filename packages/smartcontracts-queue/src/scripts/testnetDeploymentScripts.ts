@@ -2,7 +2,7 @@ import { ethers } from 'hardhat';
 
 import { bridgeImplementation } from './deployBridgeImplementation';
 import { deployBridgeProxy } from './deployBridgeProxy';
-import { deployERC20 } from './deployERC20';
+import { deployTestERC20 } from './deployTestERC20';
 
 async function main() {
   const bridgeQueue = await bridgeImplementation();
@@ -15,8 +15,8 @@ async function main() {
     communityWalletAddress: accounts[0],
     bridgeQueueAddress: bridgeQueue.address,
   });
-  const firstToken = await deployERC20({ name: 'MockUSDC', symbol: 'MUSDC' });
-  const secondToken = await deployERC20({ name: 'MockUSDT', symbol: 'MUSDT' });
+  const firstToken = await deployTestERC20({ name: 'MockUSDC', symbol: 'MUSDC' });
+  const secondToken = await deployTestERC20({ name: 'MockUSDT', symbol: 'MUSDT' });
   const bridgeQueueFactory = await ethers.getContractFactory('BridgeQueue');
   const bridgeQueueProxyAttached = bridgeQueueFactory.attach(bridgeQueueProxy.address);
   // add support for tokens
