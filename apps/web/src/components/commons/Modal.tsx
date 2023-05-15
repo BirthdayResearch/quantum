@@ -8,6 +8,7 @@ interface Props {
   isOpen: boolean;
   onClose?: () => void;
   title?: string;
+  customStyle?: string;
 }
 
 export default function Modal({
@@ -15,6 +16,7 @@ export default function Modal({
   isOpen,
   title,
   onClose,
+  customStyle,
 }: PropsWithChildren<Props>) {
   const { isMobile } = useResponsive();
 
@@ -29,7 +31,8 @@ export default function Modal({
         <div
           className={clsx(
             "relative w-full h-full dark-card-bg-image border-dark-card-stroke backdrop-blur-[18px] m-auto px-6 pt-8 pb-12",
-            "md:w-[626px] md:h-auto md:top-[calc(50%+30px)] md:-translate-y-1/2 md:rounded-xl md:border md:p-8 overflow-auto"
+            "md:w-[626px] md:h-auto md:top-[calc(50%+30px)] md:-translate-y-1/2 md:rounded-xl md:border md:p-8 overflow-auto",
+            customStyle
           )}
         >
           <Dialog.Title

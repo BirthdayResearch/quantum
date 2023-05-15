@@ -5,7 +5,7 @@ import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "../hooks/useResponsive";
 
-function SuccessCopy({
+export function SuccessCopy({
   containerClass,
   show,
 }: {
