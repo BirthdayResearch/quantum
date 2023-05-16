@@ -29,7 +29,7 @@
     ]
   },
   "dependencies": {
-    "@fastify/compress": "^6.2.1",
+    "@fastify/compress": "^6.3.0",
     "@fastify/helmet": "^10.1.1",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
@@ -48,7 +48,7 @@
     "ethers": "^5.7.2",
     "joi": "^17.9.2",
     "nestjs-pino": "^3.2.0",
-    "pg": "^8.10.0"
+    "pg": "^8.11.0"
   },
   "devDependencies": {
     "@birthdayresearch/eslint-config": "^0.5.13",
