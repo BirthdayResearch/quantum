@@ -111,7 +111,7 @@ export async function getServerSideProps({ query }) {
       BASE_URLS[query.network] ?? BASE_URLS[EnvironmentNetwork.MainNet];
     const res = await fetch(`${DEFICHAIN_WALLET_URL}/bridge/status`);
     const supportedTokensRes = await fetch(
-      `${baseUrl}/settings/bridgeSupportedTokens`
+      `${baseUrl}/settings/supportedTokens`
     );
 
     const data = await res.json();

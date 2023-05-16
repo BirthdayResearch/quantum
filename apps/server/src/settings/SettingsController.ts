@@ -37,7 +37,7 @@ export class SettingsController {
     return settings;
   }
 
-  @Get('bridgeSupportedTokens')
+  @Get('supportedTokens')
   @Throttle(35, 60)
   async getSupportedNetworksTokens(): Promise<[NetworkI<Erc20Token>, NetworkI<string>]> {
     const supportedTokens = this.getSupportedTokens();

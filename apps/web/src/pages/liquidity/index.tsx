@@ -71,7 +71,7 @@ export async function getServerSideProps({ query }) {
       BASE_URLS[query.network] ?? BASE_URLS[EnvironmentNetwork.MainNet];
     const balancesRes = await fetch(`${baseUrl}/balances`);
     const supportedTokensRes = await fetch(
-      `${baseUrl}/settings/bridgeSupportedTokens`
+      `${baseUrl}/settings/supportedTokens`
     );
 
     const [balance, balancesSC] = await Promise.all([
