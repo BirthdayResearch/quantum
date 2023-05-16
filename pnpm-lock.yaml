@@ -52,7 +52,7 @@ importers:
         version: 0.45.0
       '@waveshq/walletkit-ui':
         specifier: ^0.45.0
-        version: 0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5)
       async-mutex:
         specifier: ^0.4.0
         version: 0.4.0
@@ -302,8 +302,8 @@ importers:
         specifier: 4.3.7
         version: 4.3.7
       cross-fetch:
-        specifier: ^3.1.5
-        version: 3.1.5
+        specifier: ^3.1.6
+        version: 3.1.6
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3
@@ -512,7 +512,7 @@ packages:
       '@types/node-fetch': 2.6.2
       '@types/tunnel': 0.0.3
       form-data: 4.0.0
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       process: 0.11.10
       tough-cookie: 4.1.2
       tslib: 2.5.0
@@ -535,7 +535,7 @@ packages:
       '@types/node-fetch': 2.6.2
       '@types/tunnel': 0.0.3
       form-data: 4.0.0
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       process: 0.11.10
       tslib: 2.5.0
       tunnel: 0.0.6
@@ -2209,7 +2209,7 @@ packages:
     dependencies:
       '@defichain/jellyfish-api-core': 3.30.1(defichain@3.30.1)
       abort-controller: 3.0.0
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
       defichain: 3.30.1
     transitivePeerDependencies:
       - encoding
@@ -2271,7 +2271,7 @@ packages:
       '@defichain/jellyfish-crypto': 3.30.1(defichain@3.30.1)
       '@defichain/jellyfish-network': 3.30.1(defichain@3.30.1)
       '@defichain/testcontainers': 3.30.1(@types/tar-fs@2.0.1)(defichain@3.30.1)
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
       defichain: 3.30.1
     transitivePeerDependencies:
       - '@types/tar-fs'
@@ -2354,7 +2354,7 @@ packages:
       defichain: ^3.30.1
     dependencies:
       abort-controller: 3.0.0
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
       defichain: 3.30.1
       url-search-params-polyfill: 8.1.1
     transitivePeerDependencies:
@@ -2381,7 +2381,7 @@ packages:
     dependencies:
       '@defichain/jellyfish-network': 3.30.1(defichain@3.30.1)
       '@types/tar-fs': 2.0.1
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
       defichain: 3.30.1
       dockerode: 3.3.5
       tar-fs: 2.1.1
@@ -2400,7 +2400,7 @@ packages:
       '@defichain/jellyfish-api-core': 3.30.1(defichain@3.30.1)
       '@defichain/jellyfish-api-jsonrpc': 3.30.1(defichain@3.30.1)
       abort-controller: 3.0.0
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
       defichain: 3.30.1
       url-search-params-polyfill: 8.1.1
     transitivePeerDependencies:
@@ -3776,7 +3776,7 @@ packages:
       micromatch: 4.0.5
       mkdirp: 1.0.4
       murmurhash: 2.0.1
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       ufo: 1.1.1
       unstorage: 1.2.0
     transitivePeerDependencies:
@@ -4408,7 +4408,7 @@ packages:
     dependencies:
       chalk: 4.1.2
       consola: 2.15.3
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
     transitivePeerDependencies:
       - encoding
 
@@ -4534,7 +4534,7 @@ packages:
   /@safe-global/safe-gateway-typescript-sdk@3.7.0:
     resolution: {integrity: sha512-3BvlUgp0oZ1Zkn7nG3wY1jvCEE4t530BjKcaa3r0qsf0whf/ez/0gmQwk7DTOGmVmvOfjj6HHikxnrUCCX+/3Q==}
     dependencies:
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -4736,7 +4736,7 @@ packages:
       buffer: 6.0.1
       fast-stable-stringify: 1.0.0
       jayson: 3.7.0
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       rpc-websockets: 7.5.1
       superstruct: 0.14.2
     transitivePeerDependencies:
@@ -5731,7 +5731,7 @@ packages:
     dependencies:
       '@walletconnect/jsonrpc-utils': 1.0.7
       '@walletconnect/safe-json': 1.0.2
-      cross-fetch: 3.1.5
+      cross-fetch: 3.1.6
       tslib: 1.14.1
     transitivePeerDependencies:
       - encoding
@@ -6104,7 +6104,7 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web@0.49.3(@babel/core@7.21.0)(@next/env@13.4.1):
+  /@waveshq/standard-web@0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)(redux@4.2.1):
     resolution: {integrity: sha512-g05TKVl/rG/mt4b6t1bBQUdLwbpzolbCo8LCe9l/KuSLLeImqr3OAKEs23RUPPACifng7e0oEMBzadTajFf+ug==}
     dependencies:
       '@netlify/ipx': 1.4.0
@@ -6118,7 +6118,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-icons: 4.8.0(react@18.2.0)
-      react-redux: 8.0.5(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
+      react-redux: 8.0.5(@types/react-dom@18.2.1)(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
       react-responsive: 9.0.2(react@18.2.0)
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -6174,12 +6174,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui@0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5):
+  /@waveshq/walletkit-ui@0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5):
     resolution: {integrity: sha512-Kh1i4oHOuqddU8GRyCbImBoEaDJ7Ta0Z+vkOF/DUTVpP1FqlcCXhXb/em9IviQ3WCc897g9dAdZKqDIIrvO79w==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.11(@babel/core@7.21.0)(@types/node@18.16.1)(ts-node@10.9.1)(typescript@4.9.5)
       '@waveshq/standard-defichain-jellyfishsdk': 0.49.3(@types/tar-fs@2.0.1)
-      '@waveshq/standard-web': 0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)
+      '@waveshq/standard-web': 0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)(redux@4.2.1)
       '@waveshq/standard-web-linter': 0.49.3(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)
       '@waveshq/walletkit-core': 0.45.0
       bignumber.js: 9.1.1
@@ -7987,6 +7987,14 @@ packages:
     resolution: {integrity: sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==}
     dependencies:
       node-fetch: 2.6.7
+    transitivePeerDependencies:
+      - encoding
+    dev: true
+
+  /cross-fetch@3.1.6:
+    resolution: {integrity: sha512-riRvo06crlE8HiqOwIpQhxwdOk4fOeR7FVM/wXoxchFEqMNUjvbs3bfo4OTgMEMHzppd4DxFBDbyySj8Cv781g==}
+    dependencies:
+      node-fetch: 2.6.11
     transitivePeerDependencies:
       - encoding
 
@@ -12843,6 +12851,17 @@ packages:
   /node-fetch-native@1.0.2:
     resolution: {integrity: sha512-KIkvH1jl6b3O7es/0ShyCgWLcfXxlBrLBbP3rOr23WArC66IMcU4DeZEeYEOwnopYhawLTn7/y+YtmASe8DFVQ==}
 
+  /node-fetch@2.6.11:
+    resolution: {integrity: sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+
   /node-fetch@2.6.7:
     resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
     engines: {node: 4.x || >=6.0.0}
@@ -12853,6 +12872,7 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+    dev: true
 
   /node-fetch@2.6.9:
     resolution: {integrity: sha512-DJm/CJkZkRjKKj4Zi4BsKVZh3ValV5IR5s7LVZnW+6YMh0W1BfNA8XSs6DLMGYlId5F3KnA70uu2qepcR08Qqg==}
@@ -12864,6 +12884,7 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+    dev: true
 
   /node-forge@1.3.1:
     resolution: {integrity: sha512-dPEtOeMvF9VMcYV/1Wb8CPoVAXtp6MKMlcbAt4ddqmGqUJ6fQZFXkNZNkNlfevtNkGtaSoXf/vNNNSvgrdXwtA==}
@@ -14123,6 +14144,40 @@ packages:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 18.2.0
+    dev: false
+
+  /react-redux@8.0.5(@types/react-dom@18.2.1)(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
+    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
+    peerDependencies:
+      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+      react-native: '>=0.59'
+      redux: ^4
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@types/hoist-non-react-statics': 3.3.1
+      '@types/react': 18.2.0
+      '@types/react-dom': 18.2.1
+      '@types/use-sync-external-store': 0.0.3
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-is: 18.2.0
+      redux: 4.2.1
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /react-redux@8.0.5(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
@@ -15635,7 +15690,7 @@ packages:
       docker-compose: 0.23.19
       dockerode: 3.3.5
       get-port: 5.1.1
-      node-fetch: 2.6.9
+      node-fetch: 2.6.11
       properties-reader: 2.2.0
       ssh-remote-port-forward: 1.0.4
       tar-fs: 2.1.1
