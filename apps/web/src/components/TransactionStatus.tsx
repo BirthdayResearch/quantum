@@ -220,33 +220,34 @@ export default function TransactionStatus({
                 />
               )}
 
-              {(allocationTxnHash && dfcTxnStatusIsConfirmed) || isConfirmed ? (
-                <a
-                  className={clsx(
-                    "flex flex-row items-center hover:opacity-70",
-                    { "font-semibold": isConfirmed }
-                  )}
-                  href={getTransactionUrl(allocationTxnHash)}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {isLg ? (
-                    allocationTxnHash && (
+              {allocationTxnHash &&
+                (dfcTxnStatusIsConfirmed || isConfirmed ? (
+                  <a
+                    className={clsx(
+                      "flex flex-row items-center hover:opacity-70",
+                      { "font-semibold": isConfirmed }
+                    )}
+                    href={getTransactionUrl(allocationTxnHash)}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    {isLg ? (
+                      allocationTxnHash && (
+                        <div className="flex">
+                          View DeFiScan
+                          <FiArrowUpRight size={20} className="ml-1" />
+                        </div>
+                      )
+                    ) : (
                       <div className="flex">
-                        View DeFiScan
+                        <span className="flex items-center">DeFiScan</span>
                         <FiArrowUpRight size={20} className="ml-1" />
                       </div>
-                    )
-                  ) : (
-                    <div className="flex">
-                      <span className="flex items-center">DeFiScan</span>
-                      <FiArrowUpRight size={20} className="ml-1" />
-                    </div>
-                  )}
-                </a>
-              ) : (
-                `DeFiChain (${numberOfDfcConfirmations}/${DFC_CONFIRMATIONS_BLOCK_TOTAL})`
-              )}
+                    )}
+                  </a>
+                ) : (
+                  `DeFiChain (${numberOfDfcConfirmations}/${DFC_CONFIRMATIONS_BLOCK_TOTAL})`
+                ))}
             </div>
           </div>
         </div>
