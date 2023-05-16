@@ -1,7 +1,8 @@
-import { useState, Fragment } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useNetwork } from "wagmi";
+import { ModalTypeToDisplay } from "types";
 import ConnectButton from "./ConnectButton";
 import Banner from "./Banner";
 import Navigation from "./Navigation";
@@ -10,7 +11,6 @@ import AnnouncementBanner from "./AnnouncementBanner";
 import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import TransactionInProgressModal from "./queue/TransactionInProgressModal";
-import { ModalTypeToDisplay } from "types";
 
 export default function Header({
   isBridgeUp,

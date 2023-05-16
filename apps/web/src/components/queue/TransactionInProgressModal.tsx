@@ -2,12 +2,12 @@ import * as React from "react";
 import Modal from "@components/commons/Modal";
 import dayjs from "dayjs";
 import { FiArrowUpRight } from "react-icons/fi";
-import GoToAnotherTransaction from "./GoToAnotherTransaction";
 import { ModalTypeToDisplay } from "types";
 import ActionButton from "@components/commons/ActionButton";
 import Link from "next/link";
 import useResponsive from "@hooks/useResponsive";
 import truncateTextFromMiddle from "@utils/textHelper";
+import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionInProgressModalProps {
   type?: ModalTypeToDisplay;
@@ -21,6 +21,27 @@ interface TransactionInProgressModalProps {
   isOpen: boolean;
 }
 
+const titles = {
+  [ModalTypeToDisplay.Pending]: "Transaction in queue",
+  [ModalTypeToDisplay.RefundInProgress]: "Refund in progress",
+  [ModalTypeToDisplay.Unsuccessful]: "Transaction unsuccessful",
+};
+
+const descriptions = {
+  [ModalTypeToDisplay.Pending]:
+    "Your transaction will be processed within the next 72 hours.",
+  [ModalTypeToDisplay.RefundInProgress]:
+    "Refund will be processed within the next 72 hours.",
+  [ModalTypeToDisplay.Unsuccessful]:
+    "The queue transaction couldn't be processed. Please try again.",
+};
+
+const amountLabel = {
+  [ModalTypeToDisplay.Pending]: "Amount to receive",
+  [ModalTypeToDisplay.RefundInProgress]: "Amount to refund",
+  [ModalTypeToDisplay.Unsuccessful]: "Amount to receive",
+};
+
 export default function TransactionInProgressModal({
   type,
   txHash,
@@ -32,10 +53,13 @@ export default function TransactionInProgressModal({
   onBack,
   isOpen,
 }: TransactionInProgressModalProps): JSX.Element {
+  const { isMobile } = useResponsive();
+
   if (type === undefined) {
+    // eslint-disable-next-line
     return <></>;
   }
-  const { isMobile } = useResponsive();
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col mt-6 md:mb-4 w-full md:px-6 h-[calc(100%-56px)] md:h-auto">
@@ -111,24 +135,3 @@ export default function TransactionInProgressModal({
     </Modal>
   );
 }
-
-const titles = {
-  [ModalTypeToDisplay.Pending]: "Transaction in queue",
-  [ModalTypeToDisplay.RefundInProgress]: "Refund in progress",
-  [ModalTypeToDisplay.Unsuccessful]: "Transaction unsuccessful",
-};
-
-const descriptions = {
-  [ModalTypeToDisplay.Pending]:
-    "Your transaction will be processed within the next 72 hours.",
-  [ModalTypeToDisplay.RefundInProgress]:
-    "Refund will be processed within the next 72 hours.",
-  [ModalTypeToDisplay.Unsuccessful]:
-    "The queue transaction couldn't be processed. Please try again.",
-};
-
-const amountLabel = {
-  [ModalTypeToDisplay.Pending]: "Amount to receive",
-  [ModalTypeToDisplay.RefundInProgress]: "Amount to refund",
-  [ModalTypeToDisplay.Unsuccessful]: "Amount to receive",
-};

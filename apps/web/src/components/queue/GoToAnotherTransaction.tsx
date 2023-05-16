@@ -6,7 +6,7 @@ export default function GoToAnotherTransaction({
   return (
     <span className="text-xs text-dark-700 text-center">
       Have another transaction?{" "}
-      <button onClick={onClick} className="text-dark-1000">
+      <button onClick={onClick} className="text-dark-1000" type="button">
         Track it here
       </button>
     </span>

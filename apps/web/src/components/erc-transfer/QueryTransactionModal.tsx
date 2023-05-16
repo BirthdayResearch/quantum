@@ -56,7 +56,7 @@ export default function QueryTransactionModal({
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
   const bridgeIface = new ethers.utils.Interface(BridgeV1.abi); // TODO: use new abi from new SC
-
+  // eslint-disable-next-line
   const checkTXnHash = async () => {
     try {
       setIsLoading(true);
@@ -207,15 +207,16 @@ export default function QueryTransactionModal({
             label={isLoading ? "" : buttonLabel}
             customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[251.72px] min-h-[48px] lg:min-h-[52px]"
             disabled={transactionInput === "" || isLoading} // TODO: comment to test different modal
-            onClick={checkTXnHash} // TODO: comment to test different modal
-            // onClick={() => { // TODO: remove after testing, uncomment to test different modal
-            //   if (!onTransactionFound) {
-            //     return;
-            //   }
-            //   onTransactionFound(ModalTypeToDisplay.Pending);
-            //   // onTransactionFound(ModalTypeToDisplay.RefundInProgress);
-            //   // onTransactionFound(ModalTypeToDisplay.Unsuccessful);
-            // }}
+            // onClick={checkTXnHash} // TODO: comment to test different modal
+            onClick={() => {
+              // TODO: remove after testing, uncomment to test different modal
+              if (!onTransactionFound) {
+                return;
+              }
+              onTransactionFound(ModalTypeToDisplay.Pending);
+              // onTransactionFound(ModalTypeToDisplay.RefundInProgress);
+              // onTransactionFound(ModalTypeToDisplay.Unsuccessful);
+            }}
             isLoading={isLoading}
           />
         </div>
