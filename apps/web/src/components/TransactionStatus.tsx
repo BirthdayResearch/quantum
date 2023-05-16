@@ -44,7 +44,7 @@ export default function TransactionStatus({
   txnHash: string | undefined;
 }) {
   const { ExplorerURL } = useContractContext();
-  const { isLg, isMd } = useResponsive();
+  const { isLg, isMd, is2xl } = useResponsive();
 
   const [allocateDfcFund] = useAllocateDfcFundMutation();
   const { setStorage } = useStorageContext();
@@ -184,7 +184,7 @@ export default function TransactionStatus({
                   target="_blank"
                   rel="noreferrer"
                 >
-                  {isLg ? (
+                  {is2xl ? (
                     allocationTxnHash && (
                       <div className="flex">
                         View Etherscan
@@ -230,7 +230,7 @@ export default function TransactionStatus({
                       target="_blank"
                       rel="noreferrer"
                     >
-                      {isLg ? (
+                      {is2xl ? (
                         <div className="flex">
                           View DeFiScan
                           <FiArrowUpRight size={20} className="ml-1" />
