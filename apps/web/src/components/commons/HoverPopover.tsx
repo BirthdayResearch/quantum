@@ -1,21 +1,23 @@
 import { JSX } from "@babel/types";
-import { PropsWithChildren, ReactNode, useState } from "react";
-import { Placement, useFloating, shift } from "@floating-ui/react-dom";
+import { ReactNode, useState } from "react";
+import { useFloating, shift } from "@floating-ui/react-dom";
 import clsx from "clsx";
 
-interface IconPopoverProps {
-  popover: string | ReactNode;
-  placement?: Placement;
+export default function HoverPopover({
+  className,
+  popover,
+  placement,
+  children,
+}: {
   className?: string;
-}
-
-export function HoverPopover(
-  props: PropsWithChildren<IconPopoverProps>
-): JSX.Element {
+  popover: string;
+  placement: "top" | "right";
+  children?: ReactNode;
+}): JSX.Element {
   const [isHover, setIsHover] = useState(false);
 
   const { x, y, reference, floating, strategy } = useFloating({
-    placement: props.placement ?? "bottom",
+    placement: placement ?? "bottom",
     middleware: [shift()],
     strategy: "fixed",
   });
@@ -24,12 +26,13 @@ export function HoverPopover(
     <>
       <div
         ref={reference}
+        onFocus={() => setIsHover(true)}
         onMouseOver={() => setIsHover(true)}
         onMouseLeave={() => setIsHover(false)}
         onTouchCancel={() => setIsHover(false)}
-        className={clsx(props.className, "cursor-pointer")}
+        className={clsx(className, "cursor-pointer")}
       >
-        {props.children}
+        {children}
       </div>
 
       {(() => {
@@ -47,13 +50,9 @@ export function HoverPopover(
             }}
             className="p-2 z-20"
           >
-            {typeof props.popover === "string" ? (
-              <div className=" w-[328px] rounded bg-dark-1000 px-3 py-2 text-sm text-dark-00 text-left">
-                {props.popover}
-              </div>
-            ) : (
-              props.popover
-            )}
+            <div className=" w-[328px] rounded bg-dark-1000 px-3 py-2 text-sm text-dark-00 text-left">
+              {popover}
+            </div>
           </div>
         );
       })()}

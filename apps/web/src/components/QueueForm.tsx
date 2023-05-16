@@ -166,20 +166,17 @@ export default function QueueForm({
 
   const onTransferTokens = async (): Promise<void> => {
     setIsVerifyingTransaction(true);
-    const isBalanceSufficientVerified = await verifySufficientHWBalance(true);
-    if (isBalanceSufficientVerified) {
-      if (isSendingFromEthNetwork) {
-        // Revalidate entered amount after refetching EVM balance
-        const refetchedEvmBalance = await refetchEvmBalance();
-        if (
-          validateAmountInput(
-            amount,
-            new BigNumber(refetchedEvmBalance.data?.formatted ?? 0)
-          )
-        ) {
-          setIsVerifyingTransaction(false);
-          return;
-        }
+    if (isSendingFromEthNetwork) {
+      // Revalidate entered amount after refetching EVM balance
+      const refetchedEvmBalance = await refetchEvmBalance();
+      if (
+        validateAmountInput(
+          amount,
+          new BigNumber(refetchedEvmBalance.data?.formatted ?? 0)
+        )
+      ) {
+        setIsVerifyingTransaction(false);
+        return;
       }
       if (!hasUnconfirmedTxn) {
         const newTxn = {

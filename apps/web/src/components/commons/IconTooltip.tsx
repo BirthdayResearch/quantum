@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { FiInfo } from "react-icons/fi";
 import useResponsive from "@hooks/useResponsive";
 import BottomModal from "./BottomModal";
-import { HoverPopover } from "./HoverPopover";
+import HoverPopover from "./HoverPopover";
 
 interface Props {
   content: string;
@@ -24,16 +24,18 @@ export default function IconTooltip({
   const { isLg: isWeb } = useResponsive();
 
   return (
-    <div className="relative flex focus:outline-none group cursor-pointer">
+    <div className="relative flex focus:outline-none group">
       <FiInfo
         size={size ?? 16}
-        className={clsx(customIconColor ?? "text-dark-700 block lg:hidden")}
+        className={clsx(
+          customIconColor ?? "text-dark-700 block lg:hidden cursor-pointer"
+        )}
         onClick={() => (!isWeb ? setIsMobileModalOpen(true) : null)}
       />
       {isWeb ? (
         /* Display web tooltip */
         <HoverPopover
-          className={clsx("cursor-help group lg:block hidden")}
+          className={clsx("cursor-pointer group lg:block hidden")}
           popover={content}
           placement={position}
         >
