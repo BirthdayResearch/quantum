@@ -9,6 +9,11 @@ export const FEES_INFO: TooltipInfoI = {
     "Fees to cover the cost of transactions on DeFiChain and Ethereum networks. For more information, visit our user guide.",
 };
 
+export const PROCESSING_TIME_INFO: TooltipInfoI = {
+  title: "Processing time",
+  content: "The estimated duration for processing your transaction on Queue.",
+};
+
 export const TOKEN_SUPPLY_INFO: TooltipInfoI = {
   title: "Token Supply",
   content:
