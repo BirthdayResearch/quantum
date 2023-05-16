@@ -52,7 +52,7 @@ importers:
         version: 0.45.0
       '@waveshq/walletkit-ui':
         specifier: ^0.45.0
-        version: 0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5)
       async-mutex:
         specifier: ^0.4.0
         version: 0.4.0
@@ -279,7 +279,7 @@ importers:
         version: 1.0.8(hardhat@2.14.0)
       '@nomicfoundation/hardhat-toolbox':
         specifier: ^2.0.1
-        version: 2.0.2(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@nomicfoundation/hardhat-chai-matchers@1.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.8)(@nomiclabs/hardhat-ethers@2.2.2)(@nomiclabs/hardhat-etherscan@3.1.7)(@typechain/ethers-v5@10.2.0)(@typechain/hardhat@6.1.5)(@types/chai@4.3.5)(@types/mocha@10.0.1)(@types/node@18.16.1)(chai@4.3.7)(ethers@5.7.2)(hardhat-gas-reporter@1.0.9)(hardhat@2.14.0)(solidity-coverage@0.8.2)(ts-node@10.9.1)(typechain@8.1.1)(typescript@4.9.5)
+        version: 2.0.2(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@nomicfoundation/hardhat-chai-matchers@1.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.8)(@nomiclabs/hardhat-ethers@2.2.2)(@nomiclabs/hardhat-etherscan@3.1.7)(@typechain/ethers-v5@10.2.1)(@typechain/hardhat@6.1.5)(@types/chai@4.3.5)(@types/mocha@10.0.1)(@types/node@18.16.1)(chai@4.3.7)(ethers@5.7.2)(hardhat-gas-reporter@1.0.9)(hardhat@2.14.0)(solidity-coverage@0.8.2)(ts-node@10.9.1)(typechain@8.1.1)(typescript@4.9.5)
       '@openzeppelin/contracts':
         specifier: 4.8.2
         version: 4.8.2
@@ -287,8 +287,8 @@ importers:
         specifier: 4.8.2
         version: 4.8.2
       '@typechain/ethers-v5':
-        specifier: 10.2.0
-        version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
+        specifier: 10.2.1
+        version: 10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
       '@types/chai':
         specifier: 4.3.5
         version: 4.3.5
@@ -333,7 +333,7 @@ importers:
         version: 5.7.2
       '@nomicfoundation/hardhat-toolbox':
         specifier: ^2.0.2
-        version: 2.0.2(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@nomicfoundation/hardhat-chai-matchers@1.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.8)(@nomiclabs/hardhat-ethers@2.2.2)(@nomiclabs/hardhat-etherscan@3.1.7)(@typechain/ethers-v5@10.2.0)(@typechain/hardhat@6.1.5)(@types/chai@4.3.5)(@types/mocha@10.0.1)(@types/node@18.16.1)(chai@4.3.7)(ethers@5.7.2)(hardhat-gas-reporter@1.0.9)(hardhat@2.14.0)(solidity-coverage@0.8.2)(ts-node@10.9.1)(typechain@8.1.1)(typescript@4.9.5)
+        version: 2.0.2(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@nomicfoundation/hardhat-chai-matchers@1.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.8)(@nomiclabs/hardhat-ethers@2.2.2)(@nomiclabs/hardhat-etherscan@3.1.7)(@typechain/ethers-v5@10.2.1)(@typechain/hardhat@6.1.5)(@types/chai@4.3.5)(@types/mocha@10.0.1)(@types/node@18.16.1)(chai@4.3.7)(ethers@5.7.2)(hardhat-gas-reporter@1.0.9)(hardhat@2.14.0)(solidity-coverage@0.8.2)(ts-node@10.9.1)(typechain@8.1.1)(typescript@4.9.5)
       '@openzeppelin/contracts':
         specifier: 4.8.3
         version: 4.8.3
@@ -4221,7 +4221,7 @@ packages:
       hardhat: 2.14.0(ts-node@10.9.1)(typescript@4.9.5)
     dev: true
 
-  /@nomicfoundation/hardhat-toolbox@2.0.2(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@nomicfoundation/hardhat-chai-matchers@1.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.8)(@nomiclabs/hardhat-ethers@2.2.2)(@nomiclabs/hardhat-etherscan@3.1.7)(@typechain/ethers-v5@10.2.0)(@typechain/hardhat@6.1.5)(@types/chai@4.3.5)(@types/mocha@10.0.1)(@types/node@18.16.1)(chai@4.3.7)(ethers@5.7.2)(hardhat-gas-reporter@1.0.9)(hardhat@2.14.0)(solidity-coverage@0.8.2)(ts-node@10.9.1)(typechain@8.1.1)(typescript@4.9.5):
+  /@nomicfoundation/hardhat-toolbox@2.0.2(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@nomicfoundation/hardhat-chai-matchers@1.0.6)(@nomicfoundation/hardhat-network-helpers@1.0.8)(@nomiclabs/hardhat-ethers@2.2.2)(@nomiclabs/hardhat-etherscan@3.1.7)(@typechain/ethers-v5@10.2.1)(@typechain/hardhat@6.1.5)(@types/chai@4.3.5)(@types/mocha@10.0.1)(@types/node@18.16.1)(chai@4.3.7)(ethers@5.7.2)(hardhat-gas-reporter@1.0.9)(hardhat@2.14.0)(solidity-coverage@0.8.2)(ts-node@10.9.1)(typechain@8.1.1)(typescript@4.9.5):
     resolution: {integrity: sha512-vnN1AzxbvpSx9pfdRHbUzTRIXpMLPXnUlkW855VaDk6N1pwRaQ2gNzEmFAABk4lWf11E00PKwFd/q27HuwYrYg==}
     peerDependencies:
       '@ethersproject/abi': ^5.4.7
@@ -4250,8 +4250,8 @@ packages:
       '@nomicfoundation/hardhat-network-helpers': 1.0.8(hardhat@2.14.0)
       '@nomiclabs/hardhat-ethers': 2.2.2(ethers@5.7.2)(hardhat@2.14.0)
       '@nomiclabs/hardhat-etherscan': 3.1.7(hardhat@2.14.0)
-      '@typechain/ethers-v5': 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
-      '@typechain/hardhat': 6.1.5(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.0)(ethers@5.7.2)(hardhat@2.14.0)(typechain@8.1.1)
+      '@typechain/ethers-v5': 10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
+      '@typechain/hardhat': 6.1.5(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(ethers@5.7.2)(hardhat@2.14.0)(typechain@8.1.1)
       '@types/chai': 4.3.5
       '@types/mocha': 10.0.1
       '@types/node': 18.16.1
@@ -4978,18 +4978,16 @@ packages:
   /@tsconfig/node16@1.0.3:
     resolution: {integrity: sha512-yOlFc+7UtL/89t2ZhjPvvB/DeAr3r+Dq58IgzsFkOAvVC6NMJXmCGjbptdXdR9qsX7pKcTL+s87FtYREi2dEEQ==}
 
-  /@typechain/ethers-v5@10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5):
-    resolution: {integrity: sha512-ikaq0N/w9fABM+G01OFmU3U3dNnyRwEahkdvi9mqy1a3XwKiPZaF/lu54OcNaEWnpvEYyhhS0N7buCtLQqC92w==}
+  /@typechain/ethers-v5@10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5):
+    resolution: {integrity: sha512-n3tQmCZjRE6IU4h6lqUGiQ1j866n5MTCBJreNEHHVWXa2u9GJTaeYyU1/k+1qLutkyw+sS6VAN+AbeiTqsxd/A==}
     peerDependencies:
       '@ethersproject/abi': ^5.0.0
-      '@ethersproject/bytes': ^5.0.0
       '@ethersproject/providers': ^5.0.0
       ethers: ^5.1.3
       typechain: ^8.1.1
       typescript: '>=4.3.0'
     dependencies:
       '@ethersproject/abi': 5.7.0
-      '@ethersproject/bytes': 5.7.0
       '@ethersproject/providers': 5.7.2
       ethers: 5.7.2
       lodash: 4.17.21
@@ -4998,7 +4996,7 @@ packages:
       typescript: 4.9.5
     dev: true
 
-  /@typechain/hardhat@6.1.5(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.0)(ethers@5.7.2)(hardhat@2.14.0)(typechain@8.1.1):
+  /@typechain/hardhat@6.1.5(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(@typechain/ethers-v5@10.2.1)(ethers@5.7.2)(hardhat@2.14.0)(typechain@8.1.1):
     resolution: {integrity: sha512-lg7LW4qDZpxFMknp3Xool61Fg6Lays8F8TXdFGBG+MxyYcYU5795P1U2XdStuzGq9S2Dzdgh+1jGww9wvZ6r4Q==}
     peerDependencies:
       '@ethersproject/abi': ^5.4.7
@@ -5010,7 +5008,7 @@ packages:
     dependencies:
       '@ethersproject/abi': 5.7.0
       '@ethersproject/providers': 5.7.2
-      '@typechain/ethers-v5': 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
+      '@typechain/ethers-v5': 10.2.1(@ethersproject/abi@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
       ethers: 5.7.2
       fs-extra: 9.1.0
       hardhat: 2.14.0(ts-node@10.9.1)(typescript@4.9.5)
@@ -6104,7 +6102,7 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web@0.49.3(@babel/core@7.21.0)(@next/env@13.4.1):
+  /@waveshq/standard-web@0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)(redux@4.2.1):
     resolution: {integrity: sha512-g05TKVl/rG/mt4b6t1bBQUdLwbpzolbCo8LCe9l/KuSLLeImqr3OAKEs23RUPPACifng7e0oEMBzadTajFf+ug==}
     dependencies:
       '@netlify/ipx': 1.4.0
@@ -6118,7 +6116,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-icons: 4.8.0(react@18.2.0)
-      react-redux: 8.0.5(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
+      react-redux: 8.0.5(@types/react-dom@18.2.1)(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
       react-responsive: 9.0.2(react@18.2.0)
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -6174,12 +6172,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui@0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5):
+  /@waveshq/walletkit-ui@0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5):
     resolution: {integrity: sha512-Kh1i4oHOuqddU8GRyCbImBoEaDJ7Ta0Z+vkOF/DUTVpP1FqlcCXhXb/em9IviQ3WCc897g9dAdZKqDIIrvO79w==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.11(@babel/core@7.21.0)(@types/node@18.16.1)(ts-node@10.9.1)(typescript@4.9.5)
       '@waveshq/standard-defichain-jellyfishsdk': 0.49.3(@types/tar-fs@2.0.1)
-      '@waveshq/standard-web': 0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)
+      '@waveshq/standard-web': 0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)(redux@4.2.1)
       '@waveshq/standard-web-linter': 0.49.3(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)
       '@waveshq/walletkit-core': 0.45.0
       bignumber.js: 9.1.1
@@ -14123,6 +14121,40 @@ packages:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 18.2.0
+    dev: false
+
+  /react-redux@8.0.5(@types/react-dom@18.2.1)(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
+    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
+    peerDependencies:
+      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+      react-native: '>=0.59'
+      redux: ^4
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@types/hoist-non-react-statics': 3.3.1
+      '@types/react': 18.2.0
+      '@types/react-dom': 18.2.1
+      '@types/use-sync-external-store': 0.0.3
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-is: 18.2.0
+      redux: 4.2.1
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /react-redux@8.0.5(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
