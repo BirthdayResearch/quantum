@@ -1,5 +1,5 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
-import { DeFiChainTransactionStatus,EthereumTransactionStatus, QueueStatus } from '@prisma/client';
+import { DeFiChainTransactionStatus, EthereumTransactionStatus, QueueStatus } from '@prisma/client';
 import { ethers } from 'ethers';
 import {
   BridgeV1,
