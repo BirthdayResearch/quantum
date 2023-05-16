@@ -166,6 +166,7 @@ export default function QueueForm({
 
   const onTransferTokens = async (): Promise<void> => {
     setIsVerifyingTransaction(true);
+
     if (isSendingFromEthNetwork) {
       // Revalidate entered amount after refetching EVM balance
       const refetchedEvmBalance = await refetchEvmBalance();
@@ -178,21 +179,22 @@ export default function QueueForm({
         setIsVerifyingTransaction(false);
         return;
       }
-      if (!hasUnconfirmedTxn) {
-        const newTxn = {
-          selectedQueueNetworkA,
-          selectedQueueTokensA,
-          selectedQueueNetworkB,
-          selectedQueueTokensB,
-          networkEnv,
-          amount,
-          fromAddress,
-          toAddress: addressInput,
-        };
-        setStorage("txn-form-queue", JSON.stringify(newTxn));
-      }
-      setShowConfirmModal(true);
     }
+    if (!hasUnconfirmedTxn) {
+      const newTxn = {
+        selectedQueueNetworkA,
+        selectedQueueTokensA,
+        selectedQueueNetworkB,
+        selectedQueueTokensB,
+        networkEnv,
+        amount,
+        fromAddress,
+        toAddress: addressInput,
+      };
+      setStorage("txn-form-queue", JSON.stringify(newTxn));
+    }
+    setShowConfirmModal(true);
+
     setIsVerifyingTransaction(false);
   };
 
