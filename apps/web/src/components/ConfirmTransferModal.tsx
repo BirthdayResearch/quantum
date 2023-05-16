@@ -183,7 +183,7 @@ export default function ConfirmTransferModal({
       onClose={() => onClose(false)}
       subtitle={
         typeOfTransaction === FormOptions.QUEUE
-          ? "Transaction will be sent to queue"
+          ? "Transaction will be sent to queue."
           : undefined
       }
     >
