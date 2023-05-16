@@ -34,7 +34,7 @@ function TokenOrNetworkInfo({
         <Image
           width={100}
           height={100}
-          src={token.icon}
+          src={`/tokens/${token.name}.svg`}
           alt={token.name}
           data-testid={`${testId}-icon`}
           className={iconClass ?? "h-8 w-8"}

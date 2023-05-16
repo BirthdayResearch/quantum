@@ -161,7 +161,7 @@ export default function InputSelector({
   const { floating, y, strategy } = floatingObj;
   const roundedBorderStyle =
     type === SelectionType.Network ? "rounded-l-lg" : "rounded-r-lg";
-  const { name, icon } =
+  const { name } =
     type === SelectionType.Network
       ? (value as NetworkOptionsI)
       : (value as TokensI).tokenA;
