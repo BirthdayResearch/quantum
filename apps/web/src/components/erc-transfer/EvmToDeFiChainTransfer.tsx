@@ -248,7 +248,7 @@ export default function EvmToDeFiChainTransfer({
         </Modal>
       )}
 
-      <AlertInfoMessage containerStyle="px-5 py-4 mt-16">
+      <AlertInfoMessage containerStyle="px-5 py-4 mt-14">
         <span className="text-left text-warning text-xs ml-3">
           {DISCLAIMER_MESSAGE}
         </span>
