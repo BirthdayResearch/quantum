@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SkipThrottle } from '@nestjs/throttler';
+
 import {
   Erc20Token,
   Network,
@@ -10,8 +11,7 @@ import {
   SupportedDFCTokenSymbols,
   SupportedEVMTokenSymbols,
   TokensI,
-} from 'src/AppConfig';
-
+} from '../AppConfig';
 import { SettingsModel } from './SettingsInterface';
 
 @Controller('settings')
