@@ -100,7 +100,7 @@ function TokenOptions({ options }: { options: TokensI[] }) {
                       height={100}
                       className="h-6 w-6"
                       data-testid={option.tokenA.name}
-                      src={option.tokenA.icon}
+                      src={`/tokens/${option.tokenA.name}.svg`}
                       alt={option.tokenA.name}
                     />
                     <span className="ml-2 text-base text-dark-1000">
@@ -121,7 +121,7 @@ function TokenOptions({ options }: { options: TokensI[] }) {
                       height={100}
                       className="h-6 w-6"
                       data-testid={option.tokenB.name}
-                      src={option.tokenB.icon}
+                      src={`/tokens/${option.tokenB.name}.svg`}
                       alt={option.tokenB.name}
                     />
                     <span className="ml-2 text-base text-dark-900">
@@ -198,7 +198,7 @@ export default function InputSelector({
                   <Image
                     width={100}
                     height={100}
-                    src={icon}
+                    src={`/tokens/${name}.svg`}
                     alt={name}
                     data-testid={name}
                     className="h-5 w-5 lg:h-6 lg:w-6"

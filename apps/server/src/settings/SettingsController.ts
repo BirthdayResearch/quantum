@@ -4,19 +4,19 @@ import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import {
   Erc20Token,
   Network,
+  NETWORK_TOKENS_LIST,
   NetworkI,
   NetworkOptionsI,
   SupportedDFCTokenSymbols,
   SupportedEVMTokenSymbols,
   TokensI,
-  TokensLists,
 } from 'src/AppConfig';
 
 import { SettingsModel } from './SettingsInterface';
 
 @Controller('settings')
 export class SettingsController {
-  constructor(private configService: ConfigService) {}
+  constructor(private readonly configService: ConfigService) {}
 
   @SkipThrottle()
   @Get()
@@ -62,13 +62,13 @@ export class SettingsController {
     defichain: Array<keyof typeof SupportedDFCTokenSymbols>;
     ethereum: Array<keyof typeof SupportedEVMTokenSymbols>;
   }): [NetworkI<Erc20Token>, NetworkI<string>] {
-    const networkTokenMap = {
+    const supportedTokensPerNetwork = {
       [Network.DeFiChain]: supportedTokens.defichain,
       [Network.Ethereum]: supportedTokens.ethereum,
     };
 
-    return TokensLists.map((network: NetworkOptionsI) => {
-      const supportedNetworkTokens = networkTokenMap[network.name];
+    return NETWORK_TOKENS_LIST.map((network: NetworkOptionsI) => {
+      const supportedNetworkTokens = supportedTokensPerNetwork[network.name];
       const filteredTokens = network.tokens.filter((token: TokensI) =>
         supportedNetworkTokens.some((supportedToken) => supportedToken === token.tokenA.symbol),
       );

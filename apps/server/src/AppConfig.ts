@@ -92,7 +92,6 @@ export interface TokenDetailI<T> {
   name: T;
   subtitle?: string;
   symbol: string;
-  icon: string;
 }
 
 export interface TokensI {
@@ -116,7 +115,7 @@ export interface NetworkI<T> {
   }[];
 }
 
-export const TokensLists: [NetworkI<Erc20Token>, NetworkI<string>] = [
+export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
   {
     name: Network.Ethereum,
     icon: '/tokens/Ethereum.svg',
@@ -126,72 +125,60 @@ export const TokensLists: [NetworkI<Erc20Token>, NetworkI<string>] = [
           name: 'DFI',
           subtitle: '(Ethereum)',
           symbol: 'DFI',
-          icon: '/tokens/DFI.svg',
         },
         tokenB: {
           name: 'DFI',
           symbol: 'DFI',
-          icon: '/tokens/DFI.svg',
         },
       },
       {
         tokenA: {
           name: 'WBTC',
           symbol: 'WBTC',
-          icon: '/tokens/wBTC.svg',
         },
         tokenB: {
           name: 'dBTC',
           symbol: 'BTC',
-          icon: '/tokens/dBTC.svg',
         },
       },
       {
         tokenA: {
           name: 'ETH',
           symbol: 'ETH',
-          icon: '/tokens/ETH.svg',
         },
         tokenB: {
           name: 'dETH',
           symbol: 'ETH',
-          icon: '/tokens/dETH.svg',
         },
       },
       {
         tokenA: {
           name: 'USDT',
           symbol: 'USDT',
-          icon: '/tokens/USDT.svg',
         },
         tokenB: {
           name: 'dUSDT',
           symbol: 'USDT',
-          icon: '/tokens/dUSDT.svg',
         },
       },
       {
         tokenA: {
           name: 'USDC',
           symbol: 'USDC',
-          icon: '/tokens/USDC.svg',
         },
         tokenB: {
           name: 'dUSDC',
           symbol: 'USDC',
-          icon: '/tokens/dUSDC.svg',
         },
       },
       {
         tokenA: {
           name: 'EUROC',
           symbol: 'EUROC',
-          icon: '/tokens/EUROC.svg',
         },
         tokenB: {
           name: 'dEUROC',
           symbol: 'EUROC',
-          icon: '/tokens/dEUROC.svg',
         },
       },
     ],
@@ -204,73 +191,61 @@ export const TokensLists: [NetworkI<Erc20Token>, NetworkI<string>] = [
         tokenA: {
           name: 'DFI',
           symbol: 'DFI',
-          icon: '/tokens/DFI.svg',
         },
         tokenB: {
           name: 'DFI',
           subtitle: '(Ethereum)',
           symbol: 'DFI',
-          icon: '/tokens/DFI.svg',
         },
       },
       {
         tokenA: {
           name: 'dBTC',
           symbol: 'BTC',
-          icon: '/tokens/dBTC.svg',
         },
         tokenB: {
           name: 'WBTC',
           symbol: 'WBTC',
-          icon: '/tokens/wBTC.svg',
         },
       },
       {
         tokenA: {
           name: 'dETH',
           symbol: 'ETH',
-          icon: '/tokens/dETH.svg',
         },
         tokenB: {
           name: 'ETH',
           symbol: 'ETH',
-          icon: '/tokens/ETH.svg',
         },
       },
       {
         tokenA: {
           name: 'dUSDT',
           symbol: 'USDT',
-          icon: '/tokens/dUSDT.svg',
         },
         tokenB: {
           name: 'USDT',
           symbol: 'USDT',
-          icon: '/tokens/USDT.svg',
         },
       },
       {
         tokenA: {
           name: 'dUSDC',
           symbol: 'USDC',
-          icon: '/tokens/dUSDC.svg',
         },
         tokenB: {
           name: 'USDC',
           symbol: 'USDC',
-          icon: '/tokens/USDC.svg',
         },
       },
       {
         tokenA: {
           name: 'dEUROC',
           symbol: 'EUROC',
-          icon: '/tokens/dEUROC.svg',
         },
         tokenB: {
           name: 'EUROC',
           symbol: 'EUROC',
-          icon: '/tokens/EUROC.svg',
         },
       },
     ],
