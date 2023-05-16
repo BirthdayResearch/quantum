@@ -369,7 +369,7 @@ export default function QueueForm({
         <span className="text-dark-900 lg:font-bold font-semibold lg:text-xl text-[16px] leading-5">
           Queue beyond active liquidity
         </span>
-        <span className="lg:text-[16px] lg:leading-5 text-sm text-dark-700 font-desc">
+        <span className="lg:text-[16px] lg:leading-5 text-sm text-dark-700">
           Transactions will be queued and may take up to 72 hours to be
           fulfilled.
         </span>

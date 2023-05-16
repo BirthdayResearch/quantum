@@ -408,7 +408,7 @@ export default function BridgeForm({
         <span className="text-dark-900 lg:font-bold font-semibold lg:text-xl text-[16px] leading-5">
           Bridge your tokens instantly
         </span>
-        <span className="lg:text-[16px] lg:leading-5 text-sm text-dark-700 font-desc">
+        <span className="lg:text-[16px] lg:leading-5 text-sm text-dark-700">
           For transactions within active liquidity.
         </span>
       </section>
