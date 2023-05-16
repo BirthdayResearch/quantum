@@ -132,6 +132,9 @@ importers:
       smartcontracts:
         specifier: workspace:0.0.0
         version: link:../../packages/smartcontracts
+      smartcontracts-queue:
+        specifier: workspace:0.0.0
+        version: link:../../packages/smartcontracts-queue
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
