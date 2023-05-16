@@ -68,10 +68,8 @@ export class SettingsController {
 
     return TokensLists.map((network: NetworkOptionsI) => {
       const supportedNetworkTokens = networkTokenMap[network.name];
-      const filteredTokens = network.tokens.filter(
-        (
-          token: any, // TODO: fix type
-        ) => supportedNetworkTokens.includes(token.tokenA.symbol),
+      const filteredTokens = network.tokens.filter((token: any) =>
+        supportedNetworkTokens.includes(token.tokenA.symbol),
       );
 
       return {

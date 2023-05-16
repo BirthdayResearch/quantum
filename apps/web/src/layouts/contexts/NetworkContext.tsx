@@ -5,10 +5,16 @@ import React, {
   useState,
   useEffect,
 } from "react";
-import { Network, NetworkOptionsI, TokenDetailI, TokensI } from "types";
+import {
+  Network,
+  NetworkOptionsI,
+  TokenDetailI,
+  TokensI,
+  Erc20Token,
+} from "types";
 
 interface NetworkContextI {
-  supportedTokens: any; // TODO:FIX type
+  supportedTokens: [NetworkI<Erc20Token>, NetworkI<string>];
   selectedNetworkA: NetworkOptionsI;
   selectedTokensA: TokensI;
   selectedNetworkB: NetworkOptionsI;
@@ -37,7 +43,7 @@ export function useNetworkContext(): NetworkContextI {
 
 interface NetworkProviderProps {
   children: React.ReactNode;
-  supportedTokens: NetworkOptionsI[];
+  supportedTokens: [NetworkI<Erc20Token>, NetworkI<string>];
 }
 
 export function NetworkProvider({
