@@ -235,3 +235,7 @@ body {
   box-shadow: rgb(55 47 71) 0px 0px 5px inset;
   border-radius: 10px;
 }
+
+.grid-rows-max-content-1fr {
+  grid-template-rows: max-content 1fr;
+}
