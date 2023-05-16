@@ -123,7 +123,7 @@ export default function ConfirmationProgress({
             <div
               style={{ width: `${valuePercentage}%` }}
               className={clsx(
-                "h-full rounded-md mt-1",
+                "h-full rounded-md mt-2",
                 isConfirmed ? "bg-valid" : "bg-brand-100"
               )}
             />

@@ -417,7 +417,7 @@ export default function BridgeForm({
   return (
     <div
       className={clsx(
-        "w-full md:w-[calc(100%+2px)] lg:w-full p-6 md:pt-8 pb-16 lg:p-10",
+        "w-full md:w-[calc(100%+2px)] lg:w-full p-6 pb-10 pt-8 lg:pt-6 lg:p-10",
         "dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl",
         activeTab === FormOptions.INSTANT ? "block" : "hidden"
@@ -446,8 +446,8 @@ export default function BridgeForm({
             isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
           />
           <div className="flex flex-col space-y-7">
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex flex-row items-center">
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row">
                 <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   Amount to transfer
                 </span>
@@ -463,8 +463,8 @@ export default function BridgeForm({
                 trimTrailingZeros
               />
             </div>
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex flex-row items-center">
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row">
                 <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   Destination address
                 </span>
@@ -473,8 +473,8 @@ export default function BridgeForm({
                 {addressInput}
               </span>
             </div>
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex flex-row items-center">
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row">
                 <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   Fees
                 </span>
@@ -493,8 +493,8 @@ export default function BridgeForm({
                 trimTrailingZeros
               />
             </div>
-            <div className="flex flex-row justify-between items-center">
-              <div className="flex flex-row items-center">
+            <div className="flex flex-row justify-between">
+              <div className="flex flex-row">
                 <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   To receive
                 </span>
