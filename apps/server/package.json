@@ -48,7 +48,7 @@
     "ethers": "^5.7.2",
     "joi": "^17.9.2",
     "nestjs-pino": "^3.2.0",
-    "pg": "^8.10.0"
+    "pg": "^8.11.0"
   },
   "devDependencies": {
     "@birthdayresearch/eslint-config": "^0.5.13",

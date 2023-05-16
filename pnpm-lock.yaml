@@ -52,7 +52,7 @@ importers:
         version: 0.45.0
       '@waveshq/walletkit-ui':
         specifier: ^0.45.0
-        version: 0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5)
       async-mutex:
         specifier: ^0.4.0
         version: 0.4.0
@@ -78,8 +78,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0(@nestjs/common@9.4.0)(pino-http@8.3.3)
       pg:
-        specifier: ^8.10.0
-        version: 8.10.0
+        specifier: ^8.11.0
+        version: 8.11.0
     devDependencies:
       '@birthdayresearch/eslint-config':
         specifier: ^0.5.13
@@ -6104,7 +6104,7 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web@0.49.3(@babel/core@7.21.0)(@next/env@13.4.1):
+  /@waveshq/standard-web@0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)(redux@4.2.1):
     resolution: {integrity: sha512-g05TKVl/rG/mt4b6t1bBQUdLwbpzolbCo8LCe9l/KuSLLeImqr3OAKEs23RUPPACifng7e0oEMBzadTajFf+ug==}
     dependencies:
       '@netlify/ipx': 1.4.0
@@ -6118,7 +6118,7 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       react-icons: 4.8.0(react@18.2.0)
-      react-redux: 8.0.5(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
+      react-redux: 8.0.5(@types/react-dom@18.2.1)(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
       react-responsive: 9.0.2(react@18.2.0)
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -6174,12 +6174,12 @@ packages:
       bignumber.js: 9.1.1
     dev: false
 
-  /@waveshq/walletkit-ui@0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5):
+  /@waveshq/walletkit-ui@0.45.0(@babel/core@7.21.0)(@next/env@13.4.1)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5):
     resolution: {integrity: sha512-Kh1i4oHOuqddU8GRyCbImBoEaDJ7Ta0Z+vkOF/DUTVpP1FqlcCXhXb/em9IviQ3WCc897g9dAdZKqDIIrvO79w==}
     dependencies:
       '@birthdayresearch/sticky-jest': 0.5.11(@babel/core@7.21.0)(@types/node@18.16.1)(ts-node@10.9.1)(typescript@4.9.5)
       '@waveshq/standard-defichain-jellyfishsdk': 0.49.3(@types/tar-fs@2.0.1)
-      '@waveshq/standard-web': 0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)
+      '@waveshq/standard-web': 0.49.3(@babel/core@7.21.0)(@next/env@13.4.1)(redux@4.2.1)
       '@waveshq/standard-web-linter': 0.49.3(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.59.5)(@typescript-eslint/parser@5.59.5)(react-dom@18.2.0)(react@18.2.0)
       '@waveshq/walletkit-core': 0.45.0
       bignumber.js: 9.1.1
@@ -13384,8 +13384,14 @@ packages:
     resolution: {integrity: sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==}
     dev: true
 
-  /pg-connection-string@2.5.0:
-    resolution: {integrity: sha512-r5o/V/ORTA6TmUnyWZR9nCj1klXCO2CEKNRlVuJptZe85QuhFayC7WeMic7ndayT5IRIR0S0xFxFi2ousartlQ==}
+  /pg-cloudflare@1.1.0:
+    resolution: {integrity: sha512-tGM8/s6frwuAIyRcJ6nWcIvd3+3NmUKIs6OjviIm1HPPFEt5MzQDOTBQyhPWg/m0kCl95M6gA1JaIXtS8KovOA==}
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /pg-connection-string@2.6.0:
+    resolution: {integrity: sha512-x14ibktcwlHKoHxx9X3uTVW9zIGR41ZB6QNhHb21OPNdCCO3NaRnpJuwKIQSR4u+Yqjx4HCvy7Hh7VSy1U4dGg==}
     dev: false
 
   /pg-int8@1.0.1:
@@ -13393,12 +13399,12 @@ packages:
     engines: {node: '>=4.0.0'}
     dev: false
 
-  /pg-pool@3.6.0(pg@8.10.0):
+  /pg-pool@3.6.0(pg@8.11.0):
     resolution: {integrity: sha512-clFRf2ksqd+F497kWFyM21tMjeikn60oGDmqMT8UBrynEwVEX/5R5xd2sdvdo1cZCFlguORNpVuqxIj+aK4cfQ==}
     peerDependencies:
       pg: '>=8.0'
     dependencies:
-      pg: 8.10.0
+      pg: 8.11.0
     dev: false
 
   /pg-protocol@1.6.0:
@@ -13416,8 +13422,8 @@ packages:
       postgres-interval: 1.2.0
     dev: false
 
-  /pg@8.10.0:
-    resolution: {integrity: sha512-ke7o7qSTMb47iwzOSaZMfeR7xToFdkE71ifIipOAAaLIM0DYzfOAXlgFFmYUIE2BcJtvnVlGCID84ZzCegE8CQ==}
+  /pg@8.11.0:
+    resolution: {integrity: sha512-meLUVPn2TWgJyLmy7el3fQQVwft4gU5NGyvV0XbD41iU9Jbg8lCH4zexhIkihDzVHJStlt6r088G6/fWeNjhXA==}
     engines: {node: '>= 8.0.0'}
     peerDependencies:
       pg-native: '>=3.0.1'
@@ -13427,11 +13433,13 @@ packages:
     dependencies:
       buffer-writer: 2.0.0
       packet-reader: 1.0.0
-      pg-connection-string: 2.5.0
-      pg-pool: 3.6.0(pg@8.10.0)
+      pg-connection-string: 2.6.0
+      pg-pool: 3.6.0(pg@8.11.0)
       pg-protocol: 1.6.0
       pg-types: 2.2.0
       pgpass: 1.0.5
+    optionalDependencies:
+      pg-cloudflare: 1.1.0
     dev: false
 
   /pgpass@1.0.5:
@@ -14123,6 +14131,40 @@ packages:
       prop-types: 15.8.1
       qr.js: 0.0.0
       react: 18.2.0
+    dev: false
+
+  /react-redux@8.0.5(@types/react-dom@18.2.1)(@types/react@18.2.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
+    resolution: {integrity: sha512-Q2f6fCKxPFpkXt1qNRZdEDLlScsDWyrgSj0mliK59qU6W5gvBiKkdMEG2lJzhd1rCctf0hb6EtePPLZ2e0m1uw==}
+    peerDependencies:
+      '@types/react': ^16.8 || ^17.0 || ^18.0
+      '@types/react-dom': ^16.8 || ^17.0 || ^18.0
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+      react-native: '>=0.59'
+      redux: ^4
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+      react-dom:
+        optional: true
+      react-native:
+        optional: true
+      redux:
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.21.0
+      '@types/hoist-non-react-statics': 3.3.1
+      '@types/react': 18.2.0
+      '@types/react-dom': 18.2.1
+      '@types/use-sync-external-store': 0.0.3
+      hoist-non-react-statics: 3.3.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      react-is: 18.2.0
+      redux: 4.2.1
+      use-sync-external-store: 1.2.0(react@18.2.0)
     dev: false
 
   /react-redux@8.0.5(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1):
