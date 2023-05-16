@@ -24,6 +24,11 @@ const config: HardhatUserConfig = {
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111,
     },
+    goerli: {
+      url: process.env.GOERLI_URL || '',
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      chainId: 5,
+    },
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY,
