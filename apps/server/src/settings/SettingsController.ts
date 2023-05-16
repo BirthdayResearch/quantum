@@ -37,6 +37,7 @@ export class SettingsController {
     return settings;
   }
 
+  @SkipThrottle()
   @Get('supportedTokens')
   async getSupportedNetworksTokens(): Promise<[NetworkI<Erc20Token>, NetworkI<string>]> {
     const supportedTokens = this.getSupportedTokens();
