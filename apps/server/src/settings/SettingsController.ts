@@ -8,7 +8,7 @@ import {
   NetworkOptionsI,
   SupportedDFCTokenSymbols,
   SupportedEVMTokenSymbols,
-  SupportedNetworkTokens,
+  TokensLists,
 } from 'src/AppConfig';
 
 import { SettingsModel } from './SettingsInterface';
@@ -22,7 +22,7 @@ export class SettingsController {
   async getSettings(): Promise<SettingsModel> {
     const supportedTokens = this.getSupportedTokens();
 
-    const settings = {
+    const settings: SettingsModel = {
       defichain: {
         transferFee: this.configService.getOrThrow('defichain.transferFee') as `${number}`,
         supportedTokens: supportedTokens.defichain,
@@ -38,14 +38,14 @@ export class SettingsController {
 
   @Get('bridgeSupportedTokens')
   @Throttle(35, 60)
-  async getSupportedToken(): Promise<[NetworkI<Erc20Token>, NetworkI<string>]> {
+  async getSupportedNetworksTokens(): Promise<[NetworkI<Erc20Token>, NetworkI<string>]> {
     const supportedTokens = this.getSupportedTokens();
     return this.filterSupportedNetworkTokens(supportedTokens);
   }
 
   private getSupportedTokens(): {
-    defichain: SupportedDFCTokenSymbols;
-    ethereum: SupportedEVMTokenSymbols;
+    defichain: Array<keyof typeof SupportedDFCTokenSymbols>;
+    ethereum: Array<keyof typeof SupportedEVMTokenSymbols>;
   } {
     const supportedDfcTokens = this.configService.getOrThrow('defichain.supportedTokens').split(',') as Array<
       keyof typeof SupportedDFCTokenSymbols
@@ -60,17 +60,24 @@ export class SettingsController {
   private filterSupportedNetworkTokens(supportedTokens: {
     defichain: Array<keyof typeof SupportedDFCTokenSymbols>;
     ethereum: Array<keyof typeof SupportedEVMTokenSymbols>;
-  }): any {
-    return SupportedNetworkTokens.map((network: NetworkOptionsI) => {
-      const supportedNetworkTokens =
-        network.name === Network.DeFiChain ? supportedTokens.defichain : supportedTokens.ethereum;
+  }): [NetworkI<Erc20Token>, NetworkI<string>] {
+    const networkTokenMap = {
+      [Network.DeFiChain]: supportedTokens.defichain,
+      [Network.Ethereum]: supportedTokens.ethereum,
+    };
 
-      const tokenMatcher = network.tokens.filter((token: any) => supportedNetworkTokens.includes(token.tokenA.symbol));
+    return TokensLists.map((network: NetworkOptionsI) => {
+      const supportedNetworkTokens = networkTokenMap[network.name];
+      const filteredTokens = network.tokens.filter(
+        (
+          token: any, // TODO: fix type
+        ) => supportedNetworkTokens.includes(token.tokenA.symbol),
+      );
 
       return {
         ...network,
-        tokens: tokenMatcher,
+        tokens: filteredTokens,
       };
-    });
+    }) as [NetworkI<Erc20Token>, NetworkI<string>];
   }
 }

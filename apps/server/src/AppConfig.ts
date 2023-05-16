@@ -116,7 +116,7 @@ export interface NetworkI<T> {
   }[];
 }
 
-export const SupportedNetworkTokens: [NetworkI<Erc20Token>, NetworkI<string>] = [
+export const TokensLists: [NetworkI<Erc20Token>, NetworkI<string>] = [
   {
     name: Network.Ethereum,
     icon: '/tokens/Ethereum.svg',
