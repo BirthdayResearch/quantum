@@ -3,14 +3,19 @@ import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
 import MobileBottomMenu from "@components/MobileBottomMenu";
 import { useStorageContext } from "@contexts/StorageContext";
+import { FormOptions } from "@contexts/NetworkContext";
 import Logging from "@api/logging";
 import { getStorageItem } from "@utils/localStorage";
 import { DEFICHAIN_WALLET_URL } from "config/networkUrl";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
-import { FormTab, TabOptions } from "../components/FormTab";
+import QueueForm from "../components/QueueForm";
+import FormTab from "../components/FormTab";
+import { useQueueStorageContext } from "../layouts/contexts/QueueStorageContext";
 
 function Home() {
   const { txnHash } = useStorageContext();
+  // Todo: update to useQueueStorageContext to get the storage for queue
+  const { txnHash: txnHashQueue } = useQueueStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
     useBridgeFormStorageKeys();
 
@@ -31,7 +36,7 @@ function Home() {
     return () => window.removeEventListener("beforeunload", unloadCallback);
   }, [UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY]);
 
-  const [activeTab, setActiveTab] = useState(TabOptions.INSTANT);
+  const [activeTab, setActiveTab] = useState(FormOptions.INSTANT);
 
   return (
     <section className="relative flex flex-col" data-testid="homepage">
@@ -45,9 +50,17 @@ function Home() {
           // Todo : add condition for active tab to switch between <BridgeForm/> and <QueueForm/>
           */}
           <BridgeForm
+            activeTab={activeTab}
             hasPendingTxn={
               txnHash.unconfirmed !== undefined ||
               txnHash.unsentFund !== undefined
+            }
+          />
+          <QueueForm
+            activeTab={activeTab}
+            hasPendingTxn={
+              txnHashQueue.unconfirmed !== undefined ||
+              txnHashQueue.unsentFund !== undefined
             }
           />
         </div>

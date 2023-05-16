@@ -5,7 +5,11 @@ import { FiRefreshCw } from "react-icons/fi";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
-import { networks, useNetworkContext } from "@contexts/NetworkContext";
+import {
+  networks,
+  useNetworkContext,
+  FormOptions,
+} from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import {
   Network,
@@ -44,6 +48,7 @@ import {
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
+import useInputValidation from "../hooks/useInputValidation";
 
 function SwitchButton({
   onClick,
@@ -81,8 +86,10 @@ function SwitchButton({
 
 export default function BridgeForm({
   hasPendingTxn,
+  activeTab,
 }: {
   hasPendingTxn: boolean;
+  activeTab: FormOptions;
 }) {
   const {
     selectedNetworkA,
@@ -197,37 +204,12 @@ export default function BridgeForm({
     setSelectedNetworkA(selectedNetworkB);
   };
 
-  const validateAmountInput = (value: string, maxValue: BigNumber) => {
-    const isSendingToDFC = selectedNetworkB.name === Network.DeFiChain;
-    let err = "";
-    if (isSendingToDFC && new BigNumber(value).gt(maxValue.toFixed(8))) {
-      err = "Insufficient Funds";
-    }
-    if (
-      isSendingToDFC &&
-      new BigNumber(value).lt(
-        new BigNumber(1).dividedBy(new BigNumber(10).pow(8))
-      )
-    ) {
-      err = "Invalid Amount";
-    }
-    setAmountErr(err);
-
-    return err;
-  };
-
-  const onInputChange = (value: string): void => {
-    const numberOnlyRegex = /^\d*\.?\d*$/; // regex to allow only number
-    const maxDpRegex = /^\d*(\.\d{0,5})?$/; // regex to allow only max of 5 dp
-
-    if (
-      value === "" ||
-      (numberOnlyRegex.test(value) && maxDpRegex.test(value))
-    ) {
-      setAmount(value);
-      validateAmountInput(value, maxAmount);
-    }
-  };
+  const { onInputChange, validateAmountInput } = useInputValidation(
+    setAmount,
+    maxAmount,
+    selectedNetworkB,
+    setAmountErr
+  );
 
   const onTransferTokens = async (): Promise<void> => {
     setIsVerifyingTransaction(true);
@@ -437,7 +419,8 @@ export default function BridgeForm({
       className={clsx(
         "w-full md:w-[calc(100%+2px)] lg:w-full p-6 md:pt-8 pb-16 lg:p-10",
         "dark-card-bg-image backdrop-blur-[18px]",
-        "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl"
+        "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl",
+        activeTab === FormOptions.INSTANT ? "block" : "hidden"
       )}
     >
       {txnHash.unconfirmed ||
@@ -531,7 +514,19 @@ export default function BridgeForm({
         </>
       ) : (
         <>
-          <div className="flex flex-row items-center" ref={reference}>
+          <section className="flex flex-col lg:px-5 px-3 gap-y-1">
+            <span className="text-dark-900 lg:font-bold font-semibold lg:text-xl text-[16px] leading-5">
+              Bridge your tokens instantly
+            </span>
+            <span className="lg:text-[16px] lg:leading-5 text-sm text-dark-700">
+              For transactions within active liquidity.
+            </span>
+          </section>
+
+          <div
+            className="flex flex-row items-center lg:mt-10 md:mt-8 mt-6"
+            ref={reference}
+          >
             <div className="w-1/2">
               <InputSelector
                 label="Source Network"
@@ -560,7 +555,7 @@ export default function BridgeForm({
             </div>
           </div>
           <div className="mt-4">
-            <span className="pl-4 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-sm">
+            <span className="pl-3 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-sm">
               Amount to transfer
             </span>
             <QuickInputCard
@@ -737,9 +732,14 @@ export default function BridgeForm({
         )}
 
         {!isBalanceSufficient && !hasPendingTxn && (
-          <div className={clsx("pt-3", warningTextStyle)}>
-            Unable to process due to liquidity cap, please try again in a few
-            hours
+          <div className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}>
+            <span className="text-dark-700">
+              Amount entered exceeds active liquidity. Use&nbsp;
+            </span>
+            <span className="text-dark-1000 font-semibold">Queue</span>
+            <span className="text-dark-700">
+              &nbsp;or lower the transaction amount.
+            </span>
           </div>
         )}
       </div>
