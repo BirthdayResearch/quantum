@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { SkipThrottle } from '@nestjs/throttler';
 import {
   Erc20Token,
   Network,
@@ -38,7 +38,6 @@ export class SettingsController {
   }
 
   @Get('supportedTokens')
-  @Throttle(35, 60)
   async getSupportedNetworksTokens(): Promise<[NetworkI<Erc20Token>, NetworkI<string>]> {
     const supportedTokens = this.getSupportedTokens();
     return this.filterSupportedNetworkTokens(supportedTokens);
