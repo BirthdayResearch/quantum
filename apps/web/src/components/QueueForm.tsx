@@ -376,7 +376,7 @@ export default function QueueForm({
       </section>
 
       <div className="lg:mt-10 md:mt-8 mt-6">
-        <span className="pl-3 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-sm">
+        <span className="pl-3 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-sm tracking-normal lg:tracking-[0.02em] ">
           Amount to transfer
         </span>
         <QuickInputCard
