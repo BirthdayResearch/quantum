@@ -15,14 +15,14 @@ import {
 
 interface NetworkContextI {
   supportedTokens: [NetworkI<Erc20Token>, NetworkI<string>];
-  selectedNetworkA: NetworkOptionsI;
-  selectedTokensA: TokensI;
-  selectedNetworkB: NetworkOptionsI;
-  selectedTokensB: TokensI;
-  setSelectedNetworkA: (networkA: NetworkOptionsI) => void;
-  setSelectedTokensA: (tokenA: TokensI) => void;
-  setSelectedNetworkB: (networkB: NetworkOptionsI) => void;
-  setSelectedTokensB: (tokenB: TokensI) => void;
+  selectedNetworkA: NetworkOptionsI | null;
+  selectedTokensA: TokensI | null;
+  selectedNetworkB: NetworkOptionsI | null;
+  selectedTokensB: TokensI | null;
+  setSelectedNetworkA: (networkA: NetworkOptionsI | null) => void;
+  setSelectedTokensA: (tokenA: TokensI | null) => void;
+  setSelectedNetworkB: (networkB: NetworkOptionsI | null) => void;
+  setSelectedTokensB: (tokenB: TokensI | null) => void;
   resetNetworkSelection: () => void;
 }
 
@@ -50,47 +50,54 @@ export function NetworkProvider({
   children,
   supportedTokens,
 }: NetworkProviderProps): JSX.Element | null {
-  const [defaultNetworkA, defaultNetworkB] = supportedTokens;
+  // Provide defaults if no supportedTokens are passed in.
+  const [defaultNetworkA = null, defaultNetworkB = null] =
+    supportedTokens || [];
+
   const [selectedNetworkA, setSelectedNetworkA] =
-    useState<NetworkOptionsI>(defaultNetworkA);
-  const [selectedTokensA, setSelectedTokensA] = useState<TokensI>(
-    defaultNetworkA.tokens[0]
+    useState<NetworkOptionsI | null>(defaultNetworkA);
+  const [selectedTokensA, setSelectedTokensA] = useState<TokensI | null>(
+    defaultNetworkA?.tokens[0] || null
   );
   const [selectedNetworkB, setSelectedNetworkB] =
-    useState<NetworkOptionsI>(defaultNetworkB);
-  const [selectedTokensB, setSelectedTokensB] = useState<TokensI>(
-    defaultNetworkB.tokens[0]
+    useState<NetworkOptionsI | null>(defaultNetworkB);
+  const [selectedTokensB, setSelectedTokensB] = useState<TokensI | null>(
+    defaultNetworkB?.tokens[0] || null
   );
 
   useEffect(() => {
-    const networkB = supportedTokens.find(
-      (network) => network.name !== selectedNetworkA.name
-    );
-    if (networkB !== undefined) {
-      setSelectedNetworkB(networkB);
-      const tokens = selectedNetworkA.tokens.find(
-        (item) => item.tokenA.name === selectedTokensB.tokenA.name
+    if (supportedTokens) {
+      const networkB = supportedTokens.find(
+        (network) => network.name !== selectedNetworkA?.name
       );
-      if (tokens !== undefined) {
-        setSelectedTokensA(tokens);
+      if (networkB !== undefined) {
+        setSelectedNetworkB(networkB);
+        const tokens = selectedNetworkA?.tokens.find(
+          (item) => item.tokenA.name === selectedTokensB?.tokenA.name
+        );
+        if (tokens !== undefined) {
+          setSelectedTokensA(tokens);
+        }
       }
     }
-  }, [selectedNetworkA]);
+  }, [selectedNetworkA, supportedTokens]);
 
   useEffect(() => {
-    const tokens = selectedNetworkB.tokens.find(
-      (item) => item.tokenA.name === selectedTokensA.tokenB.name
-    );
-    if (tokens !== undefined) {
-      setSelectedTokensB(tokens);
+    if (supportedTokens) {
+      const tokens = selectedNetworkB?.tokens.find(
+        (item) => item.tokenA.name === selectedTokensA?.tokenB.name
+      );
+      if (tokens !== undefined) {
+        setSelectedTokensB(tokens);
+      }
     }
-  }, [selectedTokensA]);
+  }, [selectedTokensA, supportedTokens]);
 
   const resetNetworkSelection = () => {
     setSelectedNetworkA(defaultNetworkA);
-    setSelectedTokensA(defaultNetworkA.tokens[0]);
+    setSelectedTokensA(defaultNetworkA?.tokens[0] || null);
     setSelectedNetworkB(defaultNetworkB);
-    setSelectedTokensB(defaultNetworkB.tokens[0]);
+    setSelectedTokensB(defaultNetworkB?.tokens[0] || null);
   };
 
   const context: NetworkContextI = useMemo(
