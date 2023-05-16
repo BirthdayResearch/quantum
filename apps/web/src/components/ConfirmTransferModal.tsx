@@ -214,7 +214,7 @@ export default function ConfirmTransferModal({
               <IconTooltip
                 title={PROCESSING_TIME_INFO.title}
                 content={PROCESSING_TIME_INFO.content}
-                position="right"
+                position="top"
               />
             </div>
           </div>
@@ -232,7 +232,7 @@ export default function ConfirmTransferModal({
             <IconTooltip
               title={FEES_INFO.title}
               content={FEES_INFO.content}
-              position="right"
+              position="top"
             />
           </div>
         </div>
