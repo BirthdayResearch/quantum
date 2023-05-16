@@ -8,6 +8,7 @@ import {
   NetworkOptionsI,
   SupportedDFCTokenSymbols,
   SupportedEVMTokenSymbols,
+  TokensI,
   TokensLists,
 } from 'src/AppConfig';
 
@@ -68,8 +69,8 @@ export class SettingsController {
 
     return TokensLists.map((network: NetworkOptionsI) => {
       const supportedNetworkTokens = networkTokenMap[network.name];
-      const filteredTokens = network.tokens.filter((token: any) =>
-        supportedNetworkTokens.includes(token.tokenA.symbol),
+      const filteredTokens = network.tokens.filter((token: TokensI) =>
+        supportedNetworkTokens.some((supportedToken) => supportedToken === token.tokenA.symbol),
       );
 
       return {
