@@ -118,7 +118,7 @@ export function QuickInputCard({
   return (
     <div
       className={clsx(
-        "relative w-full outline-0 group  rounded-lg mt-1 lg:mt-2 border",
+        "relative w-full outline-0 group rounded-lg mt-1 lg:mt-2 border",
         { "pointer-events-none bg-dark-100": disabled },
         error === ""
           ? "border-dark-300 hover:border-dark-500 focus-within:!border-transparent focus-within:before:dark-gradient-2 focus-within:before:-inset-[1px] focus-within:before:rounded-lg focus-within:before:p-px"

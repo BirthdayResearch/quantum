@@ -210,7 +210,7 @@ export default function InputSelector({
             >
               <div
                 className={clsx(
-                  " flex h-full w-full flex-row items-center justify-between py-2.5 px-3 text-left lg:px-4 lg:py-3.5",
+                  "flex h-full w-full flex-row items-center justify-between py-2.5 px-3 text-left lg:px-4 lg:py-3.5",
                   roundedBorderStyle,
                   isWithQuickInputCard
                     ? "bg-transparent"
