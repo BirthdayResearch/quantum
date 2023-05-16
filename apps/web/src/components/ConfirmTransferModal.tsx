@@ -130,23 +130,22 @@ export default function ConfirmTransferModal({
   useDisableEscapeKey(show);
 
   const [fee, feeSymbol] = useTransferFee(amount);
+  let formSelectedNetworkA;
+  let formSelectedNetworkB;
+  let formSelectedTokensA;
+  let formSelectedTokensB;
 
-  const formSelectedNetworkA =
-    typeOfTransaction === FormOptions.INSTANT
-      ? selectedNetworkA
-      : selectedQueueNetworkA;
-  const formSelectedNetworkB =
-    typeOfTransaction === FormOptions.INSTANT
-      ? selectedNetworkB
-      : selectedQueueNetworkB;
-  const formSelectedTokensA =
-    typeOfTransaction === FormOptions.INSTANT
-      ? selectedTokensA
-      : selectedQueueTokensA;
-  const formSelectedTokensB =
-    typeOfTransaction === FormOptions.INSTANT
-      ? selectedTokensB
-      : selectedQueueTokensB;
+  if (typeOfTransaction === FormOptions.INSTANT) {
+    formSelectedNetworkA = selectedNetworkA;
+    formSelectedNetworkB = selectedNetworkB;
+    formSelectedTokensA = selectedTokensA;
+    formSelectedTokensB = selectedTokensB;
+  } else {
+    formSelectedNetworkA = selectedQueueNetworkA;
+    formSelectedNetworkB = selectedQueueNetworkB;
+    formSelectedTokensA = selectedQueueTokensA;
+    formSelectedTokensB = selectedQueueTokensB;
+  }
 
   // Direction of transfer
   const isSendingToDFC = formSelectedNetworkB.name === Network.DeFiChain;
