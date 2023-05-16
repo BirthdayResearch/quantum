@@ -10,7 +10,7 @@ import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 import { FormTab, TabOptions } from "../components/FormTab";
 
 function Home() {
-  const { txnHash, setStorage } = useStorageContext();
+  const { txnHash } = useStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
     useBridgeFormStorageKeys();
 

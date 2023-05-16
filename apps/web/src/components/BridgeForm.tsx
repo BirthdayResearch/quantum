@@ -446,11 +446,6 @@ export default function BridgeForm({
       txnHash.unsentFund ? (
         <>
           <TransactionStatus
-            onClose={() => {
-              setStorage("confirmed", null);
-              setStorage("allocationTxnHash", null);
-              setStorage("reverted", null);
-            }}
             txnHash={
               txnHash.unsentFund ??
               txnHash.reverted ??

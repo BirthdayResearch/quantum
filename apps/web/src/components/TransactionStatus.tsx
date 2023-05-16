@@ -31,7 +31,6 @@ export default function TransactionStatus({
   numberOfDfcConfirmations,
   allocationTxnHash,
   txnHash,
-  onClose,
 }: {
   isConfirmed: boolean;
   isApiSuccess: boolean;
@@ -43,7 +42,6 @@ export default function TransactionStatus({
   numberOfDfcConfirmations: string;
   allocationTxnHash?: string;
   txnHash: string | undefined;
-  onClose: () => void;
 }) {
   const { ExplorerURL } = useContractContext();
   const { isLg, isMd } = useResponsive();
