@@ -1,30 +1,35 @@
 import clsx from "clsx";
 import React, { Dispatch, SetStateAction } from "react";
-
-// queue and instant tab options
-export enum TabOptions {
-  INSTANT = "Instant",
-  QUEUE = "Queue",
-}
+import { FormOptions, useNetworkContext } from "@contexts/NetworkContext";
 
 function Tab({
   label,
   activeTab,
   setActiveTab,
 }: {
-  label: TabOptions;
-  activeTab: TabOptions;
-  setActiveTab: Dispatch<SetStateAction<TabOptions>>;
+  label: FormOptions;
+  activeTab: FormOptions;
+  setActiveTab: Dispatch<SetStateAction<FormOptions>>;
 }) {
+  const { setTypeOfTransaction } = useNetworkContext();
+  function setFormTransactionType(formTabOptions: FormOptions) {
+    setTypeOfTransaction(
+      FormOptions.INSTANT === formTabOptions
+        ? FormOptions.INSTANT
+        : FormOptions.QUEUE
+    );
+  }
+
   return (
     <button
       type="button"
       onClick={() => {
         setActiveTab(label);
+        setFormTransactionType(label);
       }}
       className={clsx(
         "py-[17px] relative border-dark-200 w-full",
-        label === TabOptions.INSTANT ? "border-r-[0.5px]" : "border-l-[0.5px]"
+        label === FormOptions.INSTANT ? "border-r-[0.5px]" : "border-l-[0.5px]"
       )}
     >
       <span
@@ -44,12 +49,12 @@ function Tab({
   );
 }
 
-export function FormTab({
+export default function FormTab({
   activeTab,
   setActiveTab,
 }: {
-  activeTab: TabOptions;
-  setActiveTab: Dispatch<SetStateAction<TabOptions>>;
+  activeTab: FormOptions;
+  setActiveTab: Dispatch<SetStateAction<FormOptions>>;
 }) {
   return (
     <section
@@ -62,13 +67,13 @@ export function FormTab({
     >
       <Tab
         data-testid="instant-tab"
-        label={TabOptions.INSTANT}
+        label={FormOptions.INSTANT}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
       <Tab
         data-testid="queue-tab"
-        label={TabOptions.QUEUE}
+        label={FormOptions.QUEUE}
         activeTab={activeTab}
         setActiveTab={setActiveTab}
       />
