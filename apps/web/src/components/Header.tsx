@@ -8,9 +8,9 @@ import Banner from "./Banner";
 import Navigation from "./Navigation";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
-import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import TransactionInProgressModal from "./queue/TransactionInProgressModal";
+import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
 
 export default function Header({
   isBridgeUp,
