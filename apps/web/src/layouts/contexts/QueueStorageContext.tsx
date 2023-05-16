@@ -13,7 +13,7 @@ import { useNetworkEnvironmentContext } from "./NetworkEnvironmentContext";
 
 type StorageKey =
   | "confirmed-queue"
-  | "allocationTxnHash-queue"
+  | "allocation-txn-hash-queue"
   | "unconfirmed-queue"
   | "reverted-queue"
   | "unsent-fund-queue"
@@ -84,15 +84,6 @@ export function QueueStorageProvider({
       getStorageItem<UnconfirmedQueueTxnI>(QUEUE_TXN_KEY) ?? undefined;
     setQueueTxnForm(txnFormStorage);
 
-    // DFC -> EVM
-    const dfcAddressStorage =
-      getStorageItem<string>(QUEUE_DFC_ADDR_KEY) ?? undefined;
-    const dfcAddressDetailsStorage =
-      getStorageItem<AddressDetails>(QUEUE_DFC_ADDR_DETAILS_KEY) ?? undefined;
-
-    setDfcQueueAddress(dfcAddressStorage);
-    setDfcQueueAddressDetails(dfcAddressDetailsStorage);
-
     // EVM -> DFC
     const unconfirmedTxnHashKeyStorage =
       getStorageItem<string>(UNCONFIRMED_QUEUE_TXN_HASH_KEY) ?? undefined;
@@ -137,7 +128,7 @@ export function QueueStorageProvider({
           setUnsentQueueFundTxnHashKey(value);
           setStorageItem(UNSENT_QUEUE_FUND_TXN_HASH_KEY, value);
           break;
-        case "allocationTxnHash-queue":
+        case "allocation-txn-hash-queue":
           setStorageItem(QUEUE_ALLOCATION_TXN_HASH_KEY, value);
           break;
         case "dfc-address-queue":
@@ -163,25 +154,34 @@ export function QueueStorageProvider({
 
     const getStorage = (key: StorageKey) => {
       let value;
-
-      if (key === "confirmed-queue") {
-        value = confirmedQueueTxnHashKey;
-      } else if (key === "unconfirmed-queue") {
-        value = unconfirmedQueueTxnHashKey;
-      } else if (key === "allocationTxnHash-queue") {
-        value = allocationQueueTxnHashKey;
-      } else if (key === "unsent-fund-queue") {
-        value = unsentQueueFundTxnHashKey;
-      } else if (key === "reverted-queue") {
-        value = revertedQueueTxnHashKey;
-      } else if (key === "dfc-address-queue") {
-        value = dfcQueueAddress;
-      } else if (key === "dfc-address-details-queue") {
-        value = dfcQueueAddressDetails;
-      } else if (key === "txn-form-queue") {
-        value = queueTxnForm;
+      switch (key) {
+        case "confirmed-queue":
+          value = confirmedQueueTxnHashKey;
+          break;
+        case "unconfirmed-queue":
+          value = unconfirmedQueueTxnHashKey;
+          break;
+        case "allocation-txn-hash-queue":
+          value = allocationQueueTxnHashKey;
+          break;
+        case "unsent-fund-queue":
+          value = unsentQueueFundTxnHashKey;
+          break;
+        case "reverted-queue":
+          value = revertedQueueTxnHashKey;
+          break;
+        case "dfc-address-queue":
+          value = dfcQueueAddress;
+          break;
+        case "dfc-address-details-queue":
+          value = dfcQueueAddressDetails;
+          break;
+        case "txn-form-queue":
+          value = queueTxnForm;
+          break;
+        default:
+        // no action needed ( using switch as switch faster than if else )
       }
-
       return value;
     };
     return {

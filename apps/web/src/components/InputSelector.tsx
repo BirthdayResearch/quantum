@@ -184,7 +184,7 @@ export default function InputSelector({
   return (
     <div>
       {label && (
-        <span className="text-dark-900 pl-4 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider">
+        <span className="text-dark-900 pl-3 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider">
           {label}
         </span>
       )}
@@ -210,7 +210,7 @@ export default function InputSelector({
             >
               <div
                 className={clsx(
-                  " flex h-full w-full flex-row items-center justify-between py-2.5 px-3 text-left lg:px-4 lg:py-3.5",
+                  "flex h-full w-full flex-row items-center justify-between py-2.5 px-3 text-left lg:px-4 lg:py-3.5",
                   roundedBorderStyle,
                   isWithQuickInputCard
                     ? "bg-transparent"

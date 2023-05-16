@@ -187,7 +187,7 @@ export default function WalletAddressInput({
             isPrimary,
         })}
       >
-        <span className="pl-5 text-xs font-semibold xl:tracking-wider lg:text-sm text-dark-900">
+        <span className="pl-3 text-xs font-semibold xl:tracking-wider lg:text-sm text-dark-900">
           {label}
         </span>
         {/*  Network environment */}

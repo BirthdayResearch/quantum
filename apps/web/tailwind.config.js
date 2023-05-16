@@ -9,7 +9,6 @@ module.exports = {
   theme: {
     fontFamily: {
       sans: ['"Space Grotesk"', "sans-serif"],
-      desc: ['"Montserrat"', "sans-serif"],
     },
     screens: {
       xs: "390px", // Mobile - Large
