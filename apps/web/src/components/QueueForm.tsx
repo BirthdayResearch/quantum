@@ -514,11 +514,7 @@ export default function QueueForm({
         )}
 
         {isBalanceSufficient && !hasPendingTxn && amount !== "" && (
-          <div
-            className={clsx(
-              "lg:pt-5 md:pt-4 pt-[15px] text-center lg:text-sm text-xs"
-            )}
-          >
+          <div className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}>
             <span className="text-dark-700">
               Amount entered is within the active limit. Use&nbsp;
             </span>
