@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js";
 import { FiArrowUpRight } from "react-icons/fi";
 import { RiLoader2Line } from "react-icons/ri";
-import { IoCloseOutline, IoCheckmarkCircle } from "react-icons/io5";
+import { IoCheckmarkCircle } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
@@ -220,7 +220,7 @@ export default function TransactionStatus({
                 />
               )}
 
-              {(dfcTxnStatusIsConfirmed && allocationTxnHash) || isConfirmed ? (
+              {(allocationTxnHash && dfcTxnStatusIsConfirmed) || isConfirmed ? (
                 <a
                   className={clsx(
                     "flex flex-row items-center hover:opacity-70",
