@@ -27,6 +27,7 @@ import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
   ETHEREUM_SYMBOL,
   FEES_INFO,
+  EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import {
   useNetworkContext,
@@ -34,6 +35,7 @@ import {
 } from "../layouts/contexts/NetworkContext";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import useInputValidation from "../hooks/useInputValidation";
+import QueueTransactionStatus from "./QueueTransactionStatus";
 
 export default function QueueForm({
   hasPendingTxn,
