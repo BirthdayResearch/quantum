@@ -85,7 +85,7 @@ interface NetworkProviderProps {
 
 export function NetworkProvider({
   children,
-  supportedTokens,
+  supportedTokens = FALLBACK_NETWORK_TOKENS_LIST,
 }: PropsWithChildren<NetworkProviderProps>): JSX.Element | null {
   const supportedNetworksTokens =
     supportedTokens.length > 0 ? supportedTokens : FALLBACK_NETWORK_TOKENS_LIST;
