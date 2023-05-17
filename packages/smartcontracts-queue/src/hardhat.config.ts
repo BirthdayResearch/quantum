@@ -32,11 +32,28 @@ const config: HardhatUserConfig = {
     artifacts: './artifacts',
     cache: './cache',
   },
+  gasReporter: {
+    currency: 'USD',
+    // To enable gas report, set enabled to true
+    enabled: false,
+    gasPriceApi: process.env.ETHERSCAN_API,
+    coinmarketcap: process.env.COINMARKET_API,
+  },
   networks: {
     sepolia: {
       url: process.env.SEPOLIA_URL || '',
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
       chainId: 11155111,
+    },
+    goerli: {
+      url: process.env.GOERLI_URL || '',
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      chainId: 5,
+    },
+    mainnet: {
+      url: process.env.MAINNET_URL || '',
+      accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
+      chainId: 1,
     },
   },
   etherscan: {
