@@ -8,6 +8,7 @@
     "dist"
   ],
   "scripts": {
+    "postinstall": "pnpm run generate:contract-types",
     "build": "pnpm run generate:contract-types && tsc -b ./tsconfig.build.json",
     "build:docker": "docker build -t bridge-packages/hardhatnetwork-queue:0.0.0 .",
     "generate:contract-types": "hardhat compile --config ./src/hardhat.config.ts",
