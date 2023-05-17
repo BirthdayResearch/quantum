@@ -44,7 +44,7 @@
     "ethers": "~5.7.2",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
-    "@birthdayresearch/sticky-typescript": "^0.5.7",
+    "@birthdayresearch/sticky-typescript": "^0.5.13",
     "dotenv": "^16.0.3"
   },
   "prettier": "@birthdayresearch/sticky-prettier",

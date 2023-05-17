@@ -4,7 +4,7 @@ import { DeFiChainTransactionStatus, EthereumTransactionStatus, Prisma, QueueSta
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
-import { BridgeV1, BridgeV1__factory, ERC20__factory } from 'smartcontracts';
+import { BridgeQueue, BridgeQueue__factory, ERC20__factory } from 'smartcontracts-queue';
 
 import { DeFiChainTransactionService } from '../../../defichain/services/DeFiChainTransactionService';
 import { ETHERS_RPC_PROVIDER } from '../../../modules/EthersModule';
@@ -17,7 +17,7 @@ import { OrderBy, Queue, VerifyQueueTransactionDto } from '../model/Queue';
 
 @Injectable()
 export class QueueService {
-  private contract: BridgeV1;
+  private contract: BridgeQueue;
 
   private contractAddress: string;
 
@@ -38,7 +38,7 @@ export class QueueService {
   ) {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
     this.contractAddress = this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.address');
-    this.contract = BridgeV1__factory.connect(this.contractAddress, this.ethersRpcProvider);
+    this.contract = BridgeQueue__factory.connect(this.contractAddress, this.ethersRpcProvider);
   }
 
   async getQueue(transactionHash: string, status?: QueueStatus): Promise<Queue> {
