@@ -105,13 +105,7 @@ export default function ConfirmationProgress({
         <div>
           <div className="flex text-sm text-dark-700">
             {isApiSuccess || isConfirmed ? (
-              <span
-                className={clsx("font-semibold text-brand-100", {
-                  "text-valid": isConfirmed,
-                  "text-warning": isReverted,
-                  "text-error": isUnsentFund,
-                })}
-              >
+              <span className="font-semibold text-dark-1000">
                 {`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}\u00A0`}
               </span>
             ) : (

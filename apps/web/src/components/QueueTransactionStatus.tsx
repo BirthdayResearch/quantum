@@ -10,11 +10,7 @@ import { HttpStatusCode } from "axios";
 import useTimeout from "@hooks/useSetTimeout";
 import { useQueueStorageContext } from "@contexts/QueueStorageContext";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
-import {
-  CONFIRMATIONS_BLOCK_TOTAL,
-  DFC_CONFIRMATIONS_BLOCK_TOTAL,
-  EVM_CONFIRMATIONS_BLOCK_TOTAL,
-} from "../constants";
+import { EVM_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
 import { useContractContext } from "../layouts/contexts/ContractContext";
@@ -26,9 +22,7 @@ export default function QueueTransactionStatus({
   isReverted,
   isUnsentFund,
   ethTxnStatusIsConfirmed,
-  dfcTxnStatusIsConfirmed,
   numberOfEvmConfirmations,
-  numberOfDfcConfirmations,
   allocationTxnHash,
   txnHash,
 }: {
@@ -37,9 +31,7 @@ export default function QueueTransactionStatus({
   isReverted: boolean;
   isUnsentFund: boolean;
   ethTxnStatusIsConfirmed: boolean;
-  dfcTxnStatusIsConfirmed: boolean;
   numberOfEvmConfirmations: string;
-  numberOfDfcConfirmations: string;
   allocationTxnHash?: string;
   txnHash: string | undefined;
 }) {
@@ -56,14 +48,13 @@ export default function QueueTransactionStatus({
   const [isRetrying, setIsRetrying] = useState(false);
 
   const confirmationBlocksCurrent = BigNumber.min(
-    CONFIRMATIONS_BLOCK_TOTAL,
-    new BigNumber(numberOfEvmConfirmations).plus(numberOfDfcConfirmations)
+    EVM_CONFIRMATIONS_BLOCK_TOTAL,
+    new BigNumber(numberOfEvmConfirmations)
   ).toFixed();
 
   const [throttledTimeOut] = useTimeout(() => {
     setIsThrottleLimitReached(false);
   }, 60000);
-
   useEffect(() => {
     if (isUnsentFund) {
       setTitle("Transaction failed");
@@ -77,11 +68,13 @@ export default function QueueTransactionStatus({
       );
     } else if (isConfirmed) {
       setTitle("Transaction confirmed");
-      setDescription("Expect to receive your tokens in your wallet shortly.");
+      setDescription(
+        "Please wait for a few seconds while we generate your Queue transaction."
+      );
     } else {
       setTitle("Awaiting confirmation");
       setDescription(
-        "Processing transactions on both Ethereum and DeFiChain. Once confirmed, each corresponding transaction will be posted."
+        "Please wait as we are processing your transaction. Once completed, it will be added to Queue."
       );
     }
   }, [isConfirmed, isReverted, isUnsentFund]);
@@ -132,13 +125,13 @@ export default function QueueTransactionStatus({
       {!isLg && !isUnsentFund && (
         <div className="pb-6">
           <ConfirmationProgress
-            confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
+            confirmationBlocksTotal={EVM_CONFIRMATIONS_BLOCK_TOTAL}
             confirmationBlocksCurrent={confirmationBlocksCurrent}
             isConfirmed={isConfirmed}
             isReverted={isReverted}
             isUnsentFund={isUnsentFund}
             isApiSuccess={isApiSuccess}
-            txnType="confirmations"
+            txnType="Ethereum"
           />
         </div>
       )}
@@ -155,96 +148,7 @@ export default function QueueTransactionStatus({
             className={clsx("flex mt-6 text-xs lg:text-base lg:leading-5", {
               "lg:mt-11": isConfirmed,
             })}
-          >
-            <div className="flex whitespace-nowrap items-center">
-              {ethTxnStatusIsConfirmed || allocationTxnHash || isConfirmed ? (
-                <IoCheckmarkCircle
-                  size={16}
-                  className={clsx("inline-block ml-1 mr-1.5", {
-                    "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
-                    "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
-                  })}
-                />
-              ) : (
-                <RiLoader2Line
-                  size={16}
-                  className="inline-block animate-spin mr-1"
-                />
-              )}
-              {(!ethTxnStatusIsConfirmed && !allocationTxnHash) ||
-              !isConfirmed ? (
-                `Ethereum (${numberOfEvmConfirmations}/${EVM_CONFIRMATIONS_BLOCK_TOTAL})`
-              ) : (
-                <a
-                  className={clsx(
-                    "flex flex-row items-center hover:opacity-70",
-                    { "font-semibold": isConfirmed }
-                  )}
-                  href={`${ExplorerURL}/tx/${txnHash}`}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  {is2xl ? (
-                    allocationTxnHash && (
-                      <div className="flex">
-                        View Etherscan
-                        <FiArrowUpRight size={20} className="ml-1" />
-                      </div>
-                    )
-                  ) : (
-                    <div className="flex">
-                      <span className="flex items-center">Etherscan</span>
-                      <FiArrowUpRight size={20} className="ml-1" />
-                    </div>
-                  )}
-                </a>
-              )}
-            </div>
-            <span className="text-dark-300 mx-2">•</span>
-            <div className="flex whitespace-nowrap items-center">
-              {!(ethTxnStatusIsConfirmed || isConfirmed) ||
-              allocationTxnHash ? (
-                <IoCheckmarkCircle
-                  size={16}
-                  className={clsx("inline-block ml-1 mr-1.5", {
-                    "text-valid": ethTxnStatusIsConfirmed || isConfirmed,
-                    "text-dark-300": !(ethTxnStatusIsConfirmed || isConfirmed),
-                  })}
-                />
-              ) : (
-                <RiLoader2Line
-                  size={16}
-                  className="inline-block animate-spin mr-1"
-                />
-              )}
-
-              {!(dfcTxnStatusIsConfirmed || isConfirmed)
-                ? `DeFiChain (${numberOfDfcConfirmations}/${DFC_CONFIRMATIONS_BLOCK_TOTAL})`
-                : allocationTxnHash && (
-                    <a
-                      className={clsx(
-                        "flex flex-row items-center hover:opacity-70",
-                        { "font-semibold": isConfirmed }
-                      )}
-                      href={getTransactionUrl(allocationTxnHash)}
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      {is2xl ? (
-                        <div className="flex">
-                          View DeFiScan
-                          <FiArrowUpRight size={20} className="ml-1" />
-                        </div>
-                      ) : (
-                        <div className="flex">
-                          <span className="flex items-center">DeFiScan</span>
-                          <FiArrowUpRight size={20} className="ml-1" />
-                        </div>
-                      )}
-                    </a>
-                  )}
-            </div>
-          </div>
+          ></div>
         </div>
         {isUnsentFund && (
           <ActionButton
@@ -260,7 +164,7 @@ export default function QueueTransactionStatus({
         {isLg && !isUnsentFund && (
           <div className="flex flex-row pl-8">
             <ConfirmationProgress
-              confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
+              confirmationBlocksTotal={EVM_CONFIRMATIONS_BLOCK_TOTAL}
               confirmationBlocksCurrent={confirmationBlocksCurrent}
               isConfirmed={isConfirmed}
               isReverted={isReverted}

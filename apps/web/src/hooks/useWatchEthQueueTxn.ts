@@ -1,5 +1,5 @@
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import { useStorageContext } from "@contexts/StorageContext";
+import { useQueueStorageContext } from "@contexts/QueueStorageContext";
 import {
   //   useAllocateDfcFundMutation,
   useConfirmEthQueueTxnMutation,
@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
  */
 export default function useWatchEthQueueTxn() {
   const { networkEnv } = useNetworkEnvironmentContext();
-  const { txnHash, setStorage } = useStorageContext();
+  const { txnHash, setStorage } = useQueueStorageContext();
 
   const [confirmEthQueueTxn] = useConfirmEthQueueTxnMutation();
 
@@ -53,20 +53,20 @@ export default function useWatchEthQueueTxn() {
         setIsQueueApiSuccess(true);
       } catch ({ data }) {
         if (data?.error?.includes("Fund already allocated")) {
-          setStorage("confirmed", unconfirmed ?? null);
-          setStorage("unconfirmed", null);
-          setStorage("txn-form", null);
+          setStorage("confirmed-queue", unconfirmed ?? null);
+          setStorage("unconfirmed-queue", null);
+          setStorage("txn-form-queue", null);
         } else if (
           data?.error?.includes("There is a problem in allocating fund")
         ) {
-          setStorage("unsent-fund", unconfirmed ?? null);
-          setStorage("unconfirmed", null);
+          setStorage("unsent-fund-queue", unconfirmed ?? null);
+          setStorage("unconfirmed-queue", null);
         } else if (
           data?.statusCode === HttpStatusCode.BadRequest &&
           data?.message === "Transaction Reverted"
         ) {
-          setStorage("reverted", unconfirmed ?? null);
-          setStorage("unconfirmed", null);
+          setStorage("reverted-queue", unconfirmed ?? null);
+          setStorage("unconfirmed-queue", null);
         } else if (data?.statusCode === HttpStatusCode.TooManyRequests) {
           //   handle throttle error;
         }
