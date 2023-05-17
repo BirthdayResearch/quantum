@@ -675,8 +675,9 @@ export default function BridgeForm({
       <div className="mt-[50px] mx-auto w-[290px] lg:w-[344px]">
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <ActionButton
-            label="Close"
+            label="Done"
             variant="secondary"
+            onClick={() => onResetTransferForm()}
             customStyle="mt-6 dark-section-bg"
           />
         ) : (
