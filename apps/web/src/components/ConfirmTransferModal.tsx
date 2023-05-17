@@ -32,7 +32,7 @@ function RowData({
         <Image
           width={100}
           height={100}
-          src={data.networkIcon}
+          src={`/tokens/${data.networkName}.svg`}
           alt={data.networkName}
           className={clsx("block w-7 h-7", "md:hidden md:w-9 md:h-9")}
         />
@@ -42,7 +42,7 @@ function RowData({
         <Image
           width={100}
           height={100}
-          src={data.networkIcon}
+          src={`/tokens/${data.networkName}.svg`}
           alt={data.networkName}
           className={clsx(
             "hidden w-7 h-7 ml-2",
@@ -84,7 +84,7 @@ function RowData({
             <Image
               width={100}
               height={100}
-              src={data.tokenIcon}
+              src={`/tokens/${data.tokenName}.svg`}
               alt={data.tokenName}
               className={clsx(
                 "w-5 h-5 order-last",
@@ -133,19 +133,15 @@ export default function ConfirmTransferModal({
     from: {
       address: (isSendingToDFC ? fromAddress : "DeFiChain address") as string,
       networkName: Network[selectedNetworkA.name],
-      networkIcon: selectedNetworkA.icon,
       tokenName: selectedTokensA.tokenA.name,
       tokenSymbol: selectedTokensA.tokenA.symbol,
-      tokenIcon: selectedTokensA.tokenA.icon,
       amount: new BigNumber(amount).negated(),
     },
     to: {
       address: toAddress,
       networkName: Network[selectedNetworkB.name],
-      networkIcon: selectedNetworkB.icon,
       tokenName: selectedTokensB.tokenA.name,
       tokenSymbol: selectedTokensB.tokenA.symbol,
-      tokenIcon: selectedTokensB.tokenA.icon,
       amount: new BigNumber(amount),
     },
   };

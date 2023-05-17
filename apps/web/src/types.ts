@@ -75,10 +75,8 @@ export interface UnconfirmedTxnI {
 export interface RowDataI {
   address: string;
   networkName: Network;
-  networkIcon: string;
   tokenName: string;
   tokenSymbol: string;
-  tokenIcon: string;
   amount: BigNumber;
 }
 

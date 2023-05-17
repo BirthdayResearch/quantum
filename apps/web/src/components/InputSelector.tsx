@@ -51,7 +51,7 @@ function NetworkOptions({ options }: { options: NetworkOptionsI[] }) {
                       height={100}
                       className="w-6 h-6"
                       data-testid={option.name}
-                      src={option.icon}
+                      src={`/tokens/${option.name}.svg`}
                       alt={option.name}
                     />
                     <span className="truncate text-dark-1000 ml-2 text-base">
