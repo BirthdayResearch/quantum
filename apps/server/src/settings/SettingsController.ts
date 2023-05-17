@@ -20,7 +20,7 @@ export class SettingsController {
 
   @SkipThrottle()
   @Get()
-  async getSettings(): Promise<SettingsModel> {
+  public getSettings(): SettingsModel {
     const supportedTokens = this.getSupportedTokens();
 
     const settings: SettingsModel = {
