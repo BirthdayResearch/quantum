@@ -148,7 +148,7 @@ export default function TransactionStatus({
           "items-center": !isUnsentFund,
         })}
       >
-        <div className="flex-1 flex-col">
+        <div className="flex-1 flex-col w-full">
           <div className="leading-5 lg:text-xl font-semibold">{title}</div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
           <div
