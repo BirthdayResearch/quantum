@@ -4,8 +4,9 @@ import { DeFiChainTransactionStatus, EthereumTransactionStatus, Prisma, QueueSta
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import BigNumber from 'bignumber.js';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
-import { BridgeV1, BridgeV1__factory, ERC20__factory } from 'smartcontracts';
+import { BridgeQueue, BridgeQueue__factory, ERC20__factory } from 'smartcontracts-queue';
 
+import { DeFiChainTransactionService } from '../../../defichain/services/DeFiChainTransactionService';
 import { ETHERS_RPC_PROVIDER } from '../../../modules/EthersModule';
 import { ApiPagedResponse } from '../../../pagination/ApiPagedResponse';
 import { PaginationQuery } from '../../../pagination/ApiQuery';
@@ -16,7 +17,7 @@ import { OrderBy, Queue, VerifyQueueTransactionDto } from '../model/Queue';
 
 @Injectable()
 export class QueueService {
-  private contract: BridgeV1;
+  private contract: BridgeQueue;
 
   private contractAddress: string;
 
@@ -24,17 +25,20 @@ export class QueueService {
 
   private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
 
+  private readonly MIN_REQUIRED_DFC_CONFIRMATION = 35;
+
   private readonly DAYS_TO_EXPIRY = 3;
 
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private configService: ConfigService,
+    private readonly deFiChainTransactionService: DeFiChainTransactionService,
     private verificationService: VerificationService,
     private prisma: PrismaService,
   ) {
     this.network = this.configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
     this.contractAddress = this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.address');
-    this.contract = BridgeV1__factory.connect(this.contractAddress, this.ethersRpcProvider);
+    this.contract = BridgeQueue__factory.connect(this.contractAddress, this.ethersRpcProvider);
   }
 
   async getQueue(transactionHash: string, status?: QueueStatus): Promise<Queue> {
@@ -294,6 +298,48 @@ export class QueueService {
           numberOfConfirmations,
           isConfirmed: false,
         };
+      }
+
+      return { numberOfConfirmations, isConfirmed: true };
+    } catch (e: any) {
+      throw new HttpException(
+        {
+          status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `API call for verify was unsuccessful: ${e.message}`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
+  }
+
+  async defichainVerify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
+    try {
+      const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(
+        transactionHash,
+      );
+
+      if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
+        return { numberOfConfirmations, isConfirmed: false };
+      }
+
+      const adminQueueTxnExist = await this.prisma.adminEthereumQueue.findUnique({
+        where: {
+          sendTransactionHash: transactionHash,
+        },
+      });
+
+      if (!adminQueueTxnExist) {
+        throw new Error('Transaction Hash does not exists in admin table');
+      }
+
+      if (adminQueueTxnExist.defichainStatus === DeFiChainTransactionStatus.NOT_CONFIRMED) {
+        await this.prisma.adminEthereumQueue.update({
+          where: { sendTransactionHash: transactionHash },
+          data: { defichainStatus: DeFiChainTransactionStatus.CONFIRMED, blockHash, blockHeight },
+        });
       }
 
       return { numberOfConfirmations, isConfirmed: true };
