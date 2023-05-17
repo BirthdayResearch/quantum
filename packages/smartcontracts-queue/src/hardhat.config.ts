@@ -16,7 +16,7 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async (args, hre, runSuper) => {
     version: '0.8.18',
   };
 
-  // we just use the default subtask if the version is not 0.8.5
+  // we just use the default subtask if the version is not 0.8.18
   return runSuper();
 });
 
