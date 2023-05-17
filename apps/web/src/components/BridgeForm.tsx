@@ -474,7 +474,7 @@ export default function BridgeForm({
               </span>
             </div>
             <div className="flex flex-row justify-between">
-              <div className="flex flex-row">
+              <div className="flex flex-row items-center">
                 <span className="text-dark-700 text-sm lg:text-base lg:leading-5">
                   Fees
                 </span>
