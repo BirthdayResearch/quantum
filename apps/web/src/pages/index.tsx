@@ -4,7 +4,6 @@ import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
 import MobileBottomMenu from "@components/MobileBottomMenu";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
-import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
 import { FormOptions } from "@contexts/NetworkContext";
 import Logging from "@api/logging";
@@ -68,33 +67,6 @@ function Home() {
           <WelcomeHeader />
         </div>
         <div className="flex-1 md:max-w-[50%] lg:min-w-[562px]">
-          {(txnHash.unconfirmed ||
-            txnHash.confirmed ||
-            txnHash.reverted ||
-            txnHash.unsentFund) && (
-            <TransactionStatus
-              onClose={() => {
-                setStorage("confirmed", null);
-                setStorage("allocationTxnHash", null);
-                setStorage("reverted", null);
-              }}
-              txnHash={
-                txnHash.unsentFund ??
-                txnHash.reverted ??
-                txnHash.confirmed ??
-                txnHash.unconfirmed
-              }
-              allocationTxnHash={txnHash.allocationTxn}
-              isReverted={txnHash.reverted !== undefined}
-              isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both EVM and DFC
-              isUnsentFund={txnHash.unsentFund !== undefined}
-              ethTxnStatusIsConfirmed={ethTxnStatus.isConfirmed}
-              dfcTxnStatusIsConfirmed={dfcTxnStatus.isConfirmed}
-              numberOfEvmConfirmations={getNumberOfConfirmations()}
-              numberOfDfcConfirmations={dfcTxnStatus.numberOfConfirmations}
-              isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
-            />
-          )}
           <FormTab activeTab={activeTab} setActiveTab={setActiveTab} />
           {/*
           // Todo : add condition for active tab to switch between <BridgeForm/> and <QueueForm/>
