@@ -82,7 +82,6 @@ export default function DeFiChainToERC20Transfer({
           refundAddress={refundAddress}
           addressDetail={addressDetail}
           sourceDetail={{
-            tokenIcon: data.from.tokenIcon,
             tokenName: data.from.tokenName,
           }}
           destinationDetail={{

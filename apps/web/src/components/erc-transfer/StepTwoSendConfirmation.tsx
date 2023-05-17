@@ -65,7 +65,6 @@ export default function StepTwoSendConfirmation({
   refundAddress: string;
   addressDetail?: AddressDetails;
   sourceDetail: {
-    tokenIcon: string;
     tokenName: string;
   };
   destinationDetail: {
@@ -217,7 +216,7 @@ export default function StepTwoSendConfirmation({
               <Image
                 width={100}
                 height={100}
-                src={sourceDetail.tokenIcon}
+                src={`/tokens/${sourceDetail.tokenName}.svg`}
                 alt={sourceDetail.tokenName}
                 className="w-4 md:h-4"
               />
