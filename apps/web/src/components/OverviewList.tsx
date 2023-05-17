@@ -1,6 +1,6 @@
 import { PropsWithChildren } from "react";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
-import { NetworkI, networks } from "@contexts/NetworkContext";
+import { NetworkI, useNetworkContext } from "@contexts/NetworkContext";
 import Image from "next/image";
 import NumericFormat from "@components/commons/NumericFormat";
 import BigNumber from "bignumber.js";
@@ -34,7 +34,7 @@ function TokenOrNetworkInfo({
         <Image
           width={100}
           height={100}
-          src={token.icon}
+          src={`/tokens/${token.name}.svg`}
           alt={token.name}
           data-testid={`${testId}-icon`}
           className={iconClass ?? "h-8 w-8"}
@@ -168,7 +168,7 @@ function TokenDetails({
         </div>
         <NumericFormat
           testId={`${testId}-liquidity`}
-          className="text-dark-1000 text-sm lg:text-base text-dark-1000 text-right lg:text-left flex-1"
+          className="text-dark-1000 text-sm lg:text-base text-right lg:text-left flex-1"
           value={amount}
           decimalScale={8}
           thousandSeparator
@@ -188,7 +188,8 @@ function TokenDetails({
 }
 
 export default function OverviewList({ balances }) {
-  const [firstNetwork, secondNetwork] = networks;
+  const { supportedTokens } = useNetworkContext();
+  const [firstNetwork, secondNetwork] = supportedTokens;
   const { isMobile } = useResponsive();
 
   const getAmount = (symbol: string, network): BigNumber => {
@@ -293,7 +294,7 @@ export default function OverviewList({ balances }) {
         </div>
       </div>
       <div className="space-y-3 md:space-y-4 px-5 md:px-0">
-        {secondNetwork.tokens.map((item) => (
+        {secondNetwork?.tokens.map((item) => (
           <BorderDiv
             testId={`${item.tokenA.name}-row`}
             key={item.tokenA.name}

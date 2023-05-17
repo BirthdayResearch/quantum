@@ -13,7 +13,6 @@ export interface TokenDetailI<T> {
   name: T;
   subtitle?: string;
   symbol: string;
-  icon: string;
 }
 
 export interface AddressDetails {
@@ -49,7 +48,6 @@ export interface TokensI {
 
 export interface NetworkOptionsI {
   name: Network;
-  icon: string;
   tokens: TokensI[];
 }
 

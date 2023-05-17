@@ -64,6 +64,7 @@ const client = createClient(
 function Base({
   children,
   isBridgeUp,
+  supportedTokens,
 }: PropsWithChildren<any>): JSX.Element | null {
   const initialTheme = getInitialTheme();
   const [mounted, setMounted] = useState(false);
@@ -154,7 +155,7 @@ function Base({
         <WagmiConfig client={client}>
           <ConnectKitProvider mode="dark" options={{ initialChainId: 0 }}>
             {mounted && (
-              <NetworkProvider>
+              <NetworkProvider supportedTokens={supportedTokens}>
                 <WhaleNetworkProvider api={SecuredStoreAPI} logger={Logging}>
                   <WhaleProvider>
                     <NetworkEnvironmentProvider>
