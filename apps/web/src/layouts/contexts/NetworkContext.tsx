@@ -15,7 +15,7 @@ import {
 } from "types";
 
 interface NetworkContextI {
-  supportedTokens: [NetworkI<Erc20Token>, NetworkI<string>];
+  supportedNetworksTokens: [NetworkI<Erc20Token>, NetworkI<string>];
   selectedNetworkA: NetworkOptionsI;
   selectedTokensA: TokensI;
   selectedNetworkB: NetworkOptionsI;
@@ -87,8 +87,9 @@ export function NetworkProvider({
   children,
   supportedTokens,
 }: PropsWithChildren<NetworkProviderProps>): JSX.Element | null {
-  const [defaultNetworkA, defaultNetworkB] =
+  const supportedNetworksTokens =
     supportedTokens.length > 0 ? supportedTokens : FALLBACK_NETWORK_TOKENS_LIST;
+  const [defaultNetworkA, defaultNetworkB] = supportedNetworksTokens;
   const [selectedNetworkA, setSelectedNetworkA] =
     useState<NetworkOptionsI>(defaultNetworkA);
   const [selectedTokensA, setSelectedTokensA] = useState<TokensI>(
@@ -101,7 +102,7 @@ export function NetworkProvider({
   );
 
   useEffect(() => {
-    const networkB = supportedTokens.find(
+    const networkB = supportedNetworksTokens.find(
       (network) => network.name !== selectedNetworkA.name
     );
     if (networkB !== undefined) {
@@ -133,7 +134,7 @@ export function NetworkProvider({
 
   const context: NetworkContextI = useMemo(
     () => ({
-      supportedTokens,
+      supportedNetworksTokens,
       selectedNetworkA,
       selectedTokensA,
       selectedNetworkB,

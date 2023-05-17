@@ -188,8 +188,8 @@ function TokenDetails({
 }
 
 export default function OverviewList({ balances }) {
-  const { supportedTokens } = useNetworkContext();
-  const [firstNetwork, secondNetwork] = supportedTokens;
+  const { supportedNetworksTokens } = useNetworkContext();
+  const [firstNetwork, secondNetwork] = supportedNetworksTokens;
   const { isMobile } = useResponsive();
 
   const getAmount = (symbol: string, network): BigNumber => {

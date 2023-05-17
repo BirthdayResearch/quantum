@@ -81,7 +81,7 @@ export default function BridgeForm({
   hasPendingTxn: boolean;
 }) {
   const {
-    supportedTokens,
+    supportedNetworksTokens,
     selectedNetworkA,
     selectedTokensA,
     selectedNetworkB,
@@ -421,7 +421,7 @@ export default function BridgeForm({
           <InputSelector
             label="Source Network"
             popUpLabel="Select source"
-            options={supportedTokens}
+            options={supportedNetworksTokens}
             floatingObj={floatingObj}
             type={SelectionType.Network}
             onSelect={(value: NetworkOptionsI) => setSelectedNetworkA(value)}
