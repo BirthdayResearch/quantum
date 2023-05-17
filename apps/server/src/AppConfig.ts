@@ -101,14 +101,12 @@ export interface TokensI {
 
 export interface NetworkOptionsI {
   name: Network;
-  icon: string;
   tokens: TokensI[];
 }
 
 export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI';
 export interface NetworkI<T> {
   name: Network;
-  icon: string;
   tokens: {
     tokenA: TokenDetailI<T>;
     tokenB: TokenDetailI<string>;
@@ -118,7 +116,6 @@ export interface NetworkI<T> {
 export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
   {
     name: Network.Ethereum,
-    icon: '/tokens/Ethereum.svg',
     tokens: [
       {
         tokenA: {
@@ -185,7 +182,6 @@ export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
   },
   {
     name: Network.DeFiChain,
-    icon: '/tokens/DeFichain.svg',
     tokens: [
       {
         tokenA: {
