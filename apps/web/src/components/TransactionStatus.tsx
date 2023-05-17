@@ -71,7 +71,7 @@ export default function TransactionStatus({
         "We encountered an error while processing your transaction. Please try again after a few minutes."
       );
     } else if (isReverted) {
-      setTitle("Transaction reverted");
+      setTitle("Transaction is reverted");
       setDescription(
         "Something went wrong as the transaction was being processed. Please wait for the required confirmations to proceed with your transaction."
       );
