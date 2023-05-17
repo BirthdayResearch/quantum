@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
+import { BridgeQueue__factory } from 'smartcontracts-queue';
 
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 
@@ -15,9 +16,8 @@ const contract = {
     name: 'bridgeToDeFiChain',
     signature: 'bridgeToDeFiChain(bytes,address,uint256)',
   },
-  // Todo : update to phase 2 contract when ready
   [ContractType.queue]: {
-    interface: BridgeV1__factory.abi,
+    interface: BridgeQueue__factory.abi,
     name: 'bridgeToDeFiChain',
     signature: 'bridgeToDeFiChain(bytes,address,uint256)',
   },
