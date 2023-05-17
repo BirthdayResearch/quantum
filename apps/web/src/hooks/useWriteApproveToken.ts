@@ -13,6 +13,7 @@ import {
 import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
 import Logging from "@api/logging";
+import { FormOptions, useNetworkContext } from "@contexts/NetworkContext";
 
 interface ApproveTokenI {
   tokenName: Erc20Token;
@@ -28,7 +29,8 @@ export default function useWriteApproveToken({
   setErrorMessage,
 }: ApproveTokenI) {
   const [refetchedBridgeFn, setRefetchedBridgeFn] = useState(false);
-  const { BridgeV1, Erc20Tokens } = useContractContext();
+  const { BridgeV1, BridgeQueue, Erc20Tokens } = useContractContext();
+  const { typeOfTransaction } = useNetworkContext();
 
   const erc20TokenContract = {
     address: Erc20Tokens[tokenName].address,
@@ -39,7 +41,12 @@ export default function useWriteApproveToken({
   const { config: tokenConfig } = usePrepareContractWrite({
     ...erc20TokenContract,
     functionName: "approve",
-    args: [BridgeV1.address, ethers.constants.MaxInt256],
+    args: [
+      typeOfTransaction === FormOptions.INSTANT
+        ? BridgeV1.address
+        : BridgeQueue.address,
+      ethers.constants.MaxInt256,
+    ],
   });
 
   // Write (ERC20 token) contract for `approve` function

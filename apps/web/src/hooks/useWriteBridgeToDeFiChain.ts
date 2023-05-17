@@ -13,6 +13,7 @@ import {
 import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
 import { ETHEREUM_SYMBOL } from "../constants";
+import { FormOptions, useNetworkContext } from "@contexts/NetworkContext";
 
 export interface EventErrorI {
   customErrorDisplay?:
@@ -40,7 +41,8 @@ export default function useWriteBridgeToDeFiChain({
   onBridgeTxnSettled,
   setEventError,
 }: BridgeToDeFiChainI) {
-  const { BridgeV1, Erc20Tokens } = useContractContext();
+  const { BridgeV1, BridgeQueue, Erc20Tokens } = useContractContext();
+  const { typeOfTransaction } = useNetworkContext();
   const sendingFromETH = (tokenName as string) === ETHEREUM_SYMBOL;
 
   const handlePrepContractError = (err) => {
@@ -81,8 +83,14 @@ export default function useWriteBridgeToDeFiChain({
   // Prepare write contract for `bridgeToDeFiChain` function
   const { config: bridgeConfig, refetch: refetchBridge } =
     usePrepareContractWrite({
-      address: BridgeV1.address,
-      abi: BridgeV1.abi,
+      address:
+        typeOfTransaction === FormOptions.INSTANT
+          ? BridgeV1.address
+          : BridgeQueue.address,
+      abi:
+        typeOfTransaction === FormOptions.INSTANT
+          ? BridgeV1.abi
+          : BridgeQueue.abi,
       functionName: "bridgeToDeFiChain",
       args: [
         utils.hexlify(utils.toUtf8Bytes(receiverAddress)) as `0x${string}`,

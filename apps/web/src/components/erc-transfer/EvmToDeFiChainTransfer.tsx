@@ -24,6 +24,8 @@ import {
   FormOptions,
   useNetworkContext,
 } from "../../layouts/contexts/NetworkContext";
+import { useQueueStorageContext } from "@contexts/QueueStorageContext";
+import { useQueueTransactionMutation } from "@store/index";
 
 export default function EvmToDeFiChainTransfer({
   data,
@@ -41,12 +43,13 @@ export default function EvmToDeFiChainTransfer({
   );
   const { isMobile } = useResponsive();
   const { networkEnv } = useNetworkEnvironmentContext();
-  const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
+  const { BridgeV1, BridgeQueue, Erc20Tokens, ExplorerURL } =
+    useContractContext();
   const bridgingETH = data.from.tokenSymbol === ETHEREUM_SYMBOL;
   const { setStorage } = useStorageContext();
-  // Todo: setQueueStorage from useStorageContext and update the contracts to cater for Queue
-
+  const { setStorage: setQueueStorage } = useQueueStorageContext();
   const { typeOfTransaction } = useNetworkContext();
+  const [queueTransaction] = useQueueTransactionMutation();
 
   // Read details from token contract
   const erc20TokenContract = {
@@ -58,7 +61,12 @@ export default function EvmToDeFiChainTransfer({
       {
         ...erc20TokenContract,
         functionName: "allowance",
-        args: [data.from.address as `0x${string}`, BridgeV1.address],
+        args: [
+          data.from.address as `0x${string}`,
+          typeOfTransaction === FormOptions.INSTANT
+            ? BridgeV1.address
+            : BridgeQueue.address,
+        ],
       },
       {
         ...erc20TokenContract,
@@ -104,13 +112,24 @@ export default function EvmToDeFiChainTransfer({
   });
 
   useEffect(() => {
-    if (transactionHash !== undefined) {
+    if (transactionHash === undefined) {
+      return;
+    }
+
+    if (typeOfTransaction === FormOptions.INSTANT) {
       setStorage("unconfirmed", transactionHash);
       setStorage("confirmed", null);
       setStorage("allocationTxnHash", null);
       setStorage("reverted", null);
       setStorage("txn-form", null);
       onClose(true);
+    } else {
+      setQueueStorage("unconfirmed-queue", transactionHash);
+      setQueueStorage("confirmed-queue", null);
+      setQueueStorage("allocation-txn-hash-queue", null);
+      setQueueStorage("reverted-queue", null);
+      setQueueStorage("txn-form-queue", null);
+      createQueueTransaction(transactionHash);
     }
   }, [transactionHash]);
 
@@ -195,6 +214,27 @@ export default function EvmToDeFiChainTransfer({
     writeBridgeToDeFiChain?.();
   };
 
+  const createQueueTransaction = async (
+    transactionHash: string
+  ): Promise<void> => {
+    setBridgeStatus(BridgeStatus.QueingTransaction);
+    setTimeout(async () => {
+      await queueTransaction({ txnHash: transactionHash })
+        .then((queue) => {
+          if (queue["error"]) {
+            // TODO: handle create queue error
+          } else {
+            console.log({ queue });
+            onClose(true);
+          }
+        })
+        .catch((e) => {
+          console.log(e);
+          // TODO: handle create queue error
+        });
+    }, 15000); // wait for transaction to get confirmed
+  };
+
   const statusMessage = {
     [BridgeStatus.IsTokenApprovalInProgress]: {
       title: "Waiting for approval",
@@ -203,6 +243,10 @@ export default function EvmToDeFiChainTransfer({
     [BridgeStatus.IsBridgeToDfcInProgress]: {
       title: "Waiting for confirmation",
       message: "Confirm this transaction in your Wallet.",
+    },
+    [BridgeStatus.QueingTransaction]: {
+      title: "Queing transaction",
+      message: "Please do not close this window.",
     },
   };
 
@@ -234,6 +278,7 @@ export default function EvmToDeFiChainTransfer({
       {[
         BridgeStatus.IsTokenApprovalInProgress,
         BridgeStatus.IsBridgeToDfcInProgress,
+        BridgeStatus.QueingTransaction,
       ].includes(bridgeStatus) && (
         <Modal isOpen>
           <div className="flex flex-col items-center mt-6 mb-14">
