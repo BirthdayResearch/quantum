@@ -219,10 +219,13 @@ export default function EvmToDeFiChainTransfer({
   ): Promise<void> => {
     setBridgeStatus(BridgeStatus.QueueingTransaction);
     setTimeout(async () => {
+      console.log(transactionHash);
       await queueTransaction({ txnHash: transactionHash })
         .then((queue) => {
           if (queue["error"]) {
             // TODO: handle create queue error
+            console.error(queue["error"]);
+            setErrorMessage("Unable to create a Queue transaction.");
           } else {
             console.log({ queue });
             onClose(true);
@@ -231,6 +234,8 @@ export default function EvmToDeFiChainTransfer({
         .catch((e) => {
           console.log(e);
           // TODO: handle create queue error
+          setErrorMessage("Unable to create a Queue transaction.");
+          console.error(e);
         });
     }, 15000); // wait for transaction to get confirmed
   };
