@@ -71,19 +71,19 @@ export default function RefundModal({
           Transaction details
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex justify-between">
           <span className="text-dark-700">{amountLabel[type]}</span>
           <span className="text-dark-1000">{`${amount} ${token}`}</span>
         </div>
 
-        <div className="flex items-center justify-between md:mt-8 mt-10">
+        <div className="flex justify-between md:mt-8 mt-10">
           <span className="text-dark-700">Refund TX hash</span>
           <span className="text-dark-1000 break-words w-5/12 text-right">
             {txHash}
           </span>
         </div>
 
-        <div className="flex items-center justify-between md:mt-8 mt-10">
+        <div className="flex justify-between md:mt-8 mt-10">
           <span className="text-dark-700">Timestamp</span>
           <span className="text-dark-1000">
             {dayjs(initiatedDate).format("DD/MM/YYYY HH:mm A")}
