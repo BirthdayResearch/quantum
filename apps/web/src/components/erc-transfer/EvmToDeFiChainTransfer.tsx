@@ -111,28 +111,6 @@ export default function EvmToDeFiChainTransfer({
     refetchTokenData,
   });
 
-  useEffect(() => {
-    if (transactionHash === undefined) {
-      return;
-    }
-
-    if (typeOfTransaction === FormOptions.INSTANT) {
-      setStorage("unconfirmed", transactionHash);
-      setStorage("confirmed", null);
-      setStorage("allocationTxnHash", null);
-      setStorage("reverted", null);
-      setStorage("txn-form", null);
-      onClose(true);
-    } else {
-      setQueueStorage("unconfirmed-queue", transactionHash);
-      setQueueStorage("confirmed-queue", null);
-      setQueueStorage("allocation-txn-hash-queue", null);
-      setQueueStorage("reverted-queue", null);
-      setQueueStorage("txn-form-queue", null);
-      createQueueTransaction(transactionHash);
-    }
-  }, [transactionHash]);
-
   // Requires approval for more allowance
   useEffect(() => {
     if (
@@ -178,6 +156,28 @@ export default function EvmToDeFiChainTransfer({
   ]);
 
   useEffect(() => {
+    if (transactionHash === undefined) {
+      return;
+    }
+
+    if (typeOfTransaction === FormOptions.INSTANT) {
+      setStorage("unconfirmed", transactionHash);
+      setStorage("confirmed", null);
+      setStorage("allocationTxnHash", null);
+      setStorage("reverted", null);
+      setStorage("txn-form", null);
+      onClose(true);
+    } else {
+      setQueueStorage("unconfirmed-queue", transactionHash);
+      setQueueStorage("confirmed-queue", null);
+      setQueueStorage("allocation-txn-hash-queue", null);
+      setQueueStorage("reverted-queue", null);
+      setQueueStorage("txn-form-queue", null);
+      createQueueTransaction(transactionHash);
+    }
+  }, [transactionHash]);
+
+  useEffect(() => {
     const successfulApproval = isApproveTxnSuccess && refetchedBridgeFn;
 
     if (successfulApproval && hasEnoughAllowance) {
@@ -217,7 +217,7 @@ export default function EvmToDeFiChainTransfer({
   const createQueueTransaction = async (
     transactionHash: string
   ): Promise<void> => {
-    setBridgeStatus(BridgeStatus.QueingTransaction);
+    setBridgeStatus(BridgeStatus.QueueingTransaction);
     setTimeout(async () => {
       await queueTransaction({ txnHash: transactionHash })
         .then((queue) => {
@@ -244,8 +244,8 @@ export default function EvmToDeFiChainTransfer({
       title: "Waiting for confirmation",
       message: "Confirm this transaction in your Wallet.",
     },
-    [BridgeStatus.QueingTransaction]: {
-      title: "Queing transaction",
+    [BridgeStatus.QueueingTransaction]: {
+      title: "Queueing transaction",
       message: "Please do not close this window.",
     },
   };
@@ -278,7 +278,7 @@ export default function EvmToDeFiChainTransfer({
       {[
         BridgeStatus.IsTokenApprovalInProgress,
         BridgeStatus.IsBridgeToDfcInProgress,
-        BridgeStatus.QueingTransaction,
+        BridgeStatus.QueueingTransaction,
       ].includes(bridgeStatus) && (
         <Modal isOpen>
           <div className="flex flex-col items-center mt-6 mb-14">
