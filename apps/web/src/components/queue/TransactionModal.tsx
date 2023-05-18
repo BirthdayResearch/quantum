@@ -5,8 +5,9 @@ import { ModalTypeToDisplay } from "types";
 import ActionButton from "@components/commons/ActionButton";
 import useResponsive from "@hooks/useResponsive";
 import truncateTextFromMiddle from "@utils/textHelper";
+import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
-interface TransactionInProgressModalProps {
+interface TransactionModalProps {
   type?: ModalTypeToDisplay;
   txHash: string;
   initiatedDate: Date;
@@ -14,22 +15,37 @@ interface TransactionInProgressModalProps {
   token: string;
   onClose: () => void;
   isOpen: boolean;
+  onBack: () => void;
+  destinationAddress: string;
 }
 
 const titles = {
-  [ModalTypeToDisplay.Successful]: "Refund successful",
+  [ModalTypeToDisplay.Refunded]: "Refund successful",
+  [ModalTypeToDisplay.Completed]: "Transaction completed",
 };
 
 const descriptions = {
-  [ModalTypeToDisplay.Successful]:
+  [ModalTypeToDisplay.Refunded]:
     "Please check your MetaMask wallet for your refunded tokens.",
+  [ModalTypeToDisplay.Completed]:
+    "Please check your DeFiChain address for your received dTokens.",
 };
 
-const amountLabel = {
-  [ModalTypeToDisplay.Successful]: "Amount refunded",
+const firstRowTitles = {
+  [ModalTypeToDisplay.Refunded]: "Amount refunded",
+  [ModalTypeToDisplay.Completed]: "Date initiated",
 };
 
-export default function RefundModal({
+const secondRowTitles = {
+  [ModalTypeToDisplay.Refunded]: "Refund TX hash",
+  [ModalTypeToDisplay.Completed]: "Amount to receive",
+};
+const thirdRowTitles = {
+  [ModalTypeToDisplay.Refunded]: "Timestamp",
+  [ModalTypeToDisplay.Completed]: "Destination address",
+};
+
+export default function TransactionModal({
   type,
   txHash,
   initiatedDate,
@@ -37,8 +53,25 @@ export default function RefundModal({
   token,
   onClose,
   isOpen,
-}: TransactionInProgressModalProps): JSX.Element {
+  onBack,
+  destinationAddress,
+}: TransactionModalProps): JSX.Element {
   const { isMobile } = useResponsive();
+
+  const firstRowResult = {
+    [ModalTypeToDisplay.Refunded]: `${amount} ${token}`,
+    [ModalTypeToDisplay.Completed]:
+      dayjs(initiatedDate).format("DD/MM/YYYY HH:mm A"),
+  };
+  const secondRowResult = {
+    [ModalTypeToDisplay.Refunded]: txHash,
+    [ModalTypeToDisplay.Completed]: `${amount} ${token}`,
+  };
+  const thirdRowResult = {
+    [ModalTypeToDisplay.Refunded]:
+      dayjs(initiatedDate).format("DD/MM/YYYY HH:mm A"),
+    [ModalTypeToDisplay.Completed]: destinationAddress,
+  };
 
   if (type === undefined) {
     // eslint-disable-next-line
@@ -53,7 +86,7 @@ export default function RefundModal({
           <div className="pt-6 font-bold text-2xl md:text-xl lg:text-2xl leading-8 md:leading-7 lg:!leading-8 text-dark-1000 tracking-[0.01em] md:text-center">
             {titles[type]}
           </div>
-          <div className="text-sm lg:text-base leading-5 w-10/12 text-dark-700 mt-1 mb-4 md:mb-5 lg:mb-4 md:text-center">
+          <div className="text-sm lg:text-base leading-5 w-8/12 text-dark-700 mt-1 mb-4 md:mb-5 lg:mb-4 md:text-center">
             {descriptions[type]}
           </div>
         </div>
@@ -72,25 +105,25 @@ export default function RefundModal({
         </div>
 
         <div className="flex justify-between">
-          <span className="text-dark-700">{amountLabel[type]}</span>
-          <span className="text-dark-1000">{`${amount} ${token}`}</span>
+          <span className="text-dark-700">{firstRowTitles[type]}</span>
+          <span className="text-dark-1000">{firstRowResult[type]}</span>
         </div>
 
         <div className="flex justify-between md:mt-8 mt-10">
-          <span className="text-dark-700">Refund TX hash</span>
+          <span className="text-dark-700">{secondRowTitles[type]}</span>
           <span className="text-dark-1000 break-words w-5/12 text-right">
-            {txHash}
+            {secondRowResult[type]}
           </span>
         </div>
 
         <div className="flex justify-between md:mt-8 mt-10">
-          <span className="text-dark-700">Timestamp</span>
-          <span className="text-dark-1000">
-            {dayjs(initiatedDate).format("DD/MM/YYYY HH:mm A")}
+          <span className="text-dark-700">{thirdRowTitles[type]}</span>
+          <span className="text-dark-1000 break-words w-5/12 text-right">
+            {thirdRowResult[type]}
           </span>
         </div>
 
-        <div className="mt-12 md:mt-[104px] flex justify-center h-full items-end">
+        <div className="mt-12 md:mt-[104px] flex flex-col justify-center h-full items-center">
           <ActionButton
             isExternalArrowIcon
             label="View on DeFiScan"
@@ -104,6 +137,11 @@ export default function RefundModal({
               );
             }}
           />
+          {type === ModalTypeToDisplay.Completed && (
+            <div className="mt-4 text-center h-full flex flex-col justify-end">
+              <GoToAnotherTransaction onClick={onBack} />
+            </div>
+          )}
         </div>
       </div>
     </Modal>
