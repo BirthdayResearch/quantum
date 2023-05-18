@@ -264,7 +264,8 @@ export default function BridgeForm({
     setStorage("confirmed", null);
     setStorage("allocationTxnHash", null);
     setStorage("reverted", null);
-
+    setAmount("");
+    setAddressInput("");
     setFromAddress(address || "");
     setAmountErr("");
     resetNetworkSelection();
