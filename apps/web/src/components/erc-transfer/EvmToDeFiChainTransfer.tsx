@@ -219,7 +219,6 @@ export default function EvmToDeFiChainTransfer({
   ): Promise<void> => {
     setBridgeStatus(BridgeStatus.QueueingTransaction);
     setTimeout(async () => {
-      console.log(transactionHash);
       await queueTransaction({ txnHash: transactionHash })
         .then((queue) => {
           if (queue["error"]) {
