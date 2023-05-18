@@ -141,12 +141,13 @@ export default function EvmToDeFiChainTransfer({
       status = BridgeStatus.IsTokenApprovalInProgress;
     } else if (hasPendingTx) {
       status = BridgeStatus.IsBridgeToDfcInProgress;
+    } else if (!hasPendingTx && isBridgeTxnCreated) {
+      status = BridgeStatus.QueueingTransaction;
     } else if (isApproveTxnSuccess && requiresApproval) {
       status = BridgeStatus.IsTokenApproved;
     } else if (!isApproveTxnSuccess && requiresApproval) {
       status = BridgeStatus.IsTokenRejected;
     }
-
     setBridgeStatus(status);
   }, [
     hasPendingTx,
@@ -219,11 +220,11 @@ export default function EvmToDeFiChainTransfer({
     writeBridgeToDeFiChain?.();
   };
 
-  const { isSuccess, isLoading } = useWaitForTransaction({
+  const {} = useWaitForTransaction({
     hash: transactionHash,
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (typeOfTransaction === FormOptions.QUEUE) {
-        createQueueTransaction(data.transactionHash);
+        await createQueueTransaction(data.transactionHash);
       }
     },
     onError: (err) => {
@@ -232,29 +233,21 @@ export default function EvmToDeFiChainTransfer({
     },
   });
 
-  console.log(transactionHash);
-  console.log("isSuccessful", isSuccess);
-  console.log("isLoading", isLoading);
-
   const createQueueTransaction = async (
     transactionHash: string
   ): Promise<void> => {
     await queueTransaction({ txnHash: transactionHash })
       .then((queue) => {
         if (queue["error"]) {
-          // TODO: handle create queue error
           console.error(queue["error"]);
           setErrorMessage("Unable to create a Queue transaction.");
         } else {
-          console.log({ queue });
           onClose(true);
         }
       })
       .catch((e) => {
-        console.log(e);
-        // TODO: handle create queue error
-        setErrorMessage("Unable to create a Queue transaction.");
         console.error(e);
+        setErrorMessage("Unable to create a Queue transaction.");
       });
   };
 
@@ -310,7 +303,7 @@ export default function EvmToDeFiChainTransfer({
             <span className="font-bold text-2xl text-dark-900 mt-12">
               {statusMessage[bridgeStatus].title}
             </span>
-            <span className="text-dark-900 mt-2">
+            <span className="text-dark-900 mt-2 text-center">
               {statusMessage[bridgeStatus].message}
             </span>
           </div>
