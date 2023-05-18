@@ -8,6 +8,7 @@ require('dotenv').config({
   path: '.env',
 });
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async (args, hre, runSuper) => {
   const compilerPath = path.join(__dirname, 'sol-0.8.18.js');
   return {
@@ -15,9 +16,6 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async (args, hre, runSuper) => {
     isSolcJs: true, // if you are using a native compiler, set this to false
     version: '0.8.18',
   };
-
-  // we just use the default subtask if the version is not 0.8.18
-  return runSuper();
 });
 
 const config: HardhatUserConfig = {
