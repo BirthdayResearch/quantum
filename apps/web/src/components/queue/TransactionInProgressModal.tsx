@@ -76,7 +76,7 @@ export default function TransactionInProgressModal({
             </span>
           </Link>
         )}
-        <div className="font-bold text-2xl md:text-xl lg:text-2xl leading-8 md:leading-7 lg:!leading-8 text-dark-1000 tracking-[0.01em]">
+        <div className="font-bold text-2xl md:text-xl lg:text-2xl leading-8 md:leading-7 lg:!leading-8 text-dark-1000 tracking-[0.01em] w-10/12 md:w-full">
           {titles[type]}
         </div>
         <div className="text-sm lg:text-base leading-5 w-10/12 text-dark-700 mt-1 mb-4 md:mb-5 lg:mb-4">
