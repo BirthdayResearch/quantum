@@ -96,12 +96,16 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
         address _timelockContract,
         address _coldWallet,
         uint256 _fee,
-        address _communityWallet
+        address _communityWallet,
+        address[] calldata _supportedTokens
     ) external initializer {
         _grantRole(DEFAULT_ADMIN_ROLE, _timelockContract);
         coldWallet = _coldWallet;
         transactionFee = _fee;
         communityWallet = _communityWallet;
+        for (uint256 i = 0; i < _supportedTokens.length; ++i) {
+            supportedTokens[_supportedTokens[i]] = true;
+        }
     }
 
     /**
