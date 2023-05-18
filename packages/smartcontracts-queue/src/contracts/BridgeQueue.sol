@@ -1,7 +1,7 @@
 pragma solidity 0.8.18;
-import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
+import '@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol';
 
 error ETH_TRANSFER_FAILED_TO_COMMUNITY_WALLET();
 error ETH_TRANSFER_FAILED_TO_COLD_WALLET();
@@ -38,11 +38,7 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
      * @param tokenAddress Supported token's being bridged
      * @param bridgeAmount Amount of the bridged token
      */
-    event BRIDGE_TO_DEFI_CHAIN(
-        bytes defiAddress,
-        address indexed tokenAddress,
-        uint256 indexed bridgeAmount
-    );
+    event BRIDGE_TO_DEFI_CHAIN(bytes defiAddress, address indexed tokenAddress, uint256 indexed bridgeAmount);
 
     /**
      * @notice Emitted when a token is supported
@@ -61,30 +57,21 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
      * @param oldTxFee the old transaction fee
      * @param transactionFee the new transaction fee
      */
-    event TRANSACTION_FEE_CHANGED(
-        uint256 indexed oldTxFee,
-        uint256 indexed transactionFee
-    );
+    event TRANSACTION_FEE_CHANGED(uint256 indexed oldTxFee, uint256 indexed transactionFee);
 
     /**
      * @notice Emitted when the cold wallet is changed
      * @param oldColdWallet the old cold wallet address
      * @param newColdWallet the new cold wallet address
      */
-    event COLD_WALLET_CHANGED(
-        address indexed oldColdWallet,
-        address indexed newColdWallet
-    );
+    event COLD_WALLET_CHANGED(address indexed oldColdWallet, address indexed newColdWallet);
 
     /**
      * @notice Emitted when the community wallet is changed
      * @param oldCommunityWallet the old community wallet address
      * @param newCommunityWallet the new community wallet address
      */
-    event COMMUNITY_WALLET_CHANGED(
-        address indexed oldCommunityWallet,
-        address indexed newCommunityWallet
-    );
+    event COMMUNITY_WALLET_CHANGED(address indexed oldCommunityWallet, address indexed newCommunityWallet);
 
     /**
      * @notice constructor to disable initialization of implementation smart contract
@@ -96,9 +83,7 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
     /**
      * @notice function to limit the right to upgrade the smart contract
      */
-    function _authorizeUpgrade(
-        address newImplementation
-    ) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
+    function _authorizeUpgrade(address newImplementation) internal override onlyRole(DEFAULT_ADMIN_ROLE) {}
 
     /**
      * @notice To initialize this contract
@@ -125,16 +110,11 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
      * @param _tokenAddress Supported token address that being bridged
      * @param _amount Amount to be bridged, this in in Wei
      */
-    function bridgeToDeFiChain(
-        bytes calldata _defiAddress,
-        address _tokenAddress,
-        uint256 _amount
-    ) external payable {
+    function bridgeToDeFiChain(bytes calldata _defiAddress, address _tokenAddress, uint256 _amount) external payable {
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
         uint256 requestedAmount;
         if (_tokenAddress == ETH) {
-            if (_amount > 0)
-                revert AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
+            if (_amount > 0) revert AMOUNT_PARAMETER_NOT_ZERO_WHEN_BRIDGING_ETH();
             requestedAmount = msg.value;
         } else {
             if (msg.value > 0) revert MSG_VALUE_NOT_ZERO_WHEN_BRIDGING_ERC20();
@@ -145,21 +125,13 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
         uint256 netAmount = requestedAmount - txFee;
         emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmount);
         if (_tokenAddress == ETH) {
-            (bool sentTxFee, ) = communityWallet.call{value: txFee}("");
+            (bool sentTxFee, ) = communityWallet.call{value: txFee}('');
             if (!sentTxFee) revert ETH_TRANSFER_FAILED_TO_COMMUNITY_WALLET();
-            (bool sentNetAmount, ) = coldWallet.call{value: netAmount}("");
+            (bool sentNetAmount, ) = coldWallet.call{value: netAmount}('');
             if (!sentNetAmount) revert ETH_TRANSFER_FAILED_TO_COLD_WALLET();
         } else {
-            IERC20Upgradeable(_tokenAddress).safeTransferFrom(
-                msg.sender,
-                communityWallet,
-                txFee
-            );
-            IERC20Upgradeable(_tokenAddress).safeTransferFrom(
-                msg.sender,
-                coldWallet,
-                netAmount
-            );
+            IERC20Upgradeable(_tokenAddress).safeTransferFrom(msg.sender, communityWallet, txFee);
+            IERC20Upgradeable(_tokenAddress).safeTransferFrom(msg.sender, coldWallet, netAmount);
         }
     }
 
@@ -174,9 +146,7 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
      * @notice Function to add support for a token
      * @param _tokenAddress address of the token to be supported
      */
-    function addSupportedToken(
-        address _tokenAddress
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addSupportedToken(address _tokenAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (supportedTokens[_tokenAddress]) revert TOKEN_ALREADY_SUPPORTED();
         supportedTokens[_tokenAddress] = true;
         emit TOKEN_SUPPORTED(_tokenAddress);
@@ -186,9 +156,7 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
      * @notice Function to remove support for a token
      * @param _tokenAddress address of the token to be removal of support
      */
-    function removeSupportedToken(
-        address _tokenAddress
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function removeSupportedToken(address _tokenAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (!supportedTokens[_tokenAddress]) revert TOKEN_NOT_SUPPORTED();
         supportedTokens[_tokenAddress] = false;
         emit TOKEN_REMOVED(_tokenAddress);
@@ -209,9 +177,7 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
      * @notice Function to change the cold wallet address
      * @param _newColdWallet the new cold wallet address
      */
-    function changeColdWallet(
-        address _newColdWallet
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function changeColdWallet(address _newColdWallet) external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (_newColdWallet == address(0)) revert INVALID_COLD_WALLET();
         address oldColdWallet = coldWallet;
         coldWallet = _newColdWallet;
@@ -222,11 +188,8 @@ contract BridgeQueue is UUPSUpgradeable, AccessControlUpgradeable {
      * @notice Function to change the community wallet address
      * @param _newCommunityWallet the new community wallet address
      */
-    function changeCommunityWallet(
-        address _newCommunityWallet
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (_newCommunityWallet == address(0))
-            revert INVALID_COMMUNITY_WALLET();
+    function changeCommunityWallet(address _newCommunityWallet) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (_newCommunityWallet == address(0)) revert INVALID_COMMUNITY_WALLET();
         address oldCommunityWallet = communityWallet;
         communityWallet = _newCommunityWallet;
         emit COMMUNITY_WALLET_CHANGED(oldCommunityWallet, _newCommunityWallet);
