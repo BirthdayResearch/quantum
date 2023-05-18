@@ -142,3 +142,12 @@ export interface BridgeAnnouncement {
   version: string;
   url?: string;
 }
+
+/* To differentiate modal to display search queue tx */
+export enum ModalTypeToDisplay {
+  Search,
+  Pending,
+  RefundInProgress,
+  Unsuccessful,
+  Successful,
+}
