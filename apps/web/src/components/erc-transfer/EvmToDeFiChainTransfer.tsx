@@ -1,5 +1,5 @@
 import { ethers, utils } from "ethers";
-import { erc20ABI, useContractReads } from "wagmi";
+import { erc20ABI, useContractReads, useTransaction } from "wagmi";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
@@ -173,7 +173,6 @@ export default function EvmToDeFiChainTransfer({
       setQueueStorage("allocation-txn-hash-queue", null);
       setQueueStorage("reverted-queue", null);
       setQueueStorage("txn-form-queue", null);
-      createQueueTransaction(transactionHash);
     }
   }, [transactionHash]);
 
@@ -213,6 +212,19 @@ export default function EvmToDeFiChainTransfer({
     // If no approval required, perform bridge function directly
     writeBridgeToDeFiChain?.();
   };
+
+  const { isSuccess, isLoading } = useTransaction({
+    hash: transactionHash,
+    onSuccess: (data) => {
+      if (typeOfTransaction === FormOptions.QUEUE) {
+        createQueueTransaction(data.hash);
+      }
+    },
+  });
+
+  console.log(transactionHash);
+  console.log("isSuccessful", isSuccess);
+  console.log("isLoading", isLoading);
 
   const createQueueTransaction = async (
     transactionHash: string
