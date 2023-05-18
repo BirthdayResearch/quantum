@@ -62,7 +62,7 @@ export default function TransactionInProgressModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col md:mb-4 w-full md:px-6 h-full md:h-auto md:mt-0 -mt-[60px]">
+      <div className="flex flex-col md:mt-6 md:mb-4 w-full md:px-6 h-full md:h-auto -mt-[60px]">
         {type === ModalTypeToDisplay.Unsuccessful && (
           <Link
             href="https://birthdayresearch.notion.site/Error-Codes-d5c0bfd68359466e88223791e69adb4f"
@@ -76,10 +76,10 @@ export default function TransactionInProgressModal({
             </span>
           </Link>
         )}
-        <div className="font-bold md:-mt-6 lg:mt-0 text-2xl md:text-xl lg:text-2xl leading-8 md:leading-7 lg:!leading-8 text-dark-1000 tracking-[0.01em]">
+        <div className="font-bold text-2xl md:text-xl lg:text-2xl leading-8 md:leading-7 lg:!leading-8 text-dark-1000 tracking-[0.01em]">
           {titles[type]}
         </div>
-        <div className="text-sm lg:text-base lg:leading-5 w-10/12 text-dark-700 mt-1 mb-4 md:mb-5 lg:mb-4">
+        <div className="text-sm lg:text-base leading-5 w-10/12 text-dark-700 mt-1 mb-4 md:mb-5 lg:mb-4">
           {descriptions[type]}
         </div>
 
