@@ -438,7 +438,7 @@ export default function BridgeForm({
     ) {
       setShowInstantForm(false);
     }
-  }, [txnHash]);
+  }, []);
   return (
     <div
       className={clsx(
