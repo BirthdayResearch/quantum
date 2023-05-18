@@ -106,7 +106,7 @@ export default function ConfirmationProgress({
           <div className="flex text-sm text-dark-700">
             {isApiSuccess || isConfirmed ? (
               <span
-                className={clsx("font-semibold text-brand-100", {
+                className={clsx("font-semibold text-dark-1000", {
                   "text-valid": isConfirmed,
                   "text-warning": isReverted,
                   "text-error": isUnsentFund,
@@ -123,7 +123,7 @@ export default function ConfirmationProgress({
             <div
               style={{ width: `${valuePercentage}%` }}
               className={clsx(
-                "h-full rounded-md mt-1",
+                "h-full rounded-md mt-2",
                 isConfirmed ? "bg-valid" : "bg-brand-100"
               )}
             />
