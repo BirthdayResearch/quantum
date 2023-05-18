@@ -1,5 +1,10 @@
 import { ethers, utils } from "ethers";
-import { erc20ABI, useContractReads, useTransaction } from "wagmi";
+import {
+  erc20ABI,
+  useContractReads,
+  useTransaction,
+  useWaitForTransaction,
+} from "wagmi";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
@@ -173,6 +178,7 @@ export default function EvmToDeFiChainTransfer({
       setQueueStorage("allocation-txn-hash-queue", null);
       setQueueStorage("reverted-queue", null);
       setQueueStorage("txn-form-queue", null);
+      setBridgeStatus(BridgeStatus.QueueingTransaction);
     }
   }, [transactionHash]);
 
@@ -213,12 +219,16 @@ export default function EvmToDeFiChainTransfer({
     writeBridgeToDeFiChain?.();
   };
 
-  const { isSuccess, isLoading } = useTransaction({
+  const { isSuccess, isLoading } = useWaitForTransaction({
     hash: transactionHash,
     onSuccess: (data) => {
       if (typeOfTransaction === FormOptions.QUEUE) {
-        createQueueTransaction(data.hash);
+        createQueueTransaction(data.transactionHash);
       }
+    },
+    onError: (err) => {
+      console.error(err);
+      setErrorMessage("Unable to create a Queue transaction.");
     },
   });
 
@@ -229,26 +239,23 @@ export default function EvmToDeFiChainTransfer({
   const createQueueTransaction = async (
     transactionHash: string
   ): Promise<void> => {
-    setBridgeStatus(BridgeStatus.QueueingTransaction);
-    setTimeout(async () => {
-      await queueTransaction({ txnHash: transactionHash })
-        .then((queue) => {
-          if (queue["error"]) {
-            // TODO: handle create queue error
-            console.error(queue["error"]);
-            setErrorMessage("Unable to create a Queue transaction.");
-          } else {
-            console.log({ queue });
-            onClose(true);
-          }
-        })
-        .catch((e) => {
-          console.log(e);
+    await queueTransaction({ txnHash: transactionHash })
+      .then((queue) => {
+        if (queue["error"]) {
           // TODO: handle create queue error
+          console.error(queue["error"]);
           setErrorMessage("Unable to create a Queue transaction.");
-          console.error(e);
-        });
-    }, 15000); // wait for transaction to get confirmed
+        } else {
+          console.log({ queue });
+          onClose(true);
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+        // TODO: handle create queue error
+        setErrorMessage("Unable to create a Queue transaction.");
+        console.error(e);
+      });
   };
 
   const statusMessage = {
