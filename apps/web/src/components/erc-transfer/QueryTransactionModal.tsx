@@ -114,7 +114,7 @@ export default function QueryTransactionModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col mt-6 mb-4 w-full md:px-6">
-        <div className="font-bold text-2xl md:text-xl lg:text-2xl text-dark-900 md:-mt-6">
+        <div className="font-bold text-2xl md:text-xl lg:text-2xl text-dark-900">
           {title}
         </div>
         <div className="text-sm lg:text-base lg:leading-5 w-full text-dark-700 mt-1">
