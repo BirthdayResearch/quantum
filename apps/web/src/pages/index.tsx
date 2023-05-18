@@ -1,26 +1,19 @@
 import { useEffect, useState } from "react";
-import BigNumber from "bignumber.js";
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
 import MobileBottomMenu from "@components/MobileBottomMenu";
-import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import { useStorageContext } from "@contexts/StorageContext";
 import { FormOptions } from "@contexts/NetworkContext";
 import Logging from "@api/logging";
 import { getStorageItem } from "@utils/localStorage";
 import { DEFICHAIN_WALLET_URL } from "config/networkUrl";
-import {
-  CONFIRMATIONS_BLOCK_TOTAL,
-  EVM_CONFIRMATIONS_BLOCK_TOTAL,
-} from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
 import QueueForm from "../components/QueueForm";
 import FormTab from "../components/FormTab";
 import { useQueueStorageContext } from "../layouts/contexts/QueueStorageContext";
 
 function Home() {
-  const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
-  const { txnHash, setStorage } = useStorageContext();
+  const { txnHash } = useStorageContext();
   // Todo: update to useQueueStorageContext to get the storage for queue
   const { txnHash: txnHashQueue } = useQueueStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
@@ -43,21 +36,6 @@ function Home() {
     return () => window.removeEventListener("beforeunload", unloadCallback);
   }, [UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY]);
 
-  const getNumberOfConfirmations = () => {
-    let numOfConfirmations = BigNumber.min(
-      ethTxnStatus?.numberOfConfirmations,
-      EVM_CONFIRMATIONS_BLOCK_TOTAL
-    ).toString();
-
-    if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
-      numOfConfirmations = CONFIRMATIONS_BLOCK_TOTAL.toString();
-    } else if (txnHash.reverted !== undefined) {
-      numOfConfirmations = "0";
-    }
-
-    return numOfConfirmations;
-  };
-
   const [activeTab, setActiveTab] = useState(FormOptions.INSTANT);
 
   return (
@@ -66,7 +44,7 @@ function Home() {
         <div className="flex flex-col justify-between px-6 pb-7 md:px-0 md:pb-0 md:w-5/12 mt-6 mb-5 md:mb-0 lg:mt-12">
           <WelcomeHeader />
         </div>
-        <div className="flex-1 md:max-w-[50%] lg:min-w-[562px]">
+        <div className="flex-1 md:ml-6 lg:min-w-[562px] lg:ml-24">
           <FormTab activeTab={activeTab} setActiveTab={setActiveTab} />
           {/*
           // Todo : add condition for active tab to switch between <BridgeForm/> and <QueueForm/>

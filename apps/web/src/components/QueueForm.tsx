@@ -660,18 +660,18 @@ export default function QueueForm({
           onSecondaryButtonClick={utilityModalData.onSecondaryButtonClick}
         />
       )}
-      {showErcToDfcRestoreModal && (
-        <QueryTransactionModal
-          title="Recover transaction"
-          message="Enter your Ethereum transaction hash to load your transaction again for review"
-          inputLabel="Transaction hash"
-          inputPlaceholder="Enter transaction hash"
-          buttonLabel="Restore transaction"
-          onClose={() => setShowErcToDfcRestoreModal(false)}
-          // contractType={ContractType.Instant}
-          inputErrorMessage="Enter a valid transaction hash for Ethereum"
-        />
-      )}
+
+      <QueryTransactionModal
+        title="Recover transaction"
+        message="Enter your Ethereum transaction hash to load your transaction again for review"
+        inputLabel="Transaction hash"
+        inputPlaceholder="Enter transaction hash"
+        buttonLabel="Restore transaction"
+        onClose={() => setShowErcToDfcRestoreModal(false)}
+        isOpen={showErcToDfcRestoreModal}
+        // contractType={ContractType.Instant}
+        inputErrorMessage="Enter a valid transaction hash for Ethereum"
+      />
     </div>
   );
 }
