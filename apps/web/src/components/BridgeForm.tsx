@@ -116,6 +116,7 @@ export default function BridgeForm({
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showErcToDfcRestoreModal, setShowErcToDfcRestoreModal] =
     useState<boolean>(false);
+  const [showInstantForm, setShowInstantForm] = useState<boolean>(true);
 
   const [utilityModalData, setUtilityModalData] =
     useState<ModalConfigType | null>(null);
@@ -252,6 +253,19 @@ export default function BridgeForm({
     setStorage("dfc-address", null);
     setStorage("dfc-address-details", null);
     setHasUnconfirmedTxn(false);
+    setAmount("");
+    setAddressInput("");
+    setFromAddress(address || "");
+    setAmountErr("");
+    resetNetworkSelection();
+    resetNetworkEnv();
+  };
+
+  const onDone = () => {
+    setStorage("txn-form", null);
+    setStorage("dfc-address", null);
+    setStorage("dfc-address-details", null);
+    setShowInstantForm(true);
     setAmount("");
     setAddressInput("");
     setFromAddress(address || "");
@@ -414,6 +428,17 @@ export default function BridgeForm({
 
     return numOfConfirmations;
   };
+
+  useEffect(() => {
+    if (
+      txnHash.unconfirmed ||
+      txnHash.confirmed ||
+      txnHash.reverted ||
+      txnHash.unsentFund
+    ) {
+      setShowInstantForm(false);
+    }
+  }, [txnHash]);
   return (
     <div
       className={clsx(
@@ -423,10 +448,7 @@ export default function BridgeForm({
         activeTab === FormOptions.INSTANT ? "block" : "hidden"
       )}
     >
-      {txnHash.unconfirmed ||
-      txnHash.confirmed ||
-      txnHash.reverted ||
-      txnHash.unsentFund ? (
+      {!showInstantForm ? (
         <>
           <TransactionStatus
             txnHash={
@@ -673,12 +695,12 @@ export default function BridgeForm({
         </>
       )}
       <div className="mt-[50px] mx-auto w-[290px] lg:w-[344px]">
-        {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
+        {!showInstantForm &&
+        (txnHash.confirmed !== undefined || txnHash.reverted !== undefined) ? (
           <ActionButton
             label="Done"
-            variant="secondary"
-            onClick={() => onResetTransferForm()}
-            customStyle="mt-6 dark-section-bg"
+            onClick={() => onDone()}
+            customStyle="mt-6"
           />
         ) : (
           <ConnectKitButton.Custom>
