@@ -116,7 +116,6 @@ export default function BridgeForm({
   const [showConfirmModal, setShowConfirmModal] = useState<boolean>(false);
   const [showErcToDfcRestoreModal, setShowErcToDfcRestoreModal] =
     useState<boolean>(false);
-  const [showInstantForm, setShowInstantForm] = useState<boolean>(true);
 
   const [utilityModalData, setUtilityModalData] =
     useState<ModalConfigType | null>(null);
@@ -262,12 +261,10 @@ export default function BridgeForm({
   };
 
   const onDone = () => {
-    setStorage("txn-form", null);
-    setStorage("dfc-address", null);
-    setStorage("dfc-address-details", null);
-    setShowInstantForm(true);
-    setAmount("");
-    setAddressInput("");
+    setStorage("confirmed", null);
+    setStorage("allocationTxnHash", null);
+    setStorage("reverted", null);
+
     setFromAddress(address || "");
     setAmountErr("");
     resetNetworkSelection();
@@ -429,16 +426,6 @@ export default function BridgeForm({
     return numOfConfirmations;
   };
 
-  useEffect(() => {
-    if (
-      txnHash.unconfirmed ||
-      txnHash.confirmed ||
-      txnHash.reverted ||
-      txnHash.unsentFund
-    ) {
-      setShowInstantForm(false);
-    }
-  }, []);
   return (
     <div
       className={clsx(
@@ -448,7 +435,10 @@ export default function BridgeForm({
         activeTab === FormOptions.INSTANT ? "block" : "hidden"
       )}
     >
-      {!showInstantForm ? (
+      {txnHash.unconfirmed ||
+      txnHash.confirmed ||
+      txnHash.reverted ||
+      txnHash.unsentFund ? (
         <>
           <TransactionStatus
             txnHash={
@@ -695,8 +685,7 @@ export default function BridgeForm({
         </>
       )}
       <div className="mt-[50px] mx-auto w-[290px] lg:w-[344px]">
-        {!showInstantForm &&
-        (txnHash.confirmed !== undefined || txnHash.reverted !== undefined) ? (
+        {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <ActionButton
             label="Done"
             onClick={() => onDone()}
