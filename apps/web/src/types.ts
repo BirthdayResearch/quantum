@@ -150,5 +150,6 @@ export enum ModalTypeToDisplay {
   RefundInProgress,
   Unsuccessful,
   Refunded, // Refund successful
-  Completed, // Transaction completed
+  Completed, // Queue's transaction completed
+  RefundRequested,
 }

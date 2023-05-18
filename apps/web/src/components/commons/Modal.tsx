@@ -32,7 +32,7 @@ export default function Modal({
       <Dialog.Panel className="transform transition-all fixed inset-0 bg-dark-00 bg-opacity-70 backdrop-blur-[18px] overflow-auto">
         <div
           className={clsx(
-            "relative w-full h-full dark-card-bg-image border-dark-card-stroke backdrop-blur-[18px] m-auto px-6 pt-8 pb-12",
+            "relative z-20 w-full h-full dark-card-bg-image border-dark-card-stroke backdrop-blur-[18px] m-auto px-6 pt-8 pb-12",
             "md:w-[626px] md:h-auto md:top-[calc(50%+30px)] md:-translate-y-1/2 md:rounded-xl md:border md:p-8 overflow-auto",
             customStyle
           )}
@@ -55,7 +55,7 @@ export default function Modal({
             {onClose && (
               <FiXCircle
                 size={isMobile ? 24 : 28}
-                className="text-dark-900 cursor-pointer hover:opacity-70 text-2xl md:text-[28px]"
+                className="text-dark-900 cursor-pointer hover:opacity-70 text-2xl md:text-[28px] relative z-10"
                 onClick={onClose}
               />
             )}
