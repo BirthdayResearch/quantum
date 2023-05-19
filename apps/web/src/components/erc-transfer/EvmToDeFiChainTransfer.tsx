@@ -216,19 +216,13 @@ export default function EvmToDeFiChainTransfer({
   };
 
   const createQueueTransaction = async (txnHash: string): Promise<void> => {
-    await queueTransaction({ txnHash })
-      .then((queue) => {
-        if (queue["error"]) {
-          console.error(queue["error"]);
-          setErrorMessage("Unable to create a Queue transaction.");
-        } else {
-          onClose(true);
-        }
-      })
-      .catch((e) => {
-        console.error(e);
-        setErrorMessage("Unable to create a Queue transaction.");
-      });
+    try {
+      await queueTransaction({ txnHash }).unwrap();
+      onClose(true);
+    } catch (e) {
+      console.error(e);
+      setErrorMessage("Unable to create a Queue transaction.");
+    }
   };
 
   // Call create queue api when transaction hash is confirmed
