@@ -1,10 +1,6 @@
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { useQueueStorageContext } from "@contexts/QueueStorageContext";
-import {
-  //   useAllocateDfcFundMutation,
-  useCreateEthQueueTxnMutation,
-  useVerifyEthQueueTxnMutation,
-} from "@store/index";
+import { useVerifyEthQueueTxnMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
 import { useEffect, useState } from "react";
 
@@ -14,10 +10,8 @@ import { useEffect, useState } from "react";
 export default function useWatchEthQueueTxn() {
   const { networkEnv } = useNetworkEnvironmentContext();
   const { txnHash, setStorage } = useQueueStorageContext();
-  console.log(txnHash);
 
-  const [createEthQueueTxn] = useCreateEthQueueTxnMutation();
-  const [verifyEthQueueTxn] = useCreateEthQueueTxnMutation();
+  const [verifyEthQueueTxn] = useVerifyEthQueueTxnMutation();
 
   const [isQueueApiSuccess, setIsQueueApiSuccess] = useState(false);
   const [ethQueueTxnStatus, setEthQueueTxnStatus] = useState<{
@@ -36,30 +30,22 @@ export default function useWatchEthQueueTxn() {
           return;
         }
 
-        const ethQueueTxn = await createEthQueueTxn({
-          txnHash: unconfirmed,
-        }).unwrap();
-
-        console.log(ethQueueTxn);
-
-        if (!ethQueueTxn) {
-          return;
-        }
-
         const confirmEthTxnData = await verifyEthQueueTxn({
           txnHash: unconfirmed,
         }).unwrap();
-
         console.log(confirmEthTxnData);
 
         setEthQueueTxnStatus({
           isConfirmed: confirmEthTxnData?.isConfirmed,
           numberOfConfirmations: confirmEthTxnData?.numberOfConfirmations,
         });
-        console.log(ethQueueTxnStatus);
+        console.log(confirmEthTxnData);
 
         if (confirmEthTxnData?.isConfirmed) {
           setIsQueueApiSuccess(true);
+          setStorage("confirmed-queue", unconfirmed ?? null);
+          setStorage("unconfirmed-queue", null);
+          setStorage("txn-form-queue", null);
         }
 
         setIsQueueApiSuccess(true);

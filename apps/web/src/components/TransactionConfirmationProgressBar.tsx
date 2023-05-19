@@ -89,8 +89,8 @@ export default function ConfirmationProgress({
             }}
           >
             <div className="text-center">
-              {isApiSuccess || isConfirmed ? (
-                <div className="text-lg font-bold text-dark-1000">{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
+              {!isApiSuccess || isConfirmed ? (
+                <div className="text-lg font-semibold text-dark-1000">{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
               ) : (
                 <SkeletonLoader isDesktop />
               )}

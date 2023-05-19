@@ -62,7 +62,6 @@ export default function QueueForm({
   const { Erc20Tokens } = useContractContext();
   const { dfcAddress, dfcAddressDetails, txnForm, setStorage, txnHash } =
     useQueueStorageContext();
-  const { ethQueueTxnStatus, isQueueApiSuccess } = useWatchEthQueueTxn();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -76,6 +75,8 @@ export default function QueueForm({
     useState<ModalConfigType | null>(null);
 
   const [fee, feeSymbol] = useTransferFee(amount);
+
+  const { ethQueueTxnStatus, isQueueApiSuccess } = useWatchEthQueueTxn();
 
   const { address, isConnected } = useAccount();
   const isSendingFromEthNetwork =
@@ -216,6 +217,13 @@ export default function QueueForm({
     resetNetworkEnv();
   };
 
+  const onDone = () => {
+    setStorage("confirmed-queue", null);
+    setStorage("allocation-txn-hash-queue", null);
+    setStorage("reverted-queue", null);
+    onResetTransferForm();
+  };
+
   const onRefreshEvmBalance = async () => {
     await refetchEvmBalance();
   };
@@ -223,7 +231,7 @@ export default function QueueForm({
   const getActionBtnLabel = () => {
     switch (true) {
       case hasPendingTxn:
-        return "Pending Transaction";
+        return "Awaiting confirmation";
       case hasUnconfirmedTxn:
         return "Retry transfer";
       case isConnected:
@@ -584,17 +592,25 @@ export default function QueueForm({
 
       <div className="mt-8 px-6 md:px-4 lg:mt-12 lg:mb-0 lg:px-0 xl:px-20">
         {/* Todo: to update the button when Review modal is ready */}
-        <ConnectKitButton.Custom>
-          {({ show }) => (
-            <ActionButton
-              testId="transfer-btn"
-              label={getActionBtnLabel()}
-              isLoading={hasPendingTxn || isVerifyingTransaction}
-              disabled={(isConnected && !isFormValid) || hasPendingTxn}
-              onClick={!isConnected ? show : () => onTransferTokens()}
-            />
-          )}
-        </ConnectKitButton.Custom>
+        {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
+          <ActionButton
+            label="Done"
+            onClick={() => onDone()}
+            customStyle="mt-6"
+          />
+        ) : (
+          <ConnectKitButton.Custom>
+            {({ show }) => (
+              <ActionButton
+                testId="transfer-btn"
+                label={getActionBtnLabel()}
+                isLoading={hasPendingTxn || isVerifyingTransaction}
+                disabled={(isConnected && !isFormValid) || hasPendingTxn}
+                onClick={!isConnected ? show : () => onTransferTokens()}
+              />
+            )}
+          </ConnectKitButton.Custom>
+        )}
         {isConnected &&
           selectedQueueNetworkA.name === Network.Ethereum &&
           !amount &&

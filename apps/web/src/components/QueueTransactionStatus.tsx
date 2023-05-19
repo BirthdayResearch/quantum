@@ -142,7 +142,9 @@ export default function QueueTransactionStatus({
         })}
       >
         <div className="flex-1 flex-col w-full">
-          <div className="leading-5 lg:text-xl font-semibold">{title}</div>
+          <div className="leading-5 lg:text-xl tracking-normal lg:tracking-[0.01em] font-semibold">
+            {title}
+          </div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
           <div
             className={clsx("flex mt-6 text-xs lg:text-base lg:leading-5", {
