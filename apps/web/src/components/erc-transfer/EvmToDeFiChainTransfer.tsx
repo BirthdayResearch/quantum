@@ -1,10 +1,5 @@
 import { ethers, utils } from "ethers";
-import {
-  erc20ABI,
-  useContractReads,
-  useTransaction,
-  useWaitForTransaction,
-} from "wagmi";
+import { erc20ABI, useContractReads, useWaitForTransaction } from "wagmi";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
@@ -20,6 +15,8 @@ import ErrorModal from "@components/commons/ErrorModal";
 import Modal from "@components/commons/Modal";
 import { Erc20Token, TransferData } from "types";
 import { useStorageContext } from "@contexts/StorageContext";
+import { useQueueStorageContext } from "@contexts/QueueStorageContext";
+import { useQueueTransactionMutation } from "@store/index";
 import {
   BridgeStatus,
   DISCLAIMER_MESSAGE,
@@ -29,8 +26,6 @@ import {
   FormOptions,
   useNetworkContext,
 } from "../../layouts/contexts/NetworkContext";
-import { useQueueStorageContext } from "@contexts/QueueStorageContext";
-import { useQueueTransactionMutation } from "@store/index";
 
 export default function EvmToDeFiChainTransfer({
   data,
@@ -220,27 +215,11 @@ export default function EvmToDeFiChainTransfer({
     writeBridgeToDeFiChain?.();
   };
 
-  // Call create queue api when transaction hash is confirmed
-  useWaitForTransaction({
-    hash: transactionHash,
-    onSuccess: async (data) => {
-      if (typeOfTransaction === FormOptions.QUEUE) {
-        await createQueueTransaction(data.transactionHash);
-      }
-    },
-    onError: (err) => {
-      console.error(err);
-      setErrorMessage("Unable to create a Queue transaction.");
-    },
-  });
-
-  const createQueueTransaction = async (
-    transactionHash: string
-  ): Promise<void> => {
-    await queueTransaction({ txnHash: transactionHash })
+  const createQueueTransaction = async (txnHash: string): Promise<void> => {
+    await queueTransaction({ txnHash })
       .then((queue) => {
-        if (queue["error"]) {
-          console.error(queue["error"]);
+        if (queue.error) {
+          console.error(queue.error);
           setErrorMessage("Unable to create a Queue transaction.");
         } else {
           onClose(true);
@@ -251,6 +230,20 @@ export default function EvmToDeFiChainTransfer({
         setErrorMessage("Unable to create a Queue transaction.");
       });
   };
+
+  // Call create queue api when transaction hash is confirmed
+  useWaitForTransaction({
+    hash: transactionHash,
+    onSuccess: async (transactionReceipt) => {
+      if (typeOfTransaction === FormOptions.QUEUE) {
+        await createQueueTransaction(transactionReceipt.transactionHash);
+      }
+    },
+    onError: (err) => {
+      console.error(err);
+      setErrorMessage("Unable to create a Queue transaction.");
+    },
+  });
 
   const statusMessage = {
     [BridgeStatus.IsTokenApprovalInProgress]: {

@@ -12,8 +12,8 @@ import {
 } from "wagmi";
 import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
-import { ETHEREUM_SYMBOL } from "../constants";
 import { FormOptions, useNetworkContext } from "@contexts/NetworkContext";
+import { ETHEREUM_SYMBOL } from "../constants";
 
 export interface EventErrorI {
   customErrorDisplay?:
