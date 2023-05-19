@@ -109,6 +109,7 @@ export interface ContractContextI {
   ExplorerURL: string;
   HotWalletAddress: string;
   BridgeV1: ContractConfigI;
+  BridgeQueue: ContractConfigI;
   Erc20Tokens: Record<Erc20Token, ContractConfigI>;
 }
 
@@ -138,6 +139,34 @@ export interface BridgeAnnouncement {
   version: string;
   url?: string;
 }
+
+export interface Queue {
+  id: string;
+  transactionHash: string;
+  ethereumStatus: EthereumTransactionStatus;
+  status: QueueStatus;
+  createdAt: Date;
+  updatedAt: Date | null;
+  amount: string | null;
+  tokenSymbol: string | null;
+  defichainAddress: string;
+  expiryDate: Date;
+  adminQueue?: null | {
+    sendTransactionHash: string | null;
+  };
+}
+
+export type EthereumTransactionStatus = "NOT_CONFIRMED" | "CONFIRMED";
+
+export type QueueStatus =
+  | "DRAFT"
+  | "IN_PROGRESS"
+  | "COMPLETED"
+  | "ERROR"
+  | "REJECTED"
+  | "EXPIRED"
+  | "REFUND_REQUESTED"
+  | "REFUNDED";
 
 /* To differentiate modal to display search queue tx */
 export enum ModalTypeToDisplay {
