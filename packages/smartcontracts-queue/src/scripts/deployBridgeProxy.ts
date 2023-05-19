@@ -9,6 +9,7 @@ export async function deployBridgeProxy({
   fee,
   communityWalletAddress,
   bridgeQueueAddress,
+  supportedTokenAddresses,
 }: InputsForInitialization): Promise<BridgeQueueProxy> {
   const bridgeProxyContract = await ethers.getContractFactory('BridgeQueueProxy');
   const encodedData = BridgeQueue__factory.createInterface().encodeFunctionData('initialize', [
@@ -16,11 +17,11 @@ export async function deployBridgeProxy({
     coldWalletAddress,
     fee,
     communityWalletAddress,
+    supportedTokenAddresses,
   ]);
   const bridgeQueueProxy = await bridgeProxyContract.deploy(bridgeQueueAddress, encodedData);
   await bridgeQueueProxy.deployTransaction.wait(6);
   console.log('Proxy Address: ', bridgeQueueProxy.address);
-  console.log('Verifying...');
   await verify({
     contractAddress: bridgeQueueProxy.address,
     args: [bridgeQueueAddress, encodedData],
@@ -35,4 +36,5 @@ interface InputsForInitialization {
   fee: string;
   communityWalletAddress: string;
   bridgeQueueAddress: string;
+  supportedTokenAddresses: string[];
 }
