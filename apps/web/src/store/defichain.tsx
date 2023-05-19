@@ -32,7 +32,6 @@ const staggeredBaseQueryWithBailOut = retry(
 
 export const PATH_DFC_WALLET = "defichain/wallet";
 export const PATH_ETHEREUM = "ethereum";
-export const PATH_ETH_QUEUE = "ethereum/queue";
 
 // eslint-disable-next-line import/prefer-default-export
 export const bridgeApi = createApi({
@@ -95,40 +94,6 @@ export const bridgeApi = createApi({
     >({
       query: ({ baseUrl, txnHash }) => ({
         url: `${baseUrl}/${PATH_ETHEREUM}/handleTransaction`,
-        body: {
-          transactionHash: txnHash,
-        },
-        method: "POST",
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      }),
-      extraOptions: { maxRetries: 0 },
-    }),
-    createEthQueueTxn: builder.mutation<
-      { numberOfConfirmations: string; isConfirmed: boolean },
-      any
-    >({
-      query: ({ baseUrl, txnHash }) => ({
-        url: `${baseUrl}/${PATH_ETH_QUEUE}`,
-        body: {
-          transactionHash: txnHash,
-        },
-        method: "POST",
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json; charset=UTF-8",
-        },
-      }),
-      extraOptions: { maxRetries: 0 },
-    }),
-    verifyEthQueueTxn: builder.mutation<
-      { numberOfConfirmations: string; isConfirmed: boolean },
-      any
-    >({
-      query: ({ baseUrl, txnHash }) => ({
-        url: `${baseUrl}/${PATH_ETH_QUEUE}/verify`,
         body: {
           transactionHash: txnHash,
         },
@@ -211,6 +176,23 @@ export const bridgeApi = createApi({
     queueTransaction: builder.mutation<Queue, any>({
       query: ({ baseUrl, txnHash }) => ({
         url: `${baseUrl}/${PATH_ETHEREUM}/queue`,
+        body: {
+          transactionHash: txnHash,
+        },
+        method: "POST",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      }),
+      extraOptions: { maxRetries: 0 },
+    }),
+    verifyEthQueueTxn: builder.mutation<
+      { numberOfConfirmations: string; isConfirmed: boolean },
+      any
+    >({
+      query: ({ baseUrl, txnHash }) => ({
+        url: `${baseUrl}/${PATH_ETHEREUM}/queue/verify`,
         body: {
           transactionHash: txnHash,
         },
