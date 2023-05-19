@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { ethers } from 'ethers';
 
 import { SupportedEVMTokenSymbols } from '../../AppConfig';
 import { SemaphoreCache } from '../../libs/caches/SemaphoreCache';
@@ -33,5 +34,13 @@ export class EthereumController {
     @Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
   ): Promise<{ transactionHash: string; isConfirmed: boolean; numberOfConfirmationsDfc: number }> {
     return this.evmTransactionConfirmerService.allocateDFCFund(transactionHash);
+  }
+
+  @Get('getTransaction/:transactionHash')
+  @Throttle(35, 60)
+  async getTransaction(
+    @Param('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
+  ): Promise<ethers.providers.TransactionResponse> {
+    return this.evmTransactionConfirmerService.getTransaction(transactionHash);
   }
 }

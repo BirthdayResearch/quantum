@@ -423,6 +423,10 @@ export class EVMTransactionConfirmerService {
 
     return { ...dTokenDetails, amount: transferAmount, toAddress };
   }
+
+  async getTransaction(transactionHash: string): Promise<ethers.providers.TransactionResponse> {
+    return this.ethersRpcProvider.getTransaction(transactionHash);
+  }
 }
 
 interface SignClaim {
