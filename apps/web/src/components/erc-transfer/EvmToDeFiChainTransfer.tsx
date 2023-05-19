@@ -220,7 +220,8 @@ export default function EvmToDeFiChainTransfer({
     writeBridgeToDeFiChain?.();
   };
 
-  const {} = useWaitForTransaction({
+  // Call create queue api when transaction hash is confirmed
+  useWaitForTransaction({
     hash: transactionHash,
     onSuccess: async (data) => {
       if (typeOfTransaction === FormOptions.QUEUE) {
