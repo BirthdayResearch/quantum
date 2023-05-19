@@ -5,6 +5,7 @@ import {
   BridgeAnnouncement,
   BridgeSettings,
   BridgeVersion,
+  Queue,
 } from "types";
 import { HttpStatusCode } from "axios";
 import type { RootState } from "@store/reducers/rootReducer";
@@ -206,6 +207,20 @@ export const bridgeApi = createApi({
       query: ({ baseUrl }) => ({
         url: `${baseUrl}/bridge/announcements`,
       }),
+    }),
+    queueTransaction: builder.mutation<Queue, any>({
+      query: ({ baseUrl, txnHash }) => ({
+        url: `${baseUrl}/${PATH_ETHEREUM}/queue`,
+        body: {
+          transactionHash: txnHash,
+        },
+        method: "POST",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      }),
+      extraOptions: { maxRetries: 0 },
     }),
   }),
 });
