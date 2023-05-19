@@ -1,6 +1,7 @@
 import { ContractContextI } from "types";
 import BridgeV1 from "./ABIs/mainnet/BridgeV1.json";
 import BridgeV1Testnet from "./ABIs/testnet/BridgeV1.json";
+import BridgeQueueTestnet from "./ABIs/testnet/BridgeQueue.json";
 
 export const MAINNET_CONFIG: ContractContextI = {
   EthereumRpcUrl:
@@ -9,6 +10,10 @@ export const MAINNET_CONFIG: ContractContextI = {
   BridgeV1: {
     address: "0x54346d39976629b65ba54eac1c9ef0af3be1921b",
     abi: BridgeV1,
+  },
+  BridgeQueue: {
+    address: "0x747d2a57d737085AC588e780BB593d5754B9f793", // TODO: update to mainnet contract address
+    abi: BridgeQueueTestnet, // TODO: update to use mainnet ABI
   },
   HotWalletAddress: "df1qgq0rjw09hr6vr7sny2m55hkr5qgze5l9hcm0lg",
   Erc20Tokens: {
@@ -28,6 +33,10 @@ export const TESTNET_CONFIG: ContractContextI = {
   BridgeV1: {
     address: "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef",
     abi: BridgeV1Testnet,
+  },
+  BridgeQueue: {
+    address: "0x747d2a57d737085AC588e780BB593d5754B9f793",
+    abi: BridgeQueueTestnet,
   },
   HotWalletAddress: "tf1qsckyp02vdzaf95cjl5dr95n8stcalze0pfswcp",
   Erc20Tokens: {
