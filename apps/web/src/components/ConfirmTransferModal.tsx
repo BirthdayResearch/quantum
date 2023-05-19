@@ -2,7 +2,7 @@ import clsx from "clsx";
 import BigNumber from "bignumber.js";
 import Image from "next/image";
 import { AddressDetails, Network, RowDataI, TransferData } from "types";
-import { useNetworkContext } from "@contexts/NetworkContext";
+import { useNetworkContext, FormOptions } from "@contexts/NetworkContext";
 import useDisableEscapeKey from "@hooks/useDisableEscapeKey";
 import useTransferFee from "@hooks/useTransferFee";
 import IconTooltip from "@components/commons/IconTooltip";
@@ -10,7 +10,7 @@ import Modal from "@components/commons/Modal";
 import NumericFormat from "@components/commons/NumericFormat";
 import DeFiChainToERC20Transfer from "@components/erc-transfer/DeFiChainToERC20Transfer";
 import EvmToDeFiChainTransfer from "@components/erc-transfer/EvmToDeFiChainTransfer";
-import { FEES_INFO } from "../constants";
+import { FEES_INFO, PROCESSING_TIME_INFO } from "../constants";
 
 function RowData({
   data,
@@ -121,36 +121,66 @@ export default function ConfirmTransferModal({
     selectedTokensA,
     selectedNetworkB,
     selectedTokensB,
+    selectedQueueNetworkA,
+    selectedQueueTokensA,
+    selectedQueueNetworkB,
+    selectedQueueTokensB,
+    typeOfTransaction,
   } = useNetworkContext();
   useDisableEscapeKey(show);
 
   const [fee, feeSymbol] = useTransferFee(amount);
+  let formSelectedNetworkA;
+  let formSelectedNetworkB;
+  let formSelectedTokensA;
+  let formSelectedTokensB;
+
+  if (typeOfTransaction === FormOptions.INSTANT) {
+    formSelectedNetworkA = selectedNetworkA;
+    formSelectedNetworkB = selectedNetworkB;
+    formSelectedTokensA = selectedTokensA;
+    formSelectedTokensB = selectedTokensB;
+  } else {
+    formSelectedNetworkA = selectedQueueNetworkA;
+    formSelectedNetworkB = selectedQueueNetworkB;
+    formSelectedTokensA = selectedQueueTokensA;
+    formSelectedTokensB = selectedQueueTokensB;
+  }
 
   // Direction of transfer
-  const isSendingToDFC = selectedNetworkB.name === Network.DeFiChain;
+  const isSendingToDFC = formSelectedNetworkB.name === Network.DeFiChain;
 
   const data: TransferData = {
     from: {
       address: (isSendingToDFC ? fromAddress : "DeFiChain address") as string,
-      networkName: Network[selectedNetworkA.name],
-      tokenName: selectedTokensA.tokenA.name,
-      tokenSymbol: selectedTokensA.tokenA.symbol,
+      networkName: Network[formSelectedNetworkA.name],
+      tokenName: formSelectedTokensA.tokenA.name,
+      tokenSymbol: formSelectedTokensA.tokenA.symbol,
       amount: new BigNumber(amount).negated(),
     },
     to: {
       address: toAddress,
-      networkName: Network[selectedNetworkB.name],
-      tokenName: selectedTokensB.tokenA.name,
-      tokenSymbol: selectedTokensB.tokenA.symbol,
+      networkName: Network[formSelectedNetworkB.name],
+      tokenName: formSelectedTokensB.tokenA.name,
+      tokenSymbol: formSelectedTokensB.tokenA.symbol,
       amount: new BigNumber(amount),
     },
   };
 
   return (
     <Modal
-      title="Review transaction"
+      title={
+        typeOfTransaction === FormOptions.INSTANT
+          ? "Review transaction"
+          : "Review queue transaction"
+      }
       isOpen={show}
       onClose={() => onClose(false)}
+      subtitle={
+        typeOfTransaction === FormOptions.QUEUE
+          ? "Transaction will be sent to queue."
+          : undefined
+      }
     >
       <RowData
         data={data.from}
@@ -168,6 +198,27 @@ export default function ConfirmTransferModal({
       />
       <div className="w-full border-t border-t-dark-200 md:mt-3" />
 
+      {/* Processing time */}
+      {typeOfTransaction === FormOptions.QUEUE && (
+        <div className="flex justify-between mt-6 md:mt-5 py-2">
+          <div className="inline-flex items-center">
+            <span className="text-dark-700 text-sm md:text-base">
+              Processing time
+            </span>
+            <div className="ml-2">
+              <IconTooltip
+                title={PROCESSING_TIME_INFO.title}
+                content={PROCESSING_TIME_INFO.content}
+                position="top"
+              />
+            </div>
+          </div>
+          <div className="text-right text-dark-900 tracking-[0.01em] md:tracking-normal">
+            up to 72 hours
+          </div>
+        </div>
+      )}
+
       {/* Fees */}
       <div className="flex justify-between mt-6 md:mt-5 py-2">
         <div className="inline-flex items-center">
@@ -176,7 +227,7 @@ export default function ConfirmTransferModal({
             <IconTooltip
               title={FEES_INFO.title}
               content={FEES_INFO.content}
-              position="right"
+              position="top"
             />
           </div>
         </div>
