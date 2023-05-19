@@ -7,6 +7,7 @@ import useResponsive from "@hooks/useResponsive";
 import truncateTextFromMiddle from "@utils/textHelper";
 import SearchTransactionIcon from "@components/icons/SearchTransactionIcon";
 import clsx from "clsx";
+import { IoMdCheckmarkCircle } from "react-icons/io";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionCompletionModalProps {
@@ -73,8 +74,9 @@ export default function TransactionCompletionModal({
 
   const firstRowResult = {
     [ModalTypeToDisplay.Refunded]: `${amount} ${token}`,
-    [ModalTypeToDisplay.Completed]:
-      dayjs(initiatedDate).format("DD/MM/YYYY HH:mm A"),
+    [ModalTypeToDisplay.Completed]: dayjs(initiatedDate).format(
+      "DD/MM/YYYY, HH:mm A"
+    ),
     [ModalTypeToDisplay.RefundRequested]: `${amount} ${token}`,
   };
   const secondRowResult = {
@@ -83,8 +85,9 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.RefundRequested]: destinationAddress,
   };
   const thirdRowResult = {
-    [ModalTypeToDisplay.Refunded]:
-      dayjs(initiatedDate).format("DD/MM/YYYY HH:mm A"),
+    [ModalTypeToDisplay.Refunded]: dayjs(initiatedDate).format(
+      "DD/MM/YYYY, HH:mm A"
+    ),
     [ModalTypeToDisplay.Completed]: destinationAddress,
   };
 
@@ -101,7 +104,10 @@ export default function TransactionCompletionModal({
           {type === ModalTypeToDisplay.RefundRequested ? (
             <SearchTransactionIcon customStyle="mb-4 mr-0 mt-0" />
           ) : (
-            <div className="content-[url('/check-24x24.svg')] w-[49.5px] pb-4" />
+            <IoMdCheckmarkCircle
+              className="mb-4"
+              style={{ color: "#0CC72C", width: "49.5px", height: "49.5px" }}
+            />
           )}
 
           <div className="font-bold text-2xl md:text-2xl md:leading-8 text-dark-900 md:text-dark-1000 md:text-center">
@@ -112,7 +118,7 @@ export default function TransactionCompletionModal({
           </div>
         </div>
 
-        <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7 lg:mb-9 items-center md:flex md:justify-center">
+        <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7 items-center md:flex md:justify-center">
           TX Hash:
           <span className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]">
             {isMobile ? truncateTextFromMiddle(txHash, 15) : txHash}
@@ -122,7 +128,7 @@ export default function TransactionCompletionModal({
         {/* Horizontal line */}
         <div className="h-px bg-dark-200 w-full md:mb-5 mb-6 py-px" />
 
-        <div className="text-dark-900 md:text-xl font-semibold md:mb-6 mb-8 tracking-[0.01em]">
+        <div className="text-dark-900 text-lg lg:text-xl font-semibold md:mb-6 mb-8 tracking-[0.01em]">
           Transaction details
         </div>
 
@@ -171,7 +177,7 @@ export default function TransactionCompletionModal({
             isExternalArrowIcon
             label={buttonLabels[type]}
             customIconStyle="ml-2"
-            customStyle="bg-dark-1000 text-base text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit lg:w-[418px] max-w-[418px] min-w-[240px] min-h-[48px] lg:min-h-[52px]"
+            customStyle="bg-dark-1000 text-sm lg:text-base lg:!py-3 lg:px-[72px] lg:w-[418px] max-w-[418px] min-w-[240px] min-h-[48px] lg:min-h-[52px]"
             onClick={() => {
               const url =
                 type !== ModalTypeToDisplay.RefundRequested
