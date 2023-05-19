@@ -35,7 +35,7 @@ export interface NetworkI<T> {
   }[];
 }
 
-export const FALLBACK_NETWORK_TOKENS_LIST: [
+export const FALLBACK_SUPPORTED_TOKENS_LIST: [
   NetworkI<Erc20Token>,
   NetworkI<string>
 ] = [
@@ -85,10 +85,12 @@ interface NetworkProviderProps {
 
 export function NetworkProvider({
   children,
-  supportedTokens = FALLBACK_NETWORK_TOKENS_LIST,
+  supportedTokens = FALLBACK_SUPPORTED_TOKENS_LIST,
 }: PropsWithChildren<NetworkProviderProps>): JSX.Element | null {
   const supportedNetworksTokens =
-    supportedTokens.length > 0 ? supportedTokens : FALLBACK_NETWORK_TOKENS_LIST;
+    supportedTokens.length > 0
+      ? supportedTokens
+      : FALLBACK_SUPPORTED_TOKENS_LIST;
   const [defaultNetworkA, defaultNetworkB] = supportedNetworksTokens;
   const [selectedNetworkA, setSelectedNetworkA] =
     useState<NetworkOptionsI>(defaultNetworkA);
