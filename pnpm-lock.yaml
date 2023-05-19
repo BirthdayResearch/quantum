@@ -352,6 +352,9 @@ importers:
       '@openzeppelin/contracts-upgradeable':
         specifier: 4.8.3
         version: 4.8.3
+      cross-fetch:
+        specifier: ^3.1.6
+        version: 3.1.6
       dotenv:
         specifier: ^16.0.3
         version: 16.0.3

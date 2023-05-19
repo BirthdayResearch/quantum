@@ -1,1 +1,2 @@
-export * from "./generated";
+export * from './containers';
+export * from './generated';

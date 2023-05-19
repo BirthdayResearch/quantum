@@ -21,7 +21,19 @@ subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async (args, hre, runSuper) => {
 });
 
 const config: HardhatUserConfig = {
-  solidity: '0.8.18',
+  solidity: {
+    compilers: [
+      {
+        version: '0.8.18',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
+    ],
+  },
   typechain: {
     outDir: './generated',
     target: 'ethers-v5',
