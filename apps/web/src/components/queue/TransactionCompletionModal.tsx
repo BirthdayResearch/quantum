@@ -113,7 +113,17 @@ export default function TransactionCompletionModal({
           <div className="font-bold text-2xl md:text-2xl md:leading-8 text-dark-900 md:text-dark-1000 md:text-center">
             {titles[type]}
           </div>
-          <div className="text-sm lg:text-base leading-5 md:w-10/12 text-dark-700 mt-1 mb-4 md:text-center">
+          <div
+            className={clsx(
+              "text-sm lg:text-base leading-5  text-dark-700 mt-1 mb-4 md:text-center",
+              {
+                "md:w-10/12": type === ModalTypeToDisplay.RefundRequested,
+              },
+              {
+                "md:w-8/12": type !== ModalTypeToDisplay.RefundRequested,
+              }
+            )}
+          >
             {descriptions[type]}
           </div>
         </div>
