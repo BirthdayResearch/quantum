@@ -63,23 +63,23 @@ describe('Bridge Contract', () => {
 
   describe('Proxy contract deployment', () => {
     it("Contract code should not be equal to '0x'", async () => {
-      //   await expect(hardhatNetwork.ethersRpcProvider.getCode(bridgeUpgradeable.address)).resolves.not.toStrictEqual(
-      //     '0x',
-      //   );
+      await expect(hardhatNetwork.ethersRpcProvider.getCode(bridgeUpgradeable.address)).resolves.not.toStrictEqual(
+        '0x',
+      );
     });
-    // it('Admin address should be Default Admin address', async () => {
-    //   const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
-    //   expect(await bridgeUpgradeable.hasRole(DEFAULT_ADMIN_ROLE, defaultAdminAddress)).toBe(true);
-    // });
-    // it('Withdraw address should be Withdraw address', async () => {
-    //   const WITHDRAW_ROLE = ethers.utils.solidityKeccak256(['string'], ['WITHDRAW_ROLE']);
-    //   expect(await bridgeUpgradeable.hasRole(WITHDRAW_ROLE, withdrawSignerAddress)).toBe(true);
-    // });
-    // it('Community address should be  Community address', async () => {
-    //   expect(await bridgeUpgradeable.communityWallet()).toBe(communityAddress);
-    // });
-    // it('Successfully implemented the 0.1% txn fee', async () => {
-    //   expect((await bridgeUpgradeable.transactionFee()).toString()).toBe('10');
-    // });
+    it('Admin address should be Default Admin address', async () => {
+      const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
+      expect(await bridgeUpgradeable.hasRole(DEFAULT_ADMIN_ROLE, defaultAdminAddress)).toBe(true);
+    });
+    it('Withdraw address should be Withdraw address', async () => {
+      const WITHDRAW_ROLE = ethers.utils.solidityKeccak256(['string'], ['WITHDRAW_ROLE']);
+      expect(await bridgeUpgradeable.hasRole(WITHDRAW_ROLE, withdrawSignerAddress)).toBe(true);
+    });
+    it('Community address should be  Community address', async () => {
+      expect(await bridgeUpgradeable.communityWallet()).toBe(communityAddress);
+    });
+    it('Successfully implemented the 0.1% txn fee', async () => {
+      expect((await bridgeUpgradeable.transactionFee()).toString()).toBe('10');
+    });
   });
 });
