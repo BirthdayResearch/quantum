@@ -36,7 +36,7 @@ export class EthereumController {
     return this.evmTransactionConfirmerService.allocateDFCFund(transactionHash);
   }
 
-  @Get('getTransaction/:transactionHash')
+  @Get('transaction/:transactionHash')
   @Throttle(35, 60)
   async getTransaction(
     @Param('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,

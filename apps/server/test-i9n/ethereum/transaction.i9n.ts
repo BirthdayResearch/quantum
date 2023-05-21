@@ -67,7 +67,7 @@ describe('get transaction from ethersRpcProvider', () => {
     await hardhatNetwork.generate(2);
     const resp = await testing.inject({
       method: 'GET',
-      url: `/ethereum/getTransaction/${validTxnHash}`,
+      url: `/ethereum/transaction/${validTxnHash}`,
     });
     const data = JSON.parse(resp.body);
     expect(data.hash).toStrictEqual(validTxnHash);
@@ -77,7 +77,7 @@ describe('get transaction from ethersRpcProvider', () => {
     await hardhatNetwork.generate(2);
     const resp = await testing.inject({
       method: 'GET',
-      url: `/ethereum/getTransaction/0xde3a7314eb5cf8fab61ab80a6cc920c8aa41c06cd0161a7374167ba5cf145d98`,
+      url: `/ethereum/transaction/0xde3a7314eb5cf8fab61ab80a6cc920c8aa41c06cd0161a7374167ba5cf145d98`,
     });
     const data = JSON.parse(resp.body);
     expect(data).toStrictEqual(null);
@@ -90,7 +90,7 @@ describe('get transaction from ethersRpcProvider', () => {
     while (count <= 35) {
       await testing.inject({
         method: 'GET',
-        url: `/ethereum/getTransaction/${validTxnHash}`,
+        url: `/ethereum/transaction/${validTxnHash}`,
       });
       count += 1;
     }
@@ -98,7 +98,7 @@ describe('get transaction from ethersRpcProvider', () => {
     // should get throttling error on the 36th
     const resp = await testing.inject({
       method: 'GET',
-      url: `/ethereum/getTransaction/${validTxnHash}`,
+      url: `/ethereum/transaction/${validTxnHash}`,
     });
 
     const data = JSON.parse(resp.body);
