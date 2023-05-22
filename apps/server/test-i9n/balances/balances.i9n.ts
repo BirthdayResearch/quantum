@@ -213,7 +213,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     }
 
     await hardhatNetwork.generate(1);
-
+    // Checking the bridge or bridgeQueue contract's balance??
     const initialResponse = await testing.inject({
       method: 'GET',
       url: `/balances`,
