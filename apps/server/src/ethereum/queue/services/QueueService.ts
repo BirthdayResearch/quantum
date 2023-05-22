@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DeFiChainTransactionStatus, EthereumTransactionStatus, Prisma, QueueStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
@@ -225,19 +225,12 @@ export class QueueService {
         id: queueRecord.id.toString(),
       };
     } catch (e: any) {
-      // For clearer error message when getTransaction and getTransactionReceipt is null
-      if (
-        e.message === "Cannot read properties of null (reading 'data')" ||
-        e.message === 'Transaction is still pending'
-      ) {
-        throw new NotFoundException('Unable to find transaction');
-      }
       throw new HttpException(
         {
-          status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
+          status: e.status ?? (e.code || HttpStatus.INTERNAL_SERVER_ERROR),
           error: `API call for create Queue transaction was unsuccessful: ${e.message}`,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        e.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
         {
           cause: e,
         },

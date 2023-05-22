@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 import { BridgeQueue__factory } from 'smartcontracts-queue';
@@ -87,14 +87,18 @@ export class VerificationService {
     etherInterface: ethers.utils.Interface;
     parsedTxnData: ethers.utils.TransactionDescription;
   }> {
-    const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-    const etherInterface = new ethers.utils.Interface(contract[contractType].interface);
-    const parsedTxnData = etherInterface.parseTransaction({
-      data: onChainTxnDetail.data,
-      value: onChainTxnDetail.value,
-    });
+    try {
+      const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
+      const etherInterface = new ethers.utils.Interface(contract[contractType].interface);
+      const parsedTxnData = etherInterface.parseTransaction({
+        data: onChainTxnDetail.data,
+        value: onChainTxnDetail.value,
+      });
 
-    return { etherInterface, parsedTxnData };
+      return { etherInterface, parsedTxnData };
+    } catch (e) {
+      throw new NotFoundException('Transaction not found');
+    }
   }
 
   decodeTxnData({
