@@ -1,5 +1,5 @@
 import { ethers, utils } from "ethers";
-import { erc20ABI, useContractReads, useWaitForTransaction } from "wagmi";
+import { erc20ABI, useContractReads } from "wagmi";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
@@ -43,7 +43,7 @@ export default function EvmToDeFiChainTransfer({
   );
   const { isMobile } = useResponsive();
   const { networkEnv } = useNetworkEnvironmentContext();
-  const { BridgeV1, BridgeQueue, Erc20Tokens, ExplorerURL, EthereumRpcUrl } =
+  const { BridgeV1, BridgeQueue, Erc20Tokens, ExplorerURL } =
     useContractContext();
   const bridgingETH = data.from.tokenSymbol === ETHEREUM_SYMBOL;
   const { setStorage } = useStorageContext();
@@ -111,6 +111,37 @@ export default function EvmToDeFiChainTransfer({
     refetchTokenData,
   });
 
+  const sleep = (ms) =>
+    new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+
+  const createQueueTransaction = async (txnHash: string): Promise<void> => {
+    await sleep(12000);
+    await queueTransaction({ txnHash }).unwrap();
+    onClose(true);
+  };
+
+  const retryLimit = 5; // set 5 retries in intervals of 12000ms
+  const handleCreateQueueTransaction = async (
+    txnHash: string,
+    attempts: number = 0
+  ): Promise<void> => {
+    try {
+      await createQueueTransaction(txnHash);
+    } catch (e) {
+      if (
+        e.data.error.includes("Transaction is still pending") &&
+        attempts < retryLimit
+      ) {
+        await sleep(12000);
+        await handleCreateQueueTransaction(txnHash, attempts + 1);
+      } else {
+        setErrorMessage("Unable to create a Queue transaction.");
+      }
+    }
+  };
+
   // Requires approval for more allowance
   useEffect(() => {
     if (
@@ -175,6 +206,7 @@ export default function EvmToDeFiChainTransfer({
       setQueueStorage("reverted-queue", null);
       setQueueStorage("txn-form-queue", null);
       setBridgeStatus(BridgeStatus.QueueingTransaction);
+      handleCreateQueueTransaction(transactionHash);
     }
   }, [transactionHash]);
 
@@ -214,66 +246,6 @@ export default function EvmToDeFiChainTransfer({
     // If no approval required, perform bridge function directly
     writeBridgeToDeFiChain?.();
   };
-
-  const createQueueTransaction = async (txnHash: string): Promise<void> => {
-    try {
-      console.log("creating...");
-      await queueTransaction({ txnHash }).unwrap();
-      onClose(true);
-    } catch (e) {
-      console.error(e);
-      setErrorMessage("Unable to create a Queue transaction.");
-    }
-  };
-
-  useWaitForTransaction({
-    hash: transactionHash,
-    onSuccess: async (transactionReceipt) => {
-      if (typeOfTransaction === FormOptions.QUEUE) {
-        let receipt;
-        let attempts = 0;
-        const retryLimit = 5; // set 5 retries in intervals of 5000ms
-        const sleep = (ms) =>
-          new Promise((resolve) => {
-            setTimeout(resolve, ms);
-          });
-
-        const provider = new ethers.providers.StaticJsonRpcProvider(
-          EthereumRpcUrl
-        );
-        receipt = await provider.getTransaction(
-          transactionReceipt.transactionHash
-        );
-        console.log(transactionReceipt.transactionHash);
-        console.log(transactionHash);
-        console.log(receipt);
-
-        while (receipt === null && attempts < retryLimit) {
-          // Disabling no await in loop as we want to make sure the request is made sequentially ( waiting 5000ms between each request )
-          /* eslint-disable no-await-in-loop */
-          receipt = await provider.getTransaction(
-            transactionReceipt.transactionHash
-          );
-          attempts += 1;
-          console.log("retry...", attempts);
-          if (receipt === null && attempts < retryLimit) {
-            console.log("sleep...");
-            await sleep(5000); // Wait for 5 seconds before the next attempt
-          }
-        }
-
-        if (receipt !== null) {
-          await createQueueTransaction(transactionReceipt.transactionHash);
-        } else {
-          setErrorMessage("Unable to create a Queue transaction.");
-        }
-      }
-    },
-    onError: (err) => {
-      console.error(err);
-      setErrorMessage("Unable to create a Queue transaction.");
-    },
-  });
 
   const statusMessage = {
     [BridgeStatus.IsTokenApprovalInProgress]: {
