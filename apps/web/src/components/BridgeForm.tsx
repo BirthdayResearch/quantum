@@ -683,7 +683,7 @@ export default function BridgeForm({
       <div className="mt-[50px] mx-auto w-[290px] lg:w-[344px]">
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <ActionButton
-            label="Done"
+            label="Initiate new transaction"
             onClick={() => onDone()}
             customStyle="mt-6"
           />

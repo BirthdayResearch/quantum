@@ -187,5 +187,22 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 0 },
     }),
+    verifyEthQueueTxn: builder.mutation<
+      { numberOfConfirmations: string; isConfirmed: boolean },
+      any
+    >({
+      query: ({ baseUrl, txnHash }) => ({
+        url: `${baseUrl}/${PATH_ETHEREUM}/queue/verify`,
+        body: {
+          transactionHash: txnHash,
+        },
+        method: "POST",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      }),
+      extraOptions: { maxRetries: 0 },
+    }),
   }),
 });
