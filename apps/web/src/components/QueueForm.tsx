@@ -653,21 +653,15 @@ export default function QueueForm({
           </div>
         )}
 
-        {(isBalanceSufficient && !hasPendingTxn && amount !== "") ||
-          ((txnHash.confirmed === undefined ||
-            txnHash.reverted === undefined) && (
-            <div
-              className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}
-            >
-              <span className="text-dark-700">
-                Amount entered is within the active limit. Use&nbsp;
-              </span>
-              <span className="text-dark-1000 font-semibold">Instant</span>
-              <span className="text-dark-700">
-                &nbsp;for faster processing.
-              </span>
-            </div>
-          ))}
+        {isBalanceSufficient && !hasPendingTxn && amount !== "" && (
+          <div className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}>
+            <span className="text-dark-700">
+              Amount entered is within the active limit. Use&nbsp;
+            </span>
+            <span className="text-dark-1000 font-semibold">Instant</span>
+            <span className="text-dark-700">&nbsp;for faster processing.</span>
+          </div>
+        )}
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
