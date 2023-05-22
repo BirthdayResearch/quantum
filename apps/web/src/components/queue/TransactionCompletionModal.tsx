@@ -8,6 +8,7 @@ import truncateTextFromMiddle from "@utils/textHelper";
 import SearchTransactionIcon from "@components/icons/SearchTransactionIcon";
 import clsx from "clsx";
 import { IoMdCheckmarkCircle } from "react-icons/io";
+import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionCompletionModalProps {
@@ -71,6 +72,7 @@ export default function TransactionCompletionModal({
   destinationAddress,
 }: TransactionCompletionModalProps): JSX.Element {
   const { isMobile } = useResponsive();
+  const { networkEnv } = useNetworkEnvironmentContext();
 
   const firstRowResult = {
     [ModalTypeToDisplay.Refunded]: `${amount} ${token}`,
@@ -189,11 +191,19 @@ export default function TransactionCompletionModal({
             customIconStyle="ml-2"
             customStyle="bg-dark-1000 text-sm lg:text-base lg:!py-3 lg:px-[72px] lg:w-[418px] max-w-[418px] min-w-[240px] min-h-[48px] lg:min-h-[52px]"
             onClick={() => {
-              const url =
-                type !== ModalTypeToDisplay.RefundRequested
-                  ? "https://defiscan.live/transactions/"
-                  : "https://etherscan.io/tx/";
-              window.open(`${url}/${txHash}`, "_blank", "noopener noreferrer");
+              if (type !== ModalTypeToDisplay.RefundRequested) {
+                window.open(
+                  `https://defiscan.live/transactions/${txHash}?network=${networkEnv}`,
+                  "_blank",
+                  "noopener noreferrer"
+                );
+              } else {
+                window.open(
+                  `https://etherscan.io/tx/${txHash}`,
+                  "_blank",
+                  "noopener noreferrer"
+                );
+              }
             }}
           />
           {type === ModalTypeToDisplay.Completed && (
