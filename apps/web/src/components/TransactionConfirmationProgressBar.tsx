@@ -31,8 +31,6 @@ export default function ConfirmationProgress({
   confirmationBlocksTotal,
   confirmationBlocksCurrent,
   isConfirmed,
-  isReverted,
-  isUnsentFund,
   isApiSuccess,
   txnType,
   showCircular = false,
@@ -40,8 +38,6 @@ export default function ConfirmationProgress({
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
   isConfirmed: boolean;
-  isReverted: boolean;
-  isUnsentFund: boolean;
   isApiSuccess: boolean;
   txnType: string;
   showCircular?: boolean;
@@ -89,7 +85,7 @@ export default function ConfirmationProgress({
             }}
           >
             <div className="text-center">
-              {!isApiSuccess || isConfirmed ? (
+              {isApiSuccess || isConfirmed ? (
                 <div className="text-lg font-semibold text-dark-1000">{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
               ) : (
                 <SkeletonLoader isDesktop />

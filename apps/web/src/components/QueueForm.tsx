@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
 import debounce from "@utils/debounce";
+import useWatchEthQueueTxn from "@hooks/useWatchEthQueueTxn";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
@@ -36,7 +37,6 @@ import {
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import useInputValidation from "../hooks/useInputValidation";
 import QueueTransactionStatus from "./QueueTransactionStatus";
-import useWatchEthQueueTxn from "@hooks/useWatchEthQueueTxn";
 
 export default function QueueForm({
   hasPendingTxn,
@@ -403,11 +403,9 @@ export default function QueueForm({
               txnHash.confirmed ??
               txnHash.unconfirmed
             }
-            allocationTxnHash={txnHash.allocationTxn}
             isReverted={txnHash.reverted !== undefined}
             isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both EVM and DFC
             isUnsentFund={txnHash.unsentFund !== undefined}
-            ethTxnStatusIsConfirmed={ethQueueTxnStatus.isConfirmed}
             numberOfEvmConfirmations={getNumberOfConfirmations()}
             isApiSuccess={isQueueApiSuccess || txnHash.reverted !== undefined}
           />
@@ -593,11 +591,20 @@ export default function QueueForm({
       <div className="mt-8 px-6 md:px-4 lg:mt-12 lg:mb-0 lg:px-0 xl:px-20">
         {/* Todo: to update the button when Review modal is ready */}
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
-          <ActionButton
-            label="Done"
-            onClick={() => onDone()}
-            customStyle="mt-6"
-          />
+          <>
+            <ActionButton
+              label="Queue new transaction"
+              onClick={() => onDone()}
+              customStyle="mt-6"
+            />
+            <span
+              className={clsx(
+                "flex pt-3 text-xs text-center text-dark-700 lg:w-max lg:text-sm"
+              )}
+            >
+              Return to queue page to initiate new queue transaction.
+            </span>
+          </>
         ) : (
           <ConnectKitButton.Custom>
             {({ show }) => (
@@ -646,15 +653,21 @@ export default function QueueForm({
           </div>
         )}
 
-        {isBalanceSufficient && !hasPendingTxn && amount !== "" && (
-          <div className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}>
-            <span className="text-dark-700">
-              Amount entered is within the active limit. Use&nbsp;
-            </span>
-            <span className="text-dark-1000 font-semibold">Instant</span>
-            <span className="text-dark-700">&nbsp;for faster processing.</span>
-          </div>
-        )}
+        {(isBalanceSufficient && !hasPendingTxn && amount !== "") ||
+          ((txnHash.confirmed === undefined ||
+            txnHash.reverted === undefined) && (
+            <div
+              className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}
+            >
+              <span className="text-dark-700">
+                Amount entered is within the active limit. Use&nbsp;
+              </span>
+              <span className="text-dark-1000 font-semibold">Instant</span>
+              <span className="text-dark-700">
+                &nbsp;for faster processing.
+              </span>
+            </div>
+          ))}
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}

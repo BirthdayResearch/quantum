@@ -39,8 +39,6 @@ export default function DfcTransactionStatus({
           confirmationBlocksTotal={DFC_CONFIRMATIONS_BLOCK_TOTAL}
           confirmationBlocksCurrent={numOfConfirmations}
           isConfirmed={isConfirmed}
-          isReverted={false}
-          isUnsentFund={false}
           isApiSuccess={isApiSuccess}
           txnType="DeFiChain"
           showCircular={isConfirmed}

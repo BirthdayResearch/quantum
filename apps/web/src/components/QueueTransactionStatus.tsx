@@ -1,7 +1,4 @@
 import BigNumber from "bignumber.js";
-import { FiArrowUpRight } from "react-icons/fi";
-import { RiLoader2Line } from "react-icons/ri";
-import { IoCheckmarkCircle } from "react-icons/io5";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
@@ -9,11 +6,9 @@ import { useAllocateDfcFundMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
 import useTimeout from "@hooks/useSetTimeout";
 import { useQueueStorageContext } from "@contexts/QueueStorageContext";
-import { useDeFiScanContext } from "@contexts/DeFiScanContext";
 import { EVM_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
-import { useContractContext } from "../layouts/contexts/ContractContext";
 import ActionButton from "./commons/ActionButton";
 
 export default function QueueTransactionStatus({
@@ -21,26 +16,20 @@ export default function QueueTransactionStatus({
   isApiSuccess,
   isReverted,
   isUnsentFund,
-  ethTxnStatusIsConfirmed,
   numberOfEvmConfirmations,
-  allocationTxnHash,
   txnHash,
 }: {
   isConfirmed: boolean;
   isApiSuccess: boolean;
   isReverted: boolean;
   isUnsentFund: boolean;
-  ethTxnStatusIsConfirmed: boolean;
   numberOfEvmConfirmations: string;
-  allocationTxnHash?: string;
   txnHash: string | undefined;
 }) {
-  const { ExplorerURL } = useContractContext();
-  const { isLg, isMd, is2xl } = useResponsive();
+  const { isLg, isMd } = useResponsive();
 
   const [allocateDfcFund] = useAllocateDfcFundMutation();
   const { setStorage } = useQueueStorageContext();
-  const { getTransactionUrl } = useDeFiScanContext();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -128,8 +117,6 @@ export default function QueueTransactionStatus({
             confirmationBlocksTotal={EVM_CONFIRMATIONS_BLOCK_TOTAL}
             confirmationBlocksCurrent={confirmationBlocksCurrent}
             isConfirmed={isConfirmed}
-            isReverted={isReverted}
-            isUnsentFund={isUnsentFund}
             isApiSuccess={isApiSuccess}
             txnType="Ethereum"
           />
@@ -146,11 +133,6 @@ export default function QueueTransactionStatus({
             {title}
           </div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
-          <div
-            className={clsx("flex mt-6 text-xs lg:text-base lg:leading-5", {
-              "lg:mt-11": isConfirmed,
-            })}
-          ></div>
         </div>
         {isUnsentFund && (
           <ActionButton
@@ -169,8 +151,6 @@ export default function QueueTransactionStatus({
               confirmationBlocksTotal={EVM_CONFIRMATIONS_BLOCK_TOTAL}
               confirmationBlocksCurrent={confirmationBlocksCurrent}
               isConfirmed={isConfirmed}
-              isReverted={isReverted}
-              isUnsentFund={isUnsentFund}
               isApiSuccess={isApiSuccess}
               txnType="Ethereum"
             />

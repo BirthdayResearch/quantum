@@ -135,8 +135,6 @@ export default function TransactionStatus({
             confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
             confirmationBlocksCurrent={confirmationBlocksCurrent}
             isConfirmed={isConfirmed}
-            isReverted={isReverted}
-            isUnsentFund={isUnsentFund}
             isApiSuccess={isApiSuccess}
             txnType="confirmations"
           />
@@ -263,8 +261,6 @@ export default function TransactionStatus({
               confirmationBlocksTotal={CONFIRMATIONS_BLOCK_TOTAL}
               confirmationBlocksCurrent={confirmationBlocksCurrent}
               isConfirmed={isConfirmed}
-              isReverted={isReverted}
-              isUnsentFund={isUnsentFund}
               isApiSuccess={isApiSuccess}
               txnType="Ethereum"
             />
