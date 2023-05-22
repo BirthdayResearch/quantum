@@ -71,51 +71,51 @@ export default function QueryTransactionModal({
     if (!isValidEthTxHash) {
       setInputErrorMessage("Enter a valid transaction hash for Ethereum.");
       setIsValidTransaction(false);
-    } else {
-      try {
-        setIsLoading(true);
-        // To check if its a valid Eth tx hash
-        const receipt = await provider.getTransaction(transactionInput);
+      return;
+    }
+    try {
+      setIsLoading(true);
+      // To check if its a valid Eth tx hash
+      const receipt = await provider.getTransaction(transactionInput);
 
-        // To check if its a valid Eth tx hash that comes from the bridgeToDeFiChain contract
-        const decodedData = bridgeIface.parseTransaction({
-          data: receipt.data,
-        });
+      // To check if its a valid Eth tx hash that comes from the bridgeToDeFiChain contract
+      const decodedData = bridgeIface.parseTransaction({
+        data: receipt.data,
+      });
 
-        // Checks if Eth tx hash is valid and if it doesn't come from the bridgeToDeFiChain contract
-        if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
-          setIsValidTransaction(false);
-          return;
-        }
-        if (receipt) {
-          setStorage("unconfirmed", transactionInput);
-          setIsValidTransaction(true);
-
-          // Calls queue tx from db
-          const getTx = await getQueueStatus({
-            txnHash: transactionInput,
-          }).unwrap();
-
-          if (!onTransactionFound) {
-            return;
-          }
-
-          const modalType = statusToModalTypeMap[getTx.status];
-
-          // Set modal type to display based on status from the DB
-          if (modalType) {
-            onTransactionFound(modalType);
-          }
-          return;
-        }
-      } catch (error) {
-        setInputErrorMessage(
-          "Invalid transaction hash. Please only enter queued transaction hashes."
-        );
+      // Checks if Eth tx hash is valid and if it doesn't come from the bridgeToDeFiChain contract
+      if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
         setIsValidTransaction(false);
-      } finally {
-        setIsLoading(false);
+        return;
       }
+      if (receipt) {
+        setStorage("unconfirmed", transactionInput);
+        setIsValidTransaction(true);
+
+        // Calls queue tx from db
+        const getTx = await getQueueStatus({
+          txnHash: transactionInput,
+        }).unwrap();
+
+        if (!onTransactionFound) {
+          return;
+        }
+
+        const modalType = statusToModalTypeMap[getTx.status];
+
+        // Set modal type to display based on status from the DB
+        if (modalType) {
+          onTransactionFound(modalType);
+        }
+        return;
+      }
+    } catch (error) {
+      setInputErrorMessage(
+        "Invalid transaction hash. Please only enter queued transaction hashes."
+      );
+      setIsValidTransaction(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
