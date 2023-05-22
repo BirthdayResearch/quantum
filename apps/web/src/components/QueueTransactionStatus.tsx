@@ -60,9 +60,7 @@ export default function QueueTransactionStatus({
       );
     } else if (isConfirmed) {
       setTitle("Transaction confirmed");
-      setDescription(
-        "Please wait for a few seconds while we generate your Queue transaction."
-      );
+      setDescription("Transaction successfully added to queue.");
     } else {
       setTitle("Awaiting confirmation");
       setDescription(
