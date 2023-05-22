@@ -385,7 +385,7 @@ export default function QueueForm({
   return (
     <div
       className={clsx(
-        "w-full md:w-[calc(100%+2px)] lg:w-full p-6 md:pt-8 pb-16 lg:p-10",
+        "w-full md:w-[calc(100%+2px)] lg:w-full p-6 pt-8 pb-10 lg:p-10 lg:pt-6",
         "dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl",
         activeTab === FormOptions.QUEUE ? "block" : "hidden"
@@ -406,6 +406,7 @@ export default function QueueForm({
             isReverted={txnHash.reverted !== undefined}
             isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both EVM and DFC
             isUnsentFund={txnHash.unsentFund !== undefined}
+            ethTxnStatusIsConfirmed={ethQueueTxnStatus.isConfirmed}
             numberOfEvmConfirmations={getNumberOfConfirmations()}
             isApiSuccess={isQueueApiSuccess || txnHash.reverted !== undefined}
           />
@@ -653,15 +654,22 @@ export default function QueueForm({
           </div>
         )}
 
-        {isBalanceSufficient && !hasPendingTxn && amount !== "" && (
-          <div className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}>
-            <span className="text-dark-700">
-              Amount entered is within the active limit. Use&nbsp;
-            </span>
-            <span className="text-dark-1000 font-semibold">Instant</span>
-            <span className="text-dark-700">&nbsp;for faster processing.</span>
-          </div>
-        )}
+        {isBalanceSufficient &&
+          !hasPendingTxn &&
+          amount !== "" &&
+          ethQueueTxnStatus.isConfirmed && (
+            <div
+              className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}
+            >
+              <span className="text-dark-700">
+                Amount entered is within the active limit. Use&nbsp;
+              </span>
+              <span className="text-dark-1000 font-semibold">Instant</span>
+              <span className="text-dark-700">
+                &nbsp;for faster processing.
+              </span>
+            </div>
+          )}
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
