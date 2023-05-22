@@ -8,7 +8,6 @@ require('dotenv').config({
   path: '.env',
 });
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 subtask(TASK_COMPILE_SOLIDITY_GET_SOLC_BUILD, async () => {
   const compilerPath = path.join(__dirname, 'sol-0.8.18.js');
   return {
