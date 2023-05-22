@@ -16,10 +16,7 @@ import Modal from "@components/commons/Modal";
 import { Erc20Token, TransferData } from "types";
 import { useStorageContext } from "@contexts/StorageContext";
 import { useQueueStorageContext } from "@contexts/QueueStorageContext";
-import {
-  useQueueTransactionMutation,
-  useGetTransactionMutation,
-} from "@store/index";
+import { useQueueTransactionMutation } from "@store/index";
 import {
   BridgeStatus,
   DISCLAIMER_MESSAGE,
@@ -53,7 +50,6 @@ export default function EvmToDeFiChainTransfer({
   const { setStorage: setQueueStorage } = useQueueStorageContext();
   const { typeOfTransaction } = useNetworkContext();
   const [queueTransaction] = useQueueTransactionMutation();
-  const [getTransaction] = useGetTransactionMutation();
 
   // Read details from token contract
   const erc20TokenContract = {
