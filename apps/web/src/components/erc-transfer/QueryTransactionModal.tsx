@@ -12,6 +12,7 @@ import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
 import { ModalTypeToDisplay } from "types";
 import { useGetQueueTransactionMutation } from "@store/index";
+import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 
 export interface ModalConfigType {
   title: string;
@@ -61,15 +62,15 @@ export default function QueryTransactionModal({
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   useAutoResizeTextArea(textAreaRef.current, [transactionInput]);
   const [getQueueStatus] = useGetQueueTransactionMutation();
+  const isValidEthTxHash = checkEthTxHashHelper(transactionInput);
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
   const bridgeIface = new ethers.utils.Interface(BridgeQueue.abi);
 
   const checkTXnHash = async () => {
-    const regex = /^0x([A-Fa-f0-9]{64})$/;
-    const isTransactionHash = regex.test(transactionInput);
-    if (!isTransactionHash) {
+    if (!isValidEthTxHash) {
       setInputErrorMessage("Enter a valid transaction hash for Ethereum.");
+      setIsValidTransaction(false);
     } else {
       try {
         setIsLoading(true);
@@ -147,6 +148,11 @@ export default function QueryTransactionModal({
       setTimeout(() => setCopiedFromClipboard(false), 2000);
     }
   }, [copiedFromClipboard]);
+
+  useEffect(() => {
+    setInputErrorMessage("");
+    setIsValidTransaction(true);
+  }, [transactionInput]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
