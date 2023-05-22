@@ -22,6 +22,7 @@ export class TestingModule {
 export function buildTestConfig({
   startedHardhatContainer,
   testnet,
+  testnetQueue,
   defichain,
   ethereum,
   startedPostgresContainer,
@@ -55,7 +56,7 @@ export function buildTestConfig({
         },
         // TODO: Update to the accurate address once deployed
         queueBridgeProxy: {
-          address: testnet?.bridgeContractAddress ?? '',
+          address: testnetQueue?.bridgeContractAddress ?? '',
         },
         USDC: {
           address: usdcAddress,
@@ -98,6 +99,10 @@ type OptionalBuildTestConfigParams = {
   };
   startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {
+    bridgeContractAddress: string;
+    ethWalletPrivKey: string;
+  };
+  testnetQueue: {
     bridgeContractAddress: string;
     ethWalletPrivKey: string;
   };

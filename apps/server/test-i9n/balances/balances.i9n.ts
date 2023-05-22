@@ -6,6 +6,7 @@ import {
   BridgeV1,
   HardhatNetwork,
   HardhatNetworkContainer,
+  MockBridgeQueue,
   StartedHardhatNetworkContainer,
   TestToken,
 } from 'smartcontracts';
@@ -32,6 +33,7 @@ describe('DeFiChain Send Transaction Testing', () => {
   let bridgeContractFixture: BridgeContractFixture;
   let prismaService: PrismaService;
   let bridgeContract: BridgeV1;
+  let bridgeQueueContract: MockBridgeQueue;
   let musdcContract: TestToken;
   let musdtContract: TestToken;
   let mwbtcContract: TestToken;
@@ -48,6 +50,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     // Using the default signer of the container to carry out tests
     ({
       bridgeProxy: bridgeContract,
+      mockQueueBridgeProxy: bridgeQueueContract,
       musdc: musdcContract,
       musdt: musdtContract,
       mwbtc: mwbtcContract,
@@ -62,6 +65,9 @@ describe('DeFiChain Send Transaction Testing', () => {
         startedHardhatContainer,
         testnet: {
           bridgeContractAddress: bridgeContract.address,
+        },
+        testnetQueue: {
+          bridgeContractAddress: bridgeQueueContract.address,
         },
         startedPostgresContainer,
         usdcAddress: musdcContract.address,
@@ -195,14 +201,17 @@ describe('DeFiChain Send Transaction Testing', () => {
   });
 
   it('When adding funds to EVM wallet Should return updated balances of EVM hot wallets ', async () => {
-    // Mint 10 USDC to hotwallet
-    await musdcContract.mint(bridgeContract.address, ethers.utils.parseEther('10'));
-    // Mint 9 USDT to hotwallet
-    await musdtContract.mint(bridgeContract.address, ethers.utils.parseEther('9'));
-    // Mint 8 WBTC to hotwallet
-    await mwbtcContract.mint(bridgeContract.address, ethers.utils.parseEther('8'));
-    // Mint 7 EUROC to hotwallet
-    await meurocContract.mint(bridgeContract.address, ethers.utils.parseEther('7'));
+    const bridges = [bridgeContract, bridgeQueueContract];
+    const tokens = [musdcContract, musdtContract, mwbtcContract, meurocContract];
+    // Minting token to bridges
+    let amount = ethers.utils.parseEther('10');
+    for (const bridge of bridges) {
+      for (const token of tokens) {
+        await token.mint(bridge.address, amount);
+        amount = amount.sub(ethers.utils.parseEther('1'));
+      }
+    }
+
     await hardhatNetwork.generate(1);
 
     const initialResponse = await testing.inject({

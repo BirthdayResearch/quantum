@@ -64,10 +64,17 @@ describe('BridgeContractFixture Integration Tests', () => {
     await bridgeContractFixture.deployContracts();
 
     // Then the Bridge contracts should be deployed on chain
-    const { bridgeProxy, bridgeImplementation, musdc, musdt } = bridgeContractFixture.contracts;
+    const { bridgeProxy, bridgeImplementation, musdc, musdt, mockQueueBridgeImplementation, mockQueueBridgeProxy } =
+      bridgeContractFixture.contracts;
 
     await expect(hardhatNetwork.ethersRpcProvider.getCode(bridgeProxy.address)).resolves.not.toStrictEqual('0x');
     await expect(hardhatNetwork.ethersRpcProvider.getCode(bridgeImplementation.address)).resolves.not.toStrictEqual(
+      '0x',
+    );
+    await expect(
+      hardhatNetwork.ethersRpcProvider.getCode(mockQueueBridgeImplementation.address),
+    ).resolves.not.toStrictEqual('0x');
+    await expect(hardhatNetwork.ethersRpcProvider.getCode(mockQueueBridgeProxy.address)).resolves.not.toStrictEqual(
       '0x',
     );
     await expect(hardhatNetwork.ethersRpcProvider.getCode(musdc.address)).resolves.not.toStrictEqual('0x');
@@ -84,9 +91,16 @@ describe('BridgeContractFixture Integration Tests', () => {
 
   it('should be able to the Bridge to spend tokens on behalf of a specified EOA', async () => {
     await bridgeContractFixture.approveBridgeForEOA(testEOASigner);
-    const { bridgeProxy, musdt, musdc } = bridgeContractFixture.contracts;
-
+    const { bridgeProxy, musdt, musdc, mockQueueBridgeProxy } = bridgeContractFixture.contracts;
+    // BridgeV1
     await expect(musdt.allowance(testEOAAddress, bridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
     await expect(musdc.allowance(testEOAAddress, bridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
+    // BridgeQueue
+    await expect(musdt.allowance(testEOAAddress, mockQueueBridgeProxy.address)).resolves.toStrictEqual(
+      constants.MaxInt256,
+    );
+    await expect(musdc.allowance(testEOAAddress, mockQueueBridgeProxy.address)).resolves.toStrictEqual(
+      constants.MaxInt256,
+    );
   });
 });
