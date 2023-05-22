@@ -406,9 +406,9 @@ export default function QueueForm({
             isReverted={txnHash.reverted !== undefined}
             isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both EVM and DFC
             isUnsentFund={txnHash.unsentFund !== undefined}
-            ethTxnStatusIsConfirmed={ethQueueTxnStatus.isConfirmed}
             numberOfEvmConfirmations={getNumberOfConfirmations()}
             isApiSuccess={isQueueApiSuccess || txnHash.reverted !== undefined}
+            activeTab={activeTab}
           />
           <div className="flex flex-col space-y-7">
             <div className="flex flex-row justify-between">

@@ -6,6 +6,7 @@ import { useAllocateDfcFundMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
 import useTimeout from "@hooks/useSetTimeout";
 import { useQueueStorageContext } from "@contexts/QueueStorageContext";
+import { FormOptions } from "@contexts/NetworkContext";
 import { EVM_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
@@ -18,6 +19,7 @@ export default function QueueTransactionStatus({
   isUnsentFund,
   numberOfEvmConfirmations,
   txnHash,
+  activeTab,
 }: {
   isConfirmed: boolean;
   isApiSuccess: boolean;
@@ -25,6 +27,7 @@ export default function QueueTransactionStatus({
   isUnsentFund: boolean;
   numberOfEvmConfirmations: string;
   txnHash: string | undefined;
+  activeTab: FormOptions;
 }) {
   const { isLg, isMd } = useResponsive();
 
@@ -119,6 +122,7 @@ export default function QueueTransactionStatus({
             isConfirmed={isConfirmed}
             isApiSuccess={isApiSuccess}
             txnType="Ethereum"
+            activeTab={activeTab}
           />
         </div>
       )}
@@ -153,6 +157,7 @@ export default function QueueTransactionStatus({
               isConfirmed={isConfirmed}
               isApiSuccess={isApiSuccess}
               txnType="Ethereum"
+              activeTab={activeTab}
             />
           </div>
         )}

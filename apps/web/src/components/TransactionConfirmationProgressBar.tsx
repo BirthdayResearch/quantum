@@ -2,6 +2,7 @@ import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import ContentLoader from "react-content-loader";
+import { FormOptions } from "@contexts/NetworkContext";
 import useResponsive from "../hooks/useResponsive";
 
 function SkeletonLoader({ isDesktop }: { isDesktop: boolean }) {
@@ -34,6 +35,7 @@ export default function ConfirmationProgress({
   isApiSuccess,
   txnType,
   showCircular = false,
+  activeTab,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
@@ -41,6 +43,7 @@ export default function ConfirmationProgress({
   isApiSuccess: boolean;
   txnType: string;
   showCircular?: boolean;
+  activeTab: FormOptions;
 }) {
   const { isLg } = useResponsive();
   const [valuePercentage, setValuePercentage] = useState<number>(0);
@@ -59,14 +62,14 @@ export default function ConfirmationProgress({
             <defs>
               {isConfirmed ? (
                 <linearGradient
-                  id="circularProgress"
+                  id={`circularProgress_${activeTab}`}
                   gradientTransform="rotate(90)"
                 >
                   <stop offset="0%" stopColor="#0CC72C" />
                 </linearGradient>
               ) : (
                 <linearGradient
-                  id="circularProgress"
+                  id={`circularProgress_${activeTab}`}
                   gradientTransform="rotate(90)"
                 >
                   <stop offset="0%" stopColor="#FF00FF" />
@@ -80,7 +83,7 @@ export default function ConfirmationProgress({
             strokeWidth={3}
             counterClockwise
             styles={{
-              path: { stroke: 'url("#circularProgress")' },
+              path: { stroke: `url("#circularProgress_${activeTab}")` },
               trail: { stroke: "#2B2B2B" },
             }}
           >
