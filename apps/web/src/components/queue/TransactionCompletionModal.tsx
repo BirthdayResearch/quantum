@@ -21,6 +21,7 @@ interface TransactionCompletionModalProps {
   isOpen: boolean;
   onBack: () => void;
   destinationAddress: string;
+  adminQueueSendTxHash: string;
 }
 
 const titles = {
@@ -70,6 +71,7 @@ export default function TransactionCompletionModal({
   isOpen,
   onBack,
   destinationAddress,
+  adminQueueSendTxHash,
 }: TransactionCompletionModalProps): JSX.Element {
   const { isMobile } = useResponsive();
   const { networkEnv } = useNetworkEnvironmentContext();
@@ -91,6 +93,11 @@ export default function TransactionCompletionModal({
       "DD/MM/YYYY, HH:mm A"
     ),
     [ModalTypeToDisplay.Completed]: destinationAddress,
+  };
+  const externalLinkButtonUrls = {
+    [ModalTypeToDisplay.Refunded]: `https://defiscan.live/transactions/${txHash}?network=${networkEnv}`,
+    [ModalTypeToDisplay.Completed]: `https://defiscan.live/transactions/${adminQueueSendTxHash}?network=${networkEnv}`,
+    [ModalTypeToDisplay.RefundRequested]: `https://etherscan.io/tx/${txHash}`,
   };
 
   if (type === undefined) {
@@ -191,19 +198,11 @@ export default function TransactionCompletionModal({
             customIconStyle="ml-2"
             customStyle="bg-dark-1000 text-sm lg:text-base lg:!py-3 lg:px-[72px] lg:w-[418px] max-w-[418px] min-w-[240px] min-h-[48px] lg:min-h-[52px]"
             onClick={() => {
-              if (type !== ModalTypeToDisplay.RefundRequested) {
-                window.open(
-                  `https://defiscan.live/transactions/${txHash}?network=${networkEnv}`,
-                  "_blank",
-                  "noopener noreferrer"
-                );
-              } else {
-                window.open(
-                  `https://etherscan.io/tx/${txHash}`,
-                  "_blank",
-                  "noopener noreferrer"
-                );
-              }
+              window.open(
+                externalLinkButtonUrls[type],
+                "_blank",
+                "noopener noreferrer"
+              );
             }}
           />
           {type === ModalTypeToDisplay.Completed && (

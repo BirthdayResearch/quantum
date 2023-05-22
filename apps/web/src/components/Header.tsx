@@ -8,9 +8,9 @@ import Banner from "./Banner";
 import Navigation from "./Navigation";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
-import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import TransactionInProgressModal from "./queue/TransactionInProgressModal";
 import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
+import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import TransactionCompletionModal from "./queue/TransactionCompletionModal";
 
 export default function Header({
@@ -22,6 +22,7 @@ export default function Header({
   const [modalToDisplay, setModalToDisplay] = useState<
     ModalTypeToDisplay | undefined
   >();
+  const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<string>("");
 
   return (
     <div className="relative z-[1] flex flex-col">
@@ -63,6 +64,9 @@ export default function Header({
             onTransactionFound={(modalTypeToDisplay) => {
               setModalToDisplay(modalTypeToDisplay);
             }}
+            setAdminSendTxHash={(txHash) => {
+              setAdminQueueSendTxHash(txHash);
+            }}
           />
           <TransactionInProgressModal
             isOpen={
@@ -93,6 +97,7 @@ export default function Header({
             onClose={() => setModalToDisplay(undefined)}
             onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
             destinationAddress="dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
+            adminQueueSendTxHash={adminQueueSendTxHash}
           />
         </div>
       </div>

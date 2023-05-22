@@ -17,12 +17,14 @@ import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 export interface ModalConfigType {
   title: string;
   message: string;
+  inputErrorMessage?: string;
   inputLabel: string;
   inputPlaceholder: string;
   buttonLabel: string;
   isOpen: boolean;
   onClose: () => void;
   onTransactionFound?: (modalTypeToDisplay: any) => void;
+  setAdminSendTxHash?: (txHash: string) => void;
 }
 
 export enum ContractType {
@@ -41,12 +43,14 @@ const statusToModalTypeMap = {
 export default function QueryTransactionModal({
   title,
   message,
+  inputErrorMessage,
   inputLabel,
   inputPlaceholder,
   buttonLabel,
   isOpen,
   onClose,
   onTransactionFound,
+  setAdminSendTxHash,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
@@ -55,7 +59,7 @@ export default function QueryTransactionModal({
   const [transactionInput, setTransactionInput] = useState<string>("");
   const [isFocused, setIsFocused] = useState(false);
   const [isValidTransaction, setIsValidTransaction] = useState(true);
-  const [inputErrorMessage, setInputErrorMessage] = useState<string>("");
+  const [errorMessage, setInputErrorMessage] = useState<string>("");
   const [copiedFromClipboard, setCopiedFromClipboard] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,9 +105,18 @@ export default function QueryTransactionModal({
           return;
         }
 
-        const modalType = statusToModalTypeMap[getTx.status];
+        const adminQueueTxHash = getTx.adminQueue?.sendTransactionHash;
+        if (
+          getTx.status === "COMPLETED" &&
+          adminQueueTxHash !== undefined &&
+          adminQueueTxHash !== null &&
+          setAdminSendTxHash !== undefined
+        ) {
+          setAdminSendTxHash(adminQueueTxHash);
+        }
 
         // Set modal type to display based on status from the DB
+        const modalType = statusToModalTypeMap[getTx.status];
         if (modalType) {
           onTransactionFound(modalType);
         }
@@ -149,6 +162,7 @@ export default function QueryTransactionModal({
     }
   }, [copiedFromClipboard]);
 
+  // Reset error message and valid transaction state when user types
   useEffect(() => {
     setInputErrorMessage("");
     setIsValidTransaction(true);
@@ -241,7 +255,7 @@ export default function QueryTransactionModal({
         {/* Error message */}
         {invalidTxnHash && (
           <span className="block pt-2 text-xs lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
-            {inputErrorMessage}
+            {inputErrorMessage ?? errorMessage}
           </span>
         )}
 
@@ -251,6 +265,15 @@ export default function QueryTransactionModal({
             customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[251.72px] min-h-[48px] lg:min-h-[52px]"
             disabled={transactionInput === "" || isLoading}
             onClick={checkTXnHash}
+            // onClick={() => {
+            //   // TODO: remove after testing, uncomment to test different modal
+            //   if (!onTransactionFound) {
+            //     return;
+            //   }
+            //   onTransactionFound(ModalTypeToDisplay.Completed);
+            //   // onTransactionFound(ModalTypeToDisplay.RefundInProgress);
+            //   // onTransactionFound(ModalTypeToDisplay.Unsuccessful);
+            // }}
             isLoading={isLoading}
           />
         </div>
