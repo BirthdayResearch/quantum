@@ -6,6 +6,8 @@ import {
   BridgeV1__factory,
   EvmContractManager,
   HardhatNetwork,
+  MockBridgeQueue,
+  MockBridgeQueue__factory,
   TestToken,
   TestToken__factory,
 } from 'smartcontracts';
@@ -24,6 +26,8 @@ export class BridgeContractFixture {
   static readonly Contracts = {
     BridgeImplementation: { deploymentName: 'BridgeV1', contractName: 'BridgeV1' },
     BridgeProxy: { deploymentName: 'BridgeProxy', contractName: 'BridgeProxy' },
+    BridgeQueueImplementation: { deploymentName: 'MockBridgeQueue', contractName: 'MockBridgeQueue' },
+    BridgeQueueProxy: { deploymentName: 'BridgeQueueProxy', contractName: 'BridgeQueueProxy' },
     MockUSDT: { deploymentName: 'MockUSDT', contractName: 'TestToken' },
     MockUSDC: { deploymentName: 'MockUSDC', contractName: 'TestToken' },
     MockWBTC: { deploymentName: 'MockWBTC', contractName: 'TestToken' },
@@ -40,6 +44,10 @@ export class BridgeContractFixture {
       bridgeProxy: BridgeV1__factory.connect(bridgeProxyContract.address, this.adminAndOperationalSigner),
       bridgeImplementation: this.hardhatNetwork.contracts.getDeployedContract<BridgeV1>(
         BridgeContractFixture.Contracts.BridgeImplementation.deploymentName,
+      ),
+      queueBridgeProxy: MockBridgeQueue__factory.connect(bridgeProxyContract.address, this.adminAndOperationalSigner),
+      queueBridgeImplementation: this.hardhatNetwork.contracts.getDeployedContract<MockBridgeQueue>(
+        BridgeContractFixture.Contracts.BridgeQueueImplementation.deploymentName,
       ),
       musdt: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
         BridgeContractFixture.Contracts.MockUSDT.deploymentName,
@@ -68,6 +76,11 @@ export class BridgeContractFixture {
       bridgeProxy: BridgeV1__factory.connect(bridgeProxyContract.address, userSigner),
       bridgeImplementation: this.hardhatNetwork.contracts.getDeployedContract<BridgeV1>(
         BridgeContractFixture.Contracts.BridgeImplementation.deploymentName,
+        userSigner,
+      ),
+      queueBridgeProxy: MockBridgeQueue__factory.connect(bridgeProxyContract.address, userSigner),
+      queueBridgeImplementation: this.hardhatNetwork.contracts.getDeployedContract<MockBridgeQueue>(
+        BridgeContractFixture.Contracts.BridgeQueueImplementation.deploymentName,
         userSigner,
       ),
       musdt: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
@@ -101,40 +114,23 @@ export class BridgeContractFixture {
    * Deploys the contracts, using the Signer of the HardhatContainer as the operational and admin address
    */
   async deployContracts(): Promise<BridgeContracts> {
-    // Deploying BridgeV1 implementation contract
-    const bridgeUpgradeable = await this.contractManager.deployContract<BridgeV1>({
-      deploymentName: BridgeContractFixture.Contracts.BridgeImplementation.deploymentName,
-      contractName: BridgeContractFixture.Contracts.BridgeImplementation.contractName,
-      abi: BridgeV1__factory.abi,
-    });
-    await this.hardhatNetwork.generate(1);
-
-    const adminAndOperationalAddress = await this.adminAndOperationalSigner.getAddress();
-
-    // Deployment arguments for the Proxy contract
-    const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
-      // admin address
-      adminAndOperationalAddress,
-      // operational address
-      adminAndOperationalAddress,
-      // relayer address
-      // TODO: change this to the actual relayer address
-      adminAndOperationalAddress,
-      // community address
-      // TODO: change this to the actual community address
-      adminAndOperationalAddress,
-      // 0.3% txn fee
-      30,
-      // flush funds back to admin and operational signer
-      // TODO: change this to the actual flush address
-      adminAndOperationalAddress,
-    ]);
+    const { bridgeV1: bridgeUpgradeable, data: encodedData } = await this.deployBridgeProxy();
 
     // Deploying proxy contract
     const bridgeProxy = await this.contractManager.deployContract<BridgeProxy>({
       deploymentName: BridgeContractFixture.Contracts.BridgeProxy.deploymentName,
       contractName: BridgeContractFixture.Contracts.BridgeProxy.contractName,
       deployArgs: [bridgeUpgradeable.address, encodedData],
+      abi: BridgeProxy__factory.abi,
+    });
+    await this.hardhatNetwork.generate(1);
+    const { queueBridge: queueBridgeUpgradeable, data: queueEncodedData } = await this.deployQueueBridgeProxy();
+
+    // Deploying proxy contract
+    const queueBridgeProxy = await this.contractManager.deployContract<BridgeProxy>({
+      deploymentName: BridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName,
+      contractName: BridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName,
+      deployArgs: [queueBridgeUpgradeable.address, queueEncodedData],
       abi: BridgeProxy__factory.abi,
     });
     await this.hardhatNetwork.generate(1);
@@ -183,6 +179,8 @@ export class BridgeContractFixture {
 
     // Create a reference to the implementation contract via proxy
     const bridge = BridgeV1__factory.connect(bridgeProxy.address, this.adminAndOperationalSigner);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const queueBridge = MockBridgeQueue__factory.connect(queueBridgeProxy.address, this.adminAndOperationalSigner);
 
     // Adding MUSDT, MUSDC, MWBTC, EUROC and ETH as supported tokens
     await bridge.addSupportedTokens(musdt.address, constants.MaxInt256);
@@ -191,6 +189,13 @@ export class BridgeContractFixture {
     await bridge.addSupportedTokens(meuroc.address, constants.MaxInt256);
     await bridge.addSupportedTokens(dfi.address, constants.MaxInt256);
     await bridge.addSupportedTokens(ethers.constants.AddressZero, constants.MaxInt256);
+
+    await queueBridge.addSupportedToken(musdt.address);
+    await queueBridge.addSupportedToken(musdc.address);
+    await queueBridge.addSupportedToken(mwbtc.address);
+    await queueBridge.addSupportedToken(meuroc.address);
+    await queueBridge.addSupportedToken(dfi.address);
+    await queueBridge.addSupportedToken(ethers.constants.AddressZero);
 
     await this.hardhatNetwork.generate(1);
 
@@ -209,6 +214,63 @@ export class BridgeContractFixture {
     await dfi.mint(address, amount);
 
     await this.hardhatNetwork.generate(1);
+  }
+
+  async deployBridgeProxy(): Promise<{ bridgeV1: BridgeV1; data: string }> {
+    // Deploying BridgeV1 implementation contract
+    const bridgeUpgradeable = await this.contractManager.deployContract<BridgeV1>({
+      deploymentName: BridgeContractFixture.Contracts.BridgeImplementation.deploymentName,
+      contractName: BridgeContractFixture.Contracts.BridgeImplementation.contractName,
+      abi: BridgeV1__factory.abi,
+    });
+    await this.hardhatNetwork.generate(1);
+
+    const adminAndOperationalAddress = await this.adminAndOperationalSigner.getAddress();
+
+    // Deployment arguments for the Proxy contract
+    const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
+      // admin address
+      adminAndOperationalAddress,
+      // operational address
+      adminAndOperationalAddress,
+      // relayer address
+      // TODO: change this to the actual relayer address
+      adminAndOperationalAddress,
+      // community address
+      // TODO: change this to the actual community address
+      adminAndOperationalAddress,
+      // 0.3% txn fee
+      30,
+      // flush funds back to admin and operational signer
+      // TODO: change this to the actual flush address
+      adminAndOperationalAddress,
+    ]);
+    return { bridgeV1: bridgeUpgradeable, data: encodedData };
+  }
+
+  async deployQueueBridgeProxy(): Promise<{ queueBridge: MockBridgeQueue; data: string }> {
+    // Deploying MockBridgeQueue implementation contract
+    const bridgeUpgradeable = await this.contractManager.deployContract<MockBridgeQueue>({
+      deploymentName: BridgeContractFixture.Contracts.BridgeQueueImplementation.deploymentName,
+      contractName: BridgeContractFixture.Contracts.BridgeQueueImplementation.contractName,
+      abi: MockBridgeQueue__factory.abi,
+    });
+    await this.hardhatNetwork.generate(1);
+
+    const adminAndOperationalAddress = await this.adminAndOperationalSigner.getAddress();
+
+    // Deployment arguments for the Proxy contract
+    const encodedData = MockBridgeQueue__factory.createInterface().encodeFunctionData('initialize', [
+      // admin address
+      adminAndOperationalAddress,
+      // cold wallet address
+      adminAndOperationalAddress,
+      // 0.3% txn fee
+      30,
+      // Community address
+      adminAndOperationalAddress,
+    ]);
+    return { queueBridge: bridgeUpgradeable, data: encodedData };
   }
 
   /**
@@ -248,6 +310,8 @@ export class BridgeContractFixture {
 export interface BridgeContracts {
   bridgeProxy: BridgeV1;
   bridgeImplementation: BridgeV1;
+  queueBridgeProxy: MockBridgeQueue;
+  queueBridgeImplementation: MockBridgeQueue;
   musdt: TestToken;
   musdc: TestToken;
   mwbtc: TestToken;
