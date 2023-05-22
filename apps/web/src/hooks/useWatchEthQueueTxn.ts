@@ -5,7 +5,7 @@ import { HttpStatusCode } from "axios";
 import { useEffect, useState } from "react";
 
 /**
- * This polls in the /handle-transaction to verify if txn is confirmed (>= 65 confirmations)
+ * This polls in the /ethereum/queue/verify to verify if txn is confirmed (>= 65 confirmations)
  */
 export default function useWatchEthQueueTxn() {
   const { networkEnv } = useNetworkEnvironmentContext();
