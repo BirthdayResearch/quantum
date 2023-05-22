@@ -2,7 +2,7 @@ import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 
-import { useAllocateDfcFundMutation } from "@store/index";
+import { useVerifyEthQueueTxnMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
 import useTimeout from "@hooks/useSetTimeout";
 import { useQueueStorageContext } from "@contexts/QueueStorageContext";
@@ -29,7 +29,7 @@ export default function QueueTransactionStatus({
 }) {
   const { isLg, isMd } = useResponsive();
 
-  const [allocateDfcFund] = useAllocateDfcFundMutation();
+  const [verifyEthQueueTxn] = useVerifyEthQueueTxnMutation();
   const { setStorage } = useQueueStorageContext();
 
   const [title, setTitle] = useState("");
@@ -71,14 +71,14 @@ export default function QueueTransactionStatus({
     if (txnHash !== undefined) {
       try {
         setIsRetrying(true);
-        const fundData = await allocateDfcFund({
+
+        const confirmEthTxnData = await verifyEthQueueTxn({
           txnHash,
         }).unwrap();
-
-        if (fundData?.transactionHash !== undefined) {
-          setStorage("allocation-txn-hash-queue", fundData?.transactionHash);
-          setStorage("confirmed-queue", txnHash);
-          setStorage("unsent-fund-queue", null);
+        if (confirmEthTxnData?.isConfirmed) {
+          setStorage("confirmed-queue", txnHash ?? null);
+          setStorage("unconfirmed-queue", null);
+          setStorage("txn-form-queue", null);
         }
       } catch ({ data }) {
         if (data?.statusCode === HttpStatusCode.TooManyRequests) {

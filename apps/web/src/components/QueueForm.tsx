@@ -652,8 +652,10 @@ export default function QueueForm({
           </div>
         )}
 
-        {(isBalanceSufficient && !hasPendingTxn && amount !== "") ||
-          (!ethQueueTxnStatus.isConfirmed && (
+        {isBalanceSufficient &&
+          !hasPendingTxn &&
+          amount !== "" &&
+          !ethQueueTxnStatus.isConfirmed && (
             <div
               className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}
             >
@@ -665,7 +667,7 @@ export default function QueueForm({
                 &nbsp;for faster processing.
               </span>
             </div>
-          ))}
+          )}
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
