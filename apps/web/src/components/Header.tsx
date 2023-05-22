@@ -11,6 +11,7 @@ import AnnouncementBanner from "./AnnouncementBanner";
 import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import TransactionInProgressModal from "./queue/TransactionInProgressModal";
 import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
+import TransactionCompletionModal from "./queue/TransactionCompletionModal";
 
 export default function Header({
   isBridgeUp,
@@ -48,6 +49,8 @@ export default function Header({
           />
           <ConnectButton />
           {chain === undefined && <EnvironmentNetworkSwitch />}
+
+          {/* Search tx modal */}
           <QueryTransactionModal
             title="Track transaction"
             message="Enter transaction hash of a queue transaction to track its status"
@@ -57,7 +60,6 @@ export default function Header({
             onClose={() => setModalToDisplay(undefined)}
             // contractType={ContractType.Queue}
             isOpen={modalToDisplay === ModalTypeToDisplay.Search}
-            inputErrorMessage="Invalid transaction hash. Please only enter queued transaction hashes."
             onTransactionFound={(modalTypeToDisplay) => {
               setModalToDisplay(modalTypeToDisplay);
             }}
@@ -76,6 +78,21 @@ export default function Header({
             token="dBTC"
             onClose={() => setModalToDisplay(undefined)}
             onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
+          />
+          <TransactionCompletionModal
+            isOpen={
+              modalToDisplay === ModalTypeToDisplay.Refunded ||
+              modalToDisplay === ModalTypeToDisplay.Completed ||
+              modalToDisplay === ModalTypeToDisplay.RefundRequested
+            }
+            type={modalToDisplay}
+            txHash="0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
+            initiatedDate={new Date()}
+            amount="150"
+            token="dBTC"
+            onClose={() => setModalToDisplay(undefined)}
+            onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
+            destinationAddress="dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
           />
         </div>
       </div>

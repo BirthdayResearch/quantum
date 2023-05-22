@@ -30,6 +30,8 @@ const useLazyBridgeAnnouncements = () =>
   useWrappedLazyQuery(bridgeApi.useLazyBridgeAnnouncementsQuery, true);
 const useQueueTransactionMutation = () =>
   useWrappedMutation(bridgeApi.useQueueTransactionMutation);
+const useGetQueueTransactionMutation = () =>
+  useWrappedMutation(bridgeApi.useGetQueueTransactionMutation);
 
 export {
   useGenerateAddressMutation,
@@ -45,5 +47,6 @@ export {
   useLazyBridgeSettingsQuery,
   useLazyBridgeAnnouncements,
   useQueueTransactionMutation,
+  useGetQueueTransactionMutation,
   bridgeApi,
 };

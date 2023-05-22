@@ -11,6 +11,7 @@ import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
 import { ModalTypeToDisplay } from "types";
+import { useGetQueueTransactionMutation } from "@store/index";
 
 export interface ModalConfigType {
   title: string;
@@ -18,8 +19,6 @@ export interface ModalConfigType {
   inputLabel: string;
   inputPlaceholder: string;
   buttonLabel: string;
-  inputErrorMessage: string;
-  // contractType: ContractType; // TODO: handle type when new SC is merged
   isOpen: boolean;
   onClose: () => void;
   onTransactionFound?: (modalTypeToDisplay: any) => void;
@@ -30,51 +29,79 @@ export enum ContractType {
   Queue,
 }
 
+const statusToModalTypeMap = {
+  COMPLETED: ModalTypeToDisplay.Completed,
+  REFUND_REQUESTED: ModalTypeToDisplay.RefundInProgress,
+  REFUNDED: ModalTypeToDisplay.Refunded,
+  ERROR: ModalTypeToDisplay.Unsuccessful,
+  IN_PROGRESS: ModalTypeToDisplay.Pending,
+};
+
 export default function QueryTransactionModal({
   title,
   message,
   inputLabel,
   inputPlaceholder,
   buttonLabel,
-  inputErrorMessage,
   isOpen,
   onClose,
   onTransactionFound,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
-  const { BridgeV1, EthereumRpcUrl } = useContractContext();
+  const { BridgeQueue, EthereumRpcUrl } = useContractContext();
 
   const [transactionInput, setTransactionInput] = useState<string>("");
   const [isFocused, setIsFocused] = useState(false);
   const [isValidTransaction, setIsValidTransaction] = useState(true);
+  const [inputErrorMessage, setInputErrorMessage] = useState<string>("");
   const [copiedFromClipboard, setCopiedFromClipboard] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   useAutoResizeTextArea(textAreaRef.current, [transactionInput]);
+  const [getQueueStatus] = useGetQueueTransactionMutation();
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
-  const bridgeIface = new ethers.utils.Interface(BridgeV1.abi); // TODO: use new abi from new SC
+  const bridgeIface = new ethers.utils.Interface(BridgeQueue.abi);
   // eslint-disable-next-line
   const checkTXnHash = async () => {
     try {
       setIsLoading(true);
       const receipt = await provider.getTransaction(transactionInput);
       const decodedData = bridgeIface.parseTransaction({ data: receipt.data });
+
+      // Checks if eth tx hash is valid and if it comes from the bridgeToDeFiChain contract
       if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
-        // TODO: add condition to check decodedData.name of new SC
+        setInputErrorMessage("Enter a valid transaction hash for Ethereum.");
         setIsValidTransaction(false);
         return;
       }
       if (receipt) {
         setStorage("unconfirmed", transactionInput);
         setIsValidTransaction(true);
-        // TODO: add logic to call get queue tx from db and navigate to corresponding modal
+
+        // Calls queue tx from db
+        const getTx = await getQueueStatus({
+          txnHash: transactionInput,
+        }).unwrap();
+
+        if (!onTransactionFound) {
+          return;
+        }
+
+        const modalType = statusToModalTypeMap[getTx.status];
+
+        // Set modal type to display based on status from the DB
+        if (modalType) {
+          onTransactionFound(modalType);
+        }
         return;
       }
-      setIsValidTransaction(false);
     } catch (error) {
+      setInputErrorMessage(
+        "Invalid transaction hash. Please only enter queued transaction hashes."
+      );
       setIsValidTransaction(false);
     } finally {
       setIsLoading(false);
@@ -195,7 +222,7 @@ export default function QueryTransactionModal({
           )}
         </div>
 
-        {/* Error messages */}
+        {/* Error message */}
         {invalidTxnHash && (
           <span className="block pt-2 text-xs lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
             {inputErrorMessage}
@@ -206,17 +233,8 @@ export default function QueryTransactionModal({
           <ActionButton
             label={isLoading ? "" : buttonLabel}
             customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[251.72px] min-h-[48px] lg:min-h-[52px]"
-            disabled={transactionInput === "" || isLoading} // TODO: comment to test different modal
-            // onClick={checkTXnHash} // TODO: comment to test different modal
-            onClick={() => {
-              // TODO: remove after testing, uncomment to test different modal
-              if (!onTransactionFound) {
-                return;
-              }
-              onTransactionFound(ModalTypeToDisplay.Pending);
-              // onTransactionFound(ModalTypeToDisplay.RefundInProgress);
-              // onTransactionFound(ModalTypeToDisplay.Unsuccessful);
-            }}
+            disabled={transactionInput === "" || isLoading}
+            onClick={checkTXnHash}
             isLoading={isLoading}
           />
         </div>
