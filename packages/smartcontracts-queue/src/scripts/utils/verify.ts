@@ -9,13 +9,7 @@ export async function verify({ contractAddress, args, contract }: ContractInput)
       contract,
     });
   } catch (e) {
-    if ((e as Error).message.toLowerCase().includes('already verified')) {
-      console.log('ERROR');
-      console.log('Already verified!');
-    } else {
-      console.log('ERROR');
-      console.log(e);
-    }
+    console.log(e);
   }
 }
 
