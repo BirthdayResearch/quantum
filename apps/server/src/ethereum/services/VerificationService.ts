@@ -87,18 +87,17 @@ export class VerificationService {
     etherInterface: ethers.utils.Interface;
     parsedTxnData: ethers.utils.TransactionDescription;
   }> {
-    try {
-      const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-      const etherInterface = new ethers.utils.Interface(contract[contractType].interface);
-      const parsedTxnData = etherInterface.parseTransaction({
-        data: onChainTxnDetail.data,
-        value: onChainTxnDetail.value,
-      });
-
-      return { etherInterface, parsedTxnData };
-    } catch (e) {
+    const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
+    if (onChainTxnDetail === null) {
       throw new NotFoundException('Transaction not found');
     }
+    const etherInterface = new ethers.utils.Interface(contract[contractType].interface);
+    const parsedTxnData = etherInterface.parseTransaction({
+      data: onChainTxnDetail.data,
+      value: onChainTxnDetail.value,
+    });
+
+    return { etherInterface, parsedTxnData };
   }
 
   decodeTxnData({
