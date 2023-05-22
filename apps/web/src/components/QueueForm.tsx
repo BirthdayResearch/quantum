@@ -588,14 +588,13 @@ export default function QueueForm({
         </>
       )}
 
-      <div className="mt-8 px-6 md:px-4 lg:mt-12 lg:mb-0 lg:px-0 xl:px-20">
+      <div className="flex flex-col items-center px-6 md:px-4 mt-[50px] lg:mb-0 lg:px-0 xl:px-20">
         {/* Todo: to update the button when Review modal is ready */}
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <>
             <ActionButton
               label="Queue new transaction"
               onClick={() => onDone()}
-              customStyle="mt-6"
             />
             <span
               className={clsx(
@@ -653,10 +652,8 @@ export default function QueueForm({
           </div>
         )}
 
-        {isBalanceSufficient &&
-          !hasPendingTxn &&
-          amount !== "" &&
-          ethQueueTxnStatus.isConfirmed && (
+        {(isBalanceSufficient && !hasPendingTxn && amount !== "") ||
+          (!ethQueueTxnStatus.isConfirmed && (
             <div
               className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}
             >
@@ -668,7 +665,7 @@ export default function QueueForm({
                 &nbsp;for faster processing.
               </span>
             </div>
-          )}
+          ))}
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
