@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 import { BridgeQueue__factory } from 'smartcontracts-queue';
@@ -56,23 +56,23 @@ export class VerificationService {
       parsedTxnData.parsedTxnData.name !== contract[contractType].name ||
       parsedTxnData.parsedTxnData.signature !== contract[contractType].signature
     ) {
-      return { errorMsg: ErrorMsgTypes.InaccurateNameAndSignature };
+      throw new BadRequestException(ErrorMsgTypes.InaccurateNameAndSignature);
     }
 
     // if transaction is still pending
     if (txReceipt === null) {
-      return { errorMsg: ErrorMsgTypes.PendingTxn };
+      throw new NotFoundException(ErrorMsgTypes.PendingTxn);
     }
 
     // Sanity check that the contractAddress is accurate in the Transaction Receipt
     if (txReceipt.to !== contractAddress) {
-      return { errorMsg: ErrorMsgTypes.InaccurateContractAddress };
+      throw new BadRequestException(ErrorMsgTypes.InaccurateContractAddress);
     }
 
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      return { errorMsg: ErrorMsgTypes.RevertedTxn };
+      throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
     }
 
     // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
@@ -89,7 +89,7 @@ export class VerificationService {
   }> {
     const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
     if (onChainTxnDetail === null) {
-      throw new NotFoundException('Transaction not found');
+      throw new NotFoundException(ErrorMsgTypes.PendingTxn);
     }
     const etherInterface = new ethers.utils.Interface(contract[contractType].interface);
     const parsedTxnData = etherInterface.parseTransaction({
