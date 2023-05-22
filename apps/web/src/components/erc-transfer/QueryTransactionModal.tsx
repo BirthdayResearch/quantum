@@ -65,48 +65,56 @@ export default function QueryTransactionModal({
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
   const bridgeIface = new ethers.utils.Interface(BridgeQueue.abi);
 
-  const checkTXnHashExists = async () => {
-    try {
-      setIsLoading(true);
-      // To check if its a valid Eth tx hash
-      const receipt = await provider.getTransaction(transactionInput);
+  const checkTXnHash = async () => {
+    const regex = /^0x([A-Fa-f0-9]{64})$/;
+    const isTransactionHash = regex.test(transactionInput);
+    if (!isTransactionHash) {
+      setInputErrorMessage("Enter a valid transaction hash for Ethereum.");
+    } else {
+      try {
+        setIsLoading(true);
+        // To check if its a valid Eth tx hash
+        const receipt = await provider.getTransaction(transactionInput);
 
-      // To check if its a valid Eth tx hash that comes from the bridgeToDeFiChain contract
-      const decodedData = bridgeIface.parseTransaction({ data: receipt.data });
+        // To check if its a valid Eth tx hash that comes from the bridgeToDeFiChain contract
+        const decodedData = bridgeIface.parseTransaction({
+          data: receipt.data,
+        });
 
-      // Checks if Eth tx hash is valid and if it doesn't come from the bridgeToDeFiChain contract
-      if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
-        setIsValidTransaction(false);
-        return;
-      }
-      if (receipt) {
-        setStorage("unconfirmed", transactionInput);
-        setIsValidTransaction(true);
-
-        // Calls queue tx from db
-        const getTx = await getQueueStatus({
-          txnHash: transactionInput,
-        }).unwrap();
-
-        if (!onTransactionFound) {
+        // Checks if Eth tx hash is valid and if it doesn't come from the bridgeToDeFiChain contract
+        if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
+          setIsValidTransaction(false);
           return;
         }
+        if (receipt) {
+          setStorage("unconfirmed", transactionInput);
+          setIsValidTransaction(true);
 
-        const modalType = statusToModalTypeMap[getTx.status];
+          // Calls queue tx from db
+          const getTx = await getQueueStatus({
+            txnHash: transactionInput,
+          }).unwrap();
 
-        // Set modal type to display based on status from the DB
-        if (modalType) {
-          onTransactionFound(modalType);
+          if (!onTransactionFound) {
+            return;
+          }
+
+          const modalType = statusToModalTypeMap[getTx.status];
+
+          // Set modal type to display based on status from the DB
+          if (modalType) {
+            onTransactionFound(modalType);
+          }
+          return;
         }
-        return;
+      } catch (error) {
+        setInputErrorMessage(
+          "Invalid transaction hash. Please only enter queued transaction hashes."
+        );
+        setIsValidTransaction(false);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      setInputErrorMessage(
-        "Invalid transaction hash. Please only enter queued transaction hashes."
-      );
-      setIsValidTransaction(false);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -236,19 +244,7 @@ export default function QueryTransactionModal({
             label={isLoading ? "" : buttonLabel}
             customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[251.72px] min-h-[48px] lg:min-h-[52px]"
             disabled={transactionInput === "" || isLoading}
-            onClick={() => {
-              // Checks if its a valid Ethereum tx hash
-              const regex = /^0x([A-Fa-f0-9]{64})$/;
-              const isTransactionHash = regex.test(transactionInput);
-              if (!isTransactionHash) {
-                setInputErrorMessage(
-                  "Enter a valid transaction hash for Ethereum."
-                );
-              } else {
-                // Checks if valid queue eth tx hash exists in the DB
-                checkTXnHashExists();
-              }
-            }}
+            onClick={checkTXnHash}
             isLoading={isLoading}
           />
         </div>
