@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { ethers } from 'ethers';
-
 import {
   BridgeQueue,
   BridgeQueue__factory,
@@ -18,7 +15,7 @@ describe('Bridge Contract', () => {
   let hardhatNetwork: HardhatNetwork;
   let evmContractManager: EvmContractManager;
   let defaultAdminAddress: string;
-  let withdrawSignerAddress: string;
+  let coldWalletAddress: string;
   let communityAddress: string;
   let bridgeUpgradeable: BridgeQueue;
   let bridgeProxy: BridgeQueueProxy;
@@ -29,9 +26,9 @@ describe('Bridge Contract', () => {
     evmContractManager = hardhatNetwork.contracts;
     // Default and operational admin account
     ({ testWalletAddress: defaultAdminAddress } = await hardhatNetwork.createTestWallet());
-    ({ testWalletAddress: withdrawSignerAddress } = await hardhatNetwork.createTestWallet());
+    ({ testWalletAddress: coldWalletAddress } = await hardhatNetwork.createTestWallet());
     ({ testWalletAddress: communityAddress } = await hardhatNetwork.createTestWallet());
-    // Deploying BridgeV1 contract
+    // Deploying BridgeQueue contract
     bridgeUpgradeable = await evmContractManager.deployContract<BridgeQueue>({
       deploymentName: 'BridgeQueue',
       contractName: 'BridgeQueue',
@@ -41,9 +38,9 @@ describe('Bridge Contract', () => {
     // deployment arguments for the Proxy contract
     const encodedData = BridgeQueue__factory.createInterface().encodeFunctionData('initialize', [
       defaultAdminAddress,
-      communityAddress,
+      coldWalletAddress, // cold wallet
       10, // 0.1% txn fee
-      defaultAdminAddress, // flush funds back to admin
+      communityAddress, // flush funds back to admin
     ]);
     // Deploying proxy contract
     bridgeProxy = await evmContractManager.deployContract<BridgeQueueProxy>({
@@ -71,12 +68,11 @@ describe('Bridge Contract', () => {
       const DEFAULT_ADMIN_ROLE = '0x0000000000000000000000000000000000000000000000000000000000000000';
       expect(await bridgeUpgradeable.hasRole(DEFAULT_ADMIN_ROLE, defaultAdminAddress)).toBe(true);
     });
-    it('Withdraw address should be Withdraw address', async () => {
-      const WITHDRAW_ROLE = ethers.utils.solidityKeccak256(['string'], ['WITHDRAW_ROLE']);
-      expect(await bridgeUpgradeable.hasRole(WITHDRAW_ROLE, withdrawSignerAddress)).toBe(true);
-    });
     it('Community address should be  Community address', async () => {
       expect(await bridgeUpgradeable.communityWallet()).toBe(communityAddress);
+    });
+    it('Cold address should be cold wallet address', async () => {
+      expect(await bridgeUpgradeable.coldWallet()).toBe(coldWalletAddress);
     });
     it('Successfully implemented the 0.1% txn fee', async () => {
       expect((await bridgeUpgradeable.transactionFee()).toString()).toBe('10');
