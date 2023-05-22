@@ -16,7 +16,10 @@ import Modal from "@components/commons/Modal";
 import { Erc20Token, TransferData } from "types";
 import { useStorageContext } from "@contexts/StorageContext";
 import { useQueueStorageContext } from "@contexts/QueueStorageContext";
-import { useQueueTransactionMutation } from "@store/index";
+import {
+  useQueueTransactionMutation,
+  useGetTransactionMutation,
+} from "@store/index";
 import {
   BridgeStatus,
   DISCLAIMER_MESSAGE,
@@ -43,13 +46,14 @@ export default function EvmToDeFiChainTransfer({
   );
   const { isMobile } = useResponsive();
   const { networkEnv } = useNetworkEnvironmentContext();
-  const { BridgeV1, BridgeQueue, Erc20Tokens, ExplorerURL } =
+  const { BridgeV1, BridgeQueue, Erc20Tokens, ExplorerURL, EthereumRpcUrl } =
     useContractContext();
   const bridgingETH = data.from.tokenSymbol === ETHEREUM_SYMBOL;
   const { setStorage } = useStorageContext();
   const { setStorage: setQueueStorage } = useQueueStorageContext();
   const { typeOfTransaction } = useNetworkContext();
   const [queueTransaction] = useQueueTransactionMutation();
+  const [getTransaction] = useGetTransactionMutation();
 
   // Read details from token contract
   const erc20TokenContract = {
@@ -217,6 +221,7 @@ export default function EvmToDeFiChainTransfer({
 
   const createQueueTransaction = async (txnHash: string): Promise<void> => {
     try {
+      console.log("creating...");
       await queueTransaction({ txnHash }).unwrap();
       onClose(true);
     } catch (e) {
@@ -225,12 +230,46 @@ export default function EvmToDeFiChainTransfer({
     }
   };
 
-  // Call create queue api when transaction hash is confirmed
   useWaitForTransaction({
     hash: transactionHash,
+    confirmations: 2,
     onSuccess: async (transactionReceipt) => {
       if (typeOfTransaction === FormOptions.QUEUE) {
-        await createQueueTransaction(transactionReceipt.transactionHash);
+        let receipt;
+        let attempts = 0;
+        const retryLimit = 5; // set 5 retries in intervals of 5000ms
+        const sleep = (ms) =>
+          new Promise((resolve) => {
+            setTimeout(resolve, ms);
+          });
+
+        const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
+        receipt = await provider.getTransaction(
+          transactionReceipt.transactionHash
+        );
+        console.log(transactionReceipt.transactionHash);
+        console.log(transactionHash);
+        console.log(receipt);
+
+        while (receipt === null && attempts < retryLimit) {
+          // Disabling no await in loop as we want to make sure the request is made sequentially ( waiting 5000ms between each request )
+          /* eslint-disable no-await-in-loop */
+          receipt = await provider.getTransaction(
+            transactionReceipt.transactionHash
+          );
+          attempts += 1;
+          if (receipt === null && attempts < retryLimit) {
+            await sleep(5000); // Wait for 5 seconds before the next attempt
+          }
+
+          console.log("retry...", attempts);
+        }
+
+        if (receipt !== null) {
+          await createQueueTransaction(transactionReceipt.transactionHash);
+        } else {
+          setErrorMessage("Unable to create a Queue transaction.");
+        }
       }
     },
     onError: (err) => {
