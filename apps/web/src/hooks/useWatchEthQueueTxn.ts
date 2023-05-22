@@ -33,13 +33,11 @@ export default function useWatchEthQueueTxn() {
         const confirmEthTxnData = await verifyEthQueueTxn({
           txnHash: unconfirmed,
         }).unwrap();
-        console.log(confirmEthTxnData);
 
         setEthQueueTxnStatus({
           isConfirmed: confirmEthTxnData?.isConfirmed,
           numberOfConfirmations: confirmEthTxnData?.numberOfConfirmations,
         });
-        console.log(confirmEthTxnData);
 
         if (confirmEthTxnData?.isConfirmed) {
           setIsQueueApiSuccess(true);
