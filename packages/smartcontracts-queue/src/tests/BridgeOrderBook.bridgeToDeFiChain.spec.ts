@@ -315,4 +315,12 @@ describe('Bridge order tests', () => {
       });
     });
   });
+
+  describe('Test initialization of support for tokens', () => {
+    it('Token 3 and token 4 should be supported after initialization', async () => {
+      const { proxyBridge, testToken3, testToken4 } = await loadFixture(deployContracts);
+      expect(await proxyBridge.supportedTokens(testToken3.address)).to.equal(true);
+      expect(await proxyBridge.supportedTokens(testToken4.address)).to.equal(true);
+    });
+  });
 });
