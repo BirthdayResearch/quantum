@@ -228,7 +228,6 @@ export default function EvmToDeFiChainTransfer({
 
   useWaitForTransaction({
     hash: transactionHash,
-    confirmations: 2,
     onSuccess: async (transactionReceipt) => {
       if (typeOfTransaction === FormOptions.QUEUE) {
         let receipt;
@@ -239,7 +238,9 @@ export default function EvmToDeFiChainTransfer({
             setTimeout(resolve, ms);
           });
 
-        const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
+        const provider = new ethers.providers.StaticJsonRpcProvider(
+          EthereumRpcUrl
+        );
         receipt = await provider.getTransaction(
           transactionReceipt.transactionHash
         );
@@ -254,11 +255,11 @@ export default function EvmToDeFiChainTransfer({
             transactionReceipt.transactionHash
           );
           attempts += 1;
+          console.log("retry...", attempts);
           if (receipt === null && attempts < retryLimit) {
+            console.log("sleep...");
             await sleep(5000); // Wait for 5 seconds before the next attempt
           }
-
-          console.log("retry...", attempts);
         }
 
         if (receipt !== null) {
