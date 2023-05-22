@@ -19,7 +19,6 @@ export default function QueueTransactionStatus({
   isUnsentFund,
   numberOfEvmConfirmations,
   txnHash,
-  activeTab,
 }: {
   isConfirmed: boolean;
   isApiSuccess: boolean;
@@ -27,7 +26,6 @@ export default function QueueTransactionStatus({
   isUnsentFund: boolean;
   numberOfEvmConfirmations: string;
   txnHash: string | undefined;
-  activeTab: FormOptions;
 }) {
   const { isLg, isMd } = useResponsive();
 
