@@ -120,7 +120,7 @@ export default function QueueTransactionStatus({
             isConfirmed={isConfirmed}
             isApiSuccess={isApiSuccess}
             txnType="Ethereum"
-            activeTab={activeTab}
+            activeTab={FormOptions.QUEUE}
           />
         </div>
       )}
@@ -155,7 +155,7 @@ export default function QueueTransactionStatus({
               isConfirmed={isConfirmed}
               isApiSuccess={isApiSuccess}
               txnType="Ethereum"
-              activeTab={activeTab}
+              activeTab={FormOptions.QUEUE}
             />
           </div>
         )}

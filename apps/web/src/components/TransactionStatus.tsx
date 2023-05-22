@@ -10,6 +10,7 @@ import { HttpStatusCode } from "axios";
 import useTimeout from "@hooks/useSetTimeout";
 import { useStorageContext } from "@contexts/StorageContext";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
+import { FormOptions } from "@contexts/NetworkContext";
 import {
   CONFIRMATIONS_BLOCK_TOTAL,
   DFC_CONFIRMATIONS_BLOCK_TOTAL,
@@ -137,6 +138,7 @@ export default function TransactionStatus({
             isConfirmed={isConfirmed}
             isApiSuccess={isApiSuccess}
             txnType="confirmations"
+            activeTab={FormOptions.INSTANT}
           />
         </div>
       )}
@@ -263,6 +265,7 @@ export default function TransactionStatus({
               isConfirmed={isConfirmed}
               isApiSuccess={isApiSuccess}
               txnType="Ethereum"
+              activeTab={FormOptions.INSTANT}
             />
           </div>
         )}
