@@ -318,7 +318,9 @@ export default function EvmToDeFiChainTransfer({
             writeApprove === undefined ||
             writeBridgeToDeFiChain === undefined
           }
-          isLoading={writeBridgeToDeFiChain === undefined}
+          isLoading={
+            writeApprove === undefined || writeBridgeToDeFiChain === undefined
+          }
         />
       </div>
     </>
