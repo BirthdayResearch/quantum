@@ -379,9 +379,6 @@ export default function QueueForm({
     floating,
   };
 
-  const warningTextStyle =
-    "block text-xs text-warning text-center lg:px-6 lg:text-sm";
-
   return (
     <div
       className={clsx(
@@ -408,6 +405,9 @@ export default function QueueForm({
             isUnsentFund={txnHash.unsentFund !== undefined}
             numberOfEvmConfirmations={getNumberOfConfirmations()}
             isApiSuccess={isQueueApiSuccess || txnHash.reverted !== undefined}
+            destinationAddress={addressInput}
+            amount={amount}
+            symbol={selectedQueueTokensB.tokenA.name}
           />
           <div className="flex flex-col space-y-7">
             <div className="flex flex-row justify-between">
@@ -504,6 +504,7 @@ export default function QueueForm({
               tokenDropDownValue={selectedQueueTokensA}
               options={selectedQueueNetworkA.tokens}
               setSelectedTokens={setSelectedQueueTokensA}
+              testId="queue-amount-input"
             />
             {isConnected && (
               <div className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2 items-center">
@@ -548,6 +549,7 @@ export default function QueueForm({
               }
               disabled={!isConnected}
               readOnly={hasUnconfirmedTxn}
+              testId="queue-receiver-address"
             />
           </div>
           <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-6 lg:mt-0">
@@ -589,7 +591,6 @@ export default function QueueForm({
       )}
 
       <div className="flex flex-col items-center px-6 md:px-4 mt-[50px] lg:mb-0 lg:px-0 xl:px-20">
-        {/* Todo: to update the button when Review modal is ready */}
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <>
             <ActionButton
@@ -608,7 +609,7 @@ export default function QueueForm({
           <ConnectKitButton.Custom>
             {({ show }) => (
               <ActionButton
-                testId="transfer-btn"
+                testId="queue-transfer-btn"
                 label={getActionBtnLabel()}
                 isLoading={hasPendingTxn || isVerifyingTransaction}
                 disabled={(isConnected && !isFormValid) || hasPendingTxn}
@@ -635,11 +636,6 @@ export default function QueueForm({
             </div>
           )}
 
-        {hasPendingTxn && (
-          <span className={clsx("pt-2", warningTextStyle)}>
-            Unable to edit while transaction is pending
-          </span>
-        )}
         {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton

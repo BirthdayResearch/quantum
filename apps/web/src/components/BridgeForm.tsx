@@ -404,9 +404,6 @@ export default function BridgeForm({
     floating,
   };
 
-  const warningTextStyle =
-    "block text-xs text-warning text-center lg:px-6 lg:text-sm";
-
   const getNumberOfConfirmations = () => {
     let numOfConfirmations = BigNumber.min(
       ethTxnStatus?.numberOfConfirmations,
@@ -573,6 +570,7 @@ export default function BridgeForm({
               error={amountErr}
               showAmountsBtn={selectedNetworkA.name === Network.Ethereum}
               disabled={hasUnconfirmedTxn}
+              testId="instant-amount-input"
             />
             {isConnected && (
               <div className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2 items-center">
@@ -641,6 +639,7 @@ export default function BridgeForm({
               }
               disabled={!isConnected}
               readOnly={hasUnconfirmedTxn}
+              testId="instant-receiver-address"
             />
           </div>
           <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-6 lg:mt-0">
@@ -691,7 +690,7 @@ export default function BridgeForm({
           <ConnectKitButton.Custom>
             {({ show }) => (
               <ActionButton
-                testId="transfer-btn"
+                testId="instant-transfer-btn"
                 label={getActionBtnLabel()}
                 isLoading={hasPendingTxn || isVerifyingTransaction}
                 disabled={
@@ -722,11 +721,6 @@ export default function BridgeForm({
             </div>
           )}
 
-        {hasPendingTxn && (
-          <span className={clsx("pt-2", warningTextStyle)}>
-            Unable to edit while transaction is pending
-          </span>
-        )}
         {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton
