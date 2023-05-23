@@ -549,6 +549,7 @@ export default function QueueForm({
               }
               disabled={!isConnected}
               readOnly={hasUnconfirmedTxn}
+              testId="queue-receiver-address"
             />
           </div>
           <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-6 lg:mt-0">
@@ -608,7 +609,7 @@ export default function QueueForm({
           <ConnectKitButton.Custom>
             {({ show }) => (
               <ActionButton
-                testId="transfer-btn"
+                testId="queue-transfer-btn"
                 label={getActionBtnLabel()}
                 isLoading={hasPendingTxn || isVerifyingTransaction}
                 disabled={(isConnected && !isFormValid) || hasPendingTxn}
