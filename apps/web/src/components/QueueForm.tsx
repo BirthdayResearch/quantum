@@ -408,6 +408,9 @@ export default function QueueForm({
             isUnsentFund={txnHash.unsentFund !== undefined}
             numberOfEvmConfirmations={getNumberOfConfirmations()}
             isApiSuccess={isQueueApiSuccess || txnHash.reverted !== undefined}
+            destinationAddress={addressInput}
+            amount={amount}
+            symbol={selectedQueueTokensB.tokenA.name}
           />
           <div className="flex flex-col space-y-7">
             <div className="flex flex-row justify-between">

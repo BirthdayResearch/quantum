@@ -7,6 +7,7 @@ import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import SearchTransactionIcon from "@components/icons/SearchTransactionIcon";
 
 export interface ModalConfigType {
+  isOpen: boolean;
   title: string;
   message: string;
   buttonLabel: string;
@@ -18,6 +19,7 @@ export interface ModalConfigType {
 }
 
 export default function QueueTransactionModal({
+  isOpen,
   title,
   message,
   buttonLabel,
@@ -45,7 +47,7 @@ export default function QueueTransactionModal({
 
   return (
     <Modal
-      isOpen
+      isOpen={isOpen}
       onClose={onClose}
       customStyle="grid grid-rows-max-content-1fr"
     >
@@ -88,7 +90,7 @@ export default function QueueTransactionModal({
               <div className="text-dark-700 text-sm lg:text-base leading-5">
                 Transaction hash
               </div>
-              <div className="text-dark-1000 text-right w-5/12 lg:w-[220px] break-all">
+              <div className="text-dark-1000 text-right w-7/12 break-all">
                 {transactionHash}
               </div>
             </div>
