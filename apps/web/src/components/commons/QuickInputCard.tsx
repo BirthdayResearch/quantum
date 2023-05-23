@@ -23,6 +23,7 @@ interface QuickInputCardProps {
   };
   options?: TokensI[];
   setSelectedTokens?: Dispatch<SetStateAction<TokensI>>;
+  testId: string;
 }
 
 interface SetAmountButtonProps {
@@ -114,6 +115,7 @@ export function QuickInputCard({
   tokenDropDownValue,
   options,
   setSelectedTokens,
+  testId,
 }: QuickInputCardProps): JSX.Element {
   return (
     <div
@@ -132,7 +134,7 @@ export function QuickInputCard({
           })}
         >
           <input
-            data-testid="amount"
+            data-testid={testId}
             className={clsx(
               "w-full max-h-36 grow resize-none bg-transparent text-base text-dark-1000 focus:outline-none caret-dark-1000 placeholder-dark-500 hover:placeholder-dark-800 focus:placeholder-dark-300"
             )}
@@ -146,7 +148,7 @@ export function QuickInputCard({
             <IoCloseCircleSharp
               size={20}
               onClick={() => onChange("")}
-              className="text-dark-500 self-center cursor-pointer"
+              className="text-dark-500 self-center cursor-pointer ml-1"
             />
           )}
           {disabled && (

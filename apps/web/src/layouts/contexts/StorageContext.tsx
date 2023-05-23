@@ -19,7 +19,8 @@ type StorageKey =
   | "unsent-fund"
   | "dfc-address"
   | "dfc-address-details"
-  | "txn-form";
+  | "txn-form"
+  | "transfer-amount";
 
 interface StorageContextI {
   txnHash: {
@@ -32,6 +33,7 @@ interface StorageContextI {
   dfcAddress?: string;
   dfcAddressDetails?: AddressDetails;
   txnForm?: UnconfirmedTxnI;
+  transferAmount?: string;
   getStorage: (key: StorageKey) => string | undefined;
   setStorage: (key: StorageKey, value: string | null) => void;
 }
@@ -56,6 +58,7 @@ export function StorageProvider({
   const [dfcAddress, setDfcAddress] = useState<string>();
   const [dfcAddressDetails, setDfcAddressDetails] = useState<AddressDetails>();
   const [txnForm, setTxnForm] = useState<any>();
+  const [transferAmount, setTransferAmount] = useState<string>();
 
   const { networkEnv } = useNetworkEnvironmentContext();
 
@@ -68,6 +71,7 @@ export function StorageProvider({
     DFC_ADDR_KEY,
     DFC_ADDR_DETAILS_KEY,
     TXN_KEY,
+    TRANSFER_AMOUNT_KEY,
   } = useBridgeFormStorageKeys();
 
   useEffect(() => {
@@ -95,12 +99,18 @@ export function StorageProvider({
       getStorageItem<string>(REVERTED_TXN_HASH_KEY) ?? undefined;
     const unsentFundTxnHashKeyStorage =
       getStorageItem<string>(UNSENT_FUND_TXN_HASH_KEY) ?? undefined;
+    const dfcAddressKeyStorage =
+      getStorageItem<string>(DFC_ADDR_KEY) ?? undefined;
+    const transferAmountKeyStorage =
+      getStorageItem<string>(TRANSFER_AMOUNT_KEY) ?? undefined;
 
     setUnconfirmedTxnHashKey(unconfirmedTxnHashKeyStorage);
     setConfirmedTxnHashKey(confirmedTxnHashKeyStorage);
     setAllocationTxnHashKey(allocationTxnHashKeyStorage);
     setRevertedTxnHashKey(revertedTxnHashKeyStorage);
     setUnsentFundTxnHashKey(unsentFundTxnHashKeyStorage);
+    setDfcAddress(dfcAddressKeyStorage);
+    setTransferAmount(transferAmountKeyStorage);
   }, [
     networkEnv,
     CONFIRMED_TXN_HASH_KEY,
@@ -111,6 +121,7 @@ export function StorageProvider({
     DFC_ADDR_KEY,
     DFC_ADDR_DETAILS_KEY,
     TXN_KEY,
+    TRANSFER_AMOUNT_KEY,
   ]);
 
   const context: StorageContextI = useMemo(() => {
@@ -139,6 +150,9 @@ export function StorageProvider({
       } else if (key === "txn-form") {
         setTxnForm(JSON.parse(value));
         setStorageItem(TXN_KEY, JSON.parse(value));
+      } else if (key === "transfer-amount") {
+        setTransferAmount(value);
+        setStorageItem(TRANSFER_AMOUNT_KEY, value);
       }
     };
 
@@ -161,6 +175,8 @@ export function StorageProvider({
         value = dfcAddressDetails;
       } else if (key === "txn-form") {
         value = txnForm;
+      } else if (key === "transfer-amount") {
+        value = transferAmount;
       }
 
       return value;
@@ -181,6 +197,7 @@ export function StorageProvider({
       dfcAddressDetails:
         dfcAddressDetails === null ? undefined : dfcAddressDetails,
       txnForm: txnForm === null ? undefined : txnForm,
+      transferAmount: transferAmount === null ? undefined : transferAmount,
       getStorage,
       setStorage,
     };
@@ -193,6 +210,7 @@ export function StorageProvider({
     dfcAddress,
     dfcAddressDetails,
     txnForm,
+    transferAmount,
     REVERTED_TXN_HASH_KEY,
     CONFIRMED_TXN_HASH_KEY,
     ALLOCATION_TXN_HASH_KEY,
@@ -201,6 +219,7 @@ export function StorageProvider({
     DFC_ADDR_KEY,
     DFC_ADDR_DETAILS_KEY,
     TXN_KEY,
+    TRANSFER_AMOUNT_KEY,
   ]);
 
   return (
