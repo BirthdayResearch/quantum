@@ -9,6 +9,7 @@ import SearchTransactionIcon from "@components/icons/SearchTransactionIcon";
 import clsx from "clsx";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
+import { useContractContext } from "@contexts/ContractContext";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionCompletionModalProps {
@@ -75,6 +76,7 @@ export default function TransactionCompletionModal({
 }: TransactionCompletionModalProps): JSX.Element {
   const { isMobile } = useResponsive();
   const { getTransactionUrl } = useDeFiScanContext();
+  const { ExplorerURL } = useContractContext();
 
   const firstRowResult = {
     [ModalTypeToDisplay.Refunded]: `${amount} ${token}`,
@@ -97,7 +99,7 @@ export default function TransactionCompletionModal({
   const externalLinkButtonUrls = {
     [ModalTypeToDisplay.Refunded]: getTransactionUrl(adminQueueSendTxHash),
     [ModalTypeToDisplay.Completed]: getTransactionUrl(adminQueueSendTxHash),
-    [ModalTypeToDisplay.RefundRequested]: `https://etherscan.io/tx/${txHash}`,
+    [ModalTypeToDisplay.RefundRequested]: `${ExplorerURL}/tx/${txHash}`,
   };
 
   if (type === undefined) {
