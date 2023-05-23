@@ -26,6 +26,7 @@ import {
   FormOptions,
   useNetworkContext,
 } from "../../layouts/contexts/NetworkContext";
+import sleep from "../../utils/sleep";
 
 export default function EvmToDeFiChainTransfer({
   data,
@@ -111,31 +112,25 @@ export default function EvmToDeFiChainTransfer({
     refetchTokenData,
   });
 
-  const sleep = (ms) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
-
   const createQueueTransaction = async (txnHash: string): Promise<void> => {
-    await sleep(12000);
     await queueTransaction({ txnHash }).unwrap();
     onClose(true);
   };
 
-  const retryLimit = 5; // set 5 retries in intervals of 12000ms
   const handleCreateQueueTransaction = async (
     txnHash: string,
-    attempts: number = 0
+    attempts: number = 5
   ): Promise<void> => {
     try {
+      await sleep(12000);
       await createQueueTransaction(txnHash);
     } catch (e) {
       if (
         e.data.error.includes("Transaction is still pending") &&
-        attempts < retryLimit
+        attempts > 0
       ) {
         await sleep(12000);
-        await handleCreateQueueTransaction(txnHash, attempts + 1);
+        await handleCreateQueueTransaction(txnHash, attempts - 1);
       } else {
         setErrorMessage("Unable to create a Queue transaction.");
       }
