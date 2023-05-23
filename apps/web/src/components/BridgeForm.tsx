@@ -570,6 +570,7 @@ export default function BridgeForm({
               error={amountErr}
               showAmountsBtn={selectedNetworkA.name === Network.Ethereum}
               disabled={hasUnconfirmedTxn}
+              testId="instant-amount-input"
             />
             {isConnected && (
               <div className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2 items-center">

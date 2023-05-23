@@ -504,6 +504,7 @@ export default function QueueForm({
               tokenDropDownValue={selectedQueueTokensA}
               options={selectedQueueNetworkA.tokens}
               setSelectedTokens={setSelectedQueueTokensA}
+              testId="queue-amount-input"
             />
             {isConnected && (
               <div className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2 items-center">
