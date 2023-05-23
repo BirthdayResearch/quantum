@@ -33,7 +33,7 @@ const useQueueTransactionMutation = () =>
 const useVerifyEthQueueTxnMutation = () =>
   useWrappedMutation(bridgeApi.useVerifyEthQueueTxnMutation);
 const useGetQueueTransactionQuery = () =>
-  useWrappedMutation(bridgeApi.useGetQueueTransactionMutation);
+  useWrappedLazyQuery(bridgeApi.useLazyGetQueueTransactionQuery);
 
 export {
   useGenerateAddressMutation,

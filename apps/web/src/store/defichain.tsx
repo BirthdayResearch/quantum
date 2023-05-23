@@ -204,7 +204,7 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 0 },
     }),
-    getQueueTransaction: builder.mutation<Queue, any>({
+    getQueueTransaction: builder.query<Queue, any>({
       query: ({ baseUrl, txnHash }) => ({
         url: `${baseUrl}/${PATH_ETHEREUM}/queue/${txnHash}`,
         method: "GET",
