@@ -11,8 +11,8 @@ import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
 import { ModalTypeToDisplay } from "types";
-import { useGetQueueTransactionMutation } from "@store/index";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
+import { useGetQueueTransactionQuery } from "@store/index";
 
 export interface ModalConfigType {
   title: string;
@@ -54,7 +54,8 @@ export default function QueryTransactionModal({
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
-  const { BridgeQueue, EthereumRpcUrl } = useContractContext();
+  const { BridgeV1, BridgeQueue, EthereumRpcUrl } = useContractContext();
+  const [getQueueTransaction] = useGetQueueTransactionQuery();
 
   const [transactionInput, setTransactionInput] = useState<string>("");
   const [isFocused, setIsFocused] = useState(false);
@@ -65,15 +66,12 @@ export default function QueryTransactionModal({
   const [isLoading, setIsLoading] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   useAutoResizeTextArea(textAreaRef.current, [transactionInput]);
-  const [getQueueTransaction] = useGetQueueTransactionMutation();
   const isValidEthTxHash = checkEthTxHashHelper(transactionInput);
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
-  const bridgeIface = new ethers.utils.Interface(BridgeQueue.abi);
-  // const bridgeIface = new ethers.utils.Interface(
-  //   contractType === 0 ? BridgeV1.abi : BridgeQueue.abi
-  // );
-  console.log("contracttype", contractType);
+  const bridgeIface = new ethers.utils.Interface(
+    contractType === 0 ? BridgeV1.abi : BridgeQueue.abi
+  );
 
   const checkTXnHash = async () => {
     if (!isValidEthTxHash) {
