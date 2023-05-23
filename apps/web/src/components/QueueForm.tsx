@@ -60,8 +60,14 @@ export default function QueueForm({
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
-  const { dfcAddress, dfcAddressDetails, txnForm, setStorage, txnHash } =
-    useQueueStorageContext();
+  const {
+    dfcAddress,
+    dfcAddressDetails,
+    txnForm,
+    transferAmount,
+    setStorage,
+    txnHash,
+  } = useQueueStorageContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -208,6 +214,7 @@ export default function QueueForm({
     setStorage("txn-form-queue", null);
     setStorage("dfc-address-queue", null);
     setStorage("dfc-address-details-queue", null);
+    setStorage("transfer-amount-queue", null);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
@@ -304,6 +311,8 @@ export default function QueueForm({
     const localData = txnForm;
 
     if (localData && networkEnv === localData.networkEnv) {
+      setStorage("dfc-address-queue", localData.toAddress);
+      setStorage("transfer-amount-queue", localData.amount);
       // Load data from storage
       setHasUnconfirmedTxn(true);
       setAmount(localData.amount);
@@ -405,8 +414,8 @@ export default function QueueForm({
             isUnsentFund={txnHash.unsentFund !== undefined}
             numberOfEvmConfirmations={getNumberOfConfirmations()}
             isApiSuccess={isQueueApiSuccess || txnHash.reverted !== undefined}
-            destinationAddress={addressInput}
-            amount={amount}
+            destinationAddress={dfcAddress}
+            amount={transferAmount}
             symbol={selectedQueueTokensB.tokenA.name}
           />
           <div className="flex flex-col space-y-7">
@@ -419,7 +428,7 @@ export default function QueueForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(amount || 0).minus(fee),
+                  new BigNumber(transferAmount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
@@ -434,7 +443,7 @@ export default function QueueForm({
                 </span>
               </div>
               <span className="max-w-[50%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
-                {addressInput}
+                {dfcAddress}
               </span>
             </div>
             <div className="flex flex-row justify-between">
@@ -466,7 +475,7 @@ export default function QueueForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(amount || 0).minus(fee),
+                  new BigNumber(transferAmount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator

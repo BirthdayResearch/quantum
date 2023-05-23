@@ -30,8 +30,8 @@ export default function QueueTransactionStatus({
   isUnsentFund: boolean;
   numberOfEvmConfirmations: string;
   txnHash: string | undefined;
-  destinationAddress: string;
-  amount: string;
+  destinationAddress: string | undefined;
+  amount: string | undefined;
   symbol: string;
 }) {
   const { isLg, isMd } = useResponsive();

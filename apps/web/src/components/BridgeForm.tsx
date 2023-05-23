@@ -106,8 +106,14 @@ export default function BridgeForm({
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
-  const { dfcAddress, dfcAddressDetails, txnForm, setStorage, txnHash } =
-    useStorageContext();
+  const {
+    dfcAddress,
+    dfcAddressDetails,
+    txnForm,
+    transferAmount,
+    setStorage,
+    txnHash,
+  } = useStorageContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -251,6 +257,7 @@ export default function BridgeForm({
     setStorage("txn-form", null);
     setStorage("dfc-address", null);
     setStorage("dfc-address-details", null);
+    setStorage("transfer-amount", null);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
@@ -332,6 +339,8 @@ export default function BridgeForm({
     const localData = txnForm;
 
     if (localData && networkEnv === localData.networkEnv) {
+      setStorage("dfc-address", localData.toAddress);
+      setStorage("transfer-amount", localData.amount);
       // Load data from storage
       setHasUnconfirmedTxn(true);
       setAmount(localData.amount);
@@ -460,7 +469,7 @@ export default function BridgeForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(amount || 0).minus(fee),
+                  new BigNumber(transferAmount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
@@ -475,7 +484,7 @@ export default function BridgeForm({
                 </span>
               </div>
               <span className="max-w-[50%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
-                {addressInput}
+                {dfcAddress}
               </span>
             </div>
             <div className="flex flex-row justify-between">
@@ -507,7 +516,7 @@ export default function BridgeForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(amount || 0).minus(fee),
+                  new BigNumber(transferAmount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator

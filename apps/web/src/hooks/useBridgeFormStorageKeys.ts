@@ -8,6 +8,7 @@ import {
   STORAGE_REVERTED_TXN_HASH_KEY,
   STORAGE_UNSENT_FUND_TXN_HASH_KEY,
   STORAGE_DFC_ADDR_DETAILS,
+  STORAGE_TRANSFER_AMOUNT_KEY,
   QUEUE_STORAGE_UNCONFIRMED_TXN_HASH_KEY,
   QUEUE_STORAGE_CONFIRMED_TXN_HASH_KEY,
   QUEUE_STORAGE_ALLOCATION_TXN_HASH_KEY,
@@ -16,6 +17,7 @@ import {
   QUEUE_STORAGE_TXN_KEY,
   QUEUE_STORAGE_DFC_ADDR_KEY,
   QUEUE_STORAGE_DFC_ADDR_DETAILS,
+  QUEUE_STORAGE_TRANSFER_AMOUNT_KEY,
 } from "../constants";
 
 export default function useBridgeFormStorageKeys() {
@@ -31,6 +33,7 @@ export default function useBridgeFormStorageKeys() {
   const TXN_KEY = `${networkEnv}.${STORAGE_TXN_KEY}`;
   const DFC_ADDR_KEY = `${networkEnv}.${STORAGE_DFC_ADDR_KEY}`;
   const DFC_ADDR_DETAILS_KEY = `${networkEnv}.${STORAGE_DFC_ADDR_DETAILS}`;
+  const TRANSFER_AMOUNT_KEY = `${networkEnv}.${STORAGE_TRANSFER_AMOUNT_KEY}`;
 
   // Queue
   const UNCONFIRMED_QUEUE_TXN_HASH_KEY = `${networkEnv}.${QUEUE_STORAGE_UNCONFIRMED_TXN_HASH_KEY}`;
@@ -42,6 +45,7 @@ export default function useBridgeFormStorageKeys() {
   const QUEUE_TXN_KEY = `${networkEnv}.${QUEUE_STORAGE_TXN_KEY}`;
   const QUEUE_DFC_ADDR_KEY = `${networkEnv}.${QUEUE_STORAGE_DFC_ADDR_KEY}`;
   const QUEUE_DFC_ADDR_DETAILS_KEY = `${networkEnv}.${QUEUE_STORAGE_DFC_ADDR_DETAILS}`;
+  const QUEUE_TRANSFER_AMOUNT_KEY = `${networkEnv}.${QUEUE_STORAGE_TRANSFER_AMOUNT_KEY}`;
 
   return {
     UNCONFIRMED_TXN_HASH_KEY,
@@ -52,6 +56,7 @@ export default function useBridgeFormStorageKeys() {
     DFC_ADDR_KEY,
     DFC_ADDR_DETAILS_KEY,
     ALLOCATION_TXN_HASH_KEY,
+    TRANSFER_AMOUNT_KEY,
 
     UNCONFIRMED_QUEUE_TXN_HASH_KEY,
     CONFIRMED_QUEUE_TXN_HASH_KEY,
@@ -60,6 +65,7 @@ export default function useBridgeFormStorageKeys() {
     QUEUE_TXN_KEY,
     QUEUE_DFC_ADDR_KEY,
     QUEUE_DFC_ADDR_DETAILS_KEY,
+    QUEUE_TRANSFER_AMOUNT_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
   };
 }
