@@ -267,6 +267,8 @@ export default function EvmToDeFiChainTransfer({
       : "Confirm transfer on wallet";
   }
 
+  console.log(writeBridgeToDeFiChain);
+
   return (
     <>
       {errorMessage !== undefined && (
@@ -315,7 +317,8 @@ export default function EvmToDeFiChainTransfer({
           onClick={() => handleInitiateTransfer()}
           disabled={
             hasPendingTx ||
-            (writeApprove === undefined && writeBridgeToDeFiChain === undefined)
+            writeApprove === undefined ||
+            writeBridgeToDeFiChain === undefined
           }
         />
       </div>

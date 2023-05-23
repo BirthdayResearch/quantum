@@ -146,7 +146,7 @@ export function QuickInputCard({
             <IoCloseCircleSharp
               size={20}
               onClick={() => onChange("")}
-              className="text-dark-500 self-center cursor-pointer"
+              className="text-dark-500 self-center cursor-pointer ml-1"
             />
           )}
           {disabled && (
