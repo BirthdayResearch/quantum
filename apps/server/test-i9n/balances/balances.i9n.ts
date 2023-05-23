@@ -195,16 +195,16 @@ describe('DeFiChain Send Transaction Testing', () => {
   });
 
   it('When adding funds to EVM wallet Should return updated balances of EVM hot wallets ', async () => {
-    const tokens = [musdcContract, musdtContract, mwbtcContract, meurocContract];
-    // Minting token to bridges
-    let amount = ethers.utils.parseEther('10');
-    for (const token of tokens) {
-      await token.mint(bridgeContract.address, amount);
-      amount = amount.sub(ethers.utils.parseEther('1'));
-    }
-
+    // Mint 10 USDC to hotwallet
+    await musdcContract.mint(bridgeContract.address, ethers.utils.parseEther('10'));
+    // Mint 9 USDT to hotwallet
+    await musdtContract.mint(bridgeContract.address, ethers.utils.parseEther('9'));
+    // Mint 8 WBTC to hotwallet
+    await mwbtcContract.mint(bridgeContract.address, ethers.utils.parseEther('8'));
+    // Mint 7 EUROC to hotwallet
+    await meurocContract.mint(bridgeContract.address, ethers.utils.parseEther('7'));
     await hardhatNetwork.generate(1);
-    // Checking the bridge or bridgeQueue contract's balance??
+
     const initialResponse = await testing.inject({
       method: 'GET',
       url: `/balances`,

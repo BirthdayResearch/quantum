@@ -1,4 +1,4 @@
-import { BigNumberish, constants, ethers, Signer } from 'ethers';
+import { BigNumberish, constants, Signer } from 'ethers';
 import {
   BridgeQueue,
   BridgeQueue__factory,
@@ -165,7 +165,7 @@ export class QueueBridgeContractFixture {
       // Community address
       adminAndOperationalAddress,
       // Supported token addresses
-      // [musdt.address, musdc.address, mwbtc.address, meuroc.address, dfi.address],
+      [musdt.address, musdc.address, mwbtc.address, meuroc.address, dfi.address, constants.AddressZero],
     ]);
 
     // Deploying proxy contract
@@ -179,16 +179,6 @@ export class QueueBridgeContractFixture {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const queueBridge = BridgeQueue__factory.connect(QueueBridgeProxy.address, this.adminAndOperationalSigner);
-
-    // Adding MUSDT, MUSDC, MWBTC, EUROC and ETH as supported tokens
-    await queueBridge.addSupportedToken(musdt.address);
-    await queueBridge.addSupportedToken(musdc.address);
-    await queueBridge.addSupportedToken(mwbtc.address);
-    await queueBridge.addSupportedToken(meuroc.address);
-    await queueBridge.addSupportedToken(dfi.address);
-    await queueBridge.addSupportedToken(ethers.constants.AddressZero);
-
-    await this.hardhatNetwork.generate(1);
 
     return this.contracts;
   }

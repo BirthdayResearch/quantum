@@ -24,7 +24,7 @@ describe('QueueBridgeContractFixture Integration Tests', () => {
   });
 
   /**
-   * The following errors are thrown since the bridge proxy contract is not deployed and is the first
+   * The following errors are thrown since the bridgeQueue proxy contract is not deployed and is the first
    * contract to be retrieved from the method.
    */
   describe('Contract not deployed errors', () => {
@@ -41,7 +41,7 @@ describe('QueueBridgeContractFixture Integration Tests', () => {
           constants.AddressZero,
         ),
       ).rejects.toThrowError(
-        // first contract that it tries to get is the BridgeProxy
+        // first contract that it tries to get is the BridgeQueueProxy
         `Contract '${QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName}' has not been deployed yet`,
       );
     });
@@ -53,7 +53,7 @@ describe('QueueBridgeContractFixture Integration Tests', () => {
           constants.AddressZero,
         ),
       ).rejects.toThrowError(
-        // first contract that it tries to get is the BridgeProxy
+        // first contract that it tries to get is the BridgeQueueProxy
         `Contract '${QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName}' has not been deployed yet`,
       );
     });
