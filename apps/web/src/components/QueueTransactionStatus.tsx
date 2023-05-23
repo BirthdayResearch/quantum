@@ -11,6 +11,7 @@ import { EVM_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import useResponsive from "../hooks/useResponsive";
 import ActionButton from "./commons/ActionButton";
+import QueueTransactionModal from "./erc-transfer/QueueTransactionModal";
 
 export default function QueueTransactionStatus({
   isConfirmed,
@@ -19,6 +20,9 @@ export default function QueueTransactionStatus({
   isUnsentFund,
   numberOfEvmConfirmations,
   txnHash,
+  destinationAddress,
+  amount,
+  symbol,
 }: {
   isConfirmed: boolean;
   isApiSuccess: boolean;
@@ -26,6 +30,9 @@ export default function QueueTransactionStatus({
   isUnsentFund: boolean;
   numberOfEvmConfirmations: string;
   txnHash: string | undefined;
+  destinationAddress: string;
+  amount: string;
+  symbol: string;
 }) {
   const { isLg, isMd } = useResponsive();
 
@@ -36,6 +43,7 @@ export default function QueueTransactionStatus({
   const [description, setDescription] = useState("");
   const [isThrottleLimitReached, setIsThrottleLimitReached] = useState(false);
   const [isRetrying, setIsRetrying] = useState(false);
+  const [modalToDisplay, setModalToDisplay] = useState<boolean>(false);
 
   const confirmationBlocksCurrent = BigNumber.min(
     EVM_CONFIRMATIONS_BLOCK_TOTAL,
@@ -133,6 +141,14 @@ export default function QueueTransactionStatus({
             {title}
           </div>
           <div className="pt-1 text-sm text-dark-700">{description}</div>
+          {isConfirmed && (
+            <ActionButton
+              label="View details"
+              variant="primary"
+              customStyle="mt-6 font-semibold lg:mt-4 text-dark-100 whitespace-nowrap w-full lg:w-fit lg:!px-5 !py-2.5 lg:self-center text-sm"
+              onClick={() => setModalToDisplay(true)}
+            />
+          )}
         </div>
         {isUnsentFund && (
           <ActionButton
@@ -156,6 +172,19 @@ export default function QueueTransactionStatus({
               activeTab={FormOptions.QUEUE}
             />
           </div>
+        )}
+        {txnHash && (
+          <QueueTransactionModal
+            isOpen={modalToDisplay}
+            title="Transaction in queue"
+            message="Track your transaction via the status icon (top-right corner) using your transaction hash."
+            buttonLabel="View on Etherscan"
+            transactionHash={txnHash}
+            destinationAddress={destinationAddress}
+            amount={amount}
+            symbol={symbol}
+            onClose={() => setModalToDisplay(false)}
+          />
         )}
       </div>
     </div>

@@ -404,9 +404,6 @@ export default function BridgeForm({
     floating,
   };
 
-  const warningTextStyle =
-    "block text-xs text-warning text-center lg:px-6 lg:text-sm";
-
   const getNumberOfConfirmations = () => {
     let numOfConfirmations = BigNumber.min(
       ethTxnStatus?.numberOfConfirmations,
@@ -722,11 +719,6 @@ export default function BridgeForm({
             </div>
           )}
 
-        {hasPendingTxn && (
-          <span className={clsx("pt-2", warningTextStyle)}>
-            Unable to edit while transaction is pending
-          </span>
-        )}
         {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton
