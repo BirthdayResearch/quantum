@@ -52,10 +52,10 @@
     ]
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.5.13",
-    "@birthdayresearch/sticky-testcontainers": "^0.5.13",
-    "@birthdayresearch/sticky-turbo-jest": "^0.5.13",
-    "@birthdayresearch/sticky-typescript": "^0.5.13",
+    "@birthdayresearch/eslint-config": "^0.5.14",
+    "@birthdayresearch/sticky-testcontainers": "^0.5.14",
+    "@birthdayresearch/sticky-turbo-jest": "^0.5.14",
+    "@birthdayresearch/sticky-typescript": "^0.5.14",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "1.0.6",
