@@ -125,7 +125,7 @@ export default function EvmToDeFiChainTransfer({
         e.data.error.includes("Transaction is still pending") &&
         attempts > 0
       ) {
-        await sleep(12000);
+        await sleep(8000);
         await handleCreateQueueTransaction(txnHash, attempts - 1);
       } else {
         setErrorMessage("Unable to create a Queue transaction.");
