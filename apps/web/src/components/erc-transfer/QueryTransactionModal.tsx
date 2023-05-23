@@ -97,7 +97,7 @@ export default function QueryTransactionModal({
         setStorage("unconfirmed", transactionInput);
         setIsValidTransaction(true);
 
-        // TODO: Queue refill form
+        // TODO: Queue restore form
 
         if (setShowErcToDfcRestoreModal) setShowErcToDfcRestoreModal(false);
 
