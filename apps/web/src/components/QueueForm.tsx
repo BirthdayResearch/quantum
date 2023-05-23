@@ -705,7 +705,7 @@ export default function QueueForm({
         buttonLabel="Restore transaction"
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
-        contractType={ContractType.Instant}
+        contractType={ContractType.Queue}
       />
     </div>
   );

@@ -786,6 +786,7 @@ export default function BridgeForm({
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
         contractType={ContractType.Instant}
+        setShowErcToDfcRestoreModal={setShowErcToDfcRestoreModal}
       />
     </div>
   );

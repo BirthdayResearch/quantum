@@ -25,6 +25,7 @@ export interface ModalConfigType {
   onTransactionFound?: (modalTypeToDisplay: any) => void;
   setAdminSendTxHash?: (txHash: string) => void;
   contractType: ContractType;
+  setShowErcToDfcRestoreModal?: (show: boolean) => void;
 }
 
 export enum ContractType {
@@ -51,6 +52,7 @@ export default function QueryTransactionModal({
   onTransactionFound,
   setAdminSendTxHash,
   contractType,
+  setShowErcToDfcRestoreModal,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
@@ -81,15 +83,11 @@ export default function QueryTransactionModal({
     }
     try {
       setIsLoading(true);
-      // To check if its a valid Eth tx hash
       const receipt = await provider.getTransaction(transactionInput);
-
-      // To check if its a valid Eth tx hash that comes from the bridgeToDeFiChain contract
       const decodedData = bridgeIface.parseTransaction({
         data: receipt.data,
       });
 
-      // Checks if Eth tx hash is valid and if it doesn't come from the bridgeToDeFiChain contract
       if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
         setIsValidTransaction(false);
         return;
@@ -98,39 +96,54 @@ export default function QueryTransactionModal({
         setStorage("unconfirmed", transactionInput);
         setIsValidTransaction(true);
 
-        // Calls queue tx from db
-        const queuedTransaction = await getQueueTransaction({
-          txnHash: transactionInput,
-        }).unwrap();
+        // TODO: Queue refill form
 
-        if (!onTransactionFound) {
-          return;
-        }
+        if (setShowErcToDfcRestoreModal) setShowErcToDfcRestoreModal(false);
 
-        if (queuedTransaction.adminQueue) {
-          const adminQueueTxHash =
-            queuedTransaction.adminQueue.sendTransactionHash;
-          if (
-            queuedTransaction.status === "COMPLETED" &&
-            adminQueueTxHash !== undefined &&
-            adminQueueTxHash !== null &&
-            setAdminSendTxHash !== undefined
-          ) {
-            setAdminSendTxHash(adminQueueTxHash);
+        // Calls Queue tx from endpoint
+        if (contractType === 1) {
+          const queuedTransaction = await getQueueTransaction({
+            txnHash: transactionInput,
+          }).unwrap();
+
+          if (queuedTransaction.adminQueue) {
+            const adminQueueTxHash =
+              queuedTransaction.adminQueue.sendTransactionHash;
+            if (
+              queuedTransaction.status === "COMPLETED" &&
+              adminQueueTxHash !== undefined &&
+              adminQueueTxHash !== null &&
+              setAdminSendTxHash !== undefined
+            ) {
+              setAdminSendTxHash(adminQueueTxHash);
+            }
+          }
+
+          if (!onTransactionFound) {
+            return;
+          }
+
+          const modalType = statusToModalTypeMap[queuedTransaction.status];
+          if (modalType) {
+            onTransactionFound(modalType);
+          } else {
+            // TODO: Handle this case where status from DB is valid but not in the mapped modal type
+            onTransactionFound(ModalTypeToDisplay.Pending);
           }
         }
 
-        // Set modal type to display based on status from the DB
-        const modalType = statusToModalTypeMap[queuedTransaction.status];
-        if (modalType) {
-          onTransactionFound(modalType);
-        }
         return;
       }
     } catch (error) {
-      setInputErrorMessage(
-        "Invalid transaction hash. Please only enter queued transaction hashes."
-      );
+      if (contractType === 1) {
+        setInputErrorMessage(
+          "Invalid transaction hash. Please only enter queued transaction hashes."
+        );
+      } else if (contractType === 0) {
+        setInputErrorMessage(
+          "Invalid transaction hash. Please only enter instant transaction hashes."
+        );
+      }
       setIsValidTransaction(false);
     } finally {
       setIsLoading(false);
@@ -167,7 +180,6 @@ export default function QueryTransactionModal({
     }
   }, [copiedFromClipboard]);
 
-  // Reset error message and valid transaction state when user types
   useEffect(() => {
     setInputErrorMessage("");
     setIsValidTransaction(true);
@@ -270,15 +282,6 @@ export default function QueryTransactionModal({
             customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[251.72px] min-h-[48px] lg:min-h-[52px]"
             disabled={transactionInput === "" || isLoading}
             onClick={checkTXnHash}
-            // onClick={() => {
-            //   // TODO: remove after testing, uncomment to test different modal
-            //   if (!onTransactionFound) {
-            //     return;
-            //   }
-            //   onTransactionFound(ModalTypeToDisplay.Completed);
-            //   // onTransactionFound(ModalTypeToDisplay.RefundInProgress);
-            //   // onTransactionFound(ModalTypeToDisplay.Unsuccessful);
-            // }}
             isLoading={isLoading}
           />
         </div>
