@@ -638,11 +638,6 @@ export default function QueueForm({
             </div>
           )}
 
-        {hasPendingTxn && (
-          <span className={clsx("pt-2", warningTextStyle)}>
-            Unable to edit while transaction is pending
-          </span>
-        )}
         {hasUnconfirmedTxn && !hasPendingTxn && (
           <div className="mt-3">
             <ActionButton
