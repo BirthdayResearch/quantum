@@ -24,6 +24,7 @@ export interface ModalConfigType {
   onClose: () => void;
   onTransactionFound?: (modalTypeToDisplay: any) => void;
   setAdminSendTxHash?: (txHash: string) => void;
+  contractType: ContractType;
 }
 
 export enum ContractType {
@@ -49,6 +50,7 @@ export default function QueryTransactionModal({
   onClose,
   onTransactionFound,
   setAdminSendTxHash,
+  contractType,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
@@ -63,11 +65,15 @@ export default function QueryTransactionModal({
   const [isLoading, setIsLoading] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   useAutoResizeTextArea(textAreaRef.current, [transactionInput]);
-  const [getQueueStatus] = useGetQueueTransactionMutation();
+  const [getQueueTransaction] = useGetQueueTransactionMutation();
   const isValidEthTxHash = checkEthTxHashHelper(transactionInput);
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
   const bridgeIface = new ethers.utils.Interface(BridgeQueue.abi);
+  // const bridgeIface = new ethers.utils.Interface(
+  //   contractType === 0 ? BridgeV1.abi : BridgeQueue.abi
+  // );
+  console.log("contracttype", contractType);
 
   const checkTXnHash = async () => {
     if (!isValidEthTxHash) {
@@ -95,7 +101,7 @@ export default function QueryTransactionModal({
         setIsValidTransaction(true);
 
         // Calls queue tx from db
-        const getTx = await getQueueStatus({
+        const getQueueTxData = await getQueueTransaction({
           txnHash: transactionInput,
         }).unwrap();
 
@@ -103,18 +109,21 @@ export default function QueryTransactionModal({
           return;
         }
 
-        const adminQueueTxHash = getTx.adminQueue?.sendTransactionHash;
-        if (
-          getTx.status === "COMPLETED" &&
-          adminQueueTxHash !== undefined &&
-          adminQueueTxHash !== null &&
-          setAdminSendTxHash !== undefined
-        ) {
-          setAdminSendTxHash(adminQueueTxHash);
+        if (getQueueTxData.adminQueue) {
+          const adminQueueTxHash =
+            getQueueTxData.adminQueue.sendTransactionHash;
+          if (
+            getQueueTxData.status === "COMPLETED" &&
+            adminQueueTxHash !== undefined &&
+            adminQueueTxHash !== null &&
+            setAdminSendTxHash !== undefined
+          ) {
+            setAdminSendTxHash(adminQueueTxHash);
+          }
         }
 
         // Set modal type to display based on status from the DB
-        const modalType = statusToModalTypeMap[getTx.status];
+        const modalType = statusToModalTypeMap[getQueueTxData.status];
         if (modalType) {
           onTransactionFound(modalType);
         }

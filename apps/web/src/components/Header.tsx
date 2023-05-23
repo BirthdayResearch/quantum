@@ -10,7 +10,9 @@ import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
 import TransactionInProgressModal from "./queue/TransactionInProgressModal";
 import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
-import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
+import QueryTransactionModal, {
+  ContractType,
+} from "./erc-transfer/QueryTransactionModal";
 import TransactionCompletionModal from "./queue/TransactionCompletionModal";
 
 export default function Header({
@@ -23,6 +25,16 @@ export default function Header({
     ModalTypeToDisplay | undefined
   >();
   const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<string>("");
+
+  // TODO: set these values dynamically
+  const [amount] = useState<string>("150");
+  const [token] = useState<string>("dBTC");
+  const [transactionHash] = useState<string>(
+    "0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
+  );
+  const [destinationAddress] = useState<string>(
+    "dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
+  );
 
   return (
     <div className="relative z-[1] flex flex-col">
@@ -59,7 +71,7 @@ export default function Header({
             inputPlaceholder="Enter transaction hash"
             buttonLabel="Track status"
             onClose={() => setModalToDisplay(undefined)}
-            // contractType={ContractType.Queue}
+            contractType={ContractType.Queue}
             isOpen={modalToDisplay === ModalTypeToDisplay.Search}
             onTransactionFound={(modalTypeToDisplay) => {
               setModalToDisplay(modalTypeToDisplay);
@@ -75,11 +87,11 @@ export default function Header({
               modalToDisplay === ModalTypeToDisplay.Unsuccessful
             }
             type={modalToDisplay}
-            txHash="0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
-            destinationAddress="dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
+            txHash={transactionHash}
+            destinationAddress={destinationAddress}
             initiatedDate={new Date()}
-            amount="150"
-            token="dBTC"
+            amount={amount}
+            token={token}
             onClose={() => setModalToDisplay(undefined)}
             onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
           />
@@ -90,13 +102,13 @@ export default function Header({
               modalToDisplay === ModalTypeToDisplay.RefundRequested
             }
             type={modalToDisplay}
-            txHash="0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
+            txHash={transactionHash}
             initiatedDate={new Date()}
-            amount="150"
-            token="dBTC"
+            amount={amount}
+            token={token}
             onClose={() => setModalToDisplay(undefined)}
             onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
-            destinationAddress="dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
+            destinationAddress={destinationAddress}
             adminQueueSendTxHash={adminQueueSendTxHash}
           />
         </div>

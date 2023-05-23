@@ -34,7 +34,9 @@ import {
   useNetworkContext,
   FormOptions,
 } from "../layouts/contexts/NetworkContext";
-import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
+import QueryTransactionModal, {
+  ContractType,
+} from "./erc-transfer/QueryTransactionModal";
 import useInputValidation from "../hooks/useInputValidation";
 import QueueTransactionStatus from "./QueueTransactionStatus";
 
@@ -698,8 +700,7 @@ export default function QueueForm({
         buttonLabel="Restore transaction"
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
-        // contractType={ContractType.Instant}
-        inputErrorMessage="Enter a valid transaction hash for Ethereum"
+        contractType={ContractType.Instant}
       />
     </div>
   );

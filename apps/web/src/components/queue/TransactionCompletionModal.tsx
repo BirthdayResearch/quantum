@@ -8,7 +8,7 @@ import truncateTextFromMiddle from "@utils/textHelper";
 import SearchTransactionIcon from "@components/icons/SearchTransactionIcon";
 import clsx from "clsx";
 import { IoMdCheckmarkCircle } from "react-icons/io";
-import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
+import { useDeFiScanContext } from "@contexts/DeFiScanContext";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionCompletionModalProps {
@@ -74,7 +74,7 @@ export default function TransactionCompletionModal({
   adminQueueSendTxHash,
 }: TransactionCompletionModalProps): JSX.Element {
   const { isMobile } = useResponsive();
-  const { networkEnv } = useNetworkEnvironmentContext();
+  const { getTransactionUrl } = useDeFiScanContext();
 
   const firstRowResult = {
     [ModalTypeToDisplay.Refunded]: `${amount} ${token}`,
@@ -95,8 +95,8 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.Completed]: destinationAddress,
   };
   const externalLinkButtonUrls = {
-    [ModalTypeToDisplay.Refunded]: `https://defiscan.live/transactions/${txHash}?network=${networkEnv}`,
-    [ModalTypeToDisplay.Completed]: `https://defiscan.live/transactions/${adminQueueSendTxHash}?network=${networkEnv}`,
+    [ModalTypeToDisplay.Refunded]: getTransactionUrl(adminQueueSendTxHash),
+    [ModalTypeToDisplay.Completed]: getTransactionUrl(adminQueueSendTxHash),
     [ModalTypeToDisplay.RefundRequested]: `https://etherscan.io/tx/${txHash}`,
   };
 
