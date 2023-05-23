@@ -257,6 +257,8 @@ export default function BridgeForm({
     setStorage("txn-form", null);
     setStorage("dfc-address", null);
     setStorage("dfc-address-details", null);
+    setStorage("dfc-address", null);
+    setStorage("transfer-amount", null);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");

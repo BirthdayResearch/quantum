@@ -214,6 +214,8 @@ export default function QueueForm({
     setStorage("txn-form-queue", null);
     setStorage("dfc-address-queue", null);
     setStorage("dfc-address-details-queue", null);
+    setStorage("dfc-address-queue", null);
+    setStorage("transfer-amount-queue", null);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
