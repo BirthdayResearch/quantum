@@ -1,5 +1,5 @@
 import { ethers, utils } from "ethers";
-import { erc20ABI, useContractReads, useWaitForTransaction } from "wagmi";
+import { erc20ABI, useContractReads } from "wagmi";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
@@ -26,6 +26,7 @@ import {
   FormOptions,
   useNetworkContext,
 } from "../../layouts/contexts/NetworkContext";
+import sleep from "../../utils/sleep";
 
 export default function EvmToDeFiChainTransfer({
   data,
@@ -111,6 +112,33 @@ export default function EvmToDeFiChainTransfer({
     refetchTokenData,
   });
 
+  const handleCreateQueueTransaction = async (
+    txnHash: string,
+    attempts: number = 5,
+    isFirstAttempt: boolean = true
+  ): Promise<void> => {
+    const sleepTimeBeforeFirstApiCall = 15000;
+    const sleepTimeBeforeRetryApiCall = 5000;
+    try {
+      await sleep(
+        isFirstAttempt
+          ? sleepTimeBeforeFirstApiCall
+          : sleepTimeBeforeRetryApiCall
+      );
+      await queueTransaction({ txnHash }).unwrap();
+      onClose(true);
+    } catch (e) {
+      if (
+        e.data?.error?.includes("Transaction is still pending") &&
+        attempts > 0
+      ) {
+        await handleCreateQueueTransaction(txnHash, attempts - 1, false);
+      } else {
+        setErrorMessage("Unable to create a Queue transaction.");
+      }
+    }
+  };
+
   // Requires approval for more allowance
   useEffect(() => {
     if (
@@ -175,6 +203,7 @@ export default function EvmToDeFiChainTransfer({
       setQueueStorage("reverted-queue", null);
       setQueueStorage("txn-form-queue", null);
       setBridgeStatus(BridgeStatus.QueueingTransaction);
+      handleCreateQueueTransaction(transactionHash);
     }
   }, [transactionHash]);
 
@@ -214,30 +243,6 @@ export default function EvmToDeFiChainTransfer({
     // If no approval required, perform bridge function directly
     writeBridgeToDeFiChain?.();
   };
-
-  const createQueueTransaction = async (txnHash: string): Promise<void> => {
-    try {
-      await queueTransaction({ txnHash }).unwrap();
-      onClose(true);
-    } catch (e) {
-      console.error(e);
-      setErrorMessage("Unable to create a Queue transaction.");
-    }
-  };
-
-  // Call create queue api when transaction hash is confirmed
-  useWaitForTransaction({
-    hash: transactionHash,
-    onSuccess: async (transactionReceipt) => {
-      if (typeOfTransaction === FormOptions.QUEUE) {
-        await createQueueTransaction(transactionReceipt.transactionHash);
-      }
-    },
-    onError: (err) => {
-      console.error(err);
-      setErrorMessage("Unable to create a Queue transaction.");
-    },
-  });
 
   const statusMessage = {
     [BridgeStatus.IsTokenApprovalInProgress]: {
