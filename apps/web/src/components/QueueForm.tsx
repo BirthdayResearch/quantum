@@ -589,7 +589,6 @@ export default function QueueForm({
       )}
 
       <div className="flex flex-col items-center px-6 md:px-4 mt-[50px] lg:mb-0 lg:px-0 xl:px-20">
-        {/* Todo: to update the button when Review modal is ready */}
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <>
             <ActionButton

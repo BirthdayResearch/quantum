@@ -145,7 +145,7 @@ export default function QueueTransactionStatus({
             <ActionButton
               label="View details"
               variant="primary"
-              customStyle="mt-6 font-semibold lg:mt-4 text-dark-100 whitespace-nowrap w-full lg:w-fit lg:!px-5 !py-2.5 lg:self-center lg:text-sm"
+              customStyle="mt-6 font-semibold lg:mt-4 text-dark-100 whitespace-nowrap w-full lg:w-fit lg:!px-5 !py-2.5 lg:self-center text-sm"
               onClick={() => setModalToDisplay(true)}
             />
           )}
