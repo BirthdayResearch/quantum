@@ -17,7 +17,6 @@ import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 export interface ModalConfigType {
   title: string;
   message: string;
-  inputErrorMessage?: string;
   inputLabel: string;
   inputPlaceholder: string;
   buttonLabel: string;
@@ -43,7 +42,6 @@ const statusToModalTypeMap = {
 export default function QueryTransactionModal({
   title,
   message,
-  inputErrorMessage,
   inputLabel,
   inputPlaceholder,
   buttonLabel,
@@ -59,7 +57,7 @@ export default function QueryTransactionModal({
   const [transactionInput, setTransactionInput] = useState<string>("");
   const [isFocused, setIsFocused] = useState(false);
   const [isValidTransaction, setIsValidTransaction] = useState(true);
-  const [errorMessage, setInputErrorMessage] = useState<string>("");
+  const [inputErrorMessage, setInputErrorMessage] = useState<string>("");
   const [copiedFromClipboard, setCopiedFromClipboard] =
     useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -255,7 +253,7 @@ export default function QueryTransactionModal({
         {/* Error message */}
         {invalidTxnHash && (
           <span className="block pt-2 text-xs lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
-            {inputErrorMessage ?? errorMessage}
+            {inputErrorMessage}
           </span>
         )}
 
