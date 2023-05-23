@@ -99,7 +99,7 @@ export default function QueryTransactionModal({
         setIsValidTransaction(true);
 
         // Calls queue tx from db
-        const getQueueTxData = await getQueueTransaction({
+        const queuedTransaction = await getQueueTransaction({
           txnHash: transactionInput,
         }).unwrap();
 
@@ -107,11 +107,11 @@ export default function QueryTransactionModal({
           return;
         }
 
-        if (getQueueTxData.adminQueue) {
+        if (queuedTransaction.adminQueue) {
           const adminQueueTxHash =
-            getQueueTxData.adminQueue.sendTransactionHash;
+            queuedTransaction.adminQueue.sendTransactionHash;
           if (
-            getQueueTxData.status === "COMPLETED" &&
+            queuedTransaction.status === "COMPLETED" &&
             adminQueueTxHash !== undefined &&
             adminQueueTxHash !== null &&
             setAdminSendTxHash !== undefined
@@ -121,7 +121,7 @@ export default function QueryTransactionModal({
         }
 
         // Set modal type to display based on status from the DB
-        const modalType = statusToModalTypeMap[getQueueTxData.status];
+        const modalType = statusToModalTypeMap[queuedTransaction.status];
         if (modalType) {
           onTransactionFound(modalType);
         }
