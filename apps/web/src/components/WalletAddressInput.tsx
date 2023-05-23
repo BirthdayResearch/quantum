@@ -27,6 +27,7 @@ interface Props {
   onAddressInputError: (hasError: boolean) => void;
   isPrimary?: boolean;
   customMessage?: string;
+  testId: string;
 }
 
 /**
@@ -73,6 +74,7 @@ export default function WalletAddressInput({
   onAddressInputError,
   isPrimary = true,
   customMessage,
+  testId,
 }: Props): JSX.Element {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -250,7 +252,7 @@ export default function WalletAddressInput({
 
         {/* Textarea input */}
         <textarea
-          data-testid="receiver-address"
+          data-testid={testId}
           ref={textAreaRef}
           className={clsx(
             `max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 focus:outline-none py-0.5`,

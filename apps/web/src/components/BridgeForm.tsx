@@ -649,6 +649,7 @@ export default function BridgeForm({
               }
               disabled={!isConnected}
               readOnly={hasUnconfirmedTxn}
+              testId="instant-receiver-address"
             />
           </div>
           <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-6 lg:mt-0">
@@ -699,7 +700,7 @@ export default function BridgeForm({
           <ConnectKitButton.Custom>
             {({ show }) => (
               <ActionButton
-                testId="transfer-btn"
+                testId="instant-transfer-btn"
                 label={getActionBtnLabel()}
                 isLoading={hasPendingTxn || isVerifyingTransaction}
                 disabled={
