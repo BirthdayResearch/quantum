@@ -66,7 +66,7 @@ export function QueueStorageProvider({
   const [dfcQueueAddressDetails, setDfcQueueAddressDetails] =
     useState<AddressDetails>();
   const [queueTxnForm, setQueueTxnForm] = useState<any>();
-  const [transferAmount, setTransferAmount] = useState<string>();
+  const [queueTransferAmount, setQueueTransferAmount] = useState<string>();
 
   const { networkEnv } = useNetworkEnvironmentContext();
 
@@ -110,7 +110,7 @@ export function QueueStorageProvider({
     setRevertedQueueTxnHashKey(revertedTxnHashKeyStorage);
     setUnsentQueueFundTxnHashKey(unsentFundTxnHashKeyStorage);
     setDfcQueueAddress(dfcAddressKeyStorage);
-    setTransferAmount(transferAmountKeyStorage);
+    setQueueTransferAmount(transferAmountKeyStorage);
   }, [
     networkEnv,
     UNCONFIRMED_QUEUE_TXN_HASH_KEY,
@@ -159,7 +159,7 @@ export function QueueStorageProvider({
           setStorageItem(QUEUE_TXN_KEY, JSON.parse(value));
           break;
         case "transfer-amount-queue":
-          setTransferAmount(JSON.parse(value));
+          setQueueTransferAmount(JSON.parse(value));
           setStorageItem(QUEUE_TRANSFER_AMOUNT_KEY, JSON.parse(value));
           break;
         default:
@@ -195,7 +195,7 @@ export function QueueStorageProvider({
           value = queueTxnForm;
           break;
         case "transfer-amount-queue":
-          value = transferAmount;
+          value = queueTransferAmount;
           break;
         default:
         // no action needed ( using switch as switch faster than if else )
@@ -229,7 +229,8 @@ export function QueueStorageProvider({
       dfcAddressDetails:
         dfcQueueAddressDetails === null ? undefined : dfcQueueAddressDetails,
       txnForm: queueTxnForm === null ? undefined : queueTxnForm,
-      transferAmount: transferAmount === null ? undefined : transferAmount,
+      transferAmount:
+        queueTransferAmount === null ? undefined : queueTransferAmount,
       getStorage,
       setStorage,
     };
@@ -242,7 +243,7 @@ export function QueueStorageProvider({
     dfcQueueAddress,
     dfcQueueAddressDetails,
     queueTxnForm,
-    transferAmount,
+    queueTransferAmount,
     UNCONFIRMED_QUEUE_TXN_HASH_KEY,
     CONFIRMED_QUEUE_TXN_HASH_KEY,
     REVERTED_QUEUE_TXN_HASH_KEY,
