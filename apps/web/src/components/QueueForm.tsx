@@ -379,9 +379,6 @@ export default function QueueForm({
     floating,
   };
 
-  const warningTextStyle =
-    "block text-xs text-warning text-center lg:px-6 lg:text-sm";
-
   return (
     <div
       className={clsx(

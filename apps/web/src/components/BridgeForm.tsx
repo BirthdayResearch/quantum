@@ -404,9 +404,6 @@ export default function BridgeForm({
     floating,
   };
 
-  const warningTextStyle =
-    "block text-xs text-warning text-center lg:px-6 lg:text-sm";
-
   const getNumberOfConfirmations = () => {
     let numOfConfirmations = BigNumber.min(
       ethTxnStatus?.numberOfConfirmations,
