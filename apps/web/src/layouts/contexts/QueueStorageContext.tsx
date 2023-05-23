@@ -19,7 +19,8 @@ type StorageKey =
   | "unsent-fund-queue"
   | "dfc-address-queue"
   | "dfc-address-details-queue"
-  | "txn-form-queue";
+  | "txn-form-queue"
+  | "transfer-amount-queue";
 
 interface StorageContextQueueI {
   txnHash: {
@@ -32,6 +33,7 @@ interface StorageContextQueueI {
   dfcAddress?: string;
   dfcAddressDetails?: AddressDetails;
   txnForm?: UnconfirmedQueueTxnI;
+  transferAmount?: string;
   getStorage: (key: StorageKey) => string | undefined;
   setStorage: (key: StorageKey, value: string | null) => void;
 }
@@ -64,6 +66,7 @@ export function QueueStorageProvider({
   const [dfcQueueAddressDetails, setDfcQueueAddressDetails] =
     useState<AddressDetails>();
   const [queueTxnForm, setQueueTxnForm] = useState<any>();
+  const [transferAmount, setTransferAmount] = useState<string>();
 
   const { networkEnv } = useNetworkEnvironmentContext();
 
@@ -76,6 +79,7 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_KEY,
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
+    QUEUE_TRANSFER_AMOUNT_KEY,
   } = useBridgeFormStorageKeys();
 
   useEffect(() => {
@@ -95,12 +99,18 @@ export function QueueStorageProvider({
       getStorageItem<string>(REVERTED_QUEUE_TXN_HASH_KEY) ?? undefined;
     const unsentFundTxnHashKeyStorage =
       getStorageItem<string>(UNSENT_QUEUE_FUND_TXN_HASH_KEY) ?? undefined;
+    const dfcAddressKeyStorage =
+      getStorageItem<string>(QUEUE_DFC_ADDR_KEY) ?? undefined;
+    const transferAmountKeyStorage =
+      getStorageItem<string>(QUEUE_TRANSFER_AMOUNT_KEY) ?? undefined;
 
     setUnconfirmedQueueTxnHashKey(unconfirmedTxnHashKeyStorage);
     setConfirmedQueueTxnHashKey(confirmedTxnHashKeyStorage);
     setAllocationQueueTxnHashKey(allocationTxnHashKeyStorage);
     setRevertedQueueTxnHashKey(revertedTxnHashKeyStorage);
     setUnsentQueueFundTxnHashKey(unsentFundTxnHashKeyStorage);
+    setDfcQueueAddress(dfcAddressKeyStorage);
+    setTransferAmount(transferAmountKeyStorage);
   }, [
     networkEnv,
     UNCONFIRMED_QUEUE_TXN_HASH_KEY,
@@ -111,6 +121,7 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_KEY,
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
+    QUEUE_TRANSFER_AMOUNT_KEY,
   ]);
 
   const context: StorageContextQueueI = useMemo(() => {
@@ -147,6 +158,10 @@ export function QueueStorageProvider({
           setQueueTxnForm(JSON.parse(value));
           setStorageItem(QUEUE_TXN_KEY, JSON.parse(value));
           break;
+        case "transfer-amount-queue":
+          setTransferAmount(JSON.parse(value));
+          setStorageItem(QUEUE_TRANSFER_AMOUNT_KEY, JSON.parse(value));
+          break;
         default:
         // no action needed ( using switch as switch faster than if else )
       }
@@ -178,6 +193,9 @@ export function QueueStorageProvider({
           break;
         case "txn-form-queue":
           value = queueTxnForm;
+          break;
+        case "transfer-amount-queue":
+          value = transferAmount;
           break;
         default:
         // no action needed ( using switch as switch faster than if else )
@@ -211,6 +229,7 @@ export function QueueStorageProvider({
       dfcAddressDetails:
         dfcQueueAddressDetails === null ? undefined : dfcQueueAddressDetails,
       txnForm: queueTxnForm === null ? undefined : queueTxnForm,
+      transferAmount: transferAmount === null ? undefined : transferAmount,
       getStorage,
       setStorage,
     };
@@ -223,6 +242,7 @@ export function QueueStorageProvider({
     dfcQueueAddress,
     dfcQueueAddressDetails,
     queueTxnForm,
+    transferAmount,
     UNCONFIRMED_QUEUE_TXN_HASH_KEY,
     CONFIRMED_QUEUE_TXN_HASH_KEY,
     REVERTED_QUEUE_TXN_HASH_KEY,
@@ -231,6 +251,7 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_KEY,
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
+    QUEUE_TRANSFER_AMOUNT_KEY,
   ]);
 
   return (

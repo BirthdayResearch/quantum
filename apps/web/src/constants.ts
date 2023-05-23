@@ -71,3 +71,5 @@ export const QUEUE_STORAGE_UNSENT_FUND_TXN_HASH_KEY = "unsent-txn-hash-queue";
 
 export const QUEUE_STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address-queue";
 export const QUEUE_STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details-queue";
+
+export const QUEUE_STORAGE_TRANSFER_AMOUNT_KEY = "transfer-amount-queue";
