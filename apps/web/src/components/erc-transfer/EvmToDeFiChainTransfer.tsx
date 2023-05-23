@@ -112,13 +112,13 @@ export default function EvmToDeFiChainTransfer({
     refetchTokenData,
   });
 
-  const sleepTimeBeforeFirstApiCall = 15000;
-  const sleepTimeBeforeRetryApiCall = 5000;
   const handleCreateQueueTransaction = async (
     txnHash: string,
     attempts: number = 5,
     isFirstAttempt: boolean = true
   ): Promise<void> => {
+    const sleepTimeBeforeFirstApiCall = 15000;
+    const sleepTimeBeforeRetryApiCall = 5000;
     try {
       await sleep(
         isFirstAttempt
@@ -129,7 +129,7 @@ export default function EvmToDeFiChainTransfer({
       onClose(true);
     } catch (e) {
       if (
-        e.data.error.includes("Transaction is still pending") &&
+        e.data?.error?.includes("Transaction is still pending") &&
         attempts > 0
       ) {
         await handleCreateQueueTransaction(txnHash, attempts - 1, false);
