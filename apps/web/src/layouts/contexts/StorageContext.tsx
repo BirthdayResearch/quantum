@@ -151,8 +151,8 @@ export function StorageProvider({
         setTxnForm(JSON.parse(value));
         setStorageItem(TXN_KEY, JSON.parse(value));
       } else if (key === "transfer-amount") {
-        setTransferAmount(JSON.parse(value));
-        setStorageItem(TRANSFER_AMOUNT_KEY, JSON.parse(value));
+        setTransferAmount(value);
+        setStorageItem(TRANSFER_AMOUNT_KEY, value);
       }
     };
 

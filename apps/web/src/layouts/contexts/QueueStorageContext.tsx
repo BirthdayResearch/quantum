@@ -159,8 +159,8 @@ export function QueueStorageProvider({
           setStorageItem(QUEUE_TXN_KEY, JSON.parse(value));
           break;
         case "transfer-amount-queue":
-          setQueueTransferAmount(JSON.parse(value));
-          setStorageItem(QUEUE_TRANSFER_AMOUNT_KEY, JSON.parse(value));
+          setQueueTransferAmount(value);
+          setStorageItem(QUEUE_TRANSFER_AMOUNT_KEY, value);
           break;
         default:
         // no action needed ( using switch as switch faster than if else )
