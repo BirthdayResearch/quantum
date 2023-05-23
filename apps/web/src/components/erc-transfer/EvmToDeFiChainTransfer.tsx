@@ -112,18 +112,14 @@ export default function EvmToDeFiChainTransfer({
     refetchTokenData,
   });
 
-  const createQueueTransaction = async (txnHash: string): Promise<void> => {
-    await queueTransaction({ txnHash }).unwrap();
-    onClose(true);
-  };
-
   const handleCreateQueueTransaction = async (
     txnHash: string,
     attempts: number = 5
   ): Promise<void> => {
     try {
       await sleep(12000);
-      await createQueueTransaction(txnHash);
+      await queueTransaction({ txnHash }).unwrap();
+      onClose(true);
     } catch (e) {
       if (
         e.data.error.includes("Transaction is still pending") &&
