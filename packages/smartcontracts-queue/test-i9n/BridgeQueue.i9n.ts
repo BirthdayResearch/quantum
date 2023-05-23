@@ -1,3 +1,4 @@
+import { TestToken } from '../dist';
 import {
   BridgeQueue,
   BridgeQueue__factory,
@@ -7,6 +8,7 @@ import {
   HardhatNetwork,
   HardhatNetworkContainer,
   StartedHardhatNetworkContainer,
+  TestToken__factory,
 } from '../src';
 
 describe('Bridge Contract', () => {
@@ -19,6 +21,7 @@ describe('Bridge Contract', () => {
   let communityAddress: string;
   let bridgeUpgradeable: BridgeQueue;
   let bridgeProxy: BridgeQueueProxy;
+  let testToken: TestToken;
 
   beforeAll(async () => {
     startedHardhatContainer = await container.start();
@@ -28,6 +31,14 @@ describe('Bridge Contract', () => {
     ({ testWalletAddress: defaultAdminAddress } = await hardhatNetwork.createTestWallet());
     ({ testWalletAddress: coldWalletAddress } = await hardhatNetwork.createTestWallet());
     ({ testWalletAddress: communityAddress } = await hardhatNetwork.createTestWallet());
+
+    // Deploying BridgeQueue contract
+    testToken = await evmContractManager.deployContract<TestToken>({
+      deploymentName: 'TestToken',
+      contractName: 'TestToken',
+      deployArgs: ['TT', 'MockToken'],
+      abi: TestToken__factory.abi,
+    });
     // Deploying BridgeQueue contract
     bridgeUpgradeable = await evmContractManager.deployContract<BridgeQueue>({
       deploymentName: 'BridgeQueue',
@@ -41,6 +52,7 @@ describe('Bridge Contract', () => {
       coldWalletAddress, // cold wallet
       10, // 0.1% txn fee
       communityAddress, // flush funds back to admin
+      [testToken.address],
     ]);
     // Deploying proxy contract
     bridgeProxy = await evmContractManager.deployContract<BridgeQueueProxy>({
@@ -76,6 +88,9 @@ describe('Bridge Contract', () => {
     });
     it('Successfully implemented the 0.1% txn fee', async () => {
       expect((await bridgeUpgradeable.transactionFee()).toString()).toBe('10');
+    });
+    it('Successfully added testToken as a supported token', async () => {
+      expect(await bridgeUpgradeable.supportedTokens(testToken.address)).toBe(true);
     });
   });
 });

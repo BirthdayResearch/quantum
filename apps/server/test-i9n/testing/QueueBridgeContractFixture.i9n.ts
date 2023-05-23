@@ -1,12 +1,12 @@
 import { constants, Signer } from 'ethers';
-import { HardhatNetwork, HardhatNetworkContainer, StartedHardhatNetworkContainer } from 'smartcontracts';
+import { HardhatNetwork, HardhatNetworkContainer, StartedHardhatNetworkContainer } from 'smartcontracts-queue';
 
-import { BridgeContractFixture } from './BridgeContractFixture';
+import { QueueBridgeContractFixture } from './QueueBridgeContractFixture';
 
-describe('BridgeContractFixture Integration Tests', () => {
+describe('QueueBridgeContractFixture Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
-  let bridgeContractFixture: BridgeContractFixture;
+  let bridgeContractFixture: QueueBridgeContractFixture;
   let testEOASigner: Signer;
   let testEOAAddress: string;
 
@@ -16,7 +16,7 @@ describe('BridgeContractFixture Integration Tests', () => {
 
     ({ testWalletSigner: testEOASigner, testWalletAddress: testEOAAddress } = await hardhatNetwork.createTestWallet());
 
-    bridgeContractFixture = new BridgeContractFixture(hardhatNetwork);
+    bridgeContractFixture = new QueueBridgeContractFixture(hardhatNetwork);
   });
 
   afterAll(async () => {
@@ -30,7 +30,7 @@ describe('BridgeContractFixture Integration Tests', () => {
   describe('Contract not deployed errors', () => {
     it('should throw an error when trying to get contracts before deploying contract', () => {
       expect(() => bridgeContractFixture.contracts).toThrowError(
-        `Contract '${BridgeContractFixture.Contracts.BridgeProxy.deploymentName}' has not been deployed yet`,
+        `Contract '${QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName}' has not been deployed yet`,
       );
     });
 
@@ -42,7 +42,7 @@ describe('BridgeContractFixture Integration Tests', () => {
         ),
       ).rejects.toThrowError(
         // first contract that it tries to get is the BridgeProxy
-        `Contract '${BridgeContractFixture.Contracts.BridgeProxy.deploymentName}' has not been deployed yet`,
+        `Contract '${QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName}' has not been deployed yet`,
       );
     });
 
@@ -54,7 +54,7 @@ describe('BridgeContractFixture Integration Tests', () => {
         ),
       ).rejects.toThrowError(
         // first contract that it tries to get is the BridgeProxy
-        `Contract '${BridgeContractFixture.Contracts.BridgeProxy.deploymentName}' has not been deployed yet`,
+        `Contract '${QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName}' has not been deployed yet`,
       );
     });
   });
@@ -64,12 +64,12 @@ describe('BridgeContractFixture Integration Tests', () => {
     await bridgeContractFixture.deployContracts();
 
     // Then the Bridge contracts should be deployed on chain
-    const { bridgeProxy, bridgeImplementation, musdc, musdt } = bridgeContractFixture.contracts;
+    const { musdc, musdt, QueueBridgeImplementation, QueueBridgeProxy } = bridgeContractFixture.contracts;
 
-    await expect(hardhatNetwork.ethersRpcProvider.getCode(bridgeProxy.address)).resolves.not.toStrictEqual('0x');
-    await expect(hardhatNetwork.ethersRpcProvider.getCode(bridgeImplementation.address)).resolves.not.toStrictEqual(
-      '0x',
-    );
+    await expect(
+      hardhatNetwork.ethersRpcProvider.getCode(QueueBridgeImplementation.address),
+    ).resolves.not.toStrictEqual('0x');
+    await expect(hardhatNetwork.ethersRpcProvider.getCode(QueueBridgeProxy.address)).resolves.not.toStrictEqual('0x');
     await expect(hardhatNetwork.ethersRpcProvider.getCode(musdc.address)).resolves.not.toStrictEqual('0x');
     await expect(hardhatNetwork.ethersRpcProvider.getCode(musdt.address)).resolves.not.toStrictEqual('0x');
   });
@@ -84,9 +84,9 @@ describe('BridgeContractFixture Integration Tests', () => {
 
   it('should be able to the Bridge to spend tokens on behalf of a specified EOA', async () => {
     await bridgeContractFixture.approveBridgeForEOA(testEOASigner);
-    const { bridgeProxy, musdt, musdc } = bridgeContractFixture.contracts;
-
-    await expect(musdt.allowance(testEOAAddress, bridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
-    await expect(musdc.allowance(testEOAAddress, bridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
+    const { musdt, musdc, QueueBridgeProxy } = bridgeContractFixture.contracts;
+    // BridgeQueue
+    await expect(musdt.allowance(testEOAAddress, QueueBridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
+    await expect(musdc.allowance(testEOAAddress, QueueBridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
   });
 });

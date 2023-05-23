@@ -2,25 +2,25 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresear
 import { DeFiChainTransactionStatus, EthereumTransactionStatus, QueueStatus } from '@prisma/client';
 import { ethers } from 'ethers';
 import {
-  BridgeV1,
+  BridgeQueue,
   HardhatNetwork,
   HardhatNetworkContainer,
   StartedHardhatNetworkContainer,
   TestToken,
-} from 'smartcontracts';
+} from 'smartcontracts-queue';
 
 import { PrismaService } from '../../src/PrismaService';
 import { StartedDeFiChainStubContainer } from '../defichain/containers/DeFiChainStubContainer';
-import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
+import { QueueBridgeContractFixture } from '../testing/QueueBridgeContractFixture';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 
 describe('Create Queue Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
   let testing: BridgeServerTestingApp;
-  let bridgeContract: BridgeV1;
-  let bridgeContractFixture: BridgeContractFixture;
+  let bridgeContract: BridgeQueue;
+  let bridgeContractFixture: QueueBridgeContractFixture;
   let musdcContract: TestToken;
   let prismaService: PrismaService;
   let startedPostgresContainer: StartedPostgreSqlContainer;
@@ -30,11 +30,11 @@ describe('Create Queue Service Integration Tests', () => {
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
 
-    bridgeContractFixture = new BridgeContractFixture(hardhatNetwork);
+    bridgeContractFixture = new QueueBridgeContractFixture(hardhatNetwork);
     await bridgeContractFixture.setup();
 
     // Using the default signer of the container to carry out tests
-    ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
+    ({ QueueBridgeProxy: bridgeContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
     // initialize config variables

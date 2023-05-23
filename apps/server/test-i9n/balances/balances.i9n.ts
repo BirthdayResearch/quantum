@@ -6,7 +6,6 @@ import {
   BridgeV1,
   HardhatNetwork,
   HardhatNetworkContainer,
-  MockBridgeQueue,
   StartedHardhatNetworkContainer,
   TestToken,
 } from 'smartcontracts';
@@ -33,7 +32,6 @@ describe('DeFiChain Send Transaction Testing', () => {
   let bridgeContractFixture: BridgeContractFixture;
   let prismaService: PrismaService;
   let bridgeContract: BridgeV1;
-  let bridgeQueueContract: MockBridgeQueue;
   let musdcContract: TestToken;
   let musdtContract: TestToken;
   let mwbtcContract: TestToken;
@@ -50,7 +48,6 @@ describe('DeFiChain Send Transaction Testing', () => {
     // Using the default signer of the container to carry out tests
     ({
       bridgeProxy: bridgeContract,
-      mockQueueBridgeProxy: bridgeQueueContract,
       musdc: musdcContract,
       musdt: musdtContract,
       mwbtc: mwbtcContract,
@@ -65,9 +62,6 @@ describe('DeFiChain Send Transaction Testing', () => {
         startedHardhatContainer,
         testnet: {
           bridgeContractAddress: bridgeContract.address,
-        },
-        testnetQueue: {
-          bridgeContractAddress: bridgeQueueContract.address,
         },
         startedPostgresContainer,
         usdcAddress: musdcContract.address,
@@ -201,15 +195,12 @@ describe('DeFiChain Send Transaction Testing', () => {
   });
 
   it('When adding funds to EVM wallet Should return updated balances of EVM hot wallets ', async () => {
-    const bridges = [bridgeContract, bridgeQueueContract];
     const tokens = [musdcContract, musdtContract, mwbtcContract, meurocContract];
     // Minting token to bridges
     let amount = ethers.utils.parseEther('10');
-    for (const bridge of bridges) {
-      for (const token of tokens) {
-        await token.mint(bridge.address, amount);
-        amount = amount.sub(ethers.utils.parseEther('1'));
-      }
+    for (const token of tokens) {
+      await token.mint(bridgeContract.address, amount);
+      amount = amount.sub(ethers.utils.parseEther('1'));
     }
 
     await hardhatNetwork.generate(1);
