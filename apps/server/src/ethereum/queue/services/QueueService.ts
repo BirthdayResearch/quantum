@@ -227,10 +227,10 @@ export class QueueService {
     } catch (e: any) {
       throw new HttpException(
         {
-          status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
+          status: e.status ?? (e.code || HttpStatus.INTERNAL_SERVER_ERROR),
           error: `API call for create Queue transaction was unsuccessful: ${e.message}`,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        e.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
         {
           cause: e,
         },
