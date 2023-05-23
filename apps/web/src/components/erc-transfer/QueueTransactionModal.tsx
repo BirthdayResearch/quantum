@@ -13,8 +13,8 @@ export interface ModalConfigType {
   buttonLabel: string;
   onClose: () => void;
   transactionHash: string;
-  destinationAddress: string;
-  amount: string;
+  destinationAddress: string | undefined;
+  amount: string | undefined;
   symbol: string;
 }
 
