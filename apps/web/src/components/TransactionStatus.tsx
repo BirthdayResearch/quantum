@@ -265,9 +265,9 @@ export default function TransactionStatus({
               isConfirmed={isConfirmed}
               isApiSuccess={isApiSuccess}
               txnType={
-                !(ethTxnStatusIsConfirmed || isConfirmed)
-                  ? "Ethereum"
-                  : "DeFiChain"
+                ethTxnStatusIsConfirmed || isConfirmed
+                  ? "DeFiChain"
+                  : "Ethereum"
               }
               activeTab={FormOptions.INSTANT}
             />
