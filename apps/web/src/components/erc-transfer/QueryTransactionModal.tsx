@@ -34,7 +34,7 @@ export interface ModalConfigType {
   setAdminSendTxHash?: (txHash: string) => void;
   contractType: ContractType;
   setShowErcToDfcRestoreModal?: (show: boolean) => void;
-  setQueueModalDetails: (details: QueueTxData) => void;
+  setQueueModalDetails?: (details: QueueTxData) => void;
 }
 
 export enum ContractType {
