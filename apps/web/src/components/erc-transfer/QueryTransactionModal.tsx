@@ -10,9 +10,17 @@ import { IoCloseCircle } from "react-icons/io5";
 import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
-import { ModalTypeToDisplay } from "types";
+import { ModalTypeToDisplay, Queue } from "types";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 import { useGetQueueTransactionQuery } from "@store/index";
+
+interface QueueTxData {
+  amount: string;
+  token: string;
+  transactionHash: string;
+  destinationAddress: string;
+  initiatedDate: Date;
+}
 
 export interface ModalConfigType {
   title: string;
@@ -26,14 +34,12 @@ export interface ModalConfigType {
   setAdminSendTxHash?: (txHash: string) => void;
   contractType: ContractType;
   setShowErcToDfcRestoreModal?: (show: boolean) => void;
-  setAmount?: (amt: string) => void;
-  setTokenSymbol?: (tokentType: string) => void;
-  setTransactionHash?: (txHash: string) => void;
-  setDestinationAddress?: (txHash: string) => void;
+  setQueueModalDetails: (details: QueueTxData) => void;
 }
 
 export enum ContractType {
   Instant,
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   Queue,
 }
 
@@ -58,10 +64,7 @@ export default function QueryTransactionModal({
   setAdminSendTxHash,
   contractType,
   setShowErcToDfcRestoreModal,
-  setAmount,
-  setTokenSymbol,
-  setTransactionHash,
-  setDestinationAddress,
+  setQueueModalDetails,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
@@ -84,29 +87,30 @@ export default function QueryTransactionModal({
     contractType === 0 ? BridgeV1.abi : BridgeQueue.abi
   );
 
-  const displayModalForQueueType = (queuedTransaction: any) => {
-    if (setTransactionHash) {
-      setTransactionHash(transactionInput);
-    }
-    if (setAmount && queuedTransaction.amount) {
-      setAmount(queuedTransaction.amount);
-    }
-    if (setTokenSymbol && queuedTransaction.tokenSymbol) {
-      setTokenSymbol(queuedTransaction.tokenSymbol);
-    }
-    if (setDestinationAddress && queuedTransaction.defichainAddress) {
-      setDestinationAddress(queuedTransaction.defichainAddress);
-    }
-    if (queuedTransaction.adminQueue) {
+  const displayModalForQueueType = (queuedTransaction: Queue) => {
+    if (queuedTransaction.adminQueue && setAdminSendTxHash !== undefined) {
       const adminQueueTxHash = queuedTransaction.adminQueue.sendTransactionHash;
       if (
         queuedTransaction.status === "COMPLETED" &&
         adminQueueTxHash !== undefined &&
-        adminQueueTxHash !== null &&
-        setAdminSendTxHash !== undefined
+        adminQueueTxHash !== null
       ) {
         setAdminSendTxHash(adminQueueTxHash);
       }
+    }
+
+    if (
+      setQueueModalDetails &&
+      queuedTransaction.amount &&
+      queuedTransaction.tokenSymbol
+    ) {
+      setQueueModalDetails({
+        amount: queuedTransaction.amount,
+        token: queuedTransaction.tokenSymbol,
+        transactionHash: transactionInput,
+        destinationAddress: queuedTransaction.defichainAddress,
+        initiatedDate: queuedTransaction.createdAt,
+      });
     }
 
     if (!onTransactionFound) {

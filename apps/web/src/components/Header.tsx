@@ -25,16 +25,25 @@ export default function Header({
     ModalTypeToDisplay | undefined
   >();
   const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<string>("");
-  const [amount, setAmount] = useState<string>("");
-  const [token, setToken] = useState<string>("");
-  const [transactionHash, setTransactionHash] = useState<string>("");
-  const [destinationAddress, setDestinationAddress] = useState<string>("");
+
+  const [queueModalDetails, setQueueModalDetails] = useState({
+    amount: "",
+    token: "",
+    transactionHash: "",
+    destinationAddress: "",
+    initiatedDate: new Date(),
+  });
 
   const resetModalDetails = () => {
     setModalToDisplay(ModalTypeToDisplay.Search);
-    setDestinationAddress("");
-    setAmount("");
-    setToken("");
+
+    setQueueModalDetails({
+      amount: "",
+      token: "",
+      transactionHash: "",
+      destinationAddress: "",
+      initiatedDate: new Date(),
+    });
   };
 
   return (
@@ -77,20 +86,11 @@ export default function Header({
             onTransactionFound={(modalTypeToDisplay) => {
               setModalToDisplay(modalTypeToDisplay);
             }}
+            setQueueModalDetails={(queuedTxDetails) => {
+              setQueueModalDetails(queuedTxDetails);
+            }}
             setAdminSendTxHash={(txHash) => {
               setAdminQueueSendTxHash(txHash);
-            }}
-            setAmount={(amt) => {
-              setAmount(amt);
-            }}
-            setTokenSymbol={(tokenSymbol) => {
-              setToken(tokenSymbol);
-            }}
-            setTransactionHash={(txHash) => {
-              setTransactionHash(txHash);
-            }}
-            setDestinationAddress={(address) => {
-              setDestinationAddress(address);
             }}
           />
           <TransactionInProgressModal
@@ -100,11 +100,11 @@ export default function Header({
               modalToDisplay === ModalTypeToDisplay.Unsuccessful
             }
             type={modalToDisplay}
-            txHash={transactionHash}
-            destinationAddress={destinationAddress}
-            initiatedDate={new Date()}
-            amount={amount}
-            token={token}
+            txHash={queueModalDetails.transactionHash}
+            destinationAddress={queueModalDetails.destinationAddress}
+            initiatedDate={queueModalDetails.initiatedDate}
+            amount={queueModalDetails.amount}
+            token={queueModalDetails.token}
             onClose={() => setModalToDisplay(undefined)}
             onBack={() => {
               resetModalDetails();
@@ -117,15 +117,15 @@ export default function Header({
               modalToDisplay === ModalTypeToDisplay.RefundRequested
             }
             type={modalToDisplay}
-            txHash={transactionHash}
-            initiatedDate={new Date()}
-            amount={amount}
-            token={token}
             onClose={() => setModalToDisplay(undefined)}
             onBack={() => {
               resetModalDetails();
             }}
-            destinationAddress={destinationAddress}
+            txHash={queueModalDetails.transactionHash}
+            destinationAddress={queueModalDetails.destinationAddress}
+            initiatedDate={queueModalDetails.initiatedDate}
+            amount={queueModalDetails.amount}
+            token={queueModalDetails.token}
             adminQueueSendTxHash={adminQueueSendTxHash}
           />
         </div>
