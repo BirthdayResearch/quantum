@@ -85,6 +85,9 @@ export default function QueryTransactionModal({
   );
 
   const displayModalForQueueType = (queuedTransaction: any) => {
+    if (setTransactionHash) {
+      setTransactionHash(transactionInput);
+    }
     if (setAmount && queuedTransaction.amount) {
       setAmount(queuedTransaction.amount);
     }
@@ -151,11 +154,8 @@ export default function QueryTransactionModal({
             txnHash: transactionInput,
           }).unwrap();
 
-          // set values for Queue tx
-          setTransactionHash(transactionInput);
           displayModalForQueueType(queuedTransaction);
         }
-
         return;
       }
     } catch (error) {
