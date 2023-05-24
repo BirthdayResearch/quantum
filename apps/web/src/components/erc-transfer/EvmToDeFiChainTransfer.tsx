@@ -125,7 +125,10 @@ export default function EvmToDeFiChainTransfer({
           ? sleepTimeBeforeFirstApiCall
           : sleepTimeBeforeRetryApiCall
       );
-      await queueTransaction({ transactionHash: "test-failed" }).unwrap();
+      await queueTransaction({ txnHash }).unwrap();
+      // only after queue has been created successfully then we set the form to null
+      setQueueStorage("txn-form-queue", null);
+      // only after queue has been created successfully then we set that queue has been created successfully
       setQueueStorage("queue-creation", txnHash);
       onClose(true);
     } catch (e) {
@@ -202,7 +205,6 @@ export default function EvmToDeFiChainTransfer({
       setQueueStorage("confirmed-queue", null);
       setQueueStorage("allocation-txn-hash-queue", null);
       setQueueStorage("reverted-queue", null);
-      setQueueStorage("txn-form-queue", null);
       setBridgeStatus(BridgeStatus.QueueingTransaction);
       handleCreateQueueTransaction(transactionHash);
     }

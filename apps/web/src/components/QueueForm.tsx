@@ -260,7 +260,7 @@ export default function QueueForm({
 
     if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
       numOfConfirmations = EVM_CONFIRMATIONS_BLOCK_TOTAL.toString();
-    } else if (txnHash.reverted !== undefined) {
+    } else if (txnHash.reverted !== undefined || isQueueCreated === undefined) {
       numOfConfirmations = "0";
     }
 

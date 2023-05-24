@@ -107,7 +107,7 @@ export function QueueStorageProvider({
       getStorageItem<string>(QUEUE_DFC_ADDR_KEY) ?? undefined;
     const transferAmountKeyStorage =
       getStorageItem<string>(QUEUE_TRANSFER_AMOUNT_KEY) ?? undefined;
-    const queueCreationStorage =
+    const queueCreationStorageKey =
       getStorageItem<string>(QUEUE_CREATION_KEY) ?? undefined;
 
     setUnconfirmedQueueTxnHashKey(unconfirmedTxnHashKeyStorage);
@@ -117,7 +117,7 @@ export function QueueStorageProvider({
     setUnsentQueueFundTxnHashKey(unsentFundTxnHashKeyStorage);
     setDfcQueueAddress(dfcAddressKeyStorage);
     setQueueTransferAmount(transferAmountKeyStorage);
-    setQueueCreated(queueCreated);
+    setQueueCreated(queueCreationStorageKey);
   }, [
     networkEnv,
     UNCONFIRMED_QUEUE_TXN_HASH_KEY,
