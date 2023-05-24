@@ -692,11 +692,21 @@ export default function BridgeForm({
       )}
       <div className="mt-[50px] mx-auto w-[290px] lg:w-[344px]">
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
-          <ActionButton
-            label="Initiate new transaction"
-            onClick={() => onDone()}
-            customStyle="mt-6"
-          />
+          <>
+            <ActionButton
+              label="Done"
+              onClick={() => onDone()}
+              customStyle="mt-6"
+            />
+            <span
+              className={clsx(
+                "flex pt-3 text-xs text-center text-dark-700 lg:text-sm"
+              )}
+            >
+              Transaction details will be cleared upon exiting this window. Do
+              save them for reference if needed.
+            </span>
+          </>
         ) : (
           <ConnectKitButton.Custom>
             {({ show }) => (
