@@ -71,9 +71,7 @@ export default function Header({
             inputLabel="Transaction hash"
             inputPlaceholder="Enter transaction hash"
             buttonLabel="Track status"
-            onClose={() => {
-              setModalToDisplay(undefined);
-            }}
+            onClose={() => setModalToDisplay(undefined)}
             contractType={ContractType.Queue}
             isOpen={modalToDisplay === ModalTypeToDisplay.Search}
             onTransactionFound={(modalTypeToDisplay) => {
