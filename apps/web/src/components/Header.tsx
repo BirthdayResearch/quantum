@@ -37,6 +37,7 @@ export default function Header({
   const resetModalDetails = () => {
     setModalToDisplay(ModalTypeToDisplay.Search);
 
+    setAdminQueueSendTxHash("");
     setQueueModalDetails({
       amount: "",
       token: "",
