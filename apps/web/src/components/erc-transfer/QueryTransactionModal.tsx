@@ -26,10 +26,10 @@ export interface ModalConfigType {
   setAdminSendTxHash?: (txHash: string) => void;
   contractType: ContractType;
   setShowErcToDfcRestoreModal?: (show: boolean) => void;
-  setAmount: (amt: string) => void;
-  setTokenSymbol: (tokentType: string) => void;
-  setTransactionHash: (txHash: string) => void;
-  setDestinationAddress: (txHash: string) => void;
+  setAmount?: (amt: string) => void;
+  setTokenSymbol?: (tokentType: string) => void;
+  setTransactionHash?: (txHash: string) => void;
+  setDestinationAddress?: (txHash: string) => void;
 }
 
 export enum ContractType {
@@ -85,13 +85,13 @@ export default function QueryTransactionModal({
   );
 
   const displayModalForQueueType = (queuedTransaction: any) => {
-    if (queuedTransaction.amount) {
+    if (setAmount && queuedTransaction.amount) {
       setAmount(queuedTransaction.amount);
     }
-    if (queuedTransaction.tokenSymbol) {
+    if (setTokenSymbol && queuedTransaction.tokenSymbol) {
       setTokenSymbol(queuedTransaction.tokenSymbol);
     }
-    if (queuedTransaction.defichainAddress) {
+    if (setDestinationAddress && queuedTransaction.defichainAddress) {
       setDestinationAddress(queuedTransaction.defichainAddress);
     }
 
