@@ -115,7 +115,8 @@ export default function QueryTransactionModal({
     if (modalType) {
       onTransactionFound(modalType);
     } else {
-      // TODO: Handle this case where status from DB is valid but not in the mapped modal type
+      // Handle case where status is not in the map
+      onTransactionFound(ModalTypeToDisplay.Pending);
     }
   };
 
