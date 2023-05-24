@@ -8,11 +8,11 @@ import Banner from "./Banner";
 import Navigation from "./Navigation";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
-import TransactionInProgressModal from "./queue/TransactionInProgressModal";
-import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
 import QueryTransactionModal, {
   ContractType,
 } from "./erc-transfer/QueryTransactionModal";
+import TransactionInProgressModal from "./queue/TransactionInProgressModal";
+import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
 import TransactionCompletionModal from "./queue/TransactionCompletionModal";
 
 export default function Header({
@@ -25,16 +25,17 @@ export default function Header({
     ModalTypeToDisplay | undefined
   >();
   const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<string>("");
+  const [amount, setAmount] = useState<string>("");
+  const [token, setToken] = useState<string>("");
+  const [transactionHash, setTransactionHash] = useState<string>("");
+  const [destinationAddress, setDestinationAddress] = useState<string>("");
 
-  // TODO: set these values dynamically
-  const [amount] = useState<string>("150");
-  const [token] = useState<string>("dBTC");
-  const [transactionHash] = useState<string>(
-    "0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
-  );
-  const [destinationAddress] = useState<string>(
-    "dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
-  );
+  const resetModalDetails = () => {
+    setModalToDisplay(ModalTypeToDisplay.Search);
+    setDestinationAddress("");
+    setAmount("");
+    setToken("");
+  };
 
   return (
     <div className="relative z-[1] flex flex-col">
@@ -70,7 +71,9 @@ export default function Header({
             inputLabel="Transaction hash"
             inputPlaceholder="Enter transaction hash"
             buttonLabel="Track status"
-            onClose={() => setModalToDisplay(undefined)}
+            onClose={() => {
+              setModalToDisplay(undefined);
+            }}
             contractType={ContractType.Queue}
             isOpen={modalToDisplay === ModalTypeToDisplay.Search}
             onTransactionFound={(modalTypeToDisplay) => {
@@ -78,6 +81,18 @@ export default function Header({
             }}
             setAdminSendTxHash={(txHash) => {
               setAdminQueueSendTxHash(txHash);
+            }}
+            setAmount={(amt) => {
+              setAmount(amt);
+            }}
+            setTokenSymbol={(tokenSymbol) => {
+              setToken(tokenSymbol);
+            }}
+            setTransactionHash={(txHash) => {
+              setTransactionHash(txHash);
+            }}
+            setDestinationAddress={(address) => {
+              setDestinationAddress(address);
             }}
           />
           <TransactionInProgressModal
@@ -93,7 +108,9 @@ export default function Header({
             amount={amount}
             token={token}
             onClose={() => setModalToDisplay(undefined)}
-            onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
+            onBack={() => {
+              resetModalDetails();
+            }}
           />
           <TransactionCompletionModal
             isOpen={
@@ -107,7 +124,9 @@ export default function Header({
             amount={amount}
             token={token}
             onClose={() => setModalToDisplay(undefined)}
-            onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
+            onBack={() => {
+              resetModalDetails();
+            }}
             destinationAddress={destinationAddress}
             adminQueueSendTxHash={adminQueueSendTxHash}
           />

@@ -26,6 +26,10 @@ export interface ModalConfigType {
   setAdminSendTxHash?: (txHash: string) => void;
   contractType: ContractType;
   setShowErcToDfcRestoreModal?: (show: boolean) => void;
+  setAmount: (amt: string) => void;
+  setTokenSymbol: (tokentType: string) => void;
+  setTransactionHash: (txHash: string) => void;
+  setDestinationAddress: (txHash: string) => void;
 }
 
 export enum ContractType {
@@ -54,6 +58,10 @@ export default function QueryTransactionModal({
   setAdminSendTxHash,
   contractType,
   setShowErcToDfcRestoreModal,
+  setAmount,
+  setTokenSymbol,
+  setTransactionHash,
+  setDestinationAddress,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
@@ -76,6 +84,41 @@ export default function QueryTransactionModal({
     contractType === 0 ? BridgeV1.abi : BridgeQueue.abi
   );
 
+  const displayModalForQueueType = (queuedTransaction: any) => {
+    if (queuedTransaction.amount) {
+      setAmount(queuedTransaction.amount);
+    }
+    if (queuedTransaction.tokenSymbol) {
+      setTokenSymbol(queuedTransaction.tokenSymbol);
+    }
+    if (queuedTransaction.defichainAddress) {
+      setDestinationAddress(queuedTransaction.defichainAddress);
+    }
+
+    if (queuedTransaction.adminQueue) {
+      const adminQueueTxHash = queuedTransaction.adminQueue.sendTransactionHash;
+      if (
+        queuedTransaction.status === "COMPLETED" &&
+        adminQueueTxHash !== undefined &&
+        adminQueueTxHash !== null &&
+        setAdminSendTxHash !== undefined
+      ) {
+        setAdminSendTxHash(adminQueueTxHash);
+      }
+    }
+
+    if (!onTransactionFound) {
+      return;
+    }
+
+    const modalType = statusToModalTypeMap[queuedTransaction.status];
+    if (modalType) {
+      onTransactionFound(modalType);
+    } else {
+      // TODO: Handle this case where status from DB is valid but not in the mapped modal type
+    }
+  };
+
   const checkTXnHash = async () => {
     if (!isValidEthTxHash) {
       setInputErrorMessage("Enter a valid transaction hash for Ethereum.");
@@ -97,7 +140,7 @@ export default function QueryTransactionModal({
         setStorage("unconfirmed", transactionInput);
         setIsValidTransaction(true);
 
-        // TODO: Queue restore form
+        // TODO: Restore Queue & Instant forms
 
         if (setShowErcToDfcRestoreModal) setShowErcToDfcRestoreModal(false);
 
@@ -107,30 +150,9 @@ export default function QueryTransactionModal({
             txnHash: transactionInput,
           }).unwrap();
 
-          if (queuedTransaction.adminQueue) {
-            const adminQueueTxHash =
-              queuedTransaction.adminQueue.sendTransactionHash;
-            if (
-              queuedTransaction.status === "COMPLETED" &&
-              adminQueueTxHash !== undefined &&
-              adminQueueTxHash !== null &&
-              setAdminSendTxHash !== undefined
-            ) {
-              setAdminSendTxHash(adminQueueTxHash);
-            }
-          }
-
-          if (!onTransactionFound) {
-            return;
-          }
-
-          const modalType = statusToModalTypeMap[queuedTransaction.status];
-          if (modalType) {
-            onTransactionFound(modalType);
-          } else {
-            // TODO: Handle this case where status from DB is valid but not in the mapped modal type
-            onTransactionFound(ModalTypeToDisplay.Pending);
-          }
+          // set values for Queue tx
+          setTransactionHash(transactionInput);
+          displayModalForQueueType(queuedTransaction);
         }
 
         return;
