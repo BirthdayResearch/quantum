@@ -14,14 +14,14 @@ import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionCompletionModalProps {
   type?: ModalTypeToDisplay;
-  txHash: string;
+  txHash?: string;
   initiatedDate: Date;
-  amount: string;
-  token: string;
+  amount?: string;
+  token?: string;
   onClose: () => void;
   isOpen: boolean;
   onBack: () => void;
-  destinationAddress: string;
+  destinationAddress?: string;
   adminQueueSendTxHash: string;
 }
 
@@ -142,7 +142,7 @@ export default function TransactionCompletionModal({
         <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7 items-center md:flex md:justify-center">
           TX Hash:
           <span className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]">
-            {isMobile ? truncateTextFromMiddle(txHash, 15) : txHash}
+            {isMobile && txHash ? truncateTextFromMiddle(txHash, 15) : txHash}
           </span>
         </span>
 

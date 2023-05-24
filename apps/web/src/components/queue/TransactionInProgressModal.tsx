@@ -11,10 +11,10 @@ import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionInProgressModalProps {
   type?: ModalTypeToDisplay;
-  txHash: string;
+  txHash?: string;
   initiatedDate: Date;
-  amount: string;
-  token: string;
+  amount?: string;
+  token?: string;
   destinationAddress?: string;
   onClose: () => void;
   onBack: () => void;
@@ -86,7 +86,7 @@ export default function TransactionInProgressModal({
         <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7">
           TX Hash:
           <span className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]">
-            {isMobile ? truncateTextFromMiddle(txHash, 15) : txHash}
+            {isMobile && txHash ? truncateTextFromMiddle(txHash, 15) : txHash}
           </span>
         </span>
 
@@ -98,7 +98,7 @@ export default function TransactionInProgressModal({
         <div className="flex items-center justify-between">
           <span className="text-dark-700">Date initiated</span>
           <span className="text-dark-1000">
-            {dayjs(initiatedDate).format("DD/MM/YYYY HH:mm A")}
+            {dayjs(initiatedDate).format("DD/MM/YYYY, HH:mm A")}
           </span>
         </div>
         <div className="flex items-center justify-between md:mt-8 mt-10">

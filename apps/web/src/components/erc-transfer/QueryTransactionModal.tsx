@@ -14,11 +14,11 @@ import { ModalTypeToDisplay, Queue } from "types";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 import { useGetQueueTransactionQuery } from "@store/index";
 
-interface QueueTxData {
-  amount: string;
-  token: string;
-  transactionHash: string;
-  destinationAddress: string;
+export interface QueueTxData {
+  amount?: string;
+  token?: string;
+  transactionHash?: string;
+  destinationAddress?: string;
   initiatedDate: Date;
 }
 

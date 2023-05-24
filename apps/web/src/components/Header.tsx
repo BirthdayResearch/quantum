@@ -10,6 +10,7 @@ import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
 import QueryTransactionModal, {
   ContractType,
+  QueueTxData,
 } from "./erc-transfer/QueryTransactionModal";
 import TransactionInProgressModal from "./queue/TransactionInProgressModal";
 import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
@@ -26,11 +27,11 @@ export default function Header({
   >();
   const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<string>("");
 
-  const [queueModalDetails, setQueueModalDetails] = useState({
-    amount: "",
-    token: "",
-    transactionHash: "",
-    destinationAddress: "",
+  const [queueModalDetails, setQueueModalDetails] = useState<QueueTxData>({
+    amount: undefined,
+    token: undefined,
+    transactionHash: undefined,
+    destinationAddress: undefined,
     initiatedDate: new Date(),
   });
 
