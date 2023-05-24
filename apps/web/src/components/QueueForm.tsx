@@ -604,19 +604,17 @@ export default function QueueForm({
         </>
       )}
 
-      <div className="flex flex-col items-center px-6 md:px-4 mt-[50px] lg:mb-0 lg:px-0 xl:px-20">
+      <div className="mt-[50px] mx-auto w-[290px] lg:w-[344px]">
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <>
-            <ActionButton
-              label="Queue new transaction"
-              onClick={() => onDone()}
-            />
+            <ActionButton label="Done" onClick={() => onDone()} />
             <span
               className={clsx(
-                "flex pt-3 text-xs text-center text-dark-700 lg:w-max lg:text-sm"
+                "flex pt-3 text-xs text-center text-dark-700 lg:text-sm"
               )}
             >
-              Return to queue page to initiate new queue transaction.
+              Transaction details will be cleared upon exiting this window. Do
+              save them for reference if needed.
             </span>
           </>
         ) : (
