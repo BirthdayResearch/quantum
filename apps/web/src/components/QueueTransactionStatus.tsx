@@ -125,7 +125,7 @@ export default function QueueTransactionStatus({
             confirmationBlocksCurrent={confirmationBlocksCurrent}
             isConfirmed={isConfirmed}
             isApiSuccess={isApiSuccess}
-            txnType="Ethereum"
+            txnType="confirmations"
             activeTab={FormOptions.QUEUE}
           />
         </div>
