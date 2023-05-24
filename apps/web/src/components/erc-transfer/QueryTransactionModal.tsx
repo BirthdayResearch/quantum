@@ -97,7 +97,6 @@ export default function QueryTransactionModal({
     if (setDestinationAddress && queuedTransaction.defichainAddress) {
       setDestinationAddress(queuedTransaction.defichainAddress);
     }
-
     if (queuedTransaction.adminQueue) {
       const adminQueueTxHash = queuedTransaction.adminQueue.sendTransactionHash;
       if (
