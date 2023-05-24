@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
  * This polls in the /ethereum/queue/verify to verify if txn is confirmed (>= 65 confirmations)
  */
 export default function useWatchEthQueueTxn() {
-  const { txnHash, setStorage, isQueueCreated } = useQueueStorageContext();
+  const { txnHash, setStorage, createdQueueTxnHash } = useQueueStorageContext();
 
   const [verifyEthQueueTxn] = useVerifyEthQueueTxnMutation();
 
@@ -78,13 +78,13 @@ export default function useWatchEthQueueTxn() {
         numberOfConfirmations: "0",
       });
 
-      if (isQueueCreated !== undefined) {
+      if (createdQueueTxnHash !== undefined) {
         pollConfirmEthTxn(txnHash.unconfirmed);
       }
     }
 
     pollInterval = setInterval(() => {
-      if (isQueueCreated !== undefined) {
+      if (createdQueueTxnHash !== undefined) {
         pollConfirmEthTxn(txnHash.unconfirmed);
       }
     }, 20000);
@@ -94,7 +94,7 @@ export default function useWatchEthQueueTxn() {
         clearInterval(pollInterval);
       }
     };
-  }, [isQueueCreated]);
+  }, [createdQueueTxnHash]);
 
   return { ethQueueTxnStatus, isQueueApiSuccess };
 }

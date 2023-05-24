@@ -128,7 +128,7 @@ export default function EvmToDeFiChainTransfer({
       // only after queue has been created successfully then we set the form to null
       setQueueStorage("txn-form-queue", null);
       // only after queue has been created successfully then we set that queue has been created successfully
-      setQueueStorage("queue-creation", txnHash);
+      setQueueStorage("created-queue-txn-hash", txnHash);
       onClose(true);
     } catch (e) {
       if (e.data?.error?.includes("Transaction is still pending")) {

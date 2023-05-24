@@ -14,7 +14,8 @@ import { useQueueStorageContext } from "../layouts/contexts/QueueStorageContext"
 
 function Home() {
   const { txnHash } = useStorageContext();
-  const { txnHash: txnHashQueue, isQueueCreated } = useQueueStorageContext();
+  const { txnHash: txnHashQueue, createdQueueTxnHash } =
+    useQueueStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
     useBridgeFormStorageKeys();
 
@@ -56,7 +57,7 @@ function Home() {
           <QueueForm
             activeTab={activeTab}
             hasPendingTxn={
-              isQueueCreated !== undefined &&
+              createdQueueTxnHash !== undefined &&
               (txnHashQueue.unconfirmed !== undefined ||
                 txnHashQueue.unsentFund !== undefined)
             }

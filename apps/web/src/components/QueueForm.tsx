@@ -69,7 +69,7 @@ export default function QueueForm({
     transferAmount,
     setStorage,
     txnHash,
-    isQueueCreated,
+    createdQueueTxnHash,
   } = useQueueStorageContext();
 
   const [amount, setAmount] = useState<string>("");
@@ -231,7 +231,7 @@ export default function QueueForm({
     setStorage("confirmed-queue", null);
     setStorage("allocation-txn-hash-queue", null);
     setStorage("reverted-queue", null);
-    setStorage("queue-creation", null);
+    setStorage("created-queue-txn-hash", null);
     onResetTransferForm();
   };
 
@@ -260,7 +260,10 @@ export default function QueueForm({
 
     if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
       numOfConfirmations = EVM_CONFIRMATIONS_BLOCK_TOTAL.toString();
-    } else if (txnHash.reverted !== undefined || isQueueCreated === undefined) {
+    } else if (
+      txnHash.reverted !== undefined ||
+      createdQueueTxnHash === undefined
+    ) {
       numOfConfirmations = "0";
     }
 
@@ -401,7 +404,7 @@ export default function QueueForm({
         activeTab === FormOptions.QUEUE ? "block" : "hidden"
       )}
     >
-      {isQueueCreated &&
+      {createdQueueTxnHash &&
       (txnHash.unconfirmed ||
         txnHash.confirmed ||
         txnHash.reverted ||
