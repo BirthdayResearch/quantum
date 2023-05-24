@@ -44,7 +44,7 @@ function Home() {
         <div className="flex flex-col justify-between px-6 pb-7 md:px-0 md:pb-0 md:w-5/12 mt-6 mb-5 md:mb-0 lg:mt-12">
           <WelcomeHeader />
         </div>
-        <div className="flex-1 md:ml-6 lg:min-w-[562px] lg:ml-24">
+        <div className="flex-1 md:w-6/12 lg:min-w-[562px] lg:ml-24">
           <FormTab activeTab={activeTab} setActiveTab={setActiveTab} />
           {/*
           // Todo : add condition for active tab to switch between <BridgeForm/> and <QueueForm/>
