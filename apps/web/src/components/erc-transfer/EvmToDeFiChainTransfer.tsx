@@ -315,7 +315,11 @@ export default function EvmToDeFiChainTransfer({
           onClick={() => handleInitiateTransfer()}
           disabled={
             hasPendingTx ||
-            (writeApprove === undefined && writeBridgeToDeFiChain === undefined)
+            writeApprove === undefined ||
+            writeBridgeToDeFiChain === undefined
+          }
+          isLoading={
+            writeApprove === undefined || writeBridgeToDeFiChain === undefined
           }
         />
       </div>

@@ -127,6 +127,7 @@ export default function TransactionInProgressModal({
               customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[240px] min-h-[48px] lg:min-h-[52px]"
               onClick={() => {
                 /* TODO: call refund api when ready */
+                // To display ModalTypeToDisplay.RefundInProgress
               }}
             />
           </div>

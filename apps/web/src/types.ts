@@ -178,5 +178,7 @@ export enum ModalTypeToDisplay {
   Pending,
   RefundInProgress,
   Unsuccessful,
-  Successful,
+  Refunded,
+  Completed,
+  RefundRequested,
 }
