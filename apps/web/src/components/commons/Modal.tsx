@@ -55,7 +55,7 @@ export default function Modal({
             {onClose && (
               <FiXCircle
                 size={isMobile ? 24 : 28}
-                className="text-dark-900 cursor-pointer hover:opacity-70 text-2xl md:text-[28px]"
+                className="text-dark-900 cursor-pointer hover:opacity-70 text-2xl md:text-[28px] relative z-10"
                 onClick={onClose}
               />
             )}

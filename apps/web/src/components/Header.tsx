@@ -8,9 +8,12 @@ import Banner from "./Banner";
 import Navigation from "./Navigation";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
-import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
 import TransactionInProgressModal from "./queue/TransactionInProgressModal";
 import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
+import QueryTransactionModal, {
+  ContractType,
+} from "./erc-transfer/QueryTransactionModal";
+import TransactionCompletionModal from "./queue/TransactionCompletionModal";
 
 export default function Header({
   isBridgeUp,
@@ -21,6 +24,17 @@ export default function Header({
   const [modalToDisplay, setModalToDisplay] = useState<
     ModalTypeToDisplay | undefined
   >();
+  const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<string>("");
+
+  // TODO: set these values dynamically
+  const [amount] = useState<string>("150");
+  const [token] = useState<string>("dBTC");
+  const [transactionHash] = useState<string>(
+    "0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
+  );
+  const [destinationAddress] = useState<string>(
+    "dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
+  );
 
   return (
     <div className="relative z-[1] flex flex-col">
@@ -48,6 +62,8 @@ export default function Header({
           />
           <ConnectButton />
           {chain === undefined && <EnvironmentNetworkSwitch />}
+
+          {/* Search tx modal */}
           <QueryTransactionModal
             title="Track transaction"
             message="Enter transaction hash of a queue transaction to track its status"
@@ -55,11 +71,13 @@ export default function Header({
             inputPlaceholder="Enter transaction hash"
             buttonLabel="Track status"
             onClose={() => setModalToDisplay(undefined)}
-            // contractType={ContractType.Queue}
+            contractType={ContractType.Queue}
             isOpen={modalToDisplay === ModalTypeToDisplay.Search}
-            inputErrorMessage="Invalid transaction hash. Please only enter queued transaction hashes."
             onTransactionFound={(modalTypeToDisplay) => {
               setModalToDisplay(modalTypeToDisplay);
+            }}
+            setAdminSendTxHash={(txHash) => {
+              setAdminQueueSendTxHash(txHash);
             }}
           />
           <TransactionInProgressModal
@@ -69,13 +87,29 @@ export default function Header({
               modalToDisplay === ModalTypeToDisplay.Unsuccessful
             }
             type={modalToDisplay}
-            txHash="0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
-            destinationAddress="dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
+            txHash={transactionHash}
+            destinationAddress={destinationAddress}
             initiatedDate={new Date()}
-            amount="150"
-            token="dBTC"
+            amount={amount}
+            token={token}
             onClose={() => setModalToDisplay(undefined)}
             onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
+          />
+          <TransactionCompletionModal
+            isOpen={
+              modalToDisplay === ModalTypeToDisplay.Refunded ||
+              modalToDisplay === ModalTypeToDisplay.Completed ||
+              modalToDisplay === ModalTypeToDisplay.RefundRequested
+            }
+            type={modalToDisplay}
+            txHash={transactionHash}
+            initiatedDate={new Date()}
+            amount={amount}
+            token={token}
+            onClose={() => setModalToDisplay(undefined)}
+            onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
+            destinationAddress={destinationAddress}
+            adminQueueSendTxHash={adminQueueSendTxHash}
           />
         </div>
       </div>

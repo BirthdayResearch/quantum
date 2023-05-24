@@ -47,7 +47,9 @@ import {
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
-import QueryTransactionModal from "./erc-transfer/QueryTransactionModal";
+import QueryTransactionModal, {
+  ContractType,
+} from "./erc-transfer/QueryTransactionModal";
 import useInputValidation from "../hooks/useInputValidation";
 
 function SwitchButton({
@@ -783,8 +785,8 @@ export default function BridgeForm({
         buttonLabel="Restore transaction"
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
-        // contractType={ContractType.Instant}
-        inputErrorMessage="Enter a valid transaction hash for Ethereum"
+        contractType={ContractType.Instant}
+        setShowErcToDfcRestoreModal={setShowErcToDfcRestoreModal}
       />
     </div>
   );
