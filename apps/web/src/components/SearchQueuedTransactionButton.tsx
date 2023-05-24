@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { useQueueStorageContext } from "@contexts/QueueStorageContext";
 import Image from "next/image";
 
 export default function SearchQueuedTransactionButton({
@@ -5,7 +7,13 @@ export default function SearchQueuedTransactionButton({
 }: {
   onClick: () => void;
 }) {
-  const hasQueuedTransaction = true; // TODO: add logic to get if any queued tx in local storage
+  const { txnHash } = useQueueStorageContext();
+  const [hasQueuedTransaction, setHasQueuedTransaction] = useState(false);
+
+  useEffect(() => {
+    setHasQueuedTransaction(!!txnHash.confirmed);
+  }, [txnHash]);
+
   return (
     <button
       className="relative mr-2 p-3 rounded-full border-[1px] border-dark-300/50 bg-dark-00"
