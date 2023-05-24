@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
  */
 export default function useWatchEthQueueTxn() {
   const { networkEnv } = useNetworkEnvironmentContext();
-  const { txnHash, setStorage } = useQueueStorageContext();
+  const { txnHash, setStorage, isQueueCreated } = useQueueStorageContext();
 
   const [verifyEthQueueTxn] = useVerifyEthQueueTxnMutation();
 
@@ -92,7 +92,7 @@ export default function useWatchEthQueueTxn() {
         clearInterval(pollInterval);
       }
     };
-  }, [networkEnv, txnHash]);
+  }, [isQueueCreated]);
 
   return { ethQueueTxnStatus, isQueueApiSuccess };
 }

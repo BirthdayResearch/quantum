@@ -75,3 +75,4 @@ export const QUEUE_STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address-queue";
 export const QUEUE_STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details-queue";
 
 export const QUEUE_STORAGE_TRANSFER_AMOUNT_KEY = "transfer-amount-queue";
+export const STORAGE_QUEUE_CREATION_KEY = "queue-creation";

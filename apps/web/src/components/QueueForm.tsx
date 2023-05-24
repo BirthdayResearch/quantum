@@ -69,6 +69,7 @@ export default function QueueForm({
     transferAmount,
     setStorage,
     txnHash,
+    isQueueCreated,
   } = useQueueStorageContext();
 
   const [amount, setAmount] = useState<string>("");
@@ -230,6 +231,7 @@ export default function QueueForm({
     setStorage("confirmed-queue", null);
     setStorage("allocation-txn-hash-queue", null);
     setStorage("reverted-queue", null);
+    setStorage("queue-creation", null);
     onResetTransferForm();
   };
 
@@ -399,10 +401,11 @@ export default function QueueForm({
         activeTab === FormOptions.QUEUE ? "block" : "hidden"
       )}
     >
-      {txnHash.unconfirmed ||
-      txnHash.confirmed ||
-      txnHash.reverted ||
-      txnHash.unsentFund ? (
+      {isQueueCreated &&
+      (txnHash.unconfirmed ||
+        txnHash.confirmed ||
+        txnHash.reverted ||
+        txnHash.unsentFund) ? (
         <>
           <QueueTransactionStatus
             txnHash={

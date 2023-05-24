@@ -20,7 +20,8 @@ type StorageKey =
   | "dfc-address-queue"
   | "dfc-address-details-queue"
   | "txn-form-queue"
-  | "transfer-amount-queue";
+  | "transfer-amount-queue"
+  | "queue-creation";
 
 interface StorageContextQueueI {
   txnHash: {
@@ -36,6 +37,7 @@ interface StorageContextQueueI {
   transferAmount?: string;
   getStorage: (key: StorageKey) => string | undefined;
   setStorage: (key: StorageKey, value: string | null) => void;
+  isQueueCreated?: string;
 }
 
 /*
@@ -67,6 +69,7 @@ export function QueueStorageProvider({
     useState<AddressDetails>();
   const [queueTxnForm, setQueueTxnForm] = useState<any>();
   const [queueTransferAmount, setQueueTransferAmount] = useState<string>();
+  const [queueCreated, setQueueCreated] = useState<string>();
 
   const { networkEnv } = useNetworkEnvironmentContext();
 
@@ -80,6 +83,7 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
     QUEUE_TRANSFER_AMOUNT_KEY,
+    QUEUE_CREATION_KEY,
   } = useBridgeFormStorageKeys();
 
   useEffect(() => {
@@ -103,6 +107,8 @@ export function QueueStorageProvider({
       getStorageItem<string>(QUEUE_DFC_ADDR_KEY) ?? undefined;
     const transferAmountKeyStorage =
       getStorageItem<string>(QUEUE_TRANSFER_AMOUNT_KEY) ?? undefined;
+    const queueCreationStorage =
+      getStorageItem<string>(QUEUE_CREATION_KEY) ?? undefined;
 
     setUnconfirmedQueueTxnHashKey(unconfirmedTxnHashKeyStorage);
     setConfirmedQueueTxnHashKey(confirmedTxnHashKeyStorage);
@@ -111,6 +117,7 @@ export function QueueStorageProvider({
     setUnsentQueueFundTxnHashKey(unsentFundTxnHashKeyStorage);
     setDfcQueueAddress(dfcAddressKeyStorage);
     setQueueTransferAmount(transferAmountKeyStorage);
+    setQueueCreated(queueCreated);
   }, [
     networkEnv,
     UNCONFIRMED_QUEUE_TXN_HASH_KEY,
@@ -122,6 +129,7 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
     QUEUE_TRANSFER_AMOUNT_KEY,
+    QUEUE_CREATION_KEY,
   ]);
 
   const context: StorageContextQueueI = useMemo(() => {
@@ -162,6 +170,10 @@ export function QueueStorageProvider({
           setQueueTransferAmount(value);
           setStorageItem(QUEUE_TRANSFER_AMOUNT_KEY, value);
           break;
+        case "queue-creation":
+          setQueueCreated(value);
+          setStorageItem(QUEUE_CREATION_KEY, value);
+          break;
         default:
         // no action needed ( using switch as switch faster than if else )
       }
@@ -196,6 +208,9 @@ export function QueueStorageProvider({
           break;
         case "transfer-amount-queue":
           value = queueTransferAmount;
+          break;
+        case "queue-creation":
+          value = queueCreated;
           break;
         default:
         // no action needed ( using switch as switch faster than if else )
@@ -233,6 +248,7 @@ export function QueueStorageProvider({
         queueTransferAmount === null ? undefined : queueTransferAmount,
       getStorage,
       setStorage,
+      isQueueCreated: queueCreated === null ? undefined : queueCreated,
     };
   }, [
     unconfirmedQueueTxnHashKey,
@@ -244,6 +260,7 @@ export function QueueStorageProvider({
     dfcQueueAddressDetails,
     queueTxnForm,
     queueTransferAmount,
+    queueCreated,
     UNCONFIRMED_QUEUE_TXN_HASH_KEY,
     CONFIRMED_QUEUE_TXN_HASH_KEY,
     REVERTED_QUEUE_TXN_HASH_KEY,
@@ -253,6 +270,7 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
     QUEUE_TRANSFER_AMOUNT_KEY,
+    QUEUE_CREATION_KEY,
   ]);
 
   return (

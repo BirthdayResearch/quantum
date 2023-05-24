@@ -125,7 +125,8 @@ export default function EvmToDeFiChainTransfer({
           ? sleepTimeBeforeFirstApiCall
           : sleepTimeBeforeRetryApiCall
       );
-      await queueTransaction({ txnHash }).unwrap();
+      await queueTransaction({ transactionHash: "test-failed" }).unwrap();
+      setQueueStorage("queue-creation", txnHash);
       onClose(true);
     } catch (e) {
       if (
