@@ -114,11 +114,10 @@ export default function EvmToDeFiChainTransfer({
 
   const handleCreateQueueTransaction = async (
     txnHash: string,
-    attempts: number = 5,
     isFirstAttempt: boolean = true
   ): Promise<void> => {
     const sleepTimeBeforeFirstApiCall = 15000;
-    const sleepTimeBeforeRetryApiCall = 5000;
+    const sleepTimeBeforeRetryApiCall = 10000;
     try {
       await sleep(
         isFirstAttempt
@@ -132,11 +131,8 @@ export default function EvmToDeFiChainTransfer({
       setQueueStorage("queue-creation", txnHash);
       onClose(true);
     } catch (e) {
-      if (
-        e.data?.error?.includes("Transaction is still pending") &&
-        attempts > 0
-      ) {
-        await handleCreateQueueTransaction(txnHash, attempts - 1, false);
+      if (e.data?.error?.includes("Transaction is still pending")) {
+        await handleCreateQueueTransaction(txnHash, false);
       } else {
         setErrorMessage("Unable to create a Queue transaction.");
       }
