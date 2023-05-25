@@ -27,11 +27,11 @@ importers:
         specifier: ^0.51.1
         version: 0.51.1(class-transformer@0.5.1)(class-validator@0.14.0)(pino-http@8.3.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@4.9.5)
       '@waveshq/walletkit-core':
-        specifier: ^0.45.0
-        version: 0.45.0
+        specifier: ^0.46.0
+        version: 0.46.0
       '@waveshq/walletkit-ui':
-        specifier: ^0.45.0
-        version: 0.45.0(@babel/core@7.21.0)(@next/env@13.4.3)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.6)(@typescript-eslint/parser@5.59.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5)
+        specifier: ^0.46.0
+        version: 0.46.0(@babel/core@7.21.0)(@next/env@13.4.3)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.6)(@typescript-eslint/parser@5.59.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5)
       bignumber.js:
         specifier: ^9.1.1
         version: 9.1.1
@@ -1859,27 +1859,6 @@ packages:
       - typescript
     dev: true
 
-  /@birthdayresearch/sticky-jest@0.5.11(@babel/core@7.21.0)(@types/node@18.16.1)(ts-node@10.9.1)(typescript@4.9.5):
-    resolution: {integrity: sha512-7UONZo7IfQbEzAPkSdkMcdo3ofZ3uVdbvlzsAmcBpCvPs0r3LWzNosokA1q7YQbH1c4N4wE9tal4xolmtos4Fw==}
-    dependencies:
-      '@types/jest': 29.5.1
-      jest: 29.5.0(@types/node@18.16.1)(ts-node@10.9.1)
-      jest-extended: 3.2.4(jest@29.5.0)
-      ts-jest: 29.1.0(@babel/core@7.21.0)(jest@29.5.0)(typescript@4.9.5)
-      wait-for-expect: 3.0.2
-      whatwg-fetch: 3.6.2
-    transitivePeerDependencies:
-      - '@babel/core'
-      - '@jest/types'
-      - '@types/node'
-      - babel-jest
-      - esbuild
-      - node-notifier
-      - supports-color
-      - ts-node
-      - typescript
-    dev: false
-
   /@birthdayresearch/sticky-jest@0.5.14(@babel/core@7.21.0)(@types/node@18.16.1)(ts-node@10.9.1)(typescript@4.9.5):
     resolution: {integrity: sha512-S3EQkBunpKhVXCF36btyXzUCIaMOVf9WSCBf+kjg6wIjRAU7k/Qh5FPbhPt+rdaTU2ns8FXDATSAiFgL5HKBgQ==}
     dependencies:
@@ -1899,7 +1878,6 @@ packages:
       - supports-color
       - ts-node
       - typescript
-    dev: true
 
   /@birthdayresearch/sticky-prettier@0.5.14:
     resolution: {integrity: sha512-lMrKiJjBicObQykTN6Ilp3/4XESnTSD7bR8W3jH7y2u1jCTAXp1S+P/m/xx6/c4XGkEa9EXggkv8MomWqnLzYw==}
@@ -6171,20 +6149,24 @@ packages:
       - supports-color
     dev: false
 
-  /@waveshq/walletkit-core@0.45.0:
-    resolution: {integrity: sha512-RgUHyW4EzfAs5ICVGn6hyZ9UKC30tS7dM6oj8FYOiddQSeVTvrfEioIOAylzA6PnEb7CNUXMiu3y8ULHVtwSuw==}
+  /@waveshq/walletkit-core@0.46.0:
+    resolution: {integrity: sha512-nUkNol4MnlxAyVttkAPWzsgcdZFVNmLMe4/fg8FZzAHnwmQRGp/9VCAbooeZdTRGgTrB92edY9d//xzAoZEVdQ==}
     dependencies:
       bignumber.js: 9.1.1
+      ethers: 5.7.2
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
     dev: false
 
-  /@waveshq/walletkit-ui@0.45.0(@babel/core@7.21.0)(@next/env@13.4.3)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.6)(@typescript-eslint/parser@5.59.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5):
-    resolution: {integrity: sha512-Kh1i4oHOuqddU8GRyCbImBoEaDJ7Ta0Z+vkOF/DUTVpP1FqlcCXhXb/em9IviQ3WCc897g9dAdZKqDIIrvO79w==}
+  /@waveshq/walletkit-ui@0.46.0(@babel/core@7.21.0)(@next/env@13.4.3)(@types/node@18.16.1)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.59.6)(@typescript-eslint/parser@5.59.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5):
+    resolution: {integrity: sha512-/eRYTAmOnmTxsW9q/LdutukjFtOZemyznTirdOGQG0qWirRfJGFcqa/MPSvinbf6RTOMjpaP6HmBKUs2833y1Q==}
     dependencies:
-      '@birthdayresearch/sticky-jest': 0.5.11(@babel/core@7.21.0)(@types/node@18.16.1)(ts-node@10.9.1)(typescript@4.9.5)
+      '@birthdayresearch/sticky-jest': 0.5.14(@babel/core@7.21.0)(@types/node@18.16.1)(ts-node@10.9.1)(typescript@4.9.5)
       '@waveshq/standard-defichain-jellyfishsdk': 0.49.3(@types/tar-fs@2.0.1)
       '@waveshq/standard-web': 0.49.3(@babel/core@7.21.0)(@next/env@13.4.3)(redux@4.2.1)
       '@waveshq/standard-web-linter': 0.49.3(@babel/core@7.21.0)(@typescript-eslint/eslint-plugin@5.59.6)(@typescript-eslint/parser@5.59.6)(react-dom@18.2.0)(react@18.2.0)
-      '@waveshq/walletkit-core': 0.45.0
+      '@waveshq/walletkit-core': 0.46.0
       bignumber.js: 9.1.1
       dayjs: 1.11.7
       immer: 9.0.21
@@ -6201,6 +6183,7 @@ packages:
       - '@typescript-eslint/parser'
       - babel-jest
       - babel-plugin-macros
+      - bufferutil
       - debug
       - encoding
       - enquirer
@@ -6218,6 +6201,7 @@ packages:
       - supports-color
       - ts-node
       - typescript
+      - utf-8-validate
     dev: false
 
   /@web3modal/core@2.3.7(react@18.2.0):
