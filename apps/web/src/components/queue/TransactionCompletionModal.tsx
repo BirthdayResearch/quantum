@@ -10,19 +10,16 @@ import clsx from "clsx";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
 import { useContractContext } from "@contexts/ContractContext";
+import { QueueTxData } from "@components/erc-transfer/QueryTransactionModal";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionCompletionModalProps {
   type?: ModalTypeToDisplay;
-  txHash?: string;
-  initiatedDate: Date;
-  amount?: string;
-  token?: string;
   onClose: () => void;
   isOpen: boolean;
   onBack: () => void;
-  destinationAddress?: string;
-  adminQueueSendTxHash: string;
+  adminQueueSendTxHash?: string;
+  queueModalDetails?: QueueTxData;
 }
 
 const titles = {
@@ -64,19 +61,17 @@ const buttonLabels = {
 
 export default function TransactionCompletionModal({
   type,
-  txHash,
-  initiatedDate,
-  amount,
-  token,
   onClose,
   isOpen,
   onBack,
-  destinationAddress,
   adminQueueSendTxHash,
+  queueModalDetails,
 }: TransactionCompletionModalProps): JSX.Element {
   const { isMobile } = useResponsive();
   const { getTransactionUrl } = useDeFiScanContext();
   const { ExplorerURL } = useContractContext();
+  const { amount, token, transactionHash, initiatedDate, destinationAddress } =
+    queueModalDetails ?? {};
 
   const firstRowResult = {
     [ModalTypeToDisplay.Refunded]: `${amount} ${token}`,
@@ -86,7 +81,7 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.RefundRequested]: `${amount} ${token}`,
   };
   const secondRowResult = {
-    [ModalTypeToDisplay.Refunded]: txHash,
+    [ModalTypeToDisplay.Refunded]: transactionHash,
     [ModalTypeToDisplay.Completed]: `${amount} ${token}`,
     [ModalTypeToDisplay.RefundRequested]: destinationAddress,
   };
@@ -97,9 +92,13 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.Completed]: destinationAddress,
   };
   const externalLinkButtonUrls = {
-    [ModalTypeToDisplay.Refunded]: getTransactionUrl(adminQueueSendTxHash),
-    [ModalTypeToDisplay.Completed]: getTransactionUrl(adminQueueSendTxHash),
-    [ModalTypeToDisplay.RefundRequested]: `${ExplorerURL}/tx/${txHash}`,
+    [ModalTypeToDisplay.Refunded]: adminQueueSendTxHash
+      ? getTransactionUrl(adminQueueSendTxHash)
+      : undefined,
+    [ModalTypeToDisplay.Completed]: adminQueueSendTxHash
+      ? getTransactionUrl(adminQueueSendTxHash)
+      : undefined,
+    [ModalTypeToDisplay.RefundRequested]: `${ExplorerURL}/tx/${transactionHash}`,
   };
 
   if (type === undefined) {
@@ -142,7 +141,9 @@ export default function TransactionCompletionModal({
         <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7 items-center md:flex md:justify-center">
           TX Hash:
           <span className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]">
-            {isMobile && txHash ? truncateTextFromMiddle(txHash, 15) : txHash}
+            {isMobile && transactionHash
+              ? truncateTextFromMiddle(transactionHash, 15)
+              : transactionHash}
           </span>
         </span>
 

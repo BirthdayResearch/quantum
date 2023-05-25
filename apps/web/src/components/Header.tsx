@@ -25,27 +25,17 @@ export default function Header({
   const [modalToDisplay, setModalToDisplay] = useState<
     ModalTypeToDisplay | undefined
   >();
-  const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<string>("");
+  const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<
+    string | undefined
+  >(undefined);
 
-  const [queueModalDetails, setQueueModalDetails] = useState<QueueTxData>({
-    amount: undefined,
-    token: undefined,
-    transactionHash: undefined,
-    destinationAddress: undefined,
-    initiatedDate: new Date(),
-  });
+  const [queueModalDetails, setQueueModalDetails] = useState<QueueTxData>({});
 
   const resetModalDetails = () => {
     setModalToDisplay(ModalTypeToDisplay.Search);
 
-    setAdminQueueSendTxHash("");
-    setQueueModalDetails({
-      amount: "",
-      token: "",
-      transactionHash: "",
-      destinationAddress: "",
-      initiatedDate: new Date(),
-    });
+    setAdminQueueSendTxHash(undefined);
+    setQueueModalDetails({});
   };
 
   return (
@@ -102,11 +92,7 @@ export default function Header({
               modalToDisplay === ModalTypeToDisplay.Unsuccessful
             }
             type={modalToDisplay}
-            txHash={queueModalDetails.transactionHash}
-            destinationAddress={queueModalDetails.destinationAddress}
-            initiatedDate={queueModalDetails.initiatedDate}
-            amount={queueModalDetails.amount}
-            token={queueModalDetails.token}
+            queueModalDetails={queueModalDetails}
             onClose={() => setModalToDisplay(undefined)}
             onBack={() => {
               resetModalDetails();
@@ -123,11 +109,7 @@ export default function Header({
             onBack={() => {
               resetModalDetails();
             }}
-            txHash={queueModalDetails.transactionHash}
-            destinationAddress={queueModalDetails.destinationAddress}
-            initiatedDate={queueModalDetails.initiatedDate}
-            amount={queueModalDetails.amount}
-            token={queueModalDetails.token}
+            queueModalDetails={queueModalDetails}
             adminQueueSendTxHash={adminQueueSendTxHash}
           />
         </div>

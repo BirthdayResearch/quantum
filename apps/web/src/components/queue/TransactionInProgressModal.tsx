@@ -7,18 +7,15 @@ import ActionButton from "@components/commons/ActionButton";
 import Link from "next/link";
 import useResponsive from "@hooks/useResponsive";
 import truncateTextFromMiddle from "@utils/textHelper";
+import { QueueTxData } from "@components/erc-transfer/QueryTransactionModal";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionInProgressModalProps {
   type?: ModalTypeToDisplay;
-  txHash?: string;
-  initiatedDate: Date;
-  amount?: string;
-  token?: string;
-  destinationAddress?: string;
   onClose: () => void;
   onBack: () => void;
   isOpen: boolean;
+  queueModalDetails?: QueueTxData;
 }
 
 const titles = {
@@ -44,16 +41,14 @@ const amountLabel = {
 
 export default function TransactionInProgressModal({
   type,
-  txHash,
-  initiatedDate,
-  amount,
-  token,
-  destinationAddress,
   onClose,
   onBack,
   isOpen,
+  queueModalDetails,
 }: TransactionInProgressModalProps): JSX.Element {
   const { isMobile } = useResponsive();
+  const { amount, token, transactionHash, initiatedDate, destinationAddress } =
+    queueModalDetails ?? {};
 
   if (type === undefined) {
     // eslint-disable-next-line
@@ -86,7 +81,9 @@ export default function TransactionInProgressModal({
         <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7">
           TX Hash:
           <span className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]">
-            {isMobile && txHash ? truncateTextFromMiddle(txHash, 15) : txHash}
+            {isMobile && transactionHash
+              ? truncateTextFromMiddle(transactionHash, 15)
+              : transactionHash}
           </span>
         </span>
 
