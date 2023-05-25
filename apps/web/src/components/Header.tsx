@@ -87,6 +87,7 @@ export default function Header({
           />
           <TransactionInProgressModal
             isOpen={
+              modalToDisplay === ModalTypeToDisplay.Processing ||
               modalToDisplay === ModalTypeToDisplay.Pending ||
               modalToDisplay === ModalTypeToDisplay.RefundInProgress ||
               modalToDisplay === ModalTypeToDisplay.Unsuccessful
