@@ -45,6 +45,7 @@ import {
   FEES_INFO,
   CONFIRMATIONS_BLOCK_TOTAL,
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
+  DFC_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
 import QueryTransactionModal, {
@@ -481,8 +482,16 @@ export default function BridgeForm({
             isUnsentFund={txnHash.unsentFund !== undefined}
             ethTxnStatusIsConfirmed={ethTxnStatus.isConfirmed}
             dfcTxnStatusIsConfirmed={dfcTxnStatus.isConfirmed}
-            numberOfEvmConfirmations={getNumberOfConfirmations()}
-            numberOfDfcConfirmations={dfcTxnStatus.numberOfConfirmations}
+            numberOfEvmConfirmations={
+              txnHash.confirmed !== undefined
+                ? EVM_CONFIRMATIONS_BLOCK_TOTAL.toString()
+                : getNumberOfConfirmations()
+            }
+            numberOfDfcConfirmations={
+              txnHash.confirmed !== undefined
+                ? DFC_CONFIRMATIONS_BLOCK_TOTAL.toString()
+                : dfcTxnStatus.numberOfConfirmations
+            }
             isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
           />
           <div className="flex flex-col space-y-7">
