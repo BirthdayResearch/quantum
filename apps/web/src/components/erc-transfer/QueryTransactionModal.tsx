@@ -84,7 +84,7 @@ export default function QueryTransactionModal({
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
   const bridgeIface = new ethers.utils.Interface(
-    contractType === 0 ? BridgeV1.abi : BridgeQueue.abi
+    contractType === ContractType.Instant ? BridgeV1.abi : BridgeQueue.abi
   );
 
   const displayModalForQueueType = (queuedTransaction: Queue) => {
@@ -144,32 +144,37 @@ export default function QueryTransactionModal({
         return;
       }
       if (receipt) {
-        setStorage("unconfirmed", transactionInput);
         setIsValidTransaction(true);
 
-        // TODO: Restore Queue & Instant forms
+        // TODO: Restore Queue
 
-        if (setShowErcToDfcRestoreModal) setShowErcToDfcRestoreModal(false);
+        if (contractType === ContractType.Instant) {
+          // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
+          setStorage("unconfirmed", transactionInput);
+          setShowErcToDfcRestoreModal?.(false);
+          return;
+        }
 
         // Calls Queue tx from endpoint
-        if (contractType === 1) {
+        if (contractType === ContractType.Queue) {
           const queuedTransaction = await getQueueTransaction({
             txnHash: transactionInput,
           }).unwrap();
 
           displayModalForQueueType(queuedTransaction);
         }
-        return;
       }
     } catch (error) {
-      if (contractType === 1) {
+      if (contractType === ContractType.Queue) {
         setInputErrorMessage(
           "Invalid transaction hash. Please only enter queued transaction hashes."
         );
-      } else if (contractType === 0) {
+      } else if (contractType === ContractType.Instant) {
         setInputErrorMessage(
           "Invalid transaction hash. Please only enter instant transaction hashes."
         );
+      } else {
+        // no-op because no other contract type
       }
       setIsValidTransaction(false);
     } finally {

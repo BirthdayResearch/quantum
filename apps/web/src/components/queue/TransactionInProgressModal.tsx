@@ -102,7 +102,7 @@ export default function TransactionInProgressModal({
             type="button"
             onClick={() => handleOnCopy(transactionHash)}
             title={transactionHash}
-            className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px] cursor-default"
+            className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]"
           >
             {transactionHash && truncateTextFromMiddle(transactionHash, 15)}
           </button>
