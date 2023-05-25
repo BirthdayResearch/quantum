@@ -216,6 +216,8 @@ export default function EvmToDeFiChainTransfer({
       setTimeout(() => writeBridgeToDeFiChain?.(), 300);
     } else if (hasEnoughAllowance) {
       setRequiresApproval(false);
+    } else if (successfulApproval && !hasEnoughAllowance) {
+      setTimeout(() => writeApprove?.(), 100);
     }
   }, [isApproveTxnSuccess, hasEnoughAllowance, refetchedBridgeFn]);
 
