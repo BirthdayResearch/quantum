@@ -114,11 +114,10 @@ export default function EvmToDeFiChainTransfer({
 
   const handleCreateQueueTransaction = async (
     txnHash: string,
-    attempts: number = 5,
     isFirstAttempt: boolean = true
   ): Promise<void> => {
     const sleepTimeBeforeFirstApiCall = 15000;
-    const sleepTimeBeforeRetryApiCall = 5000;
+    const sleepTimeBeforeRetryApiCall = 10000;
     try {
       await sleep(
         isFirstAttempt
@@ -126,13 +125,14 @@ export default function EvmToDeFiChainTransfer({
           : sleepTimeBeforeRetryApiCall
       );
       await queueTransaction({ txnHash }).unwrap();
+      // only after queue has been created successfully then we set the form to null
+      setQueueStorage("txn-form-queue", null);
+      // only after queue has been created successfully then we set that queue has been created successfully
+      setQueueStorage("created-queue-txn-hash", txnHash);
       onClose(true);
     } catch (e) {
-      if (
-        e.data?.error?.includes("Transaction is still pending") &&
-        attempts > 0
-      ) {
-        await handleCreateQueueTransaction(txnHash, attempts - 1, false);
+      if (e.data?.error?.includes("Transaction is still pending")) {
+        await handleCreateQueueTransaction(txnHash, false);
       } else {
         setErrorMessage("Unable to create a Queue transaction.");
       }
@@ -201,7 +201,6 @@ export default function EvmToDeFiChainTransfer({
       setQueueStorage("confirmed-queue", null);
       setQueueStorage("allocation-txn-hash-queue", null);
       setQueueStorage("reverted-queue", null);
-      setQueueStorage("txn-form-queue", null);
       setBridgeStatus(BridgeStatus.QueueingTransaction);
       handleCreateQueueTransaction(transactionHash);
     }
