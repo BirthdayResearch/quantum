@@ -1,13 +1,15 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Modal from "@components/commons/Modal";
 import dayjs from "dayjs";
 import { FiArrowUpRight } from "react-icons/fi";
 import { ModalTypeToDisplay } from "types";
 import ActionButton from "@components/commons/ActionButton";
 import Link from "next/link";
-import useResponsive from "@hooks/useResponsive";
 import truncateTextFromMiddle from "@utils/textHelper";
 import { QueueTxData } from "@components/erc-transfer/QueryTransactionModal";
+import useCopyToClipboard from "@hooks/useCopyToClipboard";
+import { SuccessCopy } from "@components/QrAddress";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionInProgressModalProps {
@@ -46,9 +48,21 @@ export default function TransactionInProgressModal({
   isOpen,
   queueModalDetails,
 }: TransactionInProgressModalProps): JSX.Element {
-  const { isMobile } = useResponsive();
+  const { copy } = useCopyToClipboard();
+  const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const { amount, token, transactionHash, initiatedDate, destinationAddress } =
     queueModalDetails ?? {};
+
+  const handleOnCopy = (text) => {
+    copy(text);
+    setShowSuccessCopy(true);
+  };
+
+  useEffect(() => {
+    if (showSuccessCopy) {
+      setTimeout(() => setShowSuccessCopy(false), 2000);
+    }
+  }, [showSuccessCopy]);
 
   if (type === undefined) {
     // eslint-disable-next-line
@@ -57,6 +71,10 @@ export default function TransactionInProgressModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
+      <SuccessCopy
+        containerClass="m-auto right-0 left-0 top-2"
+        show={showSuccessCopy}
+      />
       <div className="flex flex-col md:mt-6 md:mb-4 w-full md:px-6 h-full md:h-auto -mt-[60px]">
         {type === ModalTypeToDisplay.Unsuccessful && (
           <Link
@@ -78,13 +96,16 @@ export default function TransactionInProgressModal({
           {descriptions[type]}
         </div>
 
-        <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7">
+        <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7 items-center md:flex md:justify-center">
           TX Hash:
-          <span className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]">
-            {isMobile && transactionHash
-              ? truncateTextFromMiddle(transactionHash, 15)
-              : transactionHash}
-          </span>
+          <button
+            type="button"
+            onClick={() => handleOnCopy(transactionHash)}
+            title={transactionHash}
+            className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px] cursor-default"
+          >
+            {transactionHash && truncateTextFromMiddle(transactionHash, 15)}
+          </button>
         </span>
 
         <div className="h-px bg-dark-200 w-full md:mb-5 mb-6" />
