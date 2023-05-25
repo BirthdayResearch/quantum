@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import BigNumber from "bignumber.js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { FiRefreshCw } from "react-icons/fi";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
@@ -43,9 +43,11 @@ import QueueTransactionStatus from "./QueueTransactionStatus";
 export default function QueueForm({
   hasPendingTxn,
   activeTab,
+  setActiveTab,
 }: {
   hasPendingTxn: boolean;
   activeTab: FormOptions;
+  setActiveTab: Dispatch<SetStateAction<FormOptions>>;
 }) {
   const {
     selectedQueueNetworkA,
@@ -673,7 +675,13 @@ export default function QueueForm({
               <span className="text-dark-700">
                 Amount entered is within the active limit. Use&nbsp;
               </span>
-              <span className="text-dark-1000 font-semibold">Instant</span>
+              <button
+                className="text-dark-1000 font-semibold"
+                onClick={() => setActiveTab(FormOptions.INSTANT)}
+                type="button"
+              >
+                Instant
+              </button>
               <span className="text-dark-700">
                 &nbsp;for faster processing.
               </span>
