@@ -8,11 +8,12 @@ import Banner from "./Banner";
 import Navigation from "./Navigation";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
-import TransactionInProgressModal from "./queue/TransactionInProgressModal";
-import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
 import QueryTransactionModal, {
   ContractType,
+  QueueTxData,
 } from "./erc-transfer/QueryTransactionModal";
+import TransactionInProgressModal from "./queue/TransactionInProgressModal";
+import SearchQueuedTransactionButton from "./SearchQueuedTransactionButton";
 import TransactionCompletionModal from "./queue/TransactionCompletionModal";
 
 export default function Header({
@@ -24,17 +25,18 @@ export default function Header({
   const [modalToDisplay, setModalToDisplay] = useState<
     ModalTypeToDisplay | undefined
   >();
-  const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<string>("");
+  const [adminQueueSendTxHash, setAdminQueueSendTxHash] = useState<
+    string | undefined
+  >(undefined);
 
-  // TODO: set these values dynamically
-  const [amount] = useState<string>("150");
-  const [token] = useState<string>("dBTC");
-  const [transactionHash] = useState<string>(
-    "0x11901fd641f3a2d3a986d6745a2ff1d5fea988eb"
-  );
-  const [destinationAddress] = useState<string>(
-    "dfa1123ZAaklz901dfa1123Aaklz9012ZLasdalax1"
-  );
+  const [queueModalDetails, setQueueModalDetails] = useState<QueueTxData>({});
+
+  const resetModalDetails = () => {
+    setModalToDisplay(ModalTypeToDisplay.Search);
+
+    setAdminQueueSendTxHash(undefined);
+    setQueueModalDetails({});
+  };
 
   return (
     <div className="relative z-[1] flex flex-col">
@@ -76,6 +78,9 @@ export default function Header({
             onTransactionFound={(modalTypeToDisplay) => {
               setModalToDisplay(modalTypeToDisplay);
             }}
+            setQueueModalDetails={(queuedTxDetails) => {
+              setQueueModalDetails(queuedTxDetails);
+            }}
             setAdminSendTxHash={(txHash) => {
               setAdminQueueSendTxHash(txHash);
             }}
@@ -87,13 +92,11 @@ export default function Header({
               modalToDisplay === ModalTypeToDisplay.Unsuccessful
             }
             type={modalToDisplay}
-            txHash={transactionHash}
-            destinationAddress={destinationAddress}
-            initiatedDate={new Date()}
-            amount={amount}
-            token={token}
+            queueModalDetails={queueModalDetails}
             onClose={() => setModalToDisplay(undefined)}
-            onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
+            onBack={() => {
+              resetModalDetails();
+            }}
           />
           <TransactionCompletionModal
             isOpen={
@@ -102,13 +105,11 @@ export default function Header({
               modalToDisplay === ModalTypeToDisplay.RefundRequested
             }
             type={modalToDisplay}
-            txHash={transactionHash}
-            initiatedDate={new Date()}
-            amount={amount}
-            token={token}
             onClose={() => setModalToDisplay(undefined)}
-            onBack={() => setModalToDisplay(ModalTypeToDisplay.Search)}
-            destinationAddress={destinationAddress}
+            onBack={() => {
+              resetModalDetails();
+            }}
+            queueModalDetails={queueModalDetails}
             adminQueueSendTxHash={adminQueueSendTxHash}
           />
         </div>

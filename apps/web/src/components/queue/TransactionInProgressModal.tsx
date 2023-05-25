@@ -1,24 +1,23 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Modal from "@components/commons/Modal";
 import dayjs from "dayjs";
 import { FiArrowUpRight } from "react-icons/fi";
 import { ModalTypeToDisplay } from "types";
 import ActionButton from "@components/commons/ActionButton";
 import Link from "next/link";
-import useResponsive from "@hooks/useResponsive";
 import truncateTextFromMiddle from "@utils/textHelper";
+import { QueueTxData } from "@components/erc-transfer/QueryTransactionModal";
+import useCopyToClipboard from "@hooks/useCopyToClipboard";
+import { SuccessCopy } from "@components/QrAddress";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionInProgressModalProps {
   type?: ModalTypeToDisplay;
-  txHash: string;
-  initiatedDate: Date;
-  amount: string;
-  token: string;
-  destinationAddress?: string;
   onClose: () => void;
   onBack: () => void;
   isOpen: boolean;
+  queueModalDetails?: QueueTxData;
 }
 
 const titles = {
@@ -44,16 +43,26 @@ const amountLabel = {
 
 export default function TransactionInProgressModal({
   type,
-  txHash,
-  initiatedDate,
-  amount,
-  token,
-  destinationAddress,
   onClose,
   onBack,
   isOpen,
+  queueModalDetails,
 }: TransactionInProgressModalProps): JSX.Element {
-  const { isMobile } = useResponsive();
+  const { copy } = useCopyToClipboard();
+  const [showSuccessCopy, setShowSuccessCopy] = useState(false);
+  const { amount, token, transactionHash, initiatedDate, destinationAddress } =
+    queueModalDetails ?? {};
+
+  const handleOnCopy = (text) => {
+    copy(text);
+    setShowSuccessCopy(true);
+  };
+
+  useEffect(() => {
+    if (showSuccessCopy) {
+      setTimeout(() => setShowSuccessCopy(false), 2000);
+    }
+  }, [showSuccessCopy]);
 
   if (type === undefined) {
     // eslint-disable-next-line
@@ -62,6 +71,10 @@ export default function TransactionInProgressModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
+      <SuccessCopy
+        containerClass="m-auto right-0 left-0 top-2"
+        show={showSuccessCopy}
+      />
       <div className="flex flex-col md:mt-6 md:mb-4 w-full md:px-6 h-full md:h-auto -mt-[60px]">
         {type === ModalTypeToDisplay.Unsuccessful && (
           <Link
@@ -85,9 +98,14 @@ export default function TransactionInProgressModal({
 
         <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7">
           TX Hash:
-          <span className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]">
-            {isMobile ? truncateTextFromMiddle(txHash, 15) : txHash}
-          </span>
+          <button
+            type="button"
+            onClick={() => handleOnCopy(transactionHash)}
+            title={transactionHash}
+            className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]"
+          >
+            {transactionHash && truncateTextFromMiddle(transactionHash, 15)}
+          </button>
         </span>
 
         <div className="h-px bg-dark-200 w-full md:mb-5 mb-6" />
@@ -98,7 +116,7 @@ export default function TransactionInProgressModal({
         <div className="flex items-center justify-between">
           <span className="text-dark-700">Date initiated</span>
           <span className="text-dark-1000">
-            {dayjs(initiatedDate).format("DD/MM/YYYY HH:mm A")}
+            {dayjs(initiatedDate).format("DD/MM/YYYY, HH:mm A")}
           </span>
         </div>
         <div className="flex items-center justify-between md:mt-8 mt-10">
