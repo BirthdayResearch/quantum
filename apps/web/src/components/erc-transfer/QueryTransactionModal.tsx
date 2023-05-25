@@ -44,6 +44,7 @@ export enum ContractType {
 }
 
 const statusToModalTypeMap = {
+  DRAFT: ModalTypeToDisplay.Processing,
   COMPLETED: ModalTypeToDisplay.Completed,
   REFUND_REQUESTED: ModalTypeToDisplay.RefundInProgress,
   // REFUND_REQUESTED: ModalTypeToDisplay.RefundRequested, // TODO: uncomment this to test REFUND_REQUESTED modal
@@ -152,11 +153,8 @@ export default function QueryTransactionModal({
           // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
           setStorage("unconfirmed", transactionInput);
           setShowErcToDfcRestoreModal?.(false);
-          return;
-        }
-
-        // Calls Queue tx from endpoint
-        if (contractType === ContractType.Queue) {
+        } else {
+          // Calls Queue tx from endpoint
           const queuedTransaction = await getQueueTransaction({
             txnHash: transactionInput,
           }).unwrap();
@@ -167,14 +165,12 @@ export default function QueryTransactionModal({
     } catch (error) {
       if (contractType === ContractType.Queue) {
         setInputErrorMessage(
-          "Invalid transaction hash. Please only enter queued transaction hashes."
-        );
-      } else if (contractType === ContractType.Instant) {
-        setInputErrorMessage(
-          "Invalid transaction hash. Please only enter instant transaction hashes."
+          "Invalid transaction hash. Please only enter queued transaction hash."
         );
       } else {
-        // no-op because no other contract type
+        setInputErrorMessage(
+          "Invalid transaction hash. Please only enter instant transaction hash."
+        );
       }
       setIsValidTransaction(false);
     } finally {
