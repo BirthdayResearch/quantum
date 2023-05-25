@@ -34,7 +34,7 @@ export interface ModalConfigType {
   setAdminSendTxHash?: (txHash: string) => void;
   contractType: ContractType;
   setShowErcToDfcRestoreModal?: (show: boolean) => void;
-  setQueueModalDetails: (details: QueueTxData) => void;
+  setQueueModalDetails?: (details: QueueTxData) => void;
 }
 
 export enum ContractType {
@@ -99,7 +99,11 @@ export default function QueryTransactionModal({
       }
     }
 
-    if (queuedTransaction.amount && queuedTransaction.tokenSymbol) {
+    if (
+      setQueueModalDetails &&
+      queuedTransaction.amount &&
+      queuedTransaction.tokenSymbol
+    ) {
       setQueueModalDetails({
         amount: queuedTransaction.amount,
         token: queuedTransaction.tokenSymbol,
