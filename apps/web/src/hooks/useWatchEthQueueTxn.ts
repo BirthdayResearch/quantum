@@ -1,4 +1,3 @@
-import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import { useQueueStorageContext } from "@contexts/QueueStorageContext";
 import { useVerifyEthQueueTxnMutation } from "@store/index";
 import { HttpStatusCode } from "axios";
@@ -8,8 +7,7 @@ import { useEffect, useState } from "react";
  * This polls in the /ethereum/queue/verify to verify if txn is confirmed (>= 65 confirmations)
  */
 export default function useWatchEthQueueTxn() {
-  const { networkEnv } = useNetworkEnvironmentContext();
-  const { txnHash, setStorage } = useQueueStorageContext();
+  const { txnHash, setStorage, createdQueueTxnHash } = useQueueStorageContext();
 
   const [verifyEthQueueTxn] = useVerifyEthQueueTxnMutation();
 
@@ -80,11 +78,15 @@ export default function useWatchEthQueueTxn() {
         numberOfConfirmations: "0",
       });
 
-      pollConfirmEthTxn(txnHash.unconfirmed);
+      if (createdQueueTxnHash !== undefined) {
+        pollConfirmEthTxn(txnHash.unconfirmed);
+      }
     }
 
     pollInterval = setInterval(() => {
-      pollConfirmEthTxn(txnHash.unconfirmed);
+      if (createdQueueTxnHash !== undefined) {
+        pollConfirmEthTxn(txnHash.unconfirmed);
+      }
     }, 20000);
 
     return () => {
@@ -92,7 +94,7 @@ export default function useWatchEthQueueTxn() {
         clearInterval(pollInterval);
       }
     };
-  }, [networkEnv, txnHash]);
+  }, [createdQueueTxnHash]);
 
   return { ethQueueTxnStatus, isQueueApiSuccess };
 }
