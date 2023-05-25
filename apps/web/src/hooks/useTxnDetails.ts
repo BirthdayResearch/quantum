@@ -1,18 +1,17 @@
 import { BigNumber as EthBigNumber, ethers } from "ethers";
 import BigNumber from "bignumber.js";
-import { ContractType } from "@components/erc-transfer/QueryTransactionModal";
+import { StorageKey } from "@contexts/StorageContext";
 
 export default async function useTxnDetails(
   bridgeIface: ethers.utils.Interface,
   EthereumRpcUrl: string,
+  setStorage: (key: StorageKey, value: string | null) => void,
   transactionInput?: string
 ) {
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
-  try {
-    //0xeb2a9431faf5559aa9bee0d639a131b6ddec2cdc5d4fe7534db1d9a149d5a1a3
-    const receipt = await provider.getTransaction(
-      "0xeb2a9431faf5559aa9bee0d639a131b6ddec2cdc5d4fe7534db1d9a149d5a1a3"
-    );
+
+  if (transactionInput) {
+    const receipt = await provider.getTransaction(transactionInput);
     const decodedData = bridgeIface.parseTransaction({
       data: receipt.data,
     });
@@ -39,16 +38,14 @@ export default async function useTxnDetails(
     // );
     // const wTokenSymbol = await evmTokenContract.symbol();
     // const wTokenDecimals = await evmTokenContract.decimals();
-    // const transferAmount = new BigNumber(amount).dividedBy(
+    // transferAmount = new BigNumber(amount).dividedBy(
     //   new BigNumber(10).pow(wTokenDecimals)
     // );
 
     let formattedNumber = new BigNumber(transferAmount).toFormat(8);
-
+    setStorage("dfc-address", toAddress);
+    setStorage("transfer-amount", transferAmount);
     return { toAddress, formattedNumber };
-  } catch (err) {
-    console.log(err);
-    console.log("error");
   }
 }
 

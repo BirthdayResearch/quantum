@@ -11,7 +11,7 @@ import {
 import { AddressDetails, UnconfirmedTxnI } from "types";
 import { useNetworkEnvironmentContext } from "./NetworkEnvironmentContext";
 
-type StorageKey =
+export type StorageKey =
   | "confirmed"
   | "allocationTxnHash"
   | "unconfirmed"

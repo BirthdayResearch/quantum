@@ -161,7 +161,15 @@ export default function BridgeForm({
 
   async function getTxnDetails() {
     const bridgeIface = new ethers.utils.Interface(BridgeV1.abi);
-    const txnDetails = await useTxnDetails(bridgeIface, EthereumRpcUrl);
+    const txnDetails = await useTxnDetails(
+      bridgeIface,
+      EthereumRpcUrl,
+      setStorage,
+      txnHash.unsentFund ??
+        txnHash.reverted ??
+        txnHash.confirmed ??
+        txnHash.unconfirmed
+    );
     if (txnDetails) {
       setAmount(txnDetails.formattedNumber);
       setAddressInput(txnDetails.toAddress);
