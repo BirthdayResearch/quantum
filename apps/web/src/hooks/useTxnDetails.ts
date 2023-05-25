@@ -2,8 +2,6 @@ import { BigNumber as EthBigNumber, ethers } from "ethers";
 import BigNumber from "bignumber.js";
 import { StorageKey } from "@contexts/StorageContext";
 
-import { ERC20__factory } from "smartcontracts";
-
 export default async function useTxnDetails(
   bridgeIface: ethers.utils.Interface,
   EthereumRpcUrl: string,
@@ -33,16 +31,6 @@ export default async function useTxnDetails(
         new BigNumber(10).pow(18)
       );
     }
-    // wToken transfer
-    const evmTokenContract = new ethers.Contract(
-      tokenAddress,
-      ERC20__factory.abi,
-      this.ethersRpcProvider
-    );
-    const wTokenDecimals = await evmTokenContract.decimals();
-    transferAmount = new BigNumber(amount).dividedBy(
-      new BigNumber(10).pow(wTokenDecimals)
-    );
 
     let formattedNumber = new BigNumber(transferAmount).toFormat(8);
     setStorage("dfc-address", toAddress);
