@@ -96,7 +96,7 @@ export default function TransactionInProgressModal({
           {descriptions[type]}
         </div>
 
-        <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7 items-center md:flex md:justify-center">
+        <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7">
           TX Hash:
           <button
             type="button"
