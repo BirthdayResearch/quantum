@@ -1,28 +1,27 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Modal from "@components/commons/Modal";
 import dayjs from "dayjs";
 import { ModalTypeToDisplay } from "types";
 import ActionButton from "@components/commons/ActionButton";
-import useResponsive from "@hooks/useResponsive";
 import truncateTextFromMiddle from "@utils/textHelper";
 import SearchTransactionIcon from "@components/icons/SearchTransactionIcon";
 import clsx from "clsx";
 import { IoMdCheckmarkCircle } from "react-icons/io";
 import { useDeFiScanContext } from "@contexts/DeFiScanContext";
 import { useContractContext } from "@contexts/ContractContext";
+import { QueueTxData } from "@components/erc-transfer/QueryTransactionModal";
+import useCopyToClipboard from "@hooks/useCopyToClipboard";
+import { SuccessCopy } from "@components/QrAddress";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionCompletionModalProps {
   type?: ModalTypeToDisplay;
-  txHash: string;
-  initiatedDate: Date;
-  amount: string;
-  token: string;
   onClose: () => void;
   isOpen: boolean;
   onBack: () => void;
-  destinationAddress: string;
-  adminQueueSendTxHash: string;
+  adminQueueSendTxHash?: string;
+  queueModalDetails?: QueueTxData;
 }
 
 const titles = {
@@ -64,19 +63,30 @@ const buttonLabels = {
 
 export default function TransactionCompletionModal({
   type,
-  txHash,
-  initiatedDate,
-  amount,
-  token,
   onClose,
   isOpen,
   onBack,
-  destinationAddress,
   adminQueueSendTxHash,
+  queueModalDetails,
 }: TransactionCompletionModalProps): JSX.Element {
-  const { isMobile } = useResponsive();
+  const { copy } = useCopyToClipboard();
   const { getTransactionUrl } = useDeFiScanContext();
   const { ExplorerURL } = useContractContext();
+  const [showSuccessCopy, setShowSuccessCopy] = useState(false);
+
+  const { amount, token, transactionHash, initiatedDate, destinationAddress } =
+    queueModalDetails ?? {};
+
+  const handleOnCopy = (text) => {
+    copy(text);
+    setShowSuccessCopy(true);
+  };
+
+  useEffect(() => {
+    if (showSuccessCopy) {
+      setTimeout(() => setShowSuccessCopy(false), 2000);
+    }
+  }, [showSuccessCopy]);
 
   const firstRowResult = {
     [ModalTypeToDisplay.Refunded]: `${amount} ${token}`,
@@ -86,7 +96,7 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.RefundRequested]: `${amount} ${token}`,
   };
   const secondRowResult = {
-    [ModalTypeToDisplay.Refunded]: txHash,
+    [ModalTypeToDisplay.Refunded]: transactionHash,
     [ModalTypeToDisplay.Completed]: `${amount} ${token}`,
     [ModalTypeToDisplay.RefundRequested]: destinationAddress,
   };
@@ -97,9 +107,13 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.Completed]: destinationAddress,
   };
   const externalLinkButtonUrls = {
-    [ModalTypeToDisplay.Refunded]: getTransactionUrl(adminQueueSendTxHash),
-    [ModalTypeToDisplay.Completed]: getTransactionUrl(adminQueueSendTxHash),
-    [ModalTypeToDisplay.RefundRequested]: `${ExplorerURL}/tx/${txHash}`,
+    [ModalTypeToDisplay.Refunded]: adminQueueSendTxHash
+      ? getTransactionUrl(adminQueueSendTxHash)
+      : undefined,
+    [ModalTypeToDisplay.Completed]: adminQueueSendTxHash
+      ? getTransactionUrl(adminQueueSendTxHash)
+      : undefined,
+    [ModalTypeToDisplay.RefundRequested]: `${ExplorerURL}/tx/${transactionHash}`,
   };
 
   if (type === undefined) {
@@ -109,6 +123,10 @@ export default function TransactionCompletionModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
+      <SuccessCopy
+        containerClass="m-auto right-0 left-0 top-2"
+        show={showSuccessCopy}
+      />
       <div className="flex flex-col md:mt-6 w-full md:px-6 md:h-auto -mt-[60px] h-full">
         <div className="flex flex-col md:items-center md:justify-center">
           {/* Modal icon */}
@@ -141,9 +159,14 @@ export default function TransactionCompletionModal({
 
         <span className="text-xs xl:tracking-wider text-dark-500 mb-8 md:mb-7 items-center md:flex md:justify-center">
           TX Hash:
-          <span className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]">
-            {isMobile ? truncateTextFromMiddle(txHash, 15) : txHash}
-          </span>
+          <button
+            type="button"
+            onClick={() => handleOnCopy(transactionHash)}
+            title={transactionHash}
+            className="text-dark-900 px-2 py-1 ml-2 bg-dark-200 rounded-[20px]"
+          >
+            {transactionHash && truncateTextFromMiddle(transactionHash, 15)}
+          </button>
         </span>
 
         {/* Horizontal line */}
