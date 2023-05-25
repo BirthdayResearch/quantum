@@ -175,6 +175,7 @@ export type QueueStatus =
 /* To differentiate modal to display search queue tx */
 export enum ModalTypeToDisplay {
   Search,
+  Processing, // queue created but getting confirmations
   Pending,
   RefundInProgress,
   Unsuccessful,
