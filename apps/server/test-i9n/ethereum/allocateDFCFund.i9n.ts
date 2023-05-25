@@ -510,10 +510,9 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       },
     });
 
-    expect(JSON.parse(txReceipt.body)).toStrictEqual({
-      isConfirmed: false,
-      numberOfConfirmations: 0,
-    });
+    const respBody = JSON.parse(txReceipt.body);
+    expect(respBody.statusCode).toStrictEqual(400);
+    expect(respBody.message).toStrictEqual('Contract Address in the Transaction Receipt is inaccurate');
   });
 });
 
