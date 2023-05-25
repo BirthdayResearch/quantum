@@ -22,6 +22,7 @@ interface TransactionInProgressModalProps {
 
 const titles = {
   [ModalTypeToDisplay.Pending]: "Transaction in queue",
+  [ModalTypeToDisplay.Processing]: "Transaction processing",
   [ModalTypeToDisplay.RefundInProgress]: "Refund in progress",
   [ModalTypeToDisplay.Unsuccessful]: "Transaction unsuccessful",
 };
@@ -29,6 +30,8 @@ const titles = {
 const descriptions = {
   [ModalTypeToDisplay.Pending]:
     "Your transaction will be processed within the next 72 hours.",
+  [ModalTypeToDisplay.Processing]:
+    "Your transaction is currently being confirmed on-chain. Once completed, it will be in Queue.",
   [ModalTypeToDisplay.RefundInProgress]:
     "Refund will be processed within the next 72 hours.",
   [ModalTypeToDisplay.Unsuccessful]:
@@ -36,6 +39,7 @@ const descriptions = {
 };
 
 const amountLabel = {
+  [ModalTypeToDisplay.Processing]: "Amount to receive",
   [ModalTypeToDisplay.Pending]: "Amount to receive",
   [ModalTypeToDisplay.RefundInProgress]: "Amount to refund",
   [ModalTypeToDisplay.Unsuccessful]: "Amount to receive",
@@ -92,7 +96,7 @@ export default function TransactionInProgressModal({
         <div className="font-bold text-2xl md:text-xl lg:text-2xl leading-8 md:leading-7 lg:!leading-8 text-dark-1000 tracking-[0.01em] w-10/12">
           {titles[type]}
         </div>
-        <div className="text-sm lg:text-base leading-5 w-10/12 text-dark-700 mt-1 mb-4 md:mb-5 lg:mb-4">
+        <div className="text-sm lg:text-base leading-5 w-10/12 md:w-full text-dark-700 mt-1 mb-4 md:mb-5 lg:mb-4">
           {descriptions[type]}
         </div>
 
@@ -132,7 +136,8 @@ export default function TransactionInProgressModal({
           </div>
         )}
 
-        {(type === ModalTypeToDisplay.Pending ||
+        {(type === ModalTypeToDisplay.Processing ||
+          type === ModalTypeToDisplay.Pending ||
           type === ModalTypeToDisplay.RefundInProgress) && (
           <div className="mt-14 text-center h-full flex flex-col justify-end">
             <GoToAnotherTransaction onClick={onBack} />

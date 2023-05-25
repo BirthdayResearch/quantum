@@ -44,6 +44,7 @@ export enum ContractType {
 }
 
 const statusToModalTypeMap = {
+  DRAFT: ModalTypeToDisplay.Processing,
   COMPLETED: ModalTypeToDisplay.Completed,
   REFUND_REQUESTED: ModalTypeToDisplay.RefundInProgress,
   // REFUND_REQUESTED: ModalTypeToDisplay.RefundRequested, // TODO: uncomment this to test REFUND_REQUESTED modal
@@ -152,7 +153,6 @@ export default function QueryTransactionModal({
           // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
           setStorage("unconfirmed", transactionInput);
           setShowErcToDfcRestoreModal?.(false);
-          return;
         } else {
           // Calls Queue tx from endpoint
           const queuedTransaction = await getQueueTransaction({
