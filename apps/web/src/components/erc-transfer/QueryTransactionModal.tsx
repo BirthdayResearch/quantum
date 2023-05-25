@@ -10,9 +10,17 @@ import { IoCloseCircle } from "react-icons/io5";
 import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
-import { ModalTypeToDisplay } from "types";
+import { ModalTypeToDisplay, Queue } from "types";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 import { useGetQueueTransactionQuery } from "@store/index";
+
+export interface QueueTxData {
+  amount?: string;
+  token?: string;
+  transactionHash?: string;
+  destinationAddress?: string;
+  initiatedDate?: Date;
+}
 
 export interface ModalConfigType {
   title: string;
@@ -26,10 +34,12 @@ export interface ModalConfigType {
   setAdminSendTxHash?: (txHash: string) => void;
   contractType: ContractType;
   setShowErcToDfcRestoreModal?: (show: boolean) => void;
+  setQueueModalDetails?: (details: QueueTxData) => void;
 }
 
 export enum ContractType {
   Instant,
+  // eslint-disable-next-line @typescript-eslint/no-shadow
   Queue,
 }
 
@@ -54,6 +64,7 @@ export default function QueryTransactionModal({
   setAdminSendTxHash,
   contractType,
   setShowErcToDfcRestoreModal,
+  setQueueModalDetails,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
@@ -73,8 +84,47 @@ export default function QueryTransactionModal({
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
   const bridgeIface = new ethers.utils.Interface(
-    contractType === 0 ? BridgeV1.abi : BridgeQueue.abi
+    contractType === ContractType.Instant ? BridgeV1.abi : BridgeQueue.abi
   );
+
+  const displayModalForQueueType = (queuedTransaction: Queue) => {
+    if (queuedTransaction.adminQueue && setAdminSendTxHash !== undefined) {
+      const adminQueueTxHash = queuedTransaction.adminQueue.sendTransactionHash;
+      if (
+        queuedTransaction.status === "COMPLETED" &&
+        adminQueueTxHash !== undefined &&
+        adminQueueTxHash !== null
+      ) {
+        setAdminSendTxHash(adminQueueTxHash);
+      }
+    }
+
+    if (
+      setQueueModalDetails &&
+      queuedTransaction.amount &&
+      queuedTransaction.tokenSymbol
+    ) {
+      setQueueModalDetails({
+        amount: queuedTransaction.amount,
+        token: queuedTransaction.tokenSymbol,
+        transactionHash: transactionInput,
+        destinationAddress: queuedTransaction.defichainAddress,
+        initiatedDate: queuedTransaction.createdAt,
+      });
+    }
+
+    if (!onTransactionFound) {
+      return;
+    }
+
+    const modalType = statusToModalTypeMap[queuedTransaction.status];
+    if (modalType) {
+      onTransactionFound(modalType);
+    } else {
+      // Handle case where status is not in the map
+      onTransactionFound(ModalTypeToDisplay.Pending);
+    }
+  };
 
   const checkTXnHash = async () => {
     if (!isValidEthTxHash) {
@@ -94,55 +144,32 @@ export default function QueryTransactionModal({
         return;
       }
       if (receipt) {
-        setStorage("unconfirmed", transactionInput);
         setIsValidTransaction(true);
 
-        // TODO: Queue restore form
+        // TODO: Restore Queue
 
-        if (setShowErcToDfcRestoreModal) setShowErcToDfcRestoreModal(false);
-
-        // Calls Queue tx from endpoint
-        if (contractType === 1) {
+        if (contractType === ContractType.Instant) {
+          // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
+          setStorage("unconfirmed", transactionInput);
+          setShowErcToDfcRestoreModal?.(false);
+          return;
+        } else {
+          // Calls Queue tx from endpoint
           const queuedTransaction = await getQueueTransaction({
             txnHash: transactionInput,
           }).unwrap();
 
-          if (queuedTransaction.adminQueue) {
-            const adminQueueTxHash =
-              queuedTransaction.adminQueue.sendTransactionHash;
-            if (
-              queuedTransaction.status === "COMPLETED" &&
-              adminQueueTxHash !== undefined &&
-              adminQueueTxHash !== null &&
-              setAdminSendTxHash !== undefined
-            ) {
-              setAdminSendTxHash(adminQueueTxHash);
-            }
-          }
-
-          if (!onTransactionFound) {
-            return;
-          }
-
-          const modalType = statusToModalTypeMap[queuedTransaction.status];
-          if (modalType) {
-            onTransactionFound(modalType);
-          } else {
-            // TODO: Handle this case where status from DB is valid but not in the mapped modal type
-            onTransactionFound(ModalTypeToDisplay.Pending);
-          }
+          displayModalForQueueType(queuedTransaction);
         }
-
-        return;
       }
     } catch (error) {
-      if (contractType === 1) {
+      if (contractType === ContractType.Queue) {
         setInputErrorMessage(
-          "Invalid transaction hash. Please only enter queued transaction hashes."
+          "Invalid transaction hash. Please only enter queued transaction hash."
         );
-      } else if (contractType === 0) {
+      } else {
         setInputErrorMessage(
-          "Invalid transaction hash. Please only enter instant transaction hashes."
+          "Invalid transaction hash. Please only enter instant transaction hash."
         );
       }
       setIsValidTransaction(false);

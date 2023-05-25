@@ -53,6 +53,7 @@ function Home() {
               txnHash.unconfirmed !== undefined ||
               txnHash.unsentFund !== undefined
             }
+            setActiveTab={setActiveTab}
           />
           <QueueForm
             activeTab={activeTab}
@@ -61,6 +62,7 @@ function Home() {
               (txnHashQueue.unconfirmed !== undefined ||
                 txnHashQueue.unsentFund !== undefined)
             }
+            setActiveTab={setActiveTab}
           />
         </div>
       </div>

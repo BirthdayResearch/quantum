@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import BigNumber from "bignumber.js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { FiRefreshCw } from "react-icons/fi";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
@@ -91,9 +91,11 @@ function SwitchButton({
 export default function BridgeForm({
   hasPendingTxn,
   activeTab,
+  setActiveTab,
 }: {
   hasPendingTxn: boolean;
   activeTab: FormOptions;
+  setActiveTab: Dispatch<SetStateAction<FormOptions>>;
 }) {
   const {
     selectedNetworkA,
@@ -785,7 +787,13 @@ export default function BridgeForm({
             <span className="text-dark-700">
               Amount entered exceeds active liquidity. Use&nbsp;
             </span>
-            <span className="text-dark-1000 font-semibold">Queue</span>
+            <button
+              className="text-dark-1000 font-semibold"
+              onClick={() => setActiveTab(FormOptions.QUEUE)}
+              type="button"
+            >
+              Queue
+            </button>
             <span className="text-dark-700">
               &nbsp;or lower the transaction amount.
             </span>
