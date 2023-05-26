@@ -282,6 +282,16 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(token?.id).toStrictEqual('5');
     expect(new BigNumber(token?.amount ?? 0).toFixed(8)).toStrictEqual(amountLessFee);
     expect(token?.symbol).toStrictEqual('USDC');
+
+    // test getEVMTxnDetails endpoint
+    const txnDetails = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/getEVMTxnDetails?transactionHash=${transactionCall.hash}`,
+    });
+    const txnDetailsRes = JSON.parse(txnDetails.body);
+    expect(new BigNumber(txnDetailsRes?.amount ?? 0).toFixed(8)).toStrictEqual(amountLessFee);
+    expect(txnDetailsRes?.toAddress).toStrictEqual(address);
+    expect(txnDetailsRes?.symbol).toStrictEqual('USDC');
   });
 
   it('should fail when fund already allocated', async () => {
