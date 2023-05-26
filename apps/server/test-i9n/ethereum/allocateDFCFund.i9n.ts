@@ -282,8 +282,11 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(token?.id).toStrictEqual('5');
     expect(new BigNumber(token?.amount ?? 0).toFixed(8)).toStrictEqual(amountLessFee);
     expect(token?.symbol).toStrictEqual('USDC');
+  });
 
-    // test getEVMTxnDetails endpoint
+  it('should return accurate information when transactionDetails endpoint is called', async () => {
+    const amountLessFee = deductTransferFee(new BigNumber(1));
+
     const txnDetails = await testing.inject({
       method: 'GET',
       url: `/ethereum/transactionDetails?transactionHash=${transactionCall.hash}`,
