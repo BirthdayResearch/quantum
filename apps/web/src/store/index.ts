@@ -28,8 +28,8 @@ const useLazyBridgeSettingsQuery = () =>
   useWrappedLazyQuery(bridgeApi.useLazyBridgeSettingsQuery);
 const useLazyBridgeAnnouncements = () =>
   useWrappedLazyQuery(bridgeApi.useLazyBridgeAnnouncementsQuery, true);
-const useGetEVMTxnDetailsMutation = () =>
-  useWrappedMutation(bridgeApi.useGetEVMTxnDetailsMutation);
+const useLazyGetEVMTxnDetailsQuery = () =>
+  useWrappedLazyQuery(bridgeApi.useLazyGetEVMTxnDetailsQuery);
 
 export {
   useGenerateAddressMutation,
@@ -44,6 +44,6 @@ export {
   useBridgeVersionQuery,
   useLazyBridgeSettingsQuery,
   useLazyBridgeAnnouncements,
-  useGetEVMTxnDetailsMutation,
+  useLazyGetEVMTxnDetailsQuery,
   bridgeApi,
 };

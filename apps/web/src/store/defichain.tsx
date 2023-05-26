@@ -172,9 +172,9 @@ export const bridgeApi = createApi({
         url: `${baseUrl}/bridge/announcements`,
       }),
     }),
-    getEVMTxnDetails: builder.mutation<string, any>({
+    getEVMTxnDetails: builder.query<string, any>({
       query: ({ baseUrl, txnHash }) => ({
-        url: `${baseUrl}/${PATH_ETHEREUM}/getEVMTxnDetails/${txnHash}`,
+        url: `${baseUrl}/${PATH_ETHEREUM}/transactionDetails/${txnHash}`,
         method: "GET",
       }),
       extraOptions: { maxRetries: 1 },

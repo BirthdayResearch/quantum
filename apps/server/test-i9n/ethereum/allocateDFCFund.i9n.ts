@@ -286,7 +286,7 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     // test getEVMTxnDetails endpoint
     const txnDetails = await testing.inject({
       method: 'GET',
-      url: `/ethereum/getEVMTxnDetails?transactionHash=${transactionCall.hash}`,
+      url: `/ethereum/transactionDetails?transactionHash=${transactionCall.hash}`,
     });
     const txnDetailsRes = JSON.parse(txnDetails.body);
     expect(new BigNumber(txnDetailsRes?.amount ?? 0).toFixed(8)).toStrictEqual(amountLessFee);
