@@ -1,6 +1,6 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException,HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { OrderStatus } from '@prisma/client';
+import { QueueStatus } from '@prisma/client';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 
@@ -16,7 +16,7 @@ export class RefundService {
 
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
-    private verficationService: VerificationService,
+    private verificationService: VerificationService,
     private prisma: PrismaService,
     private configService: ConfigService,
   ) {
@@ -25,61 +25,59 @@ export class RefundService {
 
   async requestRefundOrder(transactionHash: string) {
     try {
-      const isValidTxn = await this.verficationService.verifyIfValidTxn(transactionHash, ContractType.v2);
+      const { parsedTxnData, errorMsg } = await this.verificationService.verifyIfValidTxn(
+        transactionHash,
+        this.contractAddress,
+        ContractType.queue,
+      );
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
       const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
       const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
 
       // Check if txn is created from our contract
-      if (!isValidTxn || txReceipt.to !== this.contractAddress) {
-        throw new Error('Invalid transaction hash');
+      if (!parsedTxnData) {
+        throw new Error(errorMsg);
       }
 
-      const order = await this.prisma.ethereumOrders.findFirst({
+      const queue = await this.prisma.ethereumQueue.findFirst({
         where: {
           transactionHash,
         },
       });
 
-      // Check if order exists
-      if (!order) {
-        throw new Error('Order not found');
+      // Check if queue exists
+      if (!queue) {
+        throw new BadRequestException('Queue not found');
       }
 
       // Check if 65 confirmations is completed in evm
       if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
-        throw new Error(
+        throw new BadRequestException(
           'Transaction has not been processed, did not complete 65 confirmations for EVM unable to proceed with refund request',
         );
       }
 
-      // Check if order status is in `Draft`, `Completed` or `Refunded
-      if (
-        order.status === OrderStatus.REFUNDED ||
-        order.status === OrderStatus.DRAFT ||
-        order.status === OrderStatus.COMPLETED ||
-        order.status === OrderStatus.REFUND_REQUESTED
-      ) {
-        throw new Error('Order cannot be refunded');
+      if (queue.status !== QueueStatus.EXPIRED) {
+        throw new BadRequestException('Unable to request refund for queue');
       }
 
-      // update order if order exist and refund is valid
-      const updateOrder = await this.prisma.ethereumOrders.update({
+      // update queue if queue exist and refund is valid
+      const queueWithUpdatedStatus = await this.prisma.ethereumQueue.update({
         where: { transactionHash },
-        data: { status: OrderStatus.REFUND_REQUESTED },
+        data: { status: QueueStatus.REFUND_REQUESTED },
       });
 
       return {
-        ...updateOrder,
-        id: String(updateOrder.id),
+        ...queueWithUpdatedStatus,
+        id: String(queueWithUpdatedStatus.id),
       };
     } catch (e: any) {
       throw new HttpException(
         {
-          status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
-          error: `API call for refund was unsuccessful: ${e.message}`,
+          status: e.status ?? (e.code || HttpStatus.INTERNAL_SERVER_ERROR),
+          error: `API call for request queue refund was unsuccessful: ${e.message}`,
         },
-        HttpStatus.INTERNAL_SERVER_ERROR,
+        e.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
         {
           cause: e,
         },
