@@ -1,40 +1,83 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { ethers } from 'ethers';
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
+import { BridgeQueue__factory } from 'smartcontracts-queue';
 
 import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 
 export enum ContractType {
-  v1 = 'v1',
-  v2 = 'v2',
+  instant = 'instant',
+  queue = 'queue',
 }
+
 const contract = {
-  [ContractType.v1]: {
+  [ContractType.instant]: {
     interface: BridgeV1__factory.abi,
+    name: 'bridgeToDeFiChain',
+    signature: 'bridgeToDeFiChain(bytes,address,uint256)',
   },
-  // Todo : update to phase 2 contract when ready
-  [ContractType.v2]: {
-    interface: BridgeV1__factory.abi,
+  [ContractType.queue]: {
+    interface: BridgeQueue__factory.abi,
+    name: 'bridgeToDeFiChain',
+    signature: 'bridgeToDeFiChain(bytes,address,uint256)',
   },
 };
+
+export enum ErrorMsgTypes {
+  InaccurateNameAndSignature = 'Decoded function name or signature is inaccurate',
+  PendingTxn = 'Transaction is still pending',
+  InaccurateContractAddress = 'Contract Address in the Transaction Receipt is inaccurate',
+  RevertedTxn = 'Transaction Reverted',
+}
+export interface VerifyIfValidTxnDto {
+  parsedTxnData?: {
+    etherInterface: ethers.utils.Interface;
+    parsedTxnData: ethers.utils.TransactionDescription;
+  };
+  errorMsg?: ErrorMsgTypes;
+}
 
 @Injectable()
 export class VerificationService {
   constructor(@Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider) {}
 
-  async verifyIfValidTxn(transactionHash: string, contractType: ContractType): Promise<boolean> {
-    const { parsedTxnData } = await this.parseTxnHash(transactionHash, contractType);
+  async verifyIfValidTxn(
+    transactionHash: string,
+    contractAddress: string,
+    contractType: ContractType,
+  ): Promise<VerifyIfValidTxnDto> {
+    const [parsedTxnData, txReceipt] = await Promise.all([
+      this.parseTxnHash(transactionHash, contractType),
+      this.ethersRpcProvider.getTransactionReceipt(transactionHash),
+    ]);
+
     // Sanity check that the decoded function name and signature are correct
     if (
-      parsedTxnData.name !== 'bridgeToDeFiChain' ||
-      parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
+      parsedTxnData.parsedTxnData.name !== contract[contractType].name ||
+      parsedTxnData.parsedTxnData.signature !== contract[contractType].signature
     ) {
-      return false;
+      throw new BadRequestException(ErrorMsgTypes.InaccurateNameAndSignature);
+    }
+
+    // if transaction is still pending
+    if (txReceipt === null) {
+      throw new NotFoundException(ErrorMsgTypes.PendingTxn);
+    }
+
+    // Sanity check that the contractAddress is accurate in the Transaction Receipt
+    if (txReceipt.to !== contractAddress) {
+      throw new BadRequestException(ErrorMsgTypes.InaccurateContractAddress);
+    }
+
+    // if transaction is reverted
+    const isReverted = txReceipt.status === 0;
+    if (isReverted === true) {
+      throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
     }
 
     // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
 
-    return true;
+    return { parsedTxnData };
   }
 
   async parseTxnHash(
@@ -45,6 +88,9 @@ export class VerificationService {
     parsedTxnData: ethers.utils.TransactionDescription;
   }> {
     const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
+    if (onChainTxnDetail === null) {
+      throw new NotFoundException(ErrorMsgTypes.PendingTxn);
+    }
     const etherInterface = new ethers.utils.Interface(contract[contractType].interface);
     const parsedTxnData = etherInterface.parseTransaction({
       data: onChainTxnDetail.data,
@@ -52,5 +98,50 @@ export class VerificationService {
     });
 
     return { etherInterface, parsedTxnData };
+  }
+
+  decodeTxnData({
+    etherInterface,
+    parsedTxnData,
+  }: {
+    etherInterface: ethers.utils.Interface;
+    parsedTxnData: ethers.utils.TransactionDescription;
+  }) {
+    const fragment = etherInterface.getFunction(parsedTxnData.name);
+    const params = parsedTxnData.args.reduce((res, param, i) => {
+      let parsedParam = param;
+      const isUint = fragment.inputs[i].type.indexOf('uint') === 0;
+      const isInt = fragment.inputs[i].type.indexOf('int') === 0;
+      const isAddress = fragment.inputs[i].type.indexOf('address') === 0;
+
+      if (isUint || isInt) {
+        const isArray = Array.isArray(param);
+
+        if (isArray) {
+          parsedParam = param.map((val) => EthBigNumber.from(val).toString());
+        } else {
+          parsedParam = EthBigNumber.from(param).toString();
+        }
+      }
+
+      // Addresses returned by web3 are randomly cased so we need to standardize and lowercase all
+      if (isAddress) {
+        const isArray = Array.isArray(param);
+        if (isArray) {
+          parsedParam = param.map((_) => _.toLowerCase());
+        } else {
+          parsedParam = param.toLowerCase();
+        }
+      }
+      return {
+        ...res,
+        [fragment.inputs[i].name]: parsedParam,
+      };
+    }, {});
+
+    return {
+      params,
+      name: parsedTxnData.name,
+    };
   }
 }

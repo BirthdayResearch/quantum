@@ -30,7 +30,7 @@ jobs:
 
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 8.1.1
+          version: 8.5.0
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 16
@@ -49,7 +49,7 @@ jobs:
 
       ## Implement ping on server side to do full e2e
 
-      - uses: cypress-io/github-action@a29a621b736c9a8547ba0236cc9cee1e49725bd5 # v5.6.1
+      - uses: cypress-io/github-action@191187832803e908aa13b6e33c2c42abd8b12c5a # v5.8.0
         with:
           config-file: cypress.config.js
           install: false
@@ -65,6 +65,6 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: codecov/codecov-action@40a12dcee2df644d47232dde008099a3e9e4f865 # v3.1.2
+      - uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
