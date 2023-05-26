@@ -24,18 +24,11 @@ export default function IconTooltip({
   const { isLg: isWeb } = useResponsive();
 
   return (
-    <div className="relative flex focus:outline-none group">
-      <FiInfo
-        size={size ?? 16}
-        className={clsx(
-          customIconColor ?? "text-dark-700 block lg:hidden cursor-pointer"
-        )}
-        onClick={() => (!isWeb ? setIsMobileModalOpen(true) : null)}
-      />
+    <div className="relative flex focus:outline-none group cursor-pointer">
       {isWeb ? (
         /* Display web tooltip */
         <HoverPopover
-          className={clsx("cursor-pointer group lg:block hidden")}
+          className={clsx("group lg:block hidden")}
           popover={content}
           placement={position}
         >
@@ -45,15 +38,22 @@ export default function IconTooltip({
         </HoverPopover>
       ) : (
         /* Display mobile bottom modal instead */
-        <BottomModal
-          title={title}
-          isOpen={isMobileModalOpen}
-          onClose={() => setIsMobileModalOpen(false)}
-        >
-          <div className="mt-4 mb-16 text-dark-700">
-            <span>{content}</span>
-          </div>
-        </BottomModal>
+        <>
+          <FiInfo
+            size={size ?? 16}
+            className={clsx(customIconColor ?? "text-dark-700 block lg:hidden")}
+            onClick={() => (!isWeb ? setIsMobileModalOpen(true) : null)}
+          />
+          <BottomModal
+            title={title}
+            isOpen={isMobileModalOpen}
+            onClose={() => setIsMobileModalOpen(false)}
+          >
+            <div className="mt-4 mb-16 text-dark-700">
+              <span>{content}</span>
+            </div>
+          </BottomModal>
+        </>
       )}
     </div>
   );
