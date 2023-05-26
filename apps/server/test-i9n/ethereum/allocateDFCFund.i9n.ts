@@ -284,6 +284,18 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(token?.symbol).toStrictEqual('USDC');
   });
 
+  it('should fail if given inaccurate transaction hash', async () => {
+    const invalidTxnHash = 'invalidTxnHash';
+
+    const txnDetails = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/transactionDetails?transactionHash=${invalidTxnHash}`,
+    });
+    const txnDetailsRes = JSON.parse(txnDetails.body);
+    expect(txnDetails.statusCode).toStrictEqual(400);
+    expect(txnDetailsRes?.message).toStrictEqual('Invalid Ethereum transaction hash: invalidTxnHash');
+  });
+
   it('should return accurate information when transactionDetails endpoint is called', async () => {
     const amountLessFee = deductTransferFee(new BigNumber(1));
 
