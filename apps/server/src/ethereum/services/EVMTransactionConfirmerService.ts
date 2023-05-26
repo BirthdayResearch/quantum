@@ -395,7 +395,34 @@ export class EVMTransactionConfirmerService {
     }
   }
 
-  async getEVMTxnDetails(transactionHash: string): Promise<{
+  async transactionDetails(transactionHash: string): Promise<{
+    id: string;
+    symbol: string;
+    amount: BigNumber;
+    toAddress: string;
+  }> {
+    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+
+    // if transaction is reverted
+    const isReverted = txReceipt.status === 0;
+    if (isReverted === true) {
+      throw new BadRequestException(`Transaction Reverted`);
+    }
+
+    const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
+      where: {
+        transactionHash,
+      },
+    });
+
+    if (!txHashFound) {
+      throw new Error('Transaction details not available');
+    }
+    const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
+    return { ...dTokenDetails, toAddress };
+  }
+
+  private async getEVMTxnDetails(transactionHash: string): Promise<{
     id: string;
     symbol: string;
     amount: BigNumber;

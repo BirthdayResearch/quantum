@@ -41,6 +41,6 @@ export class EthereumController {
   async getEVMTxnDetails(
     @Query('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string,
   ): Promise<{ id: string; symbol: string; amount: BigNumber; toAddress: string }> {
-    return this.evmTransactionConfirmerService.getEVMTxnDetails(transactionHash);
+    return this.evmTransactionConfirmerService.transactionDetails(transactionHash);
   }
 }
