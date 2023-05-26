@@ -487,7 +487,22 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(token?.symbol).toStrictEqual('ETH');
   });
 
-  it('transaction handling should check that transaction comes from quantum deployed smart contract', async () => {
+  it('transaction should go through when transaction is from quantum deployed smart contract', async () => {
+    transactionCall = await bridgeContract.bridgeToDeFiChain(ethers.constants.AddressZero, musdcContract.address, 5);
+    const validTxnHash = transactionCall.hash;
+    await hardhatNetwork.generate(1);
+    const txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/handleTransaction`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
+    });
+    const respBody = JSON.parse(txReceipt.body);
+    expect(respBody).toStrictEqual({ isConfirmed: false, numberOfConfirmations: 0 });
+  });
+
+  it('transaction handling should throw error for transaction that is not from quantum deployed smart contract', async () => {
     // Given any random arbitrary EOA
     const signer = ethers.Wallet.createRandom().connect(hardhatNetwork.ethersRpcProvider);
     await hardhatNetwork.activateAccount(signer.address);
@@ -520,10 +535,9 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       },
     });
 
-    expect(JSON.parse(txReceipt.body)).toStrictEqual({
-      isConfirmed: false,
-      numberOfConfirmations: 0,
-    });
+    const respBody = JSON.parse(txReceipt.body);
+    expect(respBody.statusCode).toStrictEqual(400);
+    expect(respBody.message).toStrictEqual('Contract Address in the Transaction Receipt is inaccurate');
   });
 });
 
