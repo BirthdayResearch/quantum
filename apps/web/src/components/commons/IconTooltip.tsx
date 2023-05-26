@@ -33,7 +33,10 @@ export default function IconTooltip({
           placement={position}
         >
           <div data-testid="IconTooltipPopover">
-            <FiInfo size={size ?? 16} className="text-dark-700" />
+            <FiInfo
+              size={size ?? 16}
+              className={clsx(customIconColor ?? "text-dark-700")}
+            />
           </div>
         </HoverPopover>
       ) : (
