@@ -5,7 +5,7 @@ import {
   BridgeQueue,
   HardhatNetwork,
   HardhatNetworkContainer,
-  StartedHardhatNetworkContainer,
+  StartedHardhatNetworkContainer as StartedHardhatNetworkQueueContainer,
   TestToken,
 } from 'smartcontracts-queue';
 
@@ -16,7 +16,7 @@ import { QueueBridgeContractFixture } from '../testing/QueueBridgeContractFixtur
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 
 describe('Create Queue Service Integration Tests', () => {
-  let startedHardhatContainer: StartedHardhatNetworkContainer;
+  let startedHardhatContainer: StartedHardhatNetworkQueueContainer;
   let hardhatNetwork: HardhatNetwork;
   let testing: BridgeServerTestingApp;
   let bridgeQueueContract: BridgeQueue;
