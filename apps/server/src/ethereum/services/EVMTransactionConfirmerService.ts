@@ -1,5 +1,13 @@
 import { fromAddress } from '@defichain/jellyfish-address';
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EthereumTransactionStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
@@ -18,6 +26,14 @@ import { PrismaService } from '../../PrismaService';
 import { getNextDayTimestampInSec } from '../../utils/DateUtils';
 import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
 import { ContractType, VerificationService } from './VerificationService';
+
+export enum ErrorMsgTypes {
+  TxnNotFound = 'Transaction not found',
+  PendingTxn = 'Transaction is still pending',
+  RevertedTxn = 'Transaction Reverted',
+  FundAlreadyAllocated = 'Fund already allocated',
+  InsufficientDFILiquidity = 'Insufficient DFI liquidity',
+}
 
 @Injectable()
 export class EVMTransactionConfirmerService {
@@ -92,7 +108,7 @@ export class EVMTransactionConfirmerService {
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      throw new BadRequestException(`Transaction Reverted`);
+      throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
     }
 
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
@@ -243,12 +259,12 @@ export class EVMTransactionConfirmerService {
 
       // check if tx details are available in db
       if (!txDetails) {
-        throw new Error('Transaction detail not available');
+        throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
       }
 
       // check if fund is already allocated for the given address
       if (txDetails.sendTransactionHash) {
-        throw new Error('Fund already allocated');
+        throw new NotFoundException(ErrorMsgTypes.FundAlreadyAllocated);
       }
 
       if (txDetails.unconfirmedSendTransactionHash) {
@@ -289,7 +305,7 @@ export class EVMTransactionConfirmerService {
 
       // check if txn is confirmed or not
       if (txDetails.status !== EthereumTransactionStatus.CONFIRMED) {
-        throw new Error('Transaction is not yet confirmed');
+        throw new NotFoundException(ErrorMsgTypes.PendingTxn);
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
@@ -300,7 +316,7 @@ export class EVMTransactionConfirmerService {
       );
 
       if (!txReceipt) {
-        throw new Error('Transaction is not yet available');
+        throw new NotFoundException(ErrorMsgTypes.PendingTxn);
       }
 
       // Sanity check that the contractAddress, decoded name and signature are correct
@@ -315,7 +331,7 @@ export class EVMTransactionConfirmerService {
       // if transaction is reverted
       const isReverted = txReceipt.status === 0;
       if (isReverted === true) {
-        throw new BadRequestException(`Transaction Reverted`);
+        throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
       }
 
       const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
@@ -346,7 +362,7 @@ export class EVMTransactionConfirmerService {
           this.logger.log(
             `[Sending UTXO] Failed to send because insufficient DFI UTXO in hot wallet after deducting reserved UTXO`,
           );
-          throw new BadRequestException('Insufficient DFI liquidity');
+          throw new NotFoundException(ErrorMsgTypes.InsufficientDFILiquidity);
         }
       }
 
@@ -406,7 +422,7 @@ export class EVMTransactionConfirmerService {
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      throw new BadRequestException(`Transaction Reverted`);
+      throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
     }
 
     const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
@@ -416,7 +432,7 @@ export class EVMTransactionConfirmerService {
     });
 
     if (!txHashFound) {
-      throw new Error('Transaction details not available');
+      throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
     }
     const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
     return { ...dTokenDetails, toAddress };
