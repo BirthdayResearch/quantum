@@ -6,7 +6,7 @@ import { ethers } from 'ethers';
 
 import { ETHERS_RPC_PROVIDER } from '../../../modules/EthersModule';
 import { PrismaService } from '../../../PrismaService';
-import { ContractType, VerificationService } from '../../services/VerificationService';
+import { ContractType, ErrorMsgTypes, VerificationService } from '../../services/VerificationService';
 
 @Injectable()
 export class RefundService {
@@ -23,21 +23,12 @@ export class RefundService {
     this.contractAddress = this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.address');
   }
 
-  async requestRefundOrder(transactionHash: string) {
+  async requestQueueRefund(transactionHash: string) {
     try {
-      const { parsedTxnData, errorMsg } = await this.verificationService.verifyIfValidTxn(
-        transactionHash,
-        this.contractAddress,
-        ContractType.queue,
-      );
+      await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.queue);
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
       const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
       const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
-
-      // Check if txn is created from our contract
-      if (!parsedTxnData) {
-        throw new Error(errorMsg);
-      }
 
       const queue = await this.prisma.ethereumQueue.findFirst({
         where: {
@@ -47,7 +38,7 @@ export class RefundService {
 
       // Check if queue exists
       if (!queue) {
-        throw new BadRequestException('Queue not found');
+        throw new BadRequestException(ErrorMsgTypes.QueueNotFound);
       }
 
       // Check if 65 confirmations is completed in evm

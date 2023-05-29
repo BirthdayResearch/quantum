@@ -79,7 +79,7 @@ describe('Request Refund Testing', () => {
     await testing.stop();
   });
 
-  it('Should not be able to update queue status to REFUND_REQUESTED when transaction did not complete 65 confirmations', async () => {
+  it('Should throw error when transaction did not complete 65 confirmations', async () => {
     await prismaService.ethereumQueue.create({
       data: {
         transactionHash: validTxnHash,
@@ -94,7 +94,7 @@ describe('Request Refund Testing', () => {
       },
     });
 
-    // Check that order details exists in the database
+    // Check that queue details exists in the database
     const dbRecord = await prismaService.ethereumQueue.findFirst({
       where: { transactionHash: validTxnHash },
     });
@@ -117,7 +117,7 @@ describe('Request Refund Testing', () => {
     );
   });
 
-  it('Should check that transaction comes from quantum deployed smart contract', async () => {
+  it('Should throw error when transaction is not from quantum deployed smart contract', async () => {
     // Given any random arbitrary EOA
     const signer = ethers.Wallet.createRandom().connect(hardhatNetwork.ethersRpcProvider);
     await hardhatNetwork.activateAccount(signer.address);
@@ -170,7 +170,7 @@ describe('Request Refund Testing', () => {
     );
   });
 
-  it('Should not be able to update queue status to REFUND_REQUESTED status when status is in DRAFT', async () => {
+  it('Should throw error when requesting refund for transaction that is in DRAFT status', async () => {
     await hardhatNetwork.generate(65);
     const resp = await testing.inject({
       method: 'POST',
@@ -180,11 +180,11 @@ describe('Request Refund Testing', () => {
       },
     });
 
-    const order = JSON.parse(resp.body);
-    expect(order.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
-  it('Should not be able to update queue status to REFUND_REQUESTED when status is in COMPLETED', async () => {
+  it('Should throw error when requesting refund for transaction that is in COMPLETED status', async () => {
     await prismaService.ethereumQueue.update({
       where: { transactionHash: validTxnHash },
       data: { status: QueueStatus.COMPLETED },
@@ -198,11 +198,11 @@ describe('Request Refund Testing', () => {
       },
     });
 
-    const order = JSON.parse(resp.body);
-    expect(order.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
-  it('Should not be able to update queue status to REFUND_REQUESTED when status is in REFUNDED', async () => {
+  it('Should throw error when requesting refund for transaction that is in REFUNDED status', async () => {
     await prismaService.ethereumQueue.update({
       where: { transactionHash: validTxnHash },
       data: { status: QueueStatus.REFUNDED },
@@ -216,11 +216,11 @@ describe('Request Refund Testing', () => {
       },
     });
 
-    const order = JSON.parse(resp.body);
-    expect(order.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
-  it('Should not be able to update queue status to REFUND_REQUESTED when status is in REFUND_REQUESTED', async () => {
+  it('Should throw error when requesting refund for transaction that is in REFUND_REQUESTED status', async () => {
     await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
     await prismaService.ethereumQueue.update({
       where: { transactionHash: validTxnHash },
@@ -235,11 +235,11 @@ describe('Request Refund Testing', () => {
       },
     });
 
-    const order = JSON.parse(resp.body);
-    expect(order.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
-  it('Should not be able to update order status to REFUND_REQUESTED when status is in ERROR', async () => {
+  it('Should throw error when requesting refund for transaction that is in ERROR status', async () => {
     await prismaService.ethereumQueue.update({
       where: { transactionHash: validTxnHash },
       data: { status: QueueStatus.ERROR },
@@ -253,11 +253,11 @@ describe('Request Refund Testing', () => {
       },
     });
 
-    const order = JSON.parse(resp.body);
-    expect(order.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
-  it('Should not be able to update order status to REFUND_REQUESTED when status is in REJECTED', async () => {
+  it('Should throw error when requesting refund for transaction that is in REJECTED status', async () => {
     await prismaService.ethereumQueue.update({
       where: { transactionHash: validTxnHash },
       data: { status: QueueStatus.REJECTED },
@@ -271,8 +271,26 @@ describe('Request Refund Testing', () => {
       },
     });
 
-    const order = JSON.parse(resp.body);
-    expect(order.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
+  });
+
+  it('Should throw error when requesting refund for transaction that is in IN_PROGRESS status', async () => {
+    await prismaService.ethereumQueue.update({
+      where: { transactionHash: validTxnHash },
+      data: { status: QueueStatus.IN_PROGRESS },
+    });
+
+    const resp = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/queue/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
+    });
+
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
   it('Should be able to update queue status to REFUND_REQUESTED only when status is `Expired`', async () => {
@@ -295,7 +313,8 @@ describe('Request Refund Testing', () => {
     expect(queue.status).toEqual(QueueStatus.REFUND_REQUESTED);
   });
 
-  it('Should have `Queue not found` error when transaction exist but order does not exist in DB', async () => {
+  it('Should throw error when transaction exist but queue does not exist in DB', async () => {
+    await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
     const resp = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue/refund`,
@@ -308,8 +327,7 @@ describe('Request Refund Testing', () => {
     expect(JSON.parse(resp.body).error).toEqual('API call for refund was unsuccessful: Queue not found');
   });
 
-  it("Should have `Cannot read properties of null (reading 'data')` error when transaction does not exist", async () => {
-    await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
+  it('Should throw error when transaction does not exist', async () => {
     const resp = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue/refund`,
@@ -322,7 +340,7 @@ describe('Request Refund Testing', () => {
     expect(JSON.parse(resp.body).error).toEqual('API call for refund was unsuccessful: Transaction is still pending');
   });
 
-  it('Should have `Invalid Ethereum transaction hash: 1234` message transactionHash is invalid', async () => {
+  it('Should throw error when transactionHash is invalid', async () => {
     const resp = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue/refund`,
@@ -331,6 +349,7 @@ describe('Request Refund Testing', () => {
       },
     });
 
+    expect(resp.statusCode).toEqual(400);
     expect(JSON.parse(resp.body).message).toEqual('Invalid Ethereum transaction hash: 1234');
   });
 });
