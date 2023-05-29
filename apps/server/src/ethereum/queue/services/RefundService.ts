@@ -25,11 +25,6 @@ export class RefundService {
 
   async requestQueueRefund(transactionHash: string) {
     try {
-      await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.queue);
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-      const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
-
       const queue = await this.prisma.ethereumQueue.findFirst({
         where: {
           transactionHash,
@@ -41,15 +36,20 @@ export class RefundService {
         throw new BadRequestException(ErrorMsgTypes.QueueNotFound);
       }
 
+      if (queue.status !== QueueStatus.EXPIRED) {
+        throw new BadRequestException('Unable to request refund for queue');
+      }
+
+      await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.queue);
+      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
+      const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
+
       // Check if 65 confirmations is completed in evm
       if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
         throw new BadRequestException(
           'Transaction has not been processed, did not complete 65 confirmations for EVM unable to proceed with refund request',
         );
-      }
-
-      if (queue.status !== QueueStatus.EXPIRED) {
-        throw new BadRequestException('Unable to request refund for queue');
       }
 
       // update queue if queue exist and refund is valid

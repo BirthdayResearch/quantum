@@ -84,7 +84,7 @@ describe('Request Refund Testing', () => {
       data: {
         transactionHash: validTxnHash,
         ethereumStatus: 'NOT_CONFIRMED',
-        status: 'DRAFT',
+        status: 'EXPIRED',
         createdAt: '2023-04-20T06:14:43.847Z',
         updatedAt: '2023-04-20T06:28:17.185Z',
         amount: null,
@@ -146,7 +146,7 @@ describe('Request Refund Testing', () => {
       data: {
         transactionHash: vulnerableTxHash,
         ethereumStatus: 'NOT_CONFIRMED',
-        status: 'IN_PROGRESS',
+        status: 'EXPIRED',
         createdAt: '2023-04-20T06:14:43.847Z',
         updatedAt: '2023-04-20T06:28:17.185Z',
         amount: null,
@@ -172,6 +172,10 @@ describe('Request Refund Testing', () => {
 
   it('Should throw error when requesting refund for transaction that is in DRAFT status', async () => {
     await hardhatNetwork.generate(65);
+    await prismaService.ethereumQueue.update({
+      where: { transactionHash: validTxnHash },
+      data: { status: QueueStatus.DRAFT },
+    });
     const resp = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue/refund`,
@@ -328,11 +332,25 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should throw error when transaction does not exist', async () => {
+    const nonExistentTxnHash = '0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3835';
+    await prismaService.ethereumQueue.create({
+      data: {
+        transactionHash: nonExistentTxnHash,
+        ethereumStatus: 'NOT_CONFIRMED',
+        status: 'EXPIRED',
+        createdAt: '2023-04-20T06:14:43.847Z',
+        updatedAt: '2023-04-20T06:28:17.185Z',
+        amount: null,
+        tokenSymbol: null,
+        defichainAddress: '',
+        expiryDate: '1970-01-01T00:00:00.000Z',
+      },
+    });
     const resp = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue/refund`,
       payload: {
-        transactionHash: '0x09bf1c99b2383677993378227105c938d4fc2a2a8998d6cd35fccd75ee5b3835',
+        transactionHash: nonExistentTxnHash,
       },
     });
 
