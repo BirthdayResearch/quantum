@@ -71,15 +71,7 @@ describe('Request Refund Testing', () => {
     testing = new BridgeServerTestingApp(dynamicModule);
     const app = await testing.start();
     prismaService = app.get<PrismaService>(PrismaService);
-  });
 
-  afterAll(async () => {
-    await prismaService.ethereumQueue.deleteMany({});
-    await startedPostgresContainer.stop();
-    await testing.stop();
-  });
-
-  it('Should throw error when transaction did not complete 65 confirmations', async () => {
     await prismaService.ethereumQueue.create({
       data: {
         transactionHash: validTxnHash,
@@ -93,28 +85,12 @@ describe('Request Refund Testing', () => {
         expiryDate: '1970-01-01T00:00:00.000Z',
       },
     });
+  });
 
-    // Check that queue details exists in the database
-    const dbRecord = await prismaService.ethereumQueue.findFirst({
-      where: { transactionHash: validTxnHash },
-    });
-
-    expect(dbRecord?.transactionHash).toStrictEqual(validTxnHash);
-
-    await hardhatNetwork.generate(1);
-
-    const resp = await testing.inject({
-      method: 'POST',
-      url: `/ethereum/queue/refund`,
-      payload: {
-        transactionHash: validTxnHash,
-      },
-    });
-
-    const queue = JSON.parse(resp.body);
-    expect(queue.error).toEqual(
-      'API call for refund was unsuccessful: Transaction has not been processed, did not complete 65 confirmations for EVM unable to proceed with refund request',
-    );
+  afterAll(async () => {
+    await prismaService.ethereumQueue.deleteMany({});
+    await startedPostgresContainer.stop();
+    await testing.stop();
   });
 
   it('Should throw error when transaction is not from quantum deployed smart contract', async () => {

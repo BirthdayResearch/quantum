@@ -1,7 +1,6 @@
 import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { QueueStatus } from '@prisma/client';
-import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 
 import { ETHERS_RPC_PROVIDER } from '../../../modules/EthersModule';
@@ -41,16 +40,6 @@ export class RefundService {
       }
 
       await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.queue);
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
-      const numberOfConfirmations = BigNumber.max(currentBlockNumber - txReceipt.blockNumber, 0).toNumber();
-
-      // Check if 65 confirmations is completed in evm
-      if (numberOfConfirmations < this.MIN_REQUIRED_EVM_CONFIRMATION) {
-        throw new BadRequestException(
-          'Transaction has not been processed, did not complete 65 confirmations for EVM unable to proceed with refund request',
-        );
-      }
 
       // update queue if queue exist and refund is valid
       const queueWithUpdatedStatus = await this.prisma.ethereumQueue.update({
