@@ -25,12 +25,7 @@ import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
 import { getNextDayTimestampInSec } from '../../utils/DateUtils';
 import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
-import { ContractType, VerificationService } from './VerificationService';
-
-export enum ErrorMsgTypes {
-  TxnNotFound = 'Transaction not found',
-  RevertedTxn = 'Transaction Reverted',
-}
+import { ContractType, ErrorMsgTypes,VerificationService } from './VerificationService';
 
 @Injectable()
 export class EVMTransactionConfirmerService {
