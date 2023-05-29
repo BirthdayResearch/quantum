@@ -69,6 +69,8 @@ export default function QueueForm({
     dfcAddressDetails,
     txnForm,
     transferAmount,
+    transferDisplaySymbolA,
+    transferDisplaySymbolB,
     setStorage,
     txnHash,
     createdQueueTxnHash,
@@ -322,6 +324,14 @@ export default function QueueForm({
     if (localData && networkEnv === localData.networkEnv) {
       setStorage("dfc-address-queue", localData.toAddress);
       setStorage("transfer-amount-queue", localData.amount);
+      setStorage(
+        "transfer-display-symbol-A-queue",
+        localData.selectedQueueTokensA.tokenA.name
+      );
+      setStorage(
+        "transfer-display-symbol-B-queue",
+        localData.selectedQueueTokensB.tokenA.name
+      );
       // Load data from storage
       setHasUnconfirmedTxn(true);
       setAmount(localData.amount);
@@ -426,7 +436,7 @@ export default function QueueForm({
             isApiSuccess={isQueueApiSuccess || txnHash.reverted !== undefined}
             destinationAddress={dfcAddress}
             amount={transferAmount}
-            symbol={selectedQueueTokensB.tokenA.name}
+            symbolToReceive={transferDisplaySymbolB}
           />
           <div className="flex flex-col space-y-7">
             <div className="flex flex-row justify-between">
@@ -442,7 +452,7 @@ export default function QueueForm({
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
-                suffix={` ${selectedQueueTokensB.tokenB.name}`}
+                suffix={` ${transferDisplaySymbolA}`}
                 trimTrailingZeros
               />
             </div>
@@ -472,7 +482,7 @@ export default function QueueForm({
                 className="block break-words text-right text-sm text-dark-1000 leading-5 lg:text-base"
                 value={fee}
                 thousandSeparator
-                suffix={` ${feeSymbol}`}
+                suffix={` ${transferDisplaySymbolA}`}
                 trimTrailingZeros
               />
             </div>
@@ -489,7 +499,7 @@ export default function QueueForm({
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
-                suffix={` ${selectedQueueTokensB.tokenA.name}`}
+                suffix={` ${transferDisplaySymbolB}`}
                 trimTrailingZeros
               />
             </div>
