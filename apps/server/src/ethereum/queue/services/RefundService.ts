@@ -36,7 +36,7 @@ export class RefundService {
       }
 
       const allowedRefundRequests = [QueueStatus.EXPIRED, QueueStatus.ERROR, QueueStatus.IN_PROGRESS];
-      // check if Queue is in `IN_PROGRESS`, `ERROR` or `EXPIRED` status
+      // check if Queue is NOT in `IN_PROGRESS`, `ERROR` or `EXPIRED` status
       if (!allowedRefundRequests.some((value) => value === queue.status)) {
         throw new BadRequestException('Unable to request refund for queue');
       }
