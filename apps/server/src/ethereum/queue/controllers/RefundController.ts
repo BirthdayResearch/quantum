@@ -15,7 +15,7 @@ export class RefundController {
    */
   @Throttle(5, 60)
   @Post('refund')
-  async requestRefundOrder(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
+  async requestRefundQueue(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.refundService.requestQueueRefund(transactionHash);
   }
 }
