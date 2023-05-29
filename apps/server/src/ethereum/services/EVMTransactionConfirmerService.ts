@@ -395,7 +395,7 @@ export class EVMTransactionConfirmerService {
     }
   }
 
-  async transactionDetails(transactionHash: string): Promise<{
+  async getTransactionDetails(transactionHash: string): Promise<{
     id: string;
     symbol: string;
     amount: BigNumber;
