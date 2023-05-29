@@ -429,17 +429,7 @@ export class EVMTransactionConfirmerService {
         throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
       }
       await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.instant);
-      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
-      // Sanity check that the contractAddress is correct
-      if (txReceipt.to !== this.contractAddress) {
-        throw new BadRequestException(ErrorMsgTypes.InaccurateContractAddress);
-      }
-      // if transaction is reverted
-      const isReverted = txReceipt.status === 0;
-      if (isReverted) {
-        throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
-      }
       const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
       return { ...dTokenDetails, toAddress };
     } catch (e: any) {
@@ -482,7 +472,7 @@ export class EVMTransactionConfirmerService {
     const transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
     const dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
 
-    return { ...dTokenDetails, amount: transferAmount, toAddress };
+    return { id: dTokenDetails.id, symbol: dTokenDetails.symbol, amount: transferAmount, toAddress };
   }
 }
 
