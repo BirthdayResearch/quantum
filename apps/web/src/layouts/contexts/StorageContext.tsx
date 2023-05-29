@@ -18,6 +18,7 @@ type StorageKey =
   | "reverted"
   | "unsent-fund"
   | "dfc-address"
+  | "destination-address"
   | "dfc-address-details"
   | "txn-form"
   | "transfer-amount";
@@ -34,6 +35,7 @@ interface StorageContextI {
   dfcAddressDetails?: AddressDetails;
   txnForm?: UnconfirmedTxnI;
   transferAmount?: string;
+  destinationAddress?: string;
   getStorage: (key: StorageKey) => string | undefined;
   setStorage: (key: StorageKey, value: string | null) => void;
 }
@@ -57,6 +59,7 @@ export function StorageProvider({
   const [unsentFundTxnHashKey, setUnsentFundTxnHashKey] = useState<string>();
   const [dfcAddress, setDfcAddress] = useState<string>();
   const [dfcAddressDetails, setDfcAddressDetails] = useState<AddressDetails>();
+  const [destinationAddress, setDestinationAddress] = useState<string>();
   const [txnForm, setTxnForm] = useState<any>();
   const [transferAmount, setTransferAmount] = useState<string>();
 
@@ -72,6 +75,7 @@ export function StorageProvider({
     DFC_ADDR_DETAILS_KEY,
     TXN_KEY,
     TRANSFER_AMOUNT_KEY,
+    DESTINATION_ADDRESS_KEY,
   } = useBridgeFormStorageKeys();
 
   useEffect(() => {
@@ -101,6 +105,8 @@ export function StorageProvider({
       getStorageItem<string>(UNSENT_FUND_TXN_HASH_KEY) ?? undefined;
     const dfcAddressKeyStorage =
       getStorageItem<string>(DFC_ADDR_KEY) ?? undefined;
+    const destinationAddressKeyStorage =
+      getStorageItem<string>(DESTINATION_ADDRESS_KEY) ?? undefined;
     const transferAmountKeyStorage =
       getStorageItem<string>(TRANSFER_AMOUNT_KEY) ?? undefined;
 
@@ -110,6 +116,7 @@ export function StorageProvider({
     setRevertedTxnHashKey(revertedTxnHashKeyStorage);
     setUnsentFundTxnHashKey(unsentFundTxnHashKeyStorage);
     setDfcAddress(dfcAddressKeyStorage);
+    setDestinationAddress(destinationAddressKeyStorage);
     setTransferAmount(transferAmountKeyStorage);
   }, [
     networkEnv,
@@ -122,6 +129,7 @@ export function StorageProvider({
     DFC_ADDR_DETAILS_KEY,
     TXN_KEY,
     TRANSFER_AMOUNT_KEY,
+    DESTINATION_ADDRESS_KEY,
   ]);
 
   const context: StorageContextI = useMemo(() => {
@@ -147,6 +155,9 @@ export function StorageProvider({
       } else if (key === "dfc-address-details") {
         setDfcAddressDetails(JSON.parse(value));
         setStorageItem(DFC_ADDR_DETAILS_KEY, JSON.parse(value));
+      } else if (key === "destination-address") {
+        setDestinationAddress(value);
+        setStorageItem(DESTINATION_ADDRESS_KEY, value);
       } else if (key === "txn-form") {
         setTxnForm(JSON.parse(value));
         setStorageItem(TXN_KEY, JSON.parse(value));
@@ -173,6 +184,8 @@ export function StorageProvider({
         value = dfcAddress;
       } else if (key === "dfc-address-details") {
         value = dfcAddressDetails;
+      } else if (key === "destination-address") {
+        value = destinationAddress;
       } else if (key === "txn-form") {
         value = txnForm;
       } else if (key === "transfer-amount") {
@@ -196,6 +209,8 @@ export function StorageProvider({
       dfcAddress: dfcAddress === null ? undefined : dfcAddress,
       dfcAddressDetails:
         dfcAddressDetails === null ? undefined : dfcAddressDetails,
+      destinationAddress:
+        destinationAddress === null ? undefined : destinationAddress,
       txnForm: txnForm === null ? undefined : txnForm,
       transferAmount: transferAmount === null ? undefined : transferAmount,
       getStorage,
@@ -209,6 +224,7 @@ export function StorageProvider({
     unsentFundTxnHashKey,
     dfcAddress,
     dfcAddressDetails,
+    destinationAddress,
     txnForm,
     transferAmount,
     REVERTED_TXN_HASH_KEY,
@@ -218,6 +234,7 @@ export function StorageProvider({
     UNSENT_FUND_TXN_HASH_KEY,
     DFC_ADDR_KEY,
     DFC_ADDR_DETAILS_KEY,
+    DESTINATION_ADDRESS_KEY,
     TXN_KEY,
     TRANSFER_AMOUNT_KEY,
   ]);

@@ -111,8 +111,8 @@ export default function BridgeForm({
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
   const {
-    dfcAddress,
     dfcAddressDetails,
+    destinationAddress,
     txnForm,
     transferAmount,
     setStorage,
@@ -259,7 +259,7 @@ export default function BridgeForm({
   const onResetTransferForm = () => {
     setUtilityModalData(null);
     setStorage("txn-form", null);
-    setStorage("dfc-address", null);
+    setStorage("destination-address", null);
     setStorage("dfc-address-details", null);
     setStorage("transfer-amount", null);
     setHasUnconfirmedTxn(false);
@@ -343,7 +343,7 @@ export default function BridgeForm({
     const localData = txnForm;
 
     if (localData && networkEnv === localData.networkEnv) {
-      setStorage("dfc-address", localData.toAddress);
+      setStorage("destination-address", localData.toAddress);
       setStorage("transfer-amount", localData.amount);
       // Load data from storage
       setHasUnconfirmedTxn(true);
@@ -372,7 +372,7 @@ export default function BridgeForm({
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
           setStorage("txn-form", null);
-          setStorage("dfc-address", null);
+          setStorage("destination-address", null);
         } else {
           // TODO: Improve setStorage by not forcing stringified JSON
           setStorage("dfc-address-details", JSON.stringify(addressDetailRes));
@@ -386,8 +386,8 @@ export default function BridgeForm({
   };
 
   useEffect(() => {
-    fetchAddressDetail(dfcAddress);
-  }, [networkEnv, dfcAddress]);
+    fetchAddressDetail(destinationAddress);
+  }, [networkEnv, destinationAddress]);
 
   const { y, reference, floating, strategy, refs } = useFloating({
     placement: "bottom-end",
@@ -488,7 +488,7 @@ export default function BridgeForm({
                 </span>
               </div>
               <span className="max-w-[50%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
-                {dfcAddress}
+                {destinationAddress}
               </span>
             </div>
             <div className="flex flex-row justify-between">
