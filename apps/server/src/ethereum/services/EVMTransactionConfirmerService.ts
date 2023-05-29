@@ -417,14 +417,6 @@ export class EVMTransactionConfirmerService {
     amount: BigNumber;
     toAddress: string;
   }> {
-    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-
-    // if transaction is reverted
-    const isReverted = txReceipt.status === 0;
-    if (isReverted === true) {
-      throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
-    }
-
     const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
       where: {
         transactionHash,
@@ -433,6 +425,13 @@ export class EVMTransactionConfirmerService {
 
     if (!txHashFound) {
       throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
+    }
+    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+
+    // if transaction is reverted
+    const isReverted = txReceipt.status === 0;
+    if (isReverted) {
+      throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
     }
     const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
     return { ...dTokenDetails, toAddress };
