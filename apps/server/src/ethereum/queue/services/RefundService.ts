@@ -35,10 +35,19 @@ export class RefundService {
         throw new BadRequestException(ErrorMsgTypes.QueueNotFound);
       }
 
-      if (queue.status !== QueueStatus.EXPIRED) {
+      const allowedRefundRequests = [QueueStatus.EXPIRED, QueueStatus.ERROR, QueueStatus.IN_PROGRESS];
+      // check if Queue is in `IN_PROGRESS`, `ERROR` or `EXPIRED` status
+      if (!allowedRefundRequests.some((value) => value === queue.status)) {
         throw new BadRequestException('Unable to request refund for queue');
       }
 
+      // check if Queue has expired
+      const currentDate = new Date();
+      if (currentDate.getTime() < queue.expiryDate.getTime()) {
+        throw new BadRequestException(
+          'Refund requests for the queue cannot be made at the moment as it has been less than 72 hours since the queue was created.',
+        );
+      }
       await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.queue);
 
       // update queue if queue exist and refund is valid

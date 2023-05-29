@@ -122,7 +122,7 @@ describe('Request Refund Testing', () => {
       data: {
         transactionHash: vulnerableTxHash,
         ethereumStatus: 'NOT_CONFIRMED',
-        status: 'EXPIRED',
+        status: QueueStatus.EXPIRED,
         createdAt: '2023-04-20T06:14:43.847Z',
         updatedAt: '2023-04-20T06:28:17.185Z',
         amount: null,
@@ -201,7 +201,6 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should throw error when requesting refund for transaction that is in REFUND_REQUESTED status', async () => {
-    await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
     await prismaService.ethereumQueue.update({
       where: { transactionHash: validTxnHash },
       data: { status: QueueStatus.REFUND_REQUESTED },
@@ -219,25 +218,8 @@ describe('Request Refund Testing', () => {
     expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
-  it('Should throw error when requesting refund for transaction that is in ERROR status', async () => {
-    await prismaService.ethereumQueue.update({
-      where: { transactionHash: validTxnHash },
-      data: { status: QueueStatus.ERROR },
-    });
-
-    const resp = await testing.inject({
-      method: 'POST',
-      url: `/ethereum/queue/refund`,
-      payload: {
-        transactionHash: validTxnHash,
-      },
-    });
-
-    const queue = JSON.parse(resp.body);
-    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
-  });
-
   it('Should throw error when requesting refund for transaction that is in REJECTED status', async () => {
+    await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
     await prismaService.ethereumQueue.update({
       where: { transactionHash: validTxnHash },
       data: { status: QueueStatus.REJECTED },
@@ -255,11 +237,21 @@ describe('Request Refund Testing', () => {
     expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
-  it('Should throw error when requesting refund for transaction that is in IN_PROGRESS status', async () => {
-    await prismaService.ethereumQueue.update({
-      where: { transactionHash: validTxnHash },
-      data: { status: QueueStatus.IN_PROGRESS },
-    });
+  it('Should throw error when requesting refund for transaction that is in IN_PROGRESS status and current date < expired date', async () => {
+    // set expiry date to be 1 hour > current date
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 1);
+
+    await Promise.all([
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { status: QueueStatus.IN_PROGRESS },
+      }),
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { expiryDate },
+      }),
+    ]);
 
     const resp = await testing.inject({
       method: 'POST',
@@ -270,14 +262,147 @@ describe('Request Refund Testing', () => {
     });
 
     const queue = JSON.parse(resp.body);
-    expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
+    expect(queue.error).toEqual(
+      'API call for refund was unsuccessful: Refund requests for the queue cannot be made at the moment as it has been less than 72 hours since the queue was created.',
+    );
   });
 
-  it('Should be able to update queue status to REFUND_REQUESTED only when status is `Expired`', async () => {
-    await prismaService.ethereumQueue.update({
-      where: { transactionHash: validTxnHash },
-      data: { status: QueueStatus.EXPIRED },
+  it('Should throw error when requesting refund for transaction that is in ERROR status and current date < expired date', async () => {
+    // set expiry date to be 1 hour > current date
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 1);
+
+    await Promise.all([
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { status: QueueStatus.ERROR },
+      }),
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { expiryDate },
+      }),
+    ]);
+
+    const resp = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/queue/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
     });
+
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual(
+      'API call for refund was unsuccessful: Refund requests for the queue cannot be made at the moment as it has been less than 72 hours since the queue was created.',
+    );
+  });
+
+  it('Should throw error when requesting refund for transaction that is in EXPIRED status and current date < expired date', async () => {
+    // set expiry date to be 1 hour > current date
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() + 1);
+
+    await Promise.all([
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { status: QueueStatus.EXPIRED },
+      }),
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { expiryDate },
+      }),
+    ]);
+
+    const resp = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/queue/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
+    });
+
+    const queue = JSON.parse(resp.body);
+    expect(queue.error).toEqual(
+      'API call for refund was unsuccessful: Refund requests for the queue cannot be made at the moment as it has been less than 72 hours since the queue was created.',
+    );
+  });
+
+  it('Should be able to update queue status to REFUND_REQUESTED only when status is IN_PROGRESS status and current date > expired date', async () => {
+    // set expiry date to be 1 hour < current date
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() - 1);
+
+    await Promise.all([
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { status: QueueStatus.IN_PROGRESS },
+      }),
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { expiryDate },
+      }),
+    ]);
+
+    const resp = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/queue/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
+    });
+
+    const queue = JSON.parse(resp.body);
+    expect(queue.id).toEqual('1');
+    expect(queue.transactionHash).toEqual(validTxnHash);
+    expect(queue.status).toEqual(QueueStatus.REFUND_REQUESTED);
+  });
+
+  it('Should be able to update queue status to REFUND_REQUESTED only when status is ERROR status and current date > expired date', async () => {
+    await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
+    // set expiry date to be 1 hour < current date
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() - 1);
+
+    await Promise.all([
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { status: QueueStatus.ERROR },
+      }),
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { expiryDate },
+      }),
+    ]);
+
+    const resp = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/queue/refund`,
+      payload: {
+        transactionHash: validTxnHash,
+      },
+    });
+
+    const queue = JSON.parse(resp.body);
+    expect(queue.id).toEqual('1');
+    expect(queue.transactionHash).toEqual(validTxnHash);
+    expect(queue.status).toEqual(QueueStatus.REFUND_REQUESTED);
+  });
+
+  it('Should be able to update queue status to REFUND_REQUESTED only when status is `Expired` and current date > expired date', async () => {
+    // set expiry date to be 1 hour < current date
+    const expiryDate = new Date();
+    expiryDate.setDate(expiryDate.getDate() - 1);
+
+    await Promise.all([
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { status: QueueStatus.EXPIRED },
+      }),
+      prismaService.ethereumQueue.update({
+        where: { transactionHash: validTxnHash },
+        data: { expiryDate },
+      }),
+    ]);
 
     const resp = await testing.inject({
       method: 'POST',
@@ -294,7 +419,6 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should throw error when transaction exist but queue does not exist in DB', async () => {
-    await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
     const resp = await testing.inject({
       method: 'POST',
       url: `/ethereum/queue/refund`,
