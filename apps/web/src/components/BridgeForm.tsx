@@ -111,6 +111,7 @@ export default function BridgeForm({
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
   const {
+    dfcAddress,
     dfcAddressDetails,
     destinationAddress,
     txnForm,
@@ -262,6 +263,7 @@ export default function BridgeForm({
     setUtilityModalData(null);
     setStorage("txn-form", null);
     setStorage("destination-address", null);
+    setStorage("dfc-address", null);
     setStorage("dfc-address-details", null);
     setStorage("transfer-amount", null);
     setHasUnconfirmedTxn(false);
@@ -382,7 +384,7 @@ export default function BridgeForm({
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
           setStorage("txn-form", null);
-          setStorage("destination-address", null);
+          setStorage("dfc-address", null);
         } else {
           // TODO: Improve setStorage by not forcing stringified JSON
           setStorage("dfc-address-details", JSON.stringify(addressDetailRes));
@@ -396,8 +398,8 @@ export default function BridgeForm({
   };
 
   useEffect(() => {
-    fetchAddressDetail(destinationAddress);
-  }, [networkEnv, destinationAddress]);
+    fetchAddressDetail(dfcAddress);
+  }, [networkEnv, dfcAddress]);
 
   const { y, reference, floating, strategy, refs } = useFloating({
     placement: "bottom-end",
