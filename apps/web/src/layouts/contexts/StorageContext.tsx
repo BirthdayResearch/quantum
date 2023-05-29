@@ -145,6 +145,8 @@ export function StorageProvider({
     DFC_ADDR_DETAILS_KEY,
     TXN_KEY,
     TRANSFER_AMOUNT_KEY,
+    TRANSFER_DISPLAY_SYMBOL_A_KEY,
+    TRANSFER_DISPLAY_SYMBOL_B_KEY,
   ]);
 
   const context: StorageContextI = useMemo(() => {
