@@ -29,11 +29,7 @@ import { ContractType, VerificationService } from './VerificationService';
 
 export enum ErrorMsgTypes {
   TxnNotFound = 'Transaction not found',
-  PendingTxn = 'Transaction is still pending',
   RevertedTxn = 'Transaction Reverted',
-  FundAlreadyAllocated = 'Fund already allocated',
-  InsufficientDFILiquidity = 'Insufficient DFI liquidity',
-  InaccurateContractAddress = 'Contract Address is inaccurate',
 }
 
 @Injectable()
@@ -260,12 +256,12 @@ export class EVMTransactionConfirmerService {
 
       // check if tx details are available in db
       if (!txDetails) {
-        throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
+        throw new Error('Transaction detail not available');
       }
 
       // check if fund is already allocated for the given address
       if (txDetails.sendTransactionHash) {
-        throw new NotFoundException(ErrorMsgTypes.FundAlreadyAllocated);
+        throw new Error('Fund already allocated');
       }
 
       if (txDetails.unconfirmedSendTransactionHash) {
@@ -306,7 +302,7 @@ export class EVMTransactionConfirmerService {
 
       // check if txn is confirmed or not
       if (txDetails.status !== EthereumTransactionStatus.CONFIRMED) {
-        throw new NotFoundException(ErrorMsgTypes.PendingTxn);
+        throw new Error('Transaction is not yet confirmed');
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
@@ -317,7 +313,7 @@ export class EVMTransactionConfirmerService {
       );
 
       if (!txReceipt) {
-        throw new NotFoundException(ErrorMsgTypes.PendingTxn);
+        throw new Error('Transaction is not yet available');
       }
 
       // Sanity check that the contractAddress, decoded name and signature are correct
@@ -332,7 +328,7 @@ export class EVMTransactionConfirmerService {
       // if transaction is reverted
       const isReverted = txReceipt.status === 0;
       if (isReverted === true) {
-        throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
+        throw new BadRequestException(`Transaction Reverted`);
       }
 
       const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
@@ -363,7 +359,7 @@ export class EVMTransactionConfirmerService {
           this.logger.log(
             `[Sending UTXO] Failed to send because insufficient DFI UTXO in hot wallet after deducting reserved UTXO`,
           );
-          throw new NotFoundException(ErrorMsgTypes.InsufficientDFILiquidity);
+          throw new BadRequestException('Insufficient DFI liquidity');
         }
       }
 
