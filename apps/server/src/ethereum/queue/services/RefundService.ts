@@ -1,4 +1,4 @@
-import { BadRequestException,HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { QueueStatus } from '@prisma/client';
 import BigNumber from 'bignumber.js';
@@ -75,7 +75,7 @@ export class RefundService {
       throw new HttpException(
         {
           status: e.status ?? (e.code || HttpStatus.INTERNAL_SERVER_ERROR),
-          error: `API call for request queue refund was unsuccessful: ${e.message}`,
+          error: `API call for refund was unsuccessful: ${e.message}`,
         },
         e.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
         {
