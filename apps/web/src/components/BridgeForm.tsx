@@ -113,6 +113,7 @@ export default function BridgeForm({
   const {
     dfcAddress,
     dfcAddressDetails,
+    destinationAddress,
     txnForm,
     transferAmount,
     transferDisplaySymbolA,
@@ -261,6 +262,7 @@ export default function BridgeForm({
   const onResetTransferForm = () => {
     setUtilityModalData(null);
     setStorage("txn-form", null);
+    setStorage("destination-address", null);
     setStorage("dfc-address", null);
     setStorage("dfc-address-details", null);
     setStorage("transfer-amount", null);
@@ -345,7 +347,7 @@ export default function BridgeForm({
     const localData = txnForm;
 
     if (localData && networkEnv === localData.networkEnv) {
-      setStorage("dfc-address", localData.toAddress);
+      setStorage("destination-address", localData.toAddress);
       setStorage("transfer-amount", localData.amount);
       setStorage(
         "transfer-display-symbol-A",
@@ -498,7 +500,7 @@ export default function BridgeForm({
                 </span>
               </div>
               <span className="max-w-[50%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
-                {dfcAddress}
+                {destinationAddress}
               </span>
             </div>
             <div className="flex flex-row justify-between">

@@ -52,6 +52,7 @@ export enum BridgeStatus {
 
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
 export const STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details";
+export const STORAGE_DESTINATION_ADDRESS_KEY = "destination-address";
 export const STORAGE_TRANSFER_AMOUNT_KEY = "transfer-amount";
 export const STORAGE_TRANSFER_DISPLAY_SYMBOL_A_KEY =
   "transfer-display-symbol-A";
