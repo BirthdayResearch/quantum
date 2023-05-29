@@ -53,9 +53,8 @@ export function buildTestConfig({
         bridgeProxy: {
           address: testnet?.bridgeContractAddress ?? '',
         },
-        // TODO: Update to the accurate address once deployed
         queueBridgeProxy: {
-          address: testnet?.bridgeContractAddress ?? '',
+          address: testnet?.bridgeQueueContractAddress ?? '',
         },
         USDC: {
           address: usdcAddress,
@@ -99,6 +98,7 @@ type OptionalBuildTestConfigParams = {
   startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {
     bridgeContractAddress: string;
+    bridgeQueueContractAddress: string;
     ethWalletPrivKey: string;
   };
   usdcAddress: string;

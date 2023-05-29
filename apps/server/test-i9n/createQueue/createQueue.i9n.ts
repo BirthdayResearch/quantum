@@ -19,7 +19,7 @@ describe('Create Queue Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkContainer;
   let hardhatNetwork: HardhatNetwork;
   let testing: BridgeServerTestingApp;
-  let bridgeContract: BridgeQueue;
+  let bridgeQueueContract: BridgeQueue;
   let bridgeContractFixture: QueueBridgeContractFixture;
   let musdcContract: TestToken;
   let prismaService: PrismaService;
@@ -34,7 +34,7 @@ describe('Create Queue Service Integration Tests', () => {
     await bridgeContractFixture.setup();
 
     // Using the default signer of the container to carry out tests
-    ({ QueueBridgeProxy: bridgeContract, musdc: musdcContract } =
+    ({ queueBridgeProxy: bridgeQueueContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
     // initialize config variables
@@ -43,7 +43,7 @@ describe('Create Queue Service Integration Tests', () => {
         buildTestConfig({
           defichain: { key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
           startedHardhatContainer,
-          testnet: { bridgeContractAddress: bridgeContract.address },
+          testnet: { bridgeQueueContractAddress: bridgeQueueContract.address },
           startedPostgresContainer,
           usdcAddress: musdcContract.address,
         }),
@@ -78,7 +78,7 @@ describe('Create Queue Service Integration Tests', () => {
 
   it('Check if create queue transaction is stored in database', async () => {
     // Step 1: Call bridgeToDeFiChain( test defi wallet address, _tokenAddress, _amount) function (bridge 5 USDC) and mine the block
-    const transactionCall = await bridgeContract.bridgeToDeFiChain(
+    const transactionCall = await bridgeQueueContract.bridgeToDeFiChain(
       ethers.utils.toUtf8Bytes('df1q4q49nwn7s8l6fsdpkmhvf0als6jawktg8urd3u'),
       musdcContract.address,
       5,

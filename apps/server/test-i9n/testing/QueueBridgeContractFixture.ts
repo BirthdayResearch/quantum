@@ -14,11 +14,11 @@ export class QueueBridgeContractFixture {
   private contractManager: EvmContractManager;
 
   // The default signer used to deploy contracts
-  public adminAndOperationalSigner: Signer;
+  public defaultAdminSigner: Signer;
 
   constructor(private readonly hardhatNetwork: HardhatNetwork) {
     this.contractManager = hardhatNetwork.contracts;
-    this.adminAndOperationalSigner = hardhatNetwork.contractSigner;
+    this.defaultAdminSigner = hardhatNetwork.contractSigner;
   }
 
   static readonly Contracts = {
@@ -38,8 +38,8 @@ export class QueueBridgeContractFixture {
 
     return {
       // Proxy contract proxies all calls to the implementation contract
-      QueueBridgeProxy: BridgeQueue__factory.connect(bridgeQueueProxyContract.address, this.adminAndOperationalSigner),
-      QueueBridgeImplementation: this.hardhatNetwork.contracts.getDeployedContract<BridgeQueue>(
+      queueBridgeProxy: BridgeQueue__factory.connect(bridgeQueueProxyContract.address, this.defaultAdminSigner),
+      queueBridgeImplementation: this.hardhatNetwork.contracts.getDeployedContract<BridgeQueue>(
         QueueBridgeContractFixture.Contracts.BridgeQueueImplementation.deploymentName,
       ),
       musdt: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
@@ -66,8 +66,8 @@ export class QueueBridgeContractFixture {
     );
     return {
       // Proxy contract proxies all calls to the implementation contract
-      QueueBridgeProxy: BridgeQueue__factory.connect(bridgeQueueProxyContract.address, userSigner),
-      QueueBridgeImplementation: this.hardhatNetwork.contracts.getDeployedContract<BridgeQueue>(
+      queueBridgeProxy: BridgeQueue__factory.connect(bridgeQueueProxyContract.address, userSigner),
+      queueBridgeImplementation: this.hardhatNetwork.contracts.getDeployedContract<BridgeQueue>(
         QueueBridgeContractFixture.Contracts.BridgeQueueImplementation.deploymentName,
         userSigner,
       ),
@@ -95,7 +95,7 @@ export class QueueBridgeContractFixture {
   }
 
   get contractsWithAdminAndOperationalSigner(): BridgeContracts {
-    return this.getContractsWithSigner(this.adminAndOperationalSigner);
+    return this.getContractsWithSigner(this.defaultAdminSigner);
   }
 
   /**
@@ -110,7 +110,7 @@ export class QueueBridgeContractFixture {
     });
     await this.hardhatNetwork.generate(1);
 
-    const adminAndOperationalAddress = await this.adminAndOperationalSigner.getAddress();
+    const adminAndOperationalAddress = await this.defaultAdminSigner.getAddress();
 
     // Deploy MockUSDT
     const musdt = await this.contractManager.deployContract<TestToken>({
@@ -169,7 +169,7 @@ export class QueueBridgeContractFixture {
     ]);
 
     // Deploying proxy contract
-    const QueueBridgeProxy = await this.contractManager.deployContract<BridgeQueueProxy>({
+    const queueBridgeProxy = await this.contractManager.deployContract<BridgeQueueProxy>({
       deploymentName: QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName,
       contractName: QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName,
       deployArgs: [queueBridgeUpgradeable.address, encodedData],
@@ -178,7 +178,7 @@ export class QueueBridgeContractFixture {
     await this.hardhatNetwork.generate(1);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const queueBridge = BridgeQueue__factory.connect(QueueBridgeProxy.address, this.adminAndOperationalSigner);
+    const queueBridge = BridgeQueue__factory.connect(queueBridgeProxy.address, this.defaultAdminSigner);
 
     return this.contracts;
   }
@@ -187,7 +187,7 @@ export class QueueBridgeContractFixture {
    * Mints MUSDC, MUSDT, MWBTC And MEURC tokens to an EOA
    */
   async mintTokensToEOA(address: string, amount: BigNumberish = constants.MaxInt256): Promise<void> {
-    const { musdc, musdt, mwbtc, meuroc, dfi } = this.getContractsWithSigner(this.adminAndOperationalSigner);
+    const { musdc, musdt, mwbtc, meuroc, dfi } = this.getContractsWithSigner(this.defaultAdminSigner);
     await musdc.mint(address, amount);
     await musdt.mint(address, amount);
     await mwbtc.mint(address, amount);
@@ -205,10 +205,10 @@ export class QueueBridgeContractFixture {
    */
   async approveBridgeForEOA(signer: Signer): Promise<void> {
     const { musdc, musdt, mwbtc, meuroc, dfi } = this.getContractsWithSigner(signer);
-    const { QueueBridgeProxy } = this.contracts;
+    const { queueBridgeProxy } = this.contracts;
     const tokenAddresses: TestToken[] = [musdc, musdt, mwbtc, meuroc, dfi];
     for (const token of tokenAddresses) {
-      await token.approve(QueueBridgeProxy.address, constants.MaxInt256);
+      await token.approve(queueBridgeProxy.address, constants.MaxInt256);
     }
 
     await this.hardhatNetwork.generate(1);
@@ -224,14 +224,14 @@ export class QueueBridgeContractFixture {
    */
   async setup(): Promise<void> {
     await this.deployContracts();
-    await this.mintTokensToEOA(await this.adminAndOperationalSigner.getAddress());
-    await this.approveBridgeForEOA(await this.adminAndOperationalSigner);
+    await this.mintTokensToEOA(await this.defaultAdminSigner.getAddress());
+    await this.approveBridgeForEOA(await this.defaultAdminSigner);
   }
 }
 
 export interface BridgeContracts {
-  QueueBridgeProxy: BridgeQueue;
-  QueueBridgeImplementation: BridgeQueue;
+  queueBridgeProxy: BridgeQueue;
+  queueBridgeImplementation: BridgeQueue;
   musdt: TestToken;
   musdc: TestToken;
   mwbtc: TestToken;

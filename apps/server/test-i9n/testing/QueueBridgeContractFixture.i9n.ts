@@ -64,12 +64,12 @@ describe('QueueBridgeContractFixture Integration Tests', () => {
     await bridgeContractFixture.deployContracts();
 
     // Then the Bridge contracts should be deployed on chain
-    const { musdc, musdt, QueueBridgeImplementation, QueueBridgeProxy } = bridgeContractFixture.contracts;
+    const { musdc, musdt, queueBridgeImplementation, queueBridgeProxy } = bridgeContractFixture.contracts;
 
     await expect(
-      hardhatNetwork.ethersRpcProvider.getCode(QueueBridgeImplementation.address),
+      hardhatNetwork.ethersRpcProvider.getCode(queueBridgeImplementation.address),
     ).resolves.not.toStrictEqual('0x');
-    await expect(hardhatNetwork.ethersRpcProvider.getCode(QueueBridgeProxy.address)).resolves.not.toStrictEqual('0x');
+    await expect(hardhatNetwork.ethersRpcProvider.getCode(queueBridgeProxy.address)).resolves.not.toStrictEqual('0x');
     await expect(hardhatNetwork.ethersRpcProvider.getCode(musdc.address)).resolves.not.toStrictEqual('0x');
     await expect(hardhatNetwork.ethersRpcProvider.getCode(musdt.address)).resolves.not.toStrictEqual('0x');
   });
@@ -84,9 +84,9 @@ describe('QueueBridgeContractFixture Integration Tests', () => {
 
   it('should be able to the Bridge to spend tokens on behalf of a specified EOA', async () => {
     await bridgeContractFixture.approveBridgeForEOA(testEOASigner);
-    const { musdt, musdc, QueueBridgeProxy } = bridgeContractFixture.contracts;
+    const { musdt, musdc, queueBridgeProxy } = bridgeContractFixture.contracts;
     // BridgeQueue
-    await expect(musdt.allowance(testEOAAddress, QueueBridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
-    await expect(musdc.allowance(testEOAAddress, QueueBridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
+    await expect(musdt.allowance(testEOAAddress, queueBridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
+    await expect(musdc.allowance(testEOAAddress, queueBridgeProxy.address)).resolves.toStrictEqual(constants.MaxInt256);
   });
 });

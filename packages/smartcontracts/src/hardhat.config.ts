@@ -95,6 +95,7 @@ const config: HardhatUserConfig = {
       // could be larger than the stipulated max size in EIP-170
       allowUnlimitedContractSize: true,
     },
+
     development: {
       url: 'http://127.0.0.1:8545/',
       chainId: DEFAULT_CHAINID,
