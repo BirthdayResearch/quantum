@@ -105,7 +105,7 @@ export class EVMTransactionConfirmerService {
     // if transaction is reverted
     const isReverted = txReceipt.status === 0;
     if (isReverted === true) {
-      throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
+      throw new BadRequestException(`Transaction Reverted`);
     }
 
     const currentBlockNumber = await this.ethersRpcProvider.getBlockNumber();
