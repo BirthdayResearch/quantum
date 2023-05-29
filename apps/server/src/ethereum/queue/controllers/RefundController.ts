@@ -9,7 +9,7 @@ export class RefundController {
   constructor(private readonly refundService: RefundService) {}
 
   /**
-   * Return order with status updated to OrderStatus.REFUND_REQUESTED
+   * Return queue with status updated to QueueStatus.REFUND_REQUESTED
    *
    * @body {transactionHash} transactionHash unique Ethereum transaction hash that is created when a transaction is done from EVM -> DFC
    */
