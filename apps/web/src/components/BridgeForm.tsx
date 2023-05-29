@@ -115,6 +115,8 @@ export default function BridgeForm({
     destinationAddress,
     txnForm,
     transferAmount,
+    transferDisplaySymbolA,
+    transferDisplaySymbolB,
     setStorage,
     txnHash,
   } = useStorageContext();
@@ -345,6 +347,14 @@ export default function BridgeForm({
     if (localData && networkEnv === localData.networkEnv) {
       setStorage("destination-address", localData.toAddress);
       setStorage("transfer-amount", localData.amount);
+      setStorage(
+        "transfer-display-symbol-A",
+        localData.selectedTokensA.tokenA.name
+      );
+      setStorage(
+        "transfer-display-symbol-B",
+        localData.selectedTokensB.tokenA.name
+      );
       // Load data from storage
       setHasUnconfirmedTxn(true);
       setAmount(localData.amount);
@@ -477,7 +487,7 @@ export default function BridgeForm({
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
-                suffix={` ${selectedTokensB.tokenB.name}`}
+                suffix={` ${transferDisplaySymbolA}`}
                 trimTrailingZeros
               />
             </div>
@@ -507,7 +517,7 @@ export default function BridgeForm({
                 className="block break-words text-right text-sm text-dark-1000 leading-5 lg:text-base"
                 value={fee}
                 thousandSeparator
-                suffix={` ${feeSymbol}`}
+                suffix={` ${transferDisplaySymbolA}`}
                 trimTrailingZeros
               />
             </div>
@@ -524,7 +534,7 @@ export default function BridgeForm({
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
-                suffix={` ${selectedTokensB.tokenA.name}`}
+                suffix={` ${transferDisplaySymbolB}`}
                 trimTrailingZeros
               />
             </div>

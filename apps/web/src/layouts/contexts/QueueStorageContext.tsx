@@ -21,6 +21,8 @@ type StorageKey =
   | "dfc-address-details-queue"
   | "txn-form-queue"
   | "transfer-amount-queue"
+  | "transfer-display-symbol-A-queue"
+  | "transfer-display-symbol-B-queue"
   | "created-queue-txn-hash";
 
 interface StorageContextQueueI {
@@ -35,6 +37,8 @@ interface StorageContextQueueI {
   dfcAddressDetails?: AddressDetails;
   txnForm?: UnconfirmedQueueTxnI;
   transferAmount?: string;
+  transferDisplaySymbolA?: string;
+  transferDisplaySymbolB?: string;
   getStorage: (key: StorageKey) => string | undefined;
   setStorage: (key: StorageKey, value: string | null) => void;
   createdQueueTxnHash?: string;
@@ -69,6 +73,10 @@ export function QueueStorageProvider({
     useState<AddressDetails>();
   const [queueTxnForm, setQueueTxnForm] = useState<any>();
   const [queueTransferAmount, setQueueTransferAmount] = useState<string>();
+  const [queueTransferDisplaySymbolA, setQueueTransferDisplaySymbolA] =
+    useState<string>();
+  const [queueTransferDisplaySymbolB, setQueueTransferDisplaySymbolB] =
+    useState<string>();
   const [createdQueueTxn, setCreatedQueueTxn] = useState<string>();
 
   const { networkEnv } = useNetworkEnvironmentContext();
@@ -83,6 +91,8 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
     QUEUE_TRANSFER_AMOUNT_KEY,
+    QUEUE_TRANSFER_DISPLAY_SYMBOL_A_KEY,
+    QUEUE_TRANSFER_DISPLAY_SYMBOL_B_KEY,
     QUEUE_CREATION_KEY,
   } = useBridgeFormStorageKeys();
 
@@ -107,6 +117,10 @@ export function QueueStorageProvider({
       getStorageItem<string>(QUEUE_DFC_ADDR_KEY) ?? undefined;
     const transferAmountKeyStorage =
       getStorageItem<string>(QUEUE_TRANSFER_AMOUNT_KEY) ?? undefined;
+    const transferDisplaySymbolAKeyStorage =
+      getStorageItem<string>(QUEUE_TRANSFER_DISPLAY_SYMBOL_A_KEY) ?? undefined;
+    const transferDisplaySymbolBKeyStorage =
+      getStorageItem<string>(QUEUE_TRANSFER_DISPLAY_SYMBOL_B_KEY) ?? undefined;
     const createdQueueStorageKey =
       getStorageItem<string>(QUEUE_CREATION_KEY) ?? undefined;
 
@@ -117,6 +131,8 @@ export function QueueStorageProvider({
     setUnsentQueueFundTxnHashKey(unsentFundTxnHashKeyStorage);
     setDfcQueueAddress(dfcAddressKeyStorage);
     setQueueTransferAmount(transferAmountKeyStorage);
+    setQueueTransferDisplaySymbolA(transferDisplaySymbolAKeyStorage);
+    setQueueTransferDisplaySymbolB(transferDisplaySymbolBKeyStorage);
     setCreatedQueueTxn(createdQueueStorageKey);
   }, [
     networkEnv,
@@ -129,6 +145,8 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
     QUEUE_TRANSFER_AMOUNT_KEY,
+    QUEUE_TRANSFER_DISPLAY_SYMBOL_A_KEY,
+    QUEUE_TRANSFER_DISPLAY_SYMBOL_B_KEY,
     QUEUE_CREATION_KEY,
   ]);
 
@@ -170,6 +188,14 @@ export function QueueStorageProvider({
           setQueueTransferAmount(value);
           setStorageItem(QUEUE_TRANSFER_AMOUNT_KEY, value);
           break;
+        case "transfer-display-symbol-A-queue":
+          setQueueTransferDisplaySymbolA(value);
+          setStorageItem(QUEUE_TRANSFER_DISPLAY_SYMBOL_A_KEY, value);
+          break;
+        case "transfer-display-symbol-B-queue":
+          setQueueTransferDisplaySymbolB(value);
+          setStorageItem(QUEUE_TRANSFER_DISPLAY_SYMBOL_B_KEY, value);
+          break;
         case "created-queue-txn-hash":
           setCreatedQueueTxn(value);
           setStorageItem(QUEUE_CREATION_KEY, value);
@@ -209,6 +235,12 @@ export function QueueStorageProvider({
         case "transfer-amount-queue":
           value = queueTransferAmount;
           break;
+        case "transfer-display-symbol-A-queue":
+          value = queueTransferDisplaySymbolA;
+          break;
+        case "transfer-display-symbol-B-queue":
+          value = queueTransferDisplaySymbolB;
+          break;
         case "created-queue-txn-hash":
           value = createdQueueTxn;
           break;
@@ -246,6 +278,14 @@ export function QueueStorageProvider({
       txnForm: queueTxnForm === null ? undefined : queueTxnForm,
       transferAmount:
         queueTransferAmount === null ? undefined : queueTransferAmount,
+      transferDisplaySymbolA:
+        queueTransferDisplaySymbolA === null
+          ? undefined
+          : queueTransferDisplaySymbolA,
+      transferDisplaySymbolB:
+        queueTransferDisplaySymbolB === null
+          ? undefined
+          : queueTransferDisplaySymbolB,
       getStorage,
       setStorage,
       createdQueueTxnHash:
@@ -271,6 +311,8 @@ export function QueueStorageProvider({
     QUEUE_DFC_ADDR_DETAILS_KEY,
     QUEUE_ALLOCATION_TXN_HASH_KEY,
     QUEUE_TRANSFER_AMOUNT_KEY,
+    QUEUE_TRANSFER_DISPLAY_SYMBOL_A_KEY,
+    QUEUE_TRANSFER_DISPLAY_SYMBOL_B_KEY,
     QUEUE_CREATION_KEY,
   ]);
 

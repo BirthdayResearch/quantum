@@ -13,9 +13,9 @@ export interface ModalConfigType {
   buttonLabel: string;
   onClose: () => void;
   transactionHash: string;
-  destinationAddress: string | undefined;
-  amount: string | undefined;
-  symbol: string;
+  destinationAddress?: string;
+  amount?: string;
+  symbol?: string;
 }
 
 export default function QueueTransactionModal({
