@@ -11,8 +11,6 @@ import { ContractType, ErrorMsgTypes, VerificationService } from '../../services
 export class RefundService {
   private readonly contractAddress: string;
 
-  private readonly MIN_REQUIRED_EVM_CONFIRMATION = 65;
-
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private verificationService: VerificationService,
