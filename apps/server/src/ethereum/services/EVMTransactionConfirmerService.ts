@@ -33,6 +33,7 @@ export enum ErrorMsgTypes {
   RevertedTxn = 'Transaction Reverted',
   FundAlreadyAllocated = 'Fund already allocated',
   InsufficientDFILiquidity = 'Insufficient DFI liquidity',
+  InaccurateContractAddress = 'Contract Address is inaccurate',
 }
 
 @Injectable()
@@ -417,24 +418,42 @@ export class EVMTransactionConfirmerService {
     amount: BigNumber;
     toAddress: string;
   }> {
-    const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
-      where: {
-        transactionHash,
-      },
-    });
+    try {
+      const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
+        where: {
+          transactionHash,
+        },
+      });
 
-    if (!txHashFound) {
-      throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
-    }
-    const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
+      if (!txHashFound) {
+        throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
+      }
+      await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.instant);
+      const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
-    // if transaction is reverted
-    const isReverted = txReceipt.status === 0;
-    if (isReverted) {
-      throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
+      // Sanity check that the contractAddress is correct
+      if (txReceipt.to !== this.contractAddress) {
+        throw new BadRequestException(ErrorMsgTypes.InaccurateContractAddress);
+      }
+      // if transaction is reverted
+      const isReverted = txReceipt.status === 0;
+      if (isReverted) {
+        throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
+      }
+      const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
+      return { ...dTokenDetails, toAddress };
+    } catch (e: any) {
+      throw new HttpException(
+        {
+          status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `API call for getTransactionDetails was unsuccessful: ${e.message}`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
     }
-    const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
-    return { ...dTokenDetails, toAddress };
   }
 
   private async getEVMTxnDetails(transactionHash: string): Promise<{
