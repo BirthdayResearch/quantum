@@ -1,5 +1,13 @@
 import { fromAddress } from '@defichain/jellyfish-address';
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EthereumTransactionStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
@@ -17,6 +25,7 @@ import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
 import { getNextDayTimestampInSec } from '../../utils/DateUtils';
 import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
+import { ContractType, ErrorMsgTypes, VerificationService } from './VerificationService';
 
 @Injectable()
 export class EVMTransactionConfirmerService {
@@ -36,6 +45,7 @@ export class EVMTransactionConfirmerService {
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
     private readonly clientProvider: WhaleApiClientProvider,
     private readonly sendService: SendService,
+    private readonly verificationService: VerificationService,
     private readonly deFiChainTransactionService: DeFiChainTransactionService,
     private readonly whaleWalletProvider: WhaleWalletProvider,
     private configService: ConfigService,
@@ -70,7 +80,11 @@ export class EVMTransactionConfirmerService {
   }
 
   async handleTransaction(transactionHash: string): Promise<HandledEVMTransaction> {
-    const isValidTxn = await this.verifyIfValidTxn(transactionHash);
+    const { parsedTxnData } = await this.verificationService.verifyIfValidTxn(
+      transactionHash,
+      this.contractAddress,
+      ContractType.instant,
+    );
     const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
 
     // if transaction is still pending
@@ -79,7 +93,7 @@ export class EVMTransactionConfirmerService {
     }
 
     // Sanity check that the contractAddress, decoded name and signature are correct
-    if (txReceipt.to !== this.contractAddress || !isValidTxn) {
+    if (txReceipt.to !== this.contractAddress || !parsedTxnData) {
       return { numberOfConfirmations: 0, isConfirmed: false };
     }
 
@@ -287,14 +301,18 @@ export class EVMTransactionConfirmerService {
       }
 
       const txReceipt = await this.ethersRpcProvider.getTransactionReceipt(transactionHash);
-      const isValidTxn = await this.verifyIfValidTxn(transactionHash);
+      const { parsedTxnData } = await this.verificationService.verifyIfValidTxn(
+        transactionHash,
+        this.contractAddress,
+        ContractType.instant,
+      );
 
       if (!txReceipt) {
         throw new Error('Transaction is not yet available');
       }
 
       // Sanity check that the contractAddress, decoded name and signature are correct
-      if (!isValidTxn || txReceipt.to !== this.contractAddress) {
+      if (!parsedTxnData || txReceipt.to !== this.contractAddress) {
         return {
           transactionHash: '',
           isConfirmed: false,
@@ -385,6 +403,40 @@ export class EVMTransactionConfirmerService {
     }
   }
 
+  async getTransactionDetails(transactionHash: string): Promise<{
+    id: string;
+    symbol: string;
+    amount: BigNumber;
+    toAddress: string;
+  }> {
+    try {
+      const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
+        where: {
+          transactionHash,
+        },
+      });
+
+      if (!txHashFound) {
+        throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
+      }
+      await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.instant);
+
+      const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
+      return { ...dTokenDetails, toAddress };
+    } catch (e: any) {
+      throw new HttpException(
+        {
+          status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `API call for getTransactionDetails was unsuccessful: ${e.message}`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
+  }
+
   private async getEVMTxnDetails(transactionHash: string): Promise<{
     id: string;
     symbol: string;
@@ -392,8 +444,8 @@ export class EVMTransactionConfirmerService {
     toAddress: string;
   }> {
     const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-    const parsedTxnData = await this.parseTxnHash(transactionHash);
-    const { params } = this.decodeTxnData(parsedTxnData);
+    const parsedTxnData = await this.verificationService.parseTxnHash(transactionHash, ContractType.instant);
+    const { params } = this.verificationService.decodeTxnData(parsedTxnData);
 
     const { _defiAddress: defiAddress, _tokenAddress: tokenAddress, _amount: amount } = params;
     const toAddress = ethers.utils.toUtf8String(defiAddress);
@@ -411,81 +463,7 @@ export class EVMTransactionConfirmerService {
     const transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
     const dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
 
-    return { ...dTokenDetails, amount: transferAmount, toAddress };
-  }
-
-  private async verifyIfValidTxn(transactionHash: string): Promise<boolean> {
-    const { parsedTxnData } = await this.parseTxnHash(transactionHash);
-    // Sanity check that the decoded function name and signature are correct
-    if (
-      parsedTxnData.name !== 'bridgeToDeFiChain' ||
-      parsedTxnData.signature !== 'bridgeToDeFiChain(bytes,address,uint256)'
-    ) {
-      return false;
-    }
-
-    // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
-
-    return true;
-  }
-
-  private async parseTxnHash(transactionHash: string): Promise<{
-    etherInterface: ethers.utils.Interface;
-    parsedTxnData: ethers.utils.TransactionDescription;
-  }> {
-    const onChainTxnDetail = await this.ethersRpcProvider.getTransaction(transactionHash);
-    const etherInterface = new ethers.utils.Interface(BridgeV1__factory.abi);
-    const parsedTxnData = etherInterface.parseTransaction({
-      data: onChainTxnDetail.data,
-      value: onChainTxnDetail.value,
-    });
-
-    return { etherInterface, parsedTxnData };
-  }
-
-  private decodeTxnData({
-    etherInterface,
-    parsedTxnData,
-  }: {
-    etherInterface: ethers.utils.Interface;
-    parsedTxnData: ethers.utils.TransactionDescription;
-  }) {
-    const fragment = etherInterface.getFunction(parsedTxnData.name);
-    const params = parsedTxnData.args.reduce((res, param, i) => {
-      let parsedParam = param;
-      const isUint = fragment.inputs[i].type.indexOf('uint') === 0;
-      const isInt = fragment.inputs[i].type.indexOf('int') === 0;
-      const isAddress = fragment.inputs[i].type.indexOf('address') === 0;
-
-      if (isUint || isInt) {
-        const isArray = Array.isArray(param);
-
-        if (isArray) {
-          parsedParam = param.map((val) => EthBigNumber.from(val).toString());
-        } else {
-          parsedParam = EthBigNumber.from(param).toString();
-        }
-      }
-
-      // Addresses returned by web3 are randomly cased so we need to standardize and lowercase all
-      if (isAddress) {
-        const isArray = Array.isArray(param);
-        if (isArray) {
-          parsedParam = param.map((_) => _.toLowerCase());
-        } else {
-          parsedParam = param.toLowerCase();
-        }
-      }
-      return {
-        ...res,
-        [fragment.inputs[i].name]: parsedParam,
-      };
-    }, {});
-
-    return {
-      params,
-      name: parsedTxnData.name,
-    };
+    return { id: dTokenDetails.id, symbol: dTokenDetails.symbol, amount: transferAmount, toAddress };
   }
 }
 

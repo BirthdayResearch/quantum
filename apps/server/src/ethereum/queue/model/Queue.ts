@@ -11,7 +11,7 @@ export interface Queue {
   tokenSymbol: string | null;
   defichainAddress: string;
   expiryDate: Date;
-  adminQueue: null | {
+  adminQueue?: null | {
     sendTransactionHash: string | null;
   };
 }
@@ -19,4 +19,9 @@ export interface Queue {
 export enum OrderBy {
   ASC = 'ASC',
   DESC = 'DESC',
+}
+
+export interface VerifyQueueTransactionDto {
+  numberOfConfirmations: number;
+  isConfirmed: boolean;
 }
