@@ -52,7 +52,12 @@ export enum BridgeStatus {
 
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
 export const STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details";
+export const STORAGE_DESTINATION_ADDRESS_KEY = "destination-address";
 export const STORAGE_TRANSFER_AMOUNT_KEY = "transfer-amount";
+export const STORAGE_TRANSFER_DISPLAY_SYMBOL_A_KEY =
+  "transfer-display-symbol-A";
+export const STORAGE_TRANSFER_DISPLAY_SYMBOL_B_KEY =
+  "transfer-display-symbol-B";
 
 export const ETHEREUM_SYMBOL = "ETH";
 export const CONFIRMATIONS_BLOCK_TOTAL = 100; // 65 in EVM, 35 in DFC
@@ -75,4 +80,8 @@ export const QUEUE_STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address-queue";
 export const QUEUE_STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details-queue";
 
 export const QUEUE_STORAGE_TRANSFER_AMOUNT_KEY = "transfer-amount-queue";
+export const QUEUE_STORAGE_TRANSFER_DISPLAY_SYMBOL_A_KEY =
+  "transfer-display-symbol-A-queue";
+export const QUEUE_STORAGE_TRANSFER_DISPLAY_SYMBOL_B_KEY =
+  "transfer-display-symbol-B-queue";
 export const STORAGE_QUEUE_CREATION_KEY = "created-queue-txn-hash";

@@ -216,6 +216,8 @@ export default function EvmToDeFiChainTransfer({
       setTimeout(() => writeBridgeToDeFiChain?.(), 300);
     } else if (hasEnoughAllowance) {
       setRequiresApproval(false);
+    } else if (successfulApproval && !hasEnoughAllowance) {
+      writeApprove?.();
     }
   }, [isApproveTxnSuccess, hasEnoughAllowance, refetchedBridgeFn]);
 
@@ -314,11 +316,14 @@ export default function EvmToDeFiChainTransfer({
           onClick={() => handleInitiateTransfer()}
           disabled={
             hasPendingTx ||
-            writeApprove === undefined ||
-            writeBridgeToDeFiChain === undefined
+            (requiresApproval === true
+              ? writeApprove === undefined
+              : writeBridgeToDeFiChain === undefined)
           }
           isLoading={
-            writeApprove === undefined || writeBridgeToDeFiChain === undefined
+            requiresApproval === true
+              ? writeApprove === undefined
+              : writeBridgeToDeFiChain === undefined
           }
         />
       </div>

@@ -22,17 +22,17 @@ export default function QueueTransactionStatus({
   txnHash,
   destinationAddress,
   amount,
-  symbol,
+  symbolToReceive,
 }: {
   isConfirmed: boolean;
   isApiSuccess: boolean;
   isReverted: boolean;
   isUnsentFund: boolean;
   numberOfEvmConfirmations: string;
-  txnHash: string | undefined;
-  destinationAddress: string | undefined;
-  amount: string | undefined;
-  symbol: string;
+  txnHash?: string;
+  destinationAddress?: string;
+  amount?: string;
+  symbolToReceive?: string;
 }) {
   const { isLg, isMd } = useResponsive();
 
@@ -182,7 +182,7 @@ export default function QueueTransactionStatus({
             transactionHash={txnHash}
             destinationAddress={destinationAddress}
             amount={amount}
-            symbol={symbol}
+            symbol={symbolToReceive}
             onClose={() => setModalToDisplay(false)}
           />
         )}
