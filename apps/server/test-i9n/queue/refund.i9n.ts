@@ -2,20 +2,20 @@ import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresear
 import { QueueStatus } from '@prisma/client';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
+import { ShellBridgeV1__factory } from 'smartcontracts';
 import {
-  BridgeV1,
+  BridgeQueue,
   HardhatNetwork,
   HardhatNetworkContainer,
-  ShellBridgeV1__factory,
-  StartedHardhatNetworkContainer,
+  StartedHardhatNetworkContainer as StartedHardhatNetworkQueueContainer,
   TestToken,
-} from 'smartcontracts';
+} from 'smartcontracts-queue';
 
 import { PrismaService } from '../../src/PrismaService';
 import { StartedDeFiChainStubContainer } from '../defichain/containers/DeFiChainStubContainer';
 import { sleep } from '../helper/sleep';
-import { BridgeContractFixture } from '../testing/BridgeContractFixture';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
+import { QueueBridgeContractFixture } from '../testing/QueueBridgeContractFixture';
 import { buildTestConfig, TestingModule } from '../testing/TestingModule';
 
 let startedPostgresContainer: StartedPostgreSqlContainer;
@@ -23,10 +23,10 @@ let testing: BridgeServerTestingApp;
 
 describe('Request Refund Testing', () => {
   let prismaService: PrismaService;
-  let startedHardhatContainer: StartedHardhatNetworkContainer;
+  let startedHardhatContainer: StartedHardhatNetworkQueueContainer;
   let hardhatNetwork: HardhatNetwork;
-  let bridgeContract: BridgeV1;
-  let bridgeContractFixture: BridgeContractFixture;
+  let bridgeQueueContract: BridgeQueue;
+  let bridgeContractFixture: QueueBridgeContractFixture;
   let musdcContract: TestToken;
   let validTxnHash: string;
   let validTxnHashNotInDB: string;
@@ -36,21 +36,21 @@ describe('Request Refund Testing', () => {
     startedHardhatContainer = await new HardhatNetworkContainer().start();
     hardhatNetwork = await startedHardhatContainer.ready();
 
-    bridgeContractFixture = new BridgeContractFixture(hardhatNetwork);
+    bridgeContractFixture = new QueueBridgeContractFixture(hardhatNetwork);
     await bridgeContractFixture.setup();
 
     // Using the default signer of the container to carry out tests
-    ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
+    ({ queueBridgeProxy: bridgeQueueContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
-    const transactionCall = await bridgeContract.bridgeToDeFiChain(
+    const transactionCall = await bridgeQueueContract.bridgeToDeFiChain(
       ethers.constants.AddressZero,
       musdcContract.address,
       5,
     );
     validTxnHash = transactionCall.hash;
 
-    const transactionCallNotInDB = await bridgeContract.bridgeToDeFiChain(
+    const transactionCallNotInDB = await bridgeQueueContract.bridgeToDeFiChain(
       ethers.constants.AddressZero,
       musdcContract.address,
       5,
@@ -62,7 +62,7 @@ describe('Request Refund Testing', () => {
       buildTestConfig({
         defichain: { key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
         startedHardhatContainer,
-        testnet: { bridgeContractAddress: bridgeContract.address },
+        testnet: { bridgeQueueContractAddress: bridgeQueueContract.address },
         startedPostgresContainer,
         usdcAddress: musdcContract.address,
       }),
