@@ -65,8 +65,8 @@ export class VerificationService {
       throw new NotFoundException(ErrorMsgTypes.PendingTxn);
     }
 
-    // Sanity check that the contractAddress is accurate in the Transaction Receipt
-    if (txReceipt.to !== contractAddress) {
+    // Sanity check that the contractAddress is accurate in the Transaction Receipt, getAddress() will inject the checksum by upper casing the address
+    if (ethers.utils.getAddress(txReceipt.to) !== ethers.utils.getAddress(contractAddress)) {
       throw new BadRequestException(ErrorMsgTypes.InaccurateContractAddress);
     }
 
