@@ -23,7 +23,8 @@ type StorageKey =
   | "transfer-amount-queue"
   | "transfer-display-symbol-A-queue"
   | "transfer-display-symbol-B-queue"
-  | "created-queue-txn-hash";
+  | "created-queue-txn-hash"
+  | "generated-address-queue";
 
 interface StorageContextQueueI {
   txnHash: {
@@ -39,6 +40,7 @@ interface StorageContextQueueI {
   transferAmount?: string;
   transferDisplaySymbolA?: string;
   transferDisplaySymbolB?: string;
+  generatedAddress?: string;
   getStorage: (key: StorageKey) => string | undefined;
   setStorage: (key: StorageKey, value: string | null) => void;
   createdQueueTxnHash?: string;
@@ -78,6 +80,7 @@ export function QueueStorageProvider({
   const [queueTransferDisplaySymbolB, setQueueTransferDisplaySymbolB] =
     useState<string>();
   const [createdQueueTxn, setCreatedQueueTxn] = useState<string>();
+  const [queueGeneratedAddress, setQueueGeneratedAddress] = useState<string>();
 
   const { networkEnv } = useNetworkEnvironmentContext();
 
