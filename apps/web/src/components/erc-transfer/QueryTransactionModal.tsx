@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ethers } from "ethers";
 import ActionButton from "@components/commons/ActionButton";
@@ -14,6 +14,7 @@ import { ModalTypeToDisplay, Queue } from "types";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 import { useGetQueueTransactionQuery } from "@store/index";
 import { useQueueStorageContext } from "../../layouts/contexts/QueueStorageContext";
+import { useNetworkContext } from "../../layouts/contexts/NetworkContext";
 
 export interface QueueTxData {
   amount?: string;
@@ -90,6 +91,8 @@ export default function QueryTransactionModal({
     contractType === ContractType.Instant ? BridgeV1.abi : BridgeQueue.abi
   );
 
+  const { selectedQueueNetworkA } = useNetworkContext();
+
   const displayModalForQueueType = (queuedTransaction: Queue) => {
     if (queuedTransaction.adminQueue && setAdminSendTxHash !== undefined) {
       const adminQueueTxHash = queuedTransaction.adminQueue.sendTransactionHash;
@@ -129,6 +132,13 @@ export default function QueryTransactionModal({
     }
   };
 
+  const getQueueToken = (tokenASymbol: string) => {
+    const tokens = selectedQueueNetworkA.tokens.find(
+      (token) => token.tokenB.symbol === tokenASymbol
+    );
+    return tokens;
+  };
+
   const checkTXnHash = async () => {
     if (!isValidEthTxHash) {
       setInputErrorMessage("Enter a valid transaction hash for Ethereum.");
@@ -149,7 +159,7 @@ export default function QueryTransactionModal({
       if (receipt) {
         setIsValidTransaction(true);
 
-        const queuedTransaction = await getQueueTransaction({
+        const queue = await getQueueTransaction({
           txnHash: transactionInput,
         }).unwrap();
 
@@ -157,24 +167,31 @@ export default function QueryTransactionModal({
           contractType === ContractType.Queue &&
           buttonLabel === "Restore transaction"
         ) {
-          if (queuedTransaction.status !== "DRAFT") {
+          if (queue.status !== "DRAFT") {
             throw new Error("Queue is already in progress");
           }
+          if (queue.tokenSymbol === null) {
+            throw new Error("Invalid token symbol in queue txn");
+          }
+
+          const token = getQueueToken(queue.tokenSymbol);
+
+          if (token === null || token === undefined) {
+            throw new Error("Invalid token symbol in queue txn");
+          }
+
           setQueueStorage("unconfirmed-queue", transactionInput);
           setQueueStorage("created-queue-txn-hash", transactionInput);
-          setQueueStorage("transfer-amount-queue", queuedTransaction.amount);
+          setQueueStorage("transfer-amount-queue", queue.amount);
           setQueueStorage(
             "transfer-display-symbol-A-queue",
-            queuedTransaction.tokenSymbol
+            token!.tokenA.name
           );
           setQueueStorage(
             "transfer-display-symbol-B-queue",
-            queuedTransaction.tokenSymbol
+            token!.tokenB.name
           );
-          setQueueStorage(
-            "dfc-address-queue",
-            queuedTransaction.defichainAddress
-          );
+          setQueueStorage("dfc-address-queue", queue.defichainAddress);
           onClose();
         }
 
