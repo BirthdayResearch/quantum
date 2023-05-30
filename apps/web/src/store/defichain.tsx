@@ -9,6 +9,7 @@ import {
 } from "types";
 import { HttpStatusCode } from "axios";
 import type { RootState } from "@store/reducers/rootReducer";
+import BigNumber from "bignumber.js";
 
 const staggeredBaseQueryWithBailOut = retry(
   async (args: string | FetchArgs, api, extraOptions) => {
@@ -215,7 +216,10 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 0 },
     }),
-    getEVMTxnDetails: builder.query<string, any>({
+    getEVMTxnDetails: builder.query<
+      { id: string; symbol: string; amount: BigNumber; toAddress: string },
+      any
+    >({
       query: ({ baseUrl, txnHash }) => ({
         url: `${baseUrl}/${PATH_ETHEREUM}/transactionDetails?transactionHash=${txnHash}`,
         method: "GET",

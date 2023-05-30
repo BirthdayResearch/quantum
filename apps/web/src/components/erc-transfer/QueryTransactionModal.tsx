@@ -10,9 +10,13 @@ import { IoCloseCircle } from "react-icons/io5";
 import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
-import { ModalTypeToDisplay, Queue } from "types";
+import { ModalTypeToDisplay, Queue, Network } from "types";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
-import { useGetQueueTransactionQuery } from "@store/index";
+import mapTokenToNetworkName from "@utils/mapTokenToNetworkName";
+import {
+  useGetQueueTransactionQuery,
+  useLazyGetEVMTxnDetailsQuery,
+} from "@store/index";
 import { useQueueStorageContext } from "../../layouts/contexts/QueueStorageContext";
 import { useNetworkContext } from "../../layouts/contexts/NetworkContext";
 
@@ -35,7 +39,6 @@ export interface ModalConfigType {
   onTransactionFound?: (modalTypeToDisplay: any) => void;
   setAdminSendTxHash?: (txHash: string) => void;
   type: QueryTransactionModalType;
-  setShowErcToDfcRestoreModal?: (show: boolean) => void;
   setQueueModalDetails?: (details: QueueTxData) => void;
 }
 
@@ -66,7 +69,6 @@ export default function QueryTransactionModal({
   onTransactionFound,
   setAdminSendTxHash,
   type,
-  setShowErcToDfcRestoreModal,
   setQueueModalDetails,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
@@ -85,6 +87,8 @@ export default function QueryTransactionModal({
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   useAutoResizeTextArea(textAreaRef.current, [transactionInput]);
   const isValidEthTxHash = checkEthTxHashHelper(transactionInput);
+
+  const [getEVMTxnDetails] = useLazyGetEVMTxnDetailsQuery();
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
   const bridgeIface = new ethers.utils.Interface(
@@ -165,8 +169,29 @@ export default function QueryTransactionModal({
     setQueueStorage("transfer-display-symbol-A-queue", token!.tokenA.name);
     setQueueStorage("transfer-display-symbol-B-queue", token!.tokenB.name);
     setQueueStorage("dfc-address-queue", queue.defichainAddress);
-    onClose();
   };
+
+  async function getInstantTxnDetails() {
+    const txnDetails = await getEVMTxnDetails({
+      txnHash: transactionInput,
+    }).unwrap();
+    setStorage("unconfirmed", transactionInput);
+    setStorage("transfer-amount", txnDetails.amount.toString());
+    setStorage("destination-address", txnDetails.toAddress);
+
+    const ethSymbolToDisplay = mapTokenToNetworkName(
+      Network.Ethereum,
+      txnDetails.symbol
+    );
+    const dfcSymbolToDisplay = mapTokenToNetworkName(
+      Network.DeFiChain,
+      txnDetails.symbol
+    );
+    if (ethSymbolToDisplay && dfcSymbolToDisplay) {
+      setStorage("transfer-display-symbol-A", ethSymbolToDisplay);
+      setStorage("transfer-display-symbol-B", dfcSymbolToDisplay);
+    }
+  }
 
   const checkTXnHash = async () => {
     if (!isValidEthTxHash) {
@@ -189,11 +214,12 @@ export default function QueryTransactionModal({
         setIsValidTransaction(true);
 
         if (type === QueryTransactionModalType.RecoverInstantTransaction) {
-          // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
-          setStorage("unconfirmed", transactionInput);
-          setShowErcToDfcRestoreModal?.(false);
+          // Both restore flow don't have to worry about overwriting tx that is in progress because recover tx modal is not accessible in confirmation UI
+          await getInstantTxnDetails();
+          onClose();
         } else if (type === QueryTransactionModalType.RecoverQueueTransaction) {
           await restoreQueueTxn();
+          onClose();
         } else {
           // Calls Queue tx from endpoint
           const queuedTransaction = await getQueueTransaction({

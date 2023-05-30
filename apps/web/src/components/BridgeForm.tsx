@@ -45,6 +45,7 @@ import {
   FEES_INFO,
   CONFIRMATIONS_BLOCK_TOTAL,
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
+  DFC_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
 import QueryTransactionModal, {
@@ -162,7 +163,6 @@ export default function BridgeForm({
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true);
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | {}>({});
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
-
   async function getBalanceFn(): Promise<TokenBalances | {}> {
     const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
     const balance = await getBalance(selectedTokensA.tokenB.symbol);
@@ -471,8 +471,16 @@ export default function BridgeForm({
             isUnsentFund={txnHash.unsentFund !== undefined}
             ethTxnStatusIsConfirmed={ethTxnStatus.isConfirmed}
             dfcTxnStatusIsConfirmed={dfcTxnStatus.isConfirmed}
-            numberOfEvmConfirmations={getNumberOfConfirmations()}
-            numberOfDfcConfirmations={dfcTxnStatus.numberOfConfirmations}
+            numberOfEvmConfirmations={
+              txnHash.confirmed !== undefined
+                ? EVM_CONFIRMATIONS_BLOCK_TOTAL.toString()
+                : getNumberOfConfirmations()
+            }
+            numberOfDfcConfirmations={
+              txnHash.confirmed !== undefined
+                ? DFC_CONFIRMATIONS_BLOCK_TOTAL.toString()
+                : dfcTxnStatus.numberOfConfirmations
+            }
             isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
           />
           <div className="flex flex-col space-y-7">
@@ -485,7 +493,7 @@ export default function BridgeForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(transferAmount || 0).minus(fee),
+                  new BigNumber(transferAmount || amount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
@@ -500,7 +508,7 @@ export default function BridgeForm({
                 </span>
               </div>
               <span className="max-w-[50%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
-                {destinationAddress}
+                {destinationAddress || addressInput}
               </span>
             </div>
             <div className="flex flex-row justify-between">
@@ -532,7 +540,7 @@ export default function BridgeForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(transferAmount || 0).minus(fee),
+                  new BigNumber(transferAmount || amount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
@@ -816,7 +824,6 @@ export default function BridgeForm({
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
         type={QueryTransactionModalType.RecoverInstantTransaction}
-        setShowErcToDfcRestoreModal={setShowErcToDfcRestoreModal}
       />
     </div>
   );

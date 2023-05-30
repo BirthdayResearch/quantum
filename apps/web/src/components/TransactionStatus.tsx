@@ -202,8 +202,7 @@ export default function TransactionStatus({
             </div>
             <span className="text-dark-300 mx-2">•</span>
             <div className="flex whitespace-nowrap items-center">
-              {!(ethTxnStatusIsConfirmed || isConfirmed) ||
-              allocationTxnHash ? (
+              {!ethTxnStatusIsConfirmed || isConfirmed || allocationTxnHash ? (
                 <IoCheckmarkCircle
                   size={16}
                   className={clsx("inline-block ml-1 mr-1.5", {
@@ -218,7 +217,7 @@ export default function TransactionStatus({
                 />
               )}
 
-              {!(dfcTxnStatusIsConfirmed || isConfirmed)
+              {!dfcTxnStatusIsConfirmed || isConfirmed
                 ? `DeFiChain (${numberOfDfcConfirmations}/${DFC_CONFIRMATIONS_BLOCK_TOTAL})`
                 : allocationTxnHash && (
                     <a
