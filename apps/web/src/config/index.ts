@@ -1,6 +1,7 @@
 import { ContractContextI } from "types";
 import BridgeV1 from "./ABIs/mainnet/BridgeV1.json";
 import BridgeV1Testnet from "./ABIs/testnet/BridgeV1.json";
+import BridgeQueue from "./ABIs/mainnet/BridgeQueue.json";
 import BridgeQueueTestnet from "./ABIs/testnet/BridgeQueue.json";
 
 export const MAINNET_CONFIG: ContractContextI = {
@@ -12,8 +13,8 @@ export const MAINNET_CONFIG: ContractContextI = {
     abi: BridgeV1,
   },
   BridgeQueue: {
-    address: "0x747d2a57d737085AC588e780BB593d5754B9f793", // TODO: update to mainnet contract address
-    abi: BridgeQueueTestnet, // TODO: update to use mainnet ABI
+    address: "0xBA188CDec7b48e6f1079256208B96f067E385Ff1",
+    abi: BridgeQueue,
   },
   HotWalletAddress: "df1qgq0rjw09hr6vr7sny2m55hkr5qgze5l9hcm0lg",
   Erc20Tokens: {
