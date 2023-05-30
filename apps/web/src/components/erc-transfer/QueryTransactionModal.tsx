@@ -159,14 +159,14 @@ export default function QueryTransactionModal({
       if (receipt) {
         setIsValidTransaction(true);
 
-        const queue = await getQueueTransaction({
-          txnHash: transactionInput,
-        }).unwrap();
-
         if (
           contractType === ContractType.Queue &&
           buttonLabel === "Restore transaction"
         ) {
+          const queue = await getQueueTransaction({
+            txnHash: transactionInput,
+          }).unwrap();
+
           if (queue.status !== "DRAFT") {
             throw new Error("Queue is already in progress");
           }
