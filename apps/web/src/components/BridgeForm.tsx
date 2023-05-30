@@ -39,6 +39,7 @@ import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
 import debounce from "@utils/debounce";
+import mapTokenToNetworkName from "@utils/mapTokenToNetworkName";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
@@ -178,17 +179,21 @@ export default function BridgeForm({
     }).unwrap();
     setStorage("transfer-amount", txnDetails.amount.toString());
     setStorage("destination-address", txnDetails.toAddress);
-    setStorage("transfer-display-symbol-A", txnDetails.symbol);
-    const selectedTokenB = selectedNetworkA.tokens.find(
-      (token) => token.tokenB.symbol === txnDetails.symbol
+    const ethSymbolToDisplay = mapTokenToNetworkName(
+      Network.Ethereum,
+      txnDetails.symbol
     );
-    if (selectedTokenB) {
-      const selectedTokenBName = selectedTokenB.tokenB.name;
-      setStorage("transfer-display-symbol-B", selectedTokenBName);
-    }
+    const dfcSymbolToDisplay = mapTokenToNetworkName(
+      Network.DeFiChain,
+      txnDetails.symbol
+    );
+    setStorage("transfer-display-symbol-A", ethSymbolToDisplay);
+    setStorage("transfer-display-symbol-B", dfcSymbolToDisplay);
   }
   useEffect(() => {
-    getTxnDetails();
+    if (!showErcToDfcRestoreModal) {
+      getTxnDetails();
+    }
   }, [showErcToDfcRestoreModal]);
 
   async function getBalanceFn(): Promise<TokenBalances | {}> {
