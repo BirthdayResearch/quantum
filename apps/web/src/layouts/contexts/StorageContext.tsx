@@ -258,6 +258,8 @@ export function StorageProvider({
     destinationAddress,
     txnForm,
     transferAmount,
+    transferDisplaySymbolA,
+    transferDisplaySymbolB,
     REVERTED_TXN_HASH_KEY,
     CONFIRMED_TXN_HASH_KEY,
     ALLOCATION_TXN_HASH_KEY,

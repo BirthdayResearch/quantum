@@ -54,6 +54,7 @@ import QueryTransactionModal, {
 import useInputValidation from "../hooks/useInputValidation";
 import { ethers } from "ethers";
 import useTxnDetails from "@hooks/useTxnDetails";
+import { useLazyGetEVMTxnDetailsQuery } from "@store/index";
 
 function SwitchButton({
   onClick,
@@ -159,6 +160,7 @@ export default function BridgeForm({
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
 
   const [getAddressDetail] = useGetAddressDetailMutation();
+  const [getEVMTxnDetails] = useLazyGetEVMTxnDetailsQuery();
 
   const { getBalance } = useCheckBalance();
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true);
@@ -166,21 +168,21 @@ export default function BridgeForm({
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
 
   async function getTxnDetails() {
-    const bridgeIface = new ethers.utils.Interface(BridgeV1.abi);
-    const txnDetails = await useTxnDetails(
-      bridgeIface,
-      EthereumRpcUrl,
-      setStorage,
-      txnHash.unsentFund ??
+    const txnDetails = await getEVMTxnDetails({
+      txnHash:
+        txnHash.unsentFund ??
         txnHash.reverted ??
         txnHash.confirmed ??
-        txnHash.unconfirmed
+        txnHash.unconfirmed,
+    }).unwrap();
+    setStorage("transfer-amount", txnDetails.amount);
+    setStorage("destination-address", txnDetails.toAddress);
+    setStorage("transfer-display-symbol-A", txnDetails.symbol);
+    const selectedTokenB = selectedNetworkA.tokens.find(
+      (token) => token.tokenB.symbol === txnDetails.symbol
     );
-    if (txnDetails) {
-      setAmount(txnDetails.formattedNumber);
-      setAddressInput(txnDetails.toAddress);
-    }
-    return txnDetails;
+    const selectedTokenBName = selectedTokenB.tokenB.name;
+    setStorage("transfer-display-symbol-B", selectedTokenBName);
   }
   useEffect(() => {
     getTxnDetails();
