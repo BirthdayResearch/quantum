@@ -23,8 +23,7 @@ type StorageKey =
   | "transfer-amount-queue"
   | "transfer-display-symbol-A-queue"
   | "transfer-display-symbol-B-queue"
-  | "created-queue-txn-hash"
-  | "generated-address-queue";
+  | "created-queue-txn-hash";
 
 interface StorageContextQueueI {
   txnHash: {

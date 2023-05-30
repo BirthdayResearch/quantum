@@ -110,6 +110,7 @@ export default function BridgeForm({
     setSelectedTokensB,
     resetNetworkSelection,
   } = useNetworkContext();
+
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
   const { Erc20Tokens } = useContractContext();
