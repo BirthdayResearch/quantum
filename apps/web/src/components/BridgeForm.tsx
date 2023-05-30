@@ -824,7 +824,6 @@ export default function BridgeForm({
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
         type={QueryTransactionModalType.RecoverInstantTransaction}
-        setShowErcToDfcRestoreModal={setShowErcToDfcRestoreModal}
       />
     </div>
   );
