@@ -48,7 +48,7 @@ import {
 } from "../constants";
 import Tooltip from "./commons/Tooltip";
 import QueryTransactionModal, {
-  ContractType,
+  QueryTransactionModalType,
 } from "./erc-transfer/QueryTransactionModal";
 import useInputValidation from "../hooks/useInputValidation";
 
@@ -815,7 +815,7 @@ export default function BridgeForm({
         buttonLabel="Restore transaction"
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
-        contractType={ContractType.Instant}
+        type={QueryTransactionModalType.RecoverInstantTransaction}
         setShowErcToDfcRestoreModal={setShowErcToDfcRestoreModal}
       />
     </div>
