@@ -35,7 +35,7 @@ import {
   FormOptions,
 } from "../layouts/contexts/NetworkContext";
 import QueryTransactionModal, {
-  ContractType,
+  QueryTransactionModalType,
 } from "./erc-transfer/QueryTransactionModal";
 import useInputValidation from "../hooks/useInputValidation";
 import QueueTransactionStatus from "./QueueTransactionStatus";
@@ -727,7 +727,7 @@ export default function QueueForm({
         buttonLabel="Restore transaction"
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
-        contractType={ContractType.Queue}
+        type={QueryTransactionModalType.RecoverQueueTransaction}
       />
     </div>
   );
