@@ -173,6 +173,26 @@ export default function QueryTransactionModal({
     setQueueStorage("dfc-address-queue", queue.defichainAddress);
     onClose();
   };
+  async function getInstantTxnDetails() {
+    const txnDetails = await getEVMTxnDetails({
+      txnHash: transactionInput,
+    }).unwrap();
+    setStorage("transfer-amount", txnDetails.amount.toString());
+    setStorage("destination-address", txnDetails.toAddress);
+
+    const ethSymbolToDisplay = mapTokenToNetworkName(
+      Network.Ethereum,
+      txnDetails.symbol
+    );
+    const dfcSymbolToDisplay = mapTokenToNetworkName(
+      Network.DeFiChain,
+      txnDetails.symbol
+    );
+    if (ethSymbolToDisplay && dfcSymbolToDisplay) {
+      setStorage("transfer-display-symbol-A", ethSymbolToDisplay);
+      setStorage("transfer-display-symbol-B", dfcSymbolToDisplay);
+    }
+  }
 
   const checkTXnHash = async () => {
     if (!isValidEthTxHash) {
@@ -250,27 +270,6 @@ export default function QueryTransactionModal({
       setCopiedFromClipboard(true);
     }
   };
-
-  async function getInstantTxnDetails() {
-    const txnDetails = await getEVMTxnDetails({
-      txnHash: transactionInput,
-    }).unwrap();
-    setStorage("transfer-amount", txnDetails.amount.toString());
-    setStorage("destination-address", txnDetails.toAddress);
-
-    const ethSymbolToDisplay = mapTokenToNetworkName(
-      Network.Ethereum,
-      txnDetails.symbol
-    );
-    const dfcSymbolToDisplay = mapTokenToNetworkName(
-      Network.DeFiChain,
-      txnDetails.symbol
-    );
-    if (ethSymbolToDisplay && dfcSymbolToDisplay) {
-      setStorage("transfer-display-symbol-A", ethSymbolToDisplay);
-      setStorage("transfer-display-symbol-B", dfcSymbolToDisplay);
-    }
-  }
 
   useEffect(() => {
     if (copiedFromClipboard) {
