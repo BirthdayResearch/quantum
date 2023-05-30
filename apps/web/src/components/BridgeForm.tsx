@@ -175,9 +175,9 @@ export default function BridgeForm({
         txnHash.confirmed ??
         txnHash.unconfirmed,
     }).unwrap();
-    setStorage("transfer-amount", txnDetails.amount);
-    setStorage("destination-address", txnDetails.toAddress);
-    setStorage("transfer-display-symbol-A", txnDetails.symbol);
+    setStorage("transfer-amount", txnDetails?.amount);
+    setStorage("destination-address", txnDetails?.toAddress);
+    setStorage("transfer-display-symbol-A", txnDetails?.symbol);
     const selectedTokenB = selectedNetworkA.tokens.find(
       (token) => token.tokenB.symbol === txnDetails.symbol
     );
