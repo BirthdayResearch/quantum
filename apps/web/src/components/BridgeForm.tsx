@@ -168,7 +168,7 @@ export default function BridgeForm({
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
 
   async function getTxnDetails() {
-    let txnDetails = await getEVMTxnDetails({
+    const txnDetails = await getEVMTxnDetails({
       txnHash:
         txnHash.unsentFund ??
         txnHash.reverted ??
@@ -520,9 +520,7 @@ export default function BridgeForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(
-                    transferAmount ? transferAmount : amount || 0
-                  ).minus(fee),
+                  new BigNumber(transferAmount || amount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
@@ -537,7 +535,7 @@ export default function BridgeForm({
                 </span>
               </div>
               <span className="max-w-[50%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
-                {destinationAddress ? destinationAddress : addressInput}
+                {destinationAddress || addressInput}
               </span>
             </div>
             <div className="flex flex-row justify-between">
@@ -569,9 +567,7 @@ export default function BridgeForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(
-                    transferAmount ? transferAmount : amount || 0
-                  ).minus(fee),
+                  new BigNumber(transferAmount || amount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator

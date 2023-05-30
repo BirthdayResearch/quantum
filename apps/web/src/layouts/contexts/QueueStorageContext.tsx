@@ -40,7 +40,6 @@ interface StorageContextQueueI {
   transferAmount?: string;
   transferDisplaySymbolA?: string;
   transferDisplaySymbolB?: string;
-  generatedAddress?: string;
   getStorage: (key: StorageKey) => string | undefined;
   setStorage: (key: StorageKey, value: string | null) => void;
   createdQueueTxnHash?: string;
@@ -80,7 +79,6 @@ export function QueueStorageProvider({
   const [queueTransferDisplaySymbolB, setQueueTransferDisplaySymbolB] =
     useState<string>();
   const [createdQueueTxn, setCreatedQueueTxn] = useState<string>();
-  const [queueGeneratedAddress, setQueueGeneratedAddress] = useState<string>();
 
   const { networkEnv } = useNetworkEnvironmentContext();
 
