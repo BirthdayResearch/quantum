@@ -9,6 +9,11 @@ export const FEES_INFO: TooltipInfoI = {
     "Fees to cover the cost of transactions on DeFiChain and Ethereum networks. For more information, visit our user guide.",
 };
 
+export const PROCESSING_TIME_INFO: TooltipInfoI = {
+  title: "Processing time",
+  content: "The estimated duration for processing your transaction on Queue.",
+};
+
 export const TOKEN_SUPPLY_INFO: TooltipInfoI = {
   title: "Token Supply",
   content:
@@ -42,13 +47,41 @@ export enum BridgeStatus {
   NoTxCreated = 3,
   TxHashBridgetoDfcError = 4,
   IsBridgeToDfcInProgress = 5,
+  QueueingTransaction = 6, // only for queue tab
 }
 
 export const STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address";
 export const STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details";
+export const STORAGE_DESTINATION_ADDRESS_KEY = "destination-address";
+export const STORAGE_TRANSFER_AMOUNT_KEY = "transfer-amount";
+export const STORAGE_TRANSFER_DISPLAY_SYMBOL_A_KEY =
+  "transfer-display-symbol-A";
+export const STORAGE_TRANSFER_DISPLAY_SYMBOL_B_KEY =
+  "transfer-display-symbol-B";
+
 export const ETHEREUM_SYMBOL = "ETH";
 export const CONFIRMATIONS_BLOCK_TOTAL = 100; // 65 in EVM, 35 in DFC
 export const EVM_CONFIRMATIONS_BLOCK_TOTAL = 65;
 export const DFC_CONFIRMATIONS_BLOCK_TOTAL = 35;
 
 export const ETHEREUM_MAINNET_ID = 1;
+
+// QUEUE
+export const QUEUE_STORAGE_TXN_KEY = "unconfirmed-txn-queue";
+export const QUEUE_STORAGE_UNCONFIRMED_TXN_HASH_KEY =
+  "unconfirmed-txn-hash-queue";
+export const QUEUE_STORAGE_CONFIRMED_TXN_HASH_KEY = "confirmed-txn-hash-queue";
+export const QUEUE_STORAGE_ALLOCATION_TXN_HASH_KEY =
+  "allocation-txn-hash-queue";
+export const QUEUE_STORAGE_REVERTED_TXN_HASH_KEY = "reverted-txn-hash-queue";
+export const QUEUE_STORAGE_UNSENT_FUND_TXN_HASH_KEY = "unsent-txn-hash-queue";
+
+export const QUEUE_STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address-queue";
+export const QUEUE_STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details-queue";
+
+export const QUEUE_STORAGE_TRANSFER_AMOUNT_KEY = "transfer-amount-queue";
+export const QUEUE_STORAGE_TRANSFER_DISPLAY_SYMBOL_A_KEY =
+  "transfer-display-symbol-A-queue";
+export const QUEUE_STORAGE_TRANSFER_DISPLAY_SYMBOL_B_KEY =
+  "transfer-display-symbol-B-queue";
+export const STORAGE_QUEUE_CREATION_KEY = "created-queue-txn-hash";

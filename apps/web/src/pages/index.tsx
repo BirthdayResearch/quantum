@@ -1,23 +1,21 @@
-import { useEffect } from "react";
-import BigNumber from "bignumber.js";
+import { useEffect, useState } from "react";
 import BridgeForm from "@components/BridgeForm";
 import WelcomeHeader from "@components/WelcomeHeader";
 import MobileBottomMenu from "@components/MobileBottomMenu";
-import useWatchEthTxn from "@hooks/useWatchEthTxn";
-import TransactionStatus from "@components/TransactionStatus";
 import { useStorageContext } from "@contexts/StorageContext";
+import { FormOptions } from "@contexts/NetworkContext";
 import Logging from "@api/logging";
 import { getStorageItem } from "@utils/localStorage";
 import { DEFICHAIN_WALLET_URL } from "config/networkUrl";
-import {
-  CONFIRMATIONS_BLOCK_TOTAL,
-  EVM_CONFIRMATIONS_BLOCK_TOTAL,
-} from "../constants";
 import useBridgeFormStorageKeys from "../hooks/useBridgeFormStorageKeys";
+import QueueForm from "../components/QueueForm";
+import FormTab from "../components/FormTab";
+import { useQueueStorageContext } from "../layouts/contexts/QueueStorageContext";
 
 function Home() {
-  const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
-  const { txnHash, setStorage } = useStorageContext();
+  const { txnHash } = useStorageContext();
+  const { txnHash: txnHashQueue, createdQueueTxnHash } =
+    useQueueStorageContext();
   const { UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY } =
     useBridgeFormStorageKeys();
 
@@ -38,20 +36,7 @@ function Home() {
     return () => window.removeEventListener("beforeunload", unloadCallback);
   }, [UNCONFIRMED_TXN_HASH_KEY, UNSENT_FUND_TXN_HASH_KEY]);
 
-  const getNumberOfConfirmations = () => {
-    let numOfConfirmations = BigNumber.min(
-      ethTxnStatus?.numberOfConfirmations,
-      EVM_CONFIRMATIONS_BLOCK_TOTAL
-    ).toString();
-
-    if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
-      numOfConfirmations = CONFIRMATIONS_BLOCK_TOTAL.toString();
-    } else if (txnHash.reverted !== undefined) {
-      numOfConfirmations = "0";
-    }
-
-    return numOfConfirmations;
-  };
+  const [activeTab, setActiveTab] = useState(FormOptions.INSTANT);
 
   return (
     <section className="relative flex flex-col" data-testid="homepage">
@@ -59,39 +44,25 @@ function Home() {
         <div className="flex flex-col justify-between px-6 pb-7 md:px-0 md:pb-0 md:w-5/12 mt-6 mb-5 md:mb-0 lg:mt-12">
           <WelcomeHeader />
         </div>
-        <div className="flex-1 md:max-w-[50%] lg:min-w-[562px]">
-          {(txnHash.unconfirmed ||
-            txnHash.confirmed ||
-            txnHash.reverted ||
-            txnHash.unsentFund) && (
-            <TransactionStatus
-              onClose={() => {
-                setStorage("confirmed", null);
-                setStorage("allocationTxnHash", null);
-                setStorage("reverted", null);
-              }}
-              txnHash={
-                txnHash.unsentFund ??
-                txnHash.reverted ??
-                txnHash.confirmed ??
-                txnHash.unconfirmed
-              }
-              allocationTxnHash={txnHash.allocationTxn}
-              isReverted={txnHash.reverted !== undefined}
-              isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both EVM and DFC
-              isUnsentFund={txnHash.unsentFund !== undefined}
-              ethTxnStatusIsConfirmed={ethTxnStatus.isConfirmed}
-              dfcTxnStatusIsConfirmed={dfcTxnStatus.isConfirmed}
-              numberOfEvmConfirmations={getNumberOfConfirmations()}
-              numberOfDfcConfirmations={dfcTxnStatus.numberOfConfirmations}
-              isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
-            />
-          )}
+        <div className="flex-1 md:w-6/12 lg:min-w-[562px] lg:ml-24">
+          <FormTab activeTab={activeTab} setActiveTab={setActiveTab} />
+
           <BridgeForm
+            activeTab={activeTab}
             hasPendingTxn={
               txnHash.unconfirmed !== undefined ||
               txnHash.unsentFund !== undefined
             }
+            setActiveTab={setActiveTab}
+          />
+          <QueueForm
+            activeTab={activeTab}
+            hasPendingTxn={
+              createdQueueTxnHash !== undefined &&
+              (txnHashQueue.unconfirmed !== undefined ||
+                txnHashQueue.unsentFund !== undefined)
+            }
+            setActiveTab={setActiveTab}
           />
         </div>
       </div>
