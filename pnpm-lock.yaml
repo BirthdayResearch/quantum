@@ -148,8 +148,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
       connectkit:
-        specifier: ^1.2.4
-        version: 1.2.4(ethers@5.7.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(wagmi@0.12.13)
+        specifier: ^1.3.0
+        version: 1.3.0(ethers@5.7.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(wagmi@0.12.13)
       dayjs:
         specifier: ^1.11.7
         version: 1.11.7
@@ -7812,8 +7812,8 @@ packages:
   /confusing-browser-globals@1.0.11:
     resolution: {integrity: sha512-JsPKdmh8ZkmnHxDk55FZ1TqVLvEQTvoByJZRN9jzI0UjxK/QgAmsphz7PGtqgPieQZ/CQcHWXCR7ATDNhGe+YA==}
 
-  /connectkit@1.2.4(ethers@5.7.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(wagmi@0.12.13):
-    resolution: {integrity: sha512-8fVHOvBvdS3A+3NAiQ5C6TZQBv762qjTaA/RtioR8Sffj5qS0t1MfNeF6i6w4gWagqXSXofC0dLGn7l1YPu+zQ==}
+  /connectkit@1.3.0(ethers@5.7.2)(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0)(wagmi@0.12.13):
+    resolution: {integrity: sha512-6EIETiGJjRWEwdRGUDjy+SWOqiCuRStKkib2xCQ8o2sOhKqSlDFC6W4B4L91J9EvrxoulRdlD80yPTYexbkUyA==}
     engines: {node: '>=12.4'}
     peerDependencies:
       ethers: '>=5.5.0 <6'

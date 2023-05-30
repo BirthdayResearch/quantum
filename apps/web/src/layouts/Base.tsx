@@ -59,6 +59,8 @@ const client = createClient(
     chains,
     appName,
     connectors: [metamask],
+    walletConnectProjectId:
+      process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "",
   })
 );
 
