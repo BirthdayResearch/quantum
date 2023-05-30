@@ -9,6 +9,7 @@ import {
 } from "types";
 import { HttpStatusCode } from "axios";
 import type { RootState } from "@store/reducers/rootReducer";
+import BigNumber from "bignumber.js";
 
 const staggeredBaseQueryWithBailOut = retry(
   async (args: string | FetchArgs, api, extraOptions) => {

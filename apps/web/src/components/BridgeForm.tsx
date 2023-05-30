@@ -168,21 +168,23 @@ export default function BridgeForm({
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
 
   async function getTxnDetails() {
-    const txnDetails = await getEVMTxnDetails({
+    let txnDetails = await getEVMTxnDetails({
       txnHash:
         txnHash.unsentFund ??
         txnHash.reverted ??
         txnHash.confirmed ??
         txnHash.unconfirmed,
     }).unwrap();
-    setStorage("transfer-amount", txnDetails.amount);
+    setStorage("transfer-amount", txnDetails.amount.toString());
     setStorage("destination-address", txnDetails.toAddress);
     setStorage("transfer-display-symbol-A", txnDetails.symbol);
     const selectedTokenB = selectedNetworkA.tokens.find(
       (token) => token.tokenB.symbol === txnDetails.symbol
     );
-    const selectedTokenBName = selectedTokenB.tokenB.name;
-    setStorage("transfer-display-symbol-B", selectedTokenBName);
+    if (selectedTokenB) {
+      const selectedTokenBName = selectedTokenB.tokenB.name;
+      setStorage("transfer-display-symbol-B", selectedTokenBName);
+    }
   }
   useEffect(() => {
     getTxnDetails();
