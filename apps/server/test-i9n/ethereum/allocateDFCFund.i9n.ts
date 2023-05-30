@@ -284,6 +284,31 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
     expect(token?.symbol).toStrictEqual('USDC');
   });
 
+  it('should fail if given inaccurate transaction hash', async () => {
+    const invalidTxnHash = 'invalidTxnHash';
+
+    const txnDetails = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/transactionDetails?transactionHash=${invalidTxnHash}`,
+    });
+    const txnDetailsRes = JSON.parse(txnDetails.body);
+    expect(txnDetails.statusCode).toStrictEqual(400);
+    expect(txnDetailsRes?.message).toStrictEqual('Invalid Ethereum transaction hash: invalidTxnHash');
+  });
+
+  it('should return accurate information when transactionDetails endpoint is called', async () => {
+    const amountLessFee = deductTransferFee(new BigNumber(1));
+
+    const txnDetails = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/transactionDetails?transactionHash=${transactionCall.hash}`,
+    });
+    const txnDetailsRes = JSON.parse(txnDetails.body);
+    expect(new BigNumber(txnDetailsRes?.amount ?? 0).toFixed(8)).toStrictEqual(amountLessFee);
+    expect(txnDetailsRes?.toAddress).toStrictEqual(address);
+    expect(txnDetailsRes?.symbol).toStrictEqual('USDC');
+  });
+
   it('should fail when fund already allocated', async () => {
     // Delay to workaround throttler exception
     await sleep(60000);

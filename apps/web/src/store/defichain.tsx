@@ -172,5 +172,12 @@ export const bridgeApi = createApi({
         url: `${baseUrl}/bridge/announcements`,
       }),
     }),
+    getEVMTxnDetails: builder.query<string, any>({
+      query: ({ baseUrl, txnHash }) => ({
+        url: `${baseUrl}/${PATH_ETHEREUM}/transactionDetails?transactionHash=${txnHash}`,
+        method: "GET",
+      }),
+      extraOptions: { maxRetries: 1 },
+    }),
   }),
 });
