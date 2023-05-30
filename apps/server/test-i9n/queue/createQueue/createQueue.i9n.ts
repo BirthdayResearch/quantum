@@ -9,11 +9,11 @@ import {
   TestToken,
 } from 'smartcontracts-queue';
 
-import { PrismaService } from '../../src/PrismaService';
-import { StartedDeFiChainStubContainer } from '../defichain/containers/DeFiChainStubContainer';
-import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
-import { QueueBridgeContractFixture } from '../testing/QueueBridgeContractFixture';
-import { buildTestConfig, TestingModule } from '../testing/TestingModule';
+import { PrismaService } from '../../../src/PrismaService';
+import { StartedDeFiChainStubContainer } from '../../defichain/containers/DeFiChainStubContainer';
+import { BridgeServerTestingApp } from '../../testing/BridgeServerTestingApp';
+import { QueueBridgeContractFixture } from '../../testing/QueueBridgeContractFixture';
+import { buildTestConfig, TestingModule } from '../../testing/TestingModule';
 
 describe('Create Queue Service Integration Tests', () => {
   let startedHardhatContainer: StartedHardhatNetworkQueueContainer;
