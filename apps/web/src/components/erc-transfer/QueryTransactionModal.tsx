@@ -39,7 +39,6 @@ export interface ModalConfigType {
   onTransactionFound?: (modalTypeToDisplay: any) => void;
   setAdminSendTxHash?: (txHash: string) => void;
   type: QueryTransactionModalType;
-  setShowErcToDfcRestoreModal?: (show: boolean) => void;
   setQueueModalDetails?: (details: QueueTxData) => void;
 }
 
@@ -70,7 +69,6 @@ export default function QueryTransactionModal({
   onTransactionFound,
   setAdminSendTxHash,
   type,
-  setShowErcToDfcRestoreModal,
   setQueueModalDetails,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
@@ -171,8 +169,8 @@ export default function QueryTransactionModal({
     setQueueStorage("transfer-display-symbol-A-queue", token!.tokenA.name);
     setQueueStorage("transfer-display-symbol-B-queue", token!.tokenB.name);
     setQueueStorage("dfc-address-queue", queue.defichainAddress);
-    onClose();
   };
+
   async function getInstantTxnDetails() {
     const txnDetails = await getEVMTxnDetails({
       txnHash: transactionInput,
@@ -216,11 +214,12 @@ export default function QueryTransactionModal({
         setIsValidTransaction(true);
 
         if (type === QueryTransactionModalType.RecoverInstantTransaction) {
-          // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
+          // Both restore flow don't have to worry about overwriting tx that is in progress because recover tx modal is not accessible in confirmation UI
           await getInstantTxnDetails();
           onClose();
         } else if (type === QueryTransactionModalType.RecoverQueueTransaction) {
           await restoreQueueTxn();
+          onClose();
         } else {
           // Calls Queue tx from endpoint
           const queuedTransaction = await getQueueTransaction({
