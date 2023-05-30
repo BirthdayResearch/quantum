@@ -2,7 +2,7 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import Modal from "@components/commons/Modal";
 import dayjs from "dayjs";
-import { ModalTypeToDisplay } from "types";
+import { ModalTypeToDisplay, Network } from "types";
 import ActionButton from "@components/commons/ActionButton";
 import truncateTextFromMiddle from "@utils/textHelper";
 import SearchTransactionIcon from "@components/icons/SearchTransactionIcon";
@@ -13,6 +13,7 @@ import { useContractContext } from "@contexts/ContractContext";
 import { QueueTxData } from "@components/erc-transfer/QueryTransactionModal";
 import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import { SuccessCopy } from "@components/QrAddress";
+import mapTokenToNetworkName from "@utils/mapTokenToNetworkName";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 
 interface TransactionCompletionModalProps {
@@ -77,6 +78,9 @@ export default function TransactionCompletionModal({
   const { amount, token, transactionHash, initiatedDate, destinationAddress } =
     queueModalDetails ?? {};
 
+  const dfcSymbolToDisplay = mapTokenToNetworkName(Network.DeFiChain, token);
+  const ethSymbolToDisplay = mapTokenToNetworkName(Network.Ethereum, token);
+
   const handleOnCopy = (text) => {
     copy(text);
     setShowSuccessCopy(true);
@@ -89,15 +93,15 @@ export default function TransactionCompletionModal({
   }, [showSuccessCopy]);
 
   const firstRowResult = {
-    [ModalTypeToDisplay.Refunded]: `${amount} ${token}`,
+    [ModalTypeToDisplay.Refunded]: `${amount} ${ethSymbolToDisplay}`,
     [ModalTypeToDisplay.Completed]: dayjs(initiatedDate).format(
       "DD/MM/YYYY, HH:mm A"
     ),
-    [ModalTypeToDisplay.RefundRequested]: `${amount} ${token}`,
+    [ModalTypeToDisplay.RefundRequested]: `${amount} ${ethSymbolToDisplay}`,
   };
   const secondRowResult = {
     [ModalTypeToDisplay.Refunded]: transactionHash,
-    [ModalTypeToDisplay.Completed]: `${amount} ${token}`,
+    [ModalTypeToDisplay.Completed]: `${amount} ${dfcSymbolToDisplay}`,
     [ModalTypeToDisplay.RefundRequested]: destinationAddress,
   };
   const thirdRowResult = {
