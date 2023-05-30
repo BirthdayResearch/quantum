@@ -139,6 +139,38 @@ export default function QueryTransactionModal({
     return tokens;
   };
 
+  const restoreQueueTxn = async () => {
+    if (
+      contractType === ContractType.Queue &&
+      buttonLabel === "Restore transaction"
+    ) {
+      const queue = await getQueueTransaction({
+        txnHash: transactionInput,
+      }).unwrap();
+
+      if (queue.status !== "DRAFT") {
+        setQueueStorage("confirmed-queue", transactionInput);
+        onClose();
+      }
+      if (queue.tokenSymbol === null) {
+        throw new Error("Invalid token symbol in queue txn");
+      }
+
+      const token = getQueueToken(queue.tokenSymbol);
+
+      if (token === null || token === undefined) {
+        throw new Error("Invalid token symbol in queue txn");
+      }
+      setQueueStorage("unconfirmed-queue", transactionInput);
+      setQueueStorage("created-queue-txn-hash", transactionInput);
+      setQueueStorage("transfer-amount-queue", queue.amount);
+      setQueueStorage("transfer-display-symbol-A-queue", token!.tokenA.name);
+      setQueueStorage("transfer-display-symbol-B-queue", token!.tokenB.name);
+      setQueueStorage("dfc-address-queue", queue.defichainAddress);
+      onClose();
+    }
+  };
+
   const checkTXnHash = async () => {
     if (!isValidEthTxHash) {
       setInputErrorMessage("Enter a valid transaction hash for Ethereum.");
@@ -159,41 +191,8 @@ export default function QueryTransactionModal({
       if (receipt) {
         setIsValidTransaction(true);
 
-        if (
-          contractType === ContractType.Queue &&
-          buttonLabel === "Restore transaction"
-        ) {
-          const queue = await getQueueTransaction({
-            txnHash: transactionInput,
-          }).unwrap();
-
-          if (queue.status !== "DRAFT") {
-            throw new Error("Queue is already in progress");
-          }
-          if (queue.tokenSymbol === null) {
-            throw new Error("Invalid token symbol in queue txn");
-          }
-
-          const token = getQueueToken(queue.tokenSymbol);
-
-          if (token === null || token === undefined) {
-            throw new Error("Invalid token symbol in queue txn");
-          }
-
-          setQueueStorage("unconfirmed-queue", transactionInput);
-          setQueueStorage("created-queue-txn-hash", transactionInput);
-          setQueueStorage("transfer-amount-queue", queue.amount);
-          setQueueStorage(
-            "transfer-display-symbol-A-queue",
-            token!.tokenA.name
-          );
-          setQueueStorage(
-            "transfer-display-symbol-B-queue",
-            token!.tokenB.name
-          );
-          setQueueStorage("dfc-address-queue", queue.defichainAddress);
-          onClose();
-        }
+        // check for restore transaction
+        await restoreQueueTxn();
 
         if (contractType === ContractType.Instant) {
           // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
@@ -210,13 +209,9 @@ export default function QueryTransactionModal({
       }
     } catch (error) {
       if (contractType === ContractType.Queue) {
-        if (error.message === "Queue is already in progress") {
-          setInputErrorMessage(error.message);
-        } else {
-          setInputErrorMessage(
-            "Invalid transaction hash. Please only enter queued transaction hash."
-          );
-        }
+        setInputErrorMessage(
+          "Invalid transaction hash. Please only enter queued transaction hash."
+        );
       } else {
         setInputErrorMessage(
           "Invalid transaction hash. Please only enter instant transaction hash."
