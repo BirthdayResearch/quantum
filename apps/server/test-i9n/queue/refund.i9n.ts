@@ -238,7 +238,7 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should throw error when requesting refund for transaction that is in IN_PROGRESS status and current date < expired date', async () => {
-    // set expiry date to be 1 hour > current date
+    // set expiry date to be 1 day > current date
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 1);
 
@@ -268,7 +268,7 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should throw error when requesting refund for transaction that is in ERROR status and current date < expired date', async () => {
-    // set expiry date to be 1 hour > current date
+    // set expiry date to be 1 day > current date
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 1);
 
@@ -298,7 +298,7 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should throw error when requesting refund for transaction that is in EXPIRED status and current date < expired date', async () => {
-    // set expiry date to be 1 hour > current date
+    // set expiry date to be 1 day > current date
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() + 1);
 
@@ -328,7 +328,7 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should be able to update queue status to REFUND_REQUESTED only when status is IN_PROGRESS status and current date > expired date', async () => {
-    // set expiry date to be 1 hour < current date
+    // set expiry date to be 1 day < current date
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() - 1);
 
@@ -359,7 +359,7 @@ describe('Request Refund Testing', () => {
 
   it('Should be able to update queue status to REFUND_REQUESTED only when status is ERROR status and current date > expired date', async () => {
     await sleep(1 * 60 * 1000); // sleep for 1 minute to reset throttle
-    // set expiry date to be 1 hour < current date
+    // set expiry date to be 1 day < current date
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() - 1);
 
@@ -389,7 +389,7 @@ describe('Request Refund Testing', () => {
   });
 
   it('Should be able to update queue status to REFUND_REQUESTED only when status is `Expired` and current date > expired date', async () => {
-    // set expiry date to be 1 hour < current date
+    // set expiry date to be 1 day < current date
     const expiryDate = new Date();
     expiryDate.setDate(expiryDate.getDate() - 1);
 
