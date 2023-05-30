@@ -13,6 +13,7 @@ import { useStorageContext } from "@contexts/StorageContext";
 import { ModalTypeToDisplay, Queue } from "types";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 import { useGetQueueTransactionQuery } from "@store/index";
+import { useQueueStorageContext } from "../../layouts/contexts/QueueStorageContext";
 
 export interface QueueTxData {
   amount?: string;
@@ -69,6 +70,7 @@ export default function QueryTransactionModal({
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
+  const { setStorage: setQueueStorage } = useQueueStorageContext();
   const { BridgeV1, BridgeQueue, EthereumRpcUrl } = useContractContext();
   const [getQueueTransaction] = useGetQueueTransactionQuery();
 
@@ -147,7 +149,34 @@ export default function QueryTransactionModal({
       if (receipt) {
         setIsValidTransaction(true);
 
-        // TODO: Restore Queue
+        const queuedTransaction = await getQueueTransaction({
+          txnHash: transactionInput,
+        }).unwrap();
+
+        if (
+          contractType === ContractType.Queue &&
+          buttonLabel === "Restore transaction"
+        ) {
+          if (queuedTransaction.status !== "DRAFT") {
+            throw new Error("Queue is already in progress");
+          }
+          setQueueStorage("unconfirmed-queue", transactionInput);
+          setQueueStorage("created-queue-txn-hash", transactionInput);
+          setQueueStorage("transfer-amount-queue", queuedTransaction.amount);
+          setQueueStorage(
+            "transfer-display-symbol-A-queue",
+            queuedTransaction.tokenSymbol
+          );
+          setQueueStorage(
+            "transfer-display-symbol-B-queue",
+            queuedTransaction.tokenSymbol
+          );
+          setQueueStorage(
+            "dfc-address-queue",
+            queuedTransaction.defichainAddress
+          );
+          onClose();
+        }
 
         if (contractType === ContractType.Instant) {
           // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
@@ -164,9 +193,13 @@ export default function QueryTransactionModal({
       }
     } catch (error) {
       if (contractType === ContractType.Queue) {
-        setInputErrorMessage(
-          "Invalid transaction hash. Please only enter queued transaction hash."
-        );
+        if (error.message === "Queue is already in progress") {
+          setInputErrorMessage(error.message);
+        } else {
+          setInputErrorMessage(
+            "Invalid transaction hash. Please only enter queued transaction hash."
+          );
+        }
       } else {
         setInputErrorMessage(
           "Invalid transaction hash. Please only enter instant transaction hash."
