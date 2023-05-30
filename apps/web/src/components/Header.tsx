@@ -9,7 +9,7 @@ import Navigation from "./Navigation";
 import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
 import QueryTransactionModal, {
-  ContractType,
+  QueryTransactionModalType,
   QueueTxData,
 } from "./erc-transfer/QueryTransactionModal";
 import TransactionInProgressModal from "./queue/TransactionInProgressModal";
@@ -73,7 +73,7 @@ export default function Header({
             inputPlaceholder="Enter transaction hash"
             buttonLabel="Track status"
             onClose={() => setModalToDisplay(undefined)}
-            contractType={ContractType.Queue}
+            type={QueryTransactionModalType.SearchQueueTransaction}
             isOpen={modalToDisplay === ModalTypeToDisplay.Search}
             onTransactionFound={(modalTypeToDisplay) => {
               setModalToDisplay(modalTypeToDisplay);

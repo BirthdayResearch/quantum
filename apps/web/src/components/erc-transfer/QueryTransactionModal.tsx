@@ -34,15 +34,15 @@ export interface ModalConfigType {
   onClose: () => void;
   onTransactionFound?: (modalTypeToDisplay: any) => void;
   setAdminSendTxHash?: (txHash: string) => void;
-  contractType: ContractType;
+  type: QueryTransactionModalType;
   setShowErcToDfcRestoreModal?: (show: boolean) => void;
   setQueueModalDetails?: (details: QueueTxData) => void;
 }
 
-export enum ContractType {
-  Instant,
-  // eslint-disable-next-line @typescript-eslint/no-shadow
-  Queue,
+export enum QueryTransactionModalType {
+  RecoverInstantTransaction,
+  RecoverQueueTransaction,
+  SearchQueueTransaction,
 }
 
 const statusToModalTypeMap = {
@@ -65,7 +65,7 @@ export default function QueryTransactionModal({
   onClose,
   onTransactionFound,
   setAdminSendTxHash,
-  contractType,
+  type,
   setShowErcToDfcRestoreModal,
   setQueueModalDetails,
 }: ModalConfigType) {
@@ -88,7 +88,9 @@ export default function QueryTransactionModal({
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
   const bridgeIface = new ethers.utils.Interface(
-    contractType === ContractType.Instant ? BridgeV1.abi : BridgeQueue.abi
+    type === QueryTransactionModalType.RecoverInstantTransaction
+      ? BridgeV1.abi
+      : BridgeQueue.abi
   );
 
   const { selectedQueueNetworkA } = useNetworkContext();
@@ -140,35 +142,30 @@ export default function QueryTransactionModal({
   };
 
   const restoreQueueTxn = async () => {
-    if (
-      contractType === ContractType.Queue &&
-      buttonLabel === "Restore transaction"
-    ) {
-      const queue = await getQueueTransaction({
-        txnHash: transactionInput,
-      }).unwrap();
+    const queue = await getQueueTransaction({
+      txnHash: transactionInput,
+    }).unwrap();
 
-      if (queue.status !== "DRAFT") {
-        setQueueStorage("confirmed-queue", transactionInput);
-        onClose();
-      }
-      if (queue.tokenSymbol === null) {
-        throw new Error("Invalid token symbol in queue txn");
-      }
-
-      const token = getQueueToken(queue.tokenSymbol);
-
-      if (token === null || token === undefined) {
-        throw new Error("Invalid token symbol in queue txn");
-      }
-      setQueueStorage("unconfirmed-queue", transactionInput);
-      setQueueStorage("created-queue-txn-hash", transactionInput);
-      setQueueStorage("transfer-amount-queue", queue.amount);
-      setQueueStorage("transfer-display-symbol-A-queue", token!.tokenA.name);
-      setQueueStorage("transfer-display-symbol-B-queue", token!.tokenB.name);
-      setQueueStorage("dfc-address-queue", queue.defichainAddress);
+    if (queue.status !== "DRAFT") {
+      setQueueStorage("confirmed-queue", transactionInput);
       onClose();
     }
+    if (queue.tokenSymbol === null) {
+      throw new Error("Invalid token symbol in queue txn");
+    }
+
+    const token = getQueueToken(queue.tokenSymbol);
+
+    if (token === null || token === undefined) {
+      throw new Error("Invalid token symbol in queue txn");
+    }
+    setQueueStorage("unconfirmed-queue", transactionInput);
+    setQueueStorage("created-queue-txn-hash", transactionInput);
+    setQueueStorage("transfer-amount-queue", queue.amount);
+    setQueueStorage("transfer-display-symbol-A-queue", token!.tokenA.name);
+    setQueueStorage("transfer-display-symbol-B-queue", token!.tokenB.name);
+    setQueueStorage("dfc-address-queue", queue.defichainAddress);
+    onClose();
   };
 
   const checkTXnHash = async () => {
@@ -191,13 +188,12 @@ export default function QueryTransactionModal({
       if (receipt) {
         setIsValidTransaction(true);
 
-        // check for restore transaction
-        await restoreQueueTxn();
-
-        if (contractType === ContractType.Instant) {
+        if (type === QueryTransactionModalType.RecoverInstantTransaction) {
           // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
           setStorage("unconfirmed", transactionInput);
           setShowErcToDfcRestoreModal?.(false);
+        } else if (type === QueryTransactionModalType.RecoverQueueTransaction) {
+          await restoreQueueTxn();
         } else {
           // Calls Queue tx from endpoint
           const queuedTransaction = await getQueueTransaction({
@@ -208,13 +204,14 @@ export default function QueryTransactionModal({
         }
       }
     } catch (error) {
-      if (contractType === ContractType.Queue) {
-        setInputErrorMessage(
-          "Invalid transaction hash. Please only enter queued transaction hash."
-        );
-      } else {
+      if (type === QueryTransactionModalType.RecoverInstantTransaction) {
         setInputErrorMessage(
           "Invalid transaction hash. Please only enter instant transaction hash."
+        );
+      } else {
+        // search queue and recover queue
+        setInputErrorMessage(
+          "Invalid transaction hash. Please only enter queued transaction hash."
         );
       }
       setIsValidTransaction(false);
