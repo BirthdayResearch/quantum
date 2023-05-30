@@ -177,6 +177,7 @@ export default function QueryTransactionModal({
     const txnDetails = await getEVMTxnDetails({
       txnHash: transactionInput,
     }).unwrap();
+    setStorage("unconfirmed", transactionInput);
     setStorage("transfer-amount", txnDetails.amount.toString());
     setStorage("destination-address", txnDetails.toAddress);
 
@@ -216,9 +217,8 @@ export default function QueryTransactionModal({
 
         if (type === QueryTransactionModalType.RecoverInstantTransaction) {
           // Restore instant form, don't have to worry about overwriting instant tx that is in progress because recover tx modal is not accessible in confirmation UI
-          setStorage("unconfirmed", transactionInput);
-          setShowErcToDfcRestoreModal?.(false);
           await getInstantTxnDetails();
+          onClose();
         } else if (type === QueryTransactionModalType.RecoverQueueTransaction) {
           await restoreQueueTxn();
         } else {
