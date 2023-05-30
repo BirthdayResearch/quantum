@@ -30,16 +30,12 @@ import { QuickInputCard } from "@components/commons/QuickInputCard";
 import TransactionStatus from "@components/TransactionStatus";
 import { useContractContext } from "@contexts/ContractContext";
 import { useStorageContext } from "@contexts/StorageContext";
-import {
-  useGetAddressDetailMutation,
-  useLazyGetEVMTxnDetailsQuery,
-} from "@store/index";
+import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
 import debounce from "@utils/debounce";
-import mapTokenToNetworkName from "@utils/mapTokenToNetworkName";
 import InputSelector from "./InputSelector";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
@@ -162,40 +158,11 @@ export default function BridgeForm({
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
 
   const [getAddressDetail] = useGetAddressDetailMutation();
-  const [getEVMTxnDetails] = useLazyGetEVMTxnDetailsQuery();
 
   const { getBalance } = useCheckBalance();
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true);
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | {}>({});
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
-
-  async function getTxnDetails() {
-    const txnDetails = await getEVMTxnDetails({
-      txnHash:
-        txnHash.unsentFund ??
-        txnHash.reverted ??
-        txnHash.confirmed ??
-        txnHash.unconfirmed,
-    }).unwrap();
-    setStorage("transfer-amount", txnDetails.amount.toString());
-    setStorage("destination-address", txnDetails.toAddress);
-    const ethSymbolToDisplay = mapTokenToNetworkName(
-      Network.Ethereum,
-      txnDetails.symbol
-    );
-    const dfcSymbolToDisplay = mapTokenToNetworkName(
-      Network.DeFiChain,
-      txnDetails.symbol
-    );
-    setStorage("transfer-display-symbol-A", ethSymbolToDisplay);
-    setStorage("transfer-display-symbol-B", dfcSymbolToDisplay);
-  }
-  useEffect(() => {
-    if (!showErcToDfcRestoreModal) {
-      getTxnDetails();
-    }
-  }, [showErcToDfcRestoreModal]);
-
   async function getBalanceFn(): Promise<TokenBalances | {}> {
     const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
     const balance = await getBalance(selectedTokensA.tokenB.symbol);
