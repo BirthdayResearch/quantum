@@ -215,7 +215,10 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 0 },
     }),
-    getEVMTxnDetails: builder.query<string, any>({
+    getEVMTxnDetails: builder.query<
+      { id: string; symbol: string; amount: BigNumber; toAddress: string },
+      any
+    >({
       query: ({ baseUrl, txnHash }) => ({
         url: `${baseUrl}/${PATH_ETHEREUM}/transactionDetails?transactionHash=${txnHash}`,
         method: "GET",

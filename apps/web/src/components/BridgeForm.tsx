@@ -30,7 +30,10 @@ import { QuickInputCard } from "@components/commons/QuickInputCard";
 import TransactionStatus from "@components/TransactionStatus";
 import { useContractContext } from "@contexts/ContractContext";
 import { useStorageContext } from "@contexts/StorageContext";
-import { useGetAddressDetailMutation } from "@store/index";
+import {
+  useGetAddressDetailMutation,
+  useLazyGetEVMTxnDetailsQuery,
+} from "@store/index";
 import dayjs from "dayjs";
 import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import useTransferFee from "@hooks/useTransferFee";
@@ -52,9 +55,6 @@ import QueryTransactionModal, {
   ContractType,
 } from "./erc-transfer/QueryTransactionModal";
 import useInputValidation from "../hooks/useInputValidation";
-import { ethers } from "ethers";
-import useTxnDetails from "@hooks/useTxnDetails";
-import { useLazyGetEVMTxnDetailsQuery } from "@store/index";
 
 function SwitchButton({
   onClick,
@@ -112,7 +112,7 @@ export default function BridgeForm({
   } = useNetworkContext();
   const { networkEnv, updateNetworkEnv, resetNetworkEnv } =
     useNetworkEnvironmentContext();
-  const { BridgeV1, EthereumRpcUrl, Erc20Tokens } = useContractContext();
+  const { Erc20Tokens } = useContractContext();
   const {
     dfcAddress,
     dfcAddressDetails,
@@ -175,9 +175,9 @@ export default function BridgeForm({
         txnHash.confirmed ??
         txnHash.unconfirmed,
     }).unwrap();
-    setStorage("transfer-amount", txnDetails?.amount);
-    setStorage("destination-address", txnDetails?.toAddress);
-    setStorage("transfer-display-symbol-A", txnDetails?.symbol);
+    setStorage("transfer-amount", txnDetails.amount);
+    setStorage("destination-address", txnDetails.toAddress);
+    setStorage("transfer-display-symbol-A", txnDetails.symbol);
     const selectedTokenB = selectedNetworkA.tokens.find(
       (token) => token.tokenB.symbol === txnDetails.symbol
     );
