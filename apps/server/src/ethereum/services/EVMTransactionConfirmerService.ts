@@ -1,5 +1,13 @@
 import { fromAddress } from '@defichain/jellyfish-address';
-import { BadRequestException, HttpException, HttpStatus, Inject, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EthereumTransactionStatus } from '@prisma/client';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
@@ -17,7 +25,7 @@ import { ETHERS_RPC_PROVIDER } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
 import { getNextDayTimestampInSec } from '../../utils/DateUtils';
 import { getDTokenDetailsByWToken } from '../../utils/TokensUtils';
-import { ContractType, VerificationService } from './VerificationService';
+import { ContractType, ErrorMsgTypes,VerificationService } from './VerificationService';
 
 @Injectable()
 export class EVMTransactionConfirmerService {
@@ -395,6 +403,40 @@ export class EVMTransactionConfirmerService {
     }
   }
 
+  async getTransactionDetails(transactionHash: string): Promise<{
+    id: string;
+    symbol: string;
+    amount: BigNumber;
+    toAddress: string;
+  }> {
+    try {
+      const txHashFound = await this.prisma.bridgeEventTransactions.findFirst({
+        where: {
+          transactionHash,
+        },
+      });
+
+      if (!txHashFound) {
+        throw new NotFoundException(ErrorMsgTypes.TxnNotFound);
+      }
+      await this.verificationService.verifyIfValidTxn(transactionHash, this.contractAddress, ContractType.instant);
+
+      const { toAddress, ...dTokenDetails } = await this.getEVMTxnDetails(transactionHash);
+      return { ...dTokenDetails, toAddress };
+    } catch (e: any) {
+      throw new HttpException(
+        {
+          status: e.code || HttpStatus.INTERNAL_SERVER_ERROR,
+          error: `API call for getTransactionDetails was unsuccessful: ${e.message}`,
+        },
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        {
+          cause: e,
+        },
+      );
+    }
+  }
+
   private async getEVMTxnDetails(transactionHash: string): Promise<{
     id: string;
     symbol: string;
@@ -421,7 +463,7 @@ export class EVMTransactionConfirmerService {
     const transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
     const dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
 
-    return { ...dTokenDetails, amount: transferAmount, toAddress };
+    return { id: dTokenDetails.id, symbol: dTokenDetails.symbol, amount: transferAmount, toAddress };
   }
 }
 
