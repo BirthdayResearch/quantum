@@ -3,7 +3,6 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { FiAlertCircle, FiCheck } from "react-icons/fi";
-import { utils } from "ethers";
 import {
   erc20ABI,
   useContractRead,
@@ -11,6 +10,7 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
+import { parseEther, parseUnits } from "viem";
 import { useRouter } from "next/router";
 import { useContractContext } from "@contexts/ContractContext";
 import { useStorageContext } from "@contexts/StorageContext";
@@ -76,8 +76,8 @@ export default function StepLastClaim({
     BigNumber.ROUND_DOWN
   );
   const parsedAmount = isTokenETH
-    ? utils.parseEther(amountLessFee)
-    : utils.parseUnits(amountLessFee, tokenDecimals);
+    ? parseEther(amountLessFee as any)
+    : parseUnits(amountLessFee as any, tokenDecimals as any);
 
   const {
     config: bridgeConfig,

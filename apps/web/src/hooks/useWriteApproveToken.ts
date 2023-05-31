@@ -45,8 +45,13 @@ export default function useWriteApproveToken({
       typeOfTransaction === FormOptions.INSTANT
         ? BridgeV1.address
         : BridgeQueue.address,
-      ethers.constants.MaxInt256,
+      BigInt(Number.MAX_SAFE_INTEGER),
     ],
+  });
+  console.log("WRITEAPPROVE:: ", {
+    ethers: ethers.constants.MaxInt256,
+    bigint: BigInt(Number.MAX_SAFE_INTEGER),
+    maxint: Number.MAX_SAFE_INTEGER,
   });
 
   // Write (ERC20 token) contract for `approve` function

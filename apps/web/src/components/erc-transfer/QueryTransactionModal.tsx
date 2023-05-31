@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import { ethers } from "ethers";
+import { createPublicClient, http, decodeFunctionData } from "viem";
 import ActionButton from "@components/commons/ActionButton";
 import Modal from "@components/commons/Modal";
 import { useContractContext } from "@contexts/ContractContext";
@@ -90,12 +90,9 @@ export default function QueryTransactionModal({
 
   const [getEVMTxnDetails] = useLazyGetEVMTxnDetailsQuery();
 
-  const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
-  const bridgeIface = new ethers.utils.Interface(
-    type === QueryTransactionModalType.RecoverInstantTransaction
-      ? BridgeV1.abi
-      : BridgeQueue.abi
-  );
+  const client = createPublicClient({
+    transport: http(EthereumRpcUrl),
+  });
 
   const { selectedQueueNetworkA } = useNetworkContext();
 
@@ -201,12 +198,18 @@ export default function QueryTransactionModal({
     }
     try {
       setIsLoading(true);
-      const receipt = await provider.getTransaction(transactionInput);
-      const decodedData = bridgeIface.parseTransaction({
-        data: receipt.data,
+      const receipt = await client.getTransaction({
+        hash: transactionInput as `0x${string}`,
+      });
+      const decodedData = decodeFunctionData({
+        abi:
+          type === QueryTransactionModalType.RecoverInstantTransaction
+            ? BridgeV1.abi
+            : BridgeQueue.abi,
+        data: receipt.input,
       });
 
-      if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
+      if (receipt && decodedData?.functionName !== "bridgeToDeFiChain") {
         setIsValidTransaction(false);
         return;
       }

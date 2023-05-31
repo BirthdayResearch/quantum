@@ -33,7 +33,8 @@ export function NetworkEnvironmentProvider({
   const env = getEnvironment(process.env.NODE_ENV);
   const networkQuery = router.query.network;
   const defaultNetwork = EnvironmentNetwork.MainNet;
-  const { updateNetwork: updateWhaleNetwork } = useWhaleNetworkContext();
+  console.log({ useWhaleNetworkContext });
+  // const { updateNetwork: updateWhaleNetwork } = useWhaleNetworkContext();
   const { chain } = useNetwork();
   const isEthereumMainNet = chain?.id === ETHEREUM_MAINNET_ID;
 
@@ -65,7 +66,7 @@ export function NetworkEnvironmentProvider({
   const handleNetworkEnvChange = (value: EnvironmentNetwork) => {
     setNetworkEnv(value);
     updateRoute(value);
-    updateWhaleNetwork(value);
+    // updateWhaleNetwork(value);
   };
 
   const resetNetworkEnv = () => {
@@ -75,7 +76,7 @@ export function NetworkEnvironmentProvider({
   useEffect(() => {
     setNetworkEnv(initialNetwork);
     updateRoute(initialNetwork);
-    updateWhaleNetwork(initialNetwork);
+    // updateWhaleNetwork(initialNetwork);
   }, [initialNetwork, chain]);
 
   const context: NetworkContextI = useMemo(

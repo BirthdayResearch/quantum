@@ -1,6 +1,7 @@
-import { ethers, utils } from "ethers";
+import { parseUnits } from "viem";
 import { erc20ABI, useContractReads } from "wagmi";
 import { useEffect, useState } from "react";
+import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
@@ -78,10 +79,10 @@ export default function EvmToDeFiChainTransfer({
   });
 
   const tokenDecimals = readTokenData?.[1] ?? "gwei";
-  const tokenAllowance = readTokenData?.[0] ?? ethers.BigNumber.from(0);
+  const tokenAllowance = readTokenData?.[0] ?? BigNumber(0); // ethers.BigNumber.from(0);
 
   const hasEnoughAllowance = tokenAllowance.gte(
-    utils.parseUnits(data.to.amount.toFixed(), tokenDecimals)
+    parseUnits(data.to.amount as any, tokenDecimals as any)
   );
 
   const {
@@ -232,7 +233,7 @@ export default function EvmToDeFiChainTransfer({
       const latestTokenAllowance = refetchedData?.[0];
       const latestTokenDecimals = refetchedData?.[1];
       const hasInsufficientAllowance = latestTokenAllowance?.lt(
-        utils.parseUnits(data.to.amount.toFixed(), latestTokenDecimals)
+        parseUnits(`${data.to.amount.toNumber()}`, latestTokenDecimals as any)
       );
       if (hasInsufficientAllowance) {
         setRequiresApproval(true);
