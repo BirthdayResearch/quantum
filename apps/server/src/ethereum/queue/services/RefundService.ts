@@ -33,9 +33,9 @@ export class RefundService {
         throw new BadRequestException(ErrorMsgTypes.QueueNotFound);
       }
 
-      const allowedRefundRequests = [QueueStatus.EXPIRED, QueueStatus.ERROR, QueueStatus.IN_PROGRESS];
+      const allowedRefundRequests: QueueStatus[] = [QueueStatus.EXPIRED, QueueStatus.ERROR, QueueStatus.IN_PROGRESS];
       // check if Queue is NOT in `IN_PROGRESS`, `ERROR` or `EXPIRED` status
-      if (!allowedRefundRequests.some((value) => value === queue.status)) {
+      if (!allowedRefundRequests.includes(queue.status)) {
         throw new BadRequestException('Unable to request refund for queue');
       }
 
@@ -55,8 +55,9 @@ export class RefundService {
       });
 
       return {
-        ...queueWithUpdatedStatus,
         id: String(queueWithUpdatedStatus.id),
+        transactionHash: queueWithUpdatedStatus.transactionHash,
+        status: queueWithUpdatedStatus.status,
       };
     } catch (e: any) {
       throw new HttpException(
