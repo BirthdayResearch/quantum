@@ -95,14 +95,12 @@ export default function useWriteBridgeToDeFiChain({
         toHex(new Uint8Array(toBytes(receiverAddress))),
         Erc20Tokens[tokenName].address,
         sendingFromETH
-          ? 0 // ETH amount is set inside overrides' `value` field
+          ? 0 // ETH amount is set inside `value` field below
           : parseUnits(`${transferAmount}`, tokenDecimals).toString(),
       ],
       ...(sendingFromETH
         ? {
-            overrides: {
-              value: parseEther(`${transferAmount}`),
-            },
+            value: parseEther(`${transferAmount}`),
           }
         : {}),
       onError: handlePrepContractError,
