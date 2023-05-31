@@ -185,18 +185,18 @@ export class QueueService {
 
       let transferAmount = new BigNumber(0);
       let dTokenDetails;
-      let tokenMinAmt;
 
       // expiry date calculations
       const currDate = new Date();
       const expiryDate = new Date(currDate.setDate(currDate.getDate() + this.DAYS_TO_EXPIRY)).toISOString();
+
+      const bigNumAmt = new BigNumber(amount);
 
       // eth transfer
       if (tokenAddress === ethers.constants.AddressZero) {
         const ethAmount = EthBigNumber.from(onChainTxnDetail.value).toString();
         transferAmount = new BigNumber(ethAmount).dividedBy(new BigNumber(10).pow(18));
         dTokenDetails = getDTokenDetailsByWToken('ETH', this.network);
-        tokenMinAmt = queueTokensMinAmt.ETH;
       } else {
         // wToken transfer
         const evmTokenContract = new ethers.Contract(tokenAddress, ERC20__factory.abi, this.ethersRpcProvider);
@@ -204,11 +204,11 @@ export class QueueService {
           evmTokenContract.symbol(),
           evmTokenContract.decimals(),
         ]);
-        transferAmount = new BigNumber(amount).dividedBy(new BigNumber(10).pow(wTokenDecimals));
+        transferAmount = bigNumAmt.dividedBy(new BigNumber(10).pow(wTokenDecimals));
         dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
-        tokenMinAmt = queueTokensMinAmt[dTokenDetails.symbol];
       }
-      if (new BigNumber(amount).isLessThan(tokenMinAmt)) {
+      const tokenMinAmt = queueTokensMinAmt[dTokenDetails.symbol];
+      if (bigNumAmt.isLessThan(tokenMinAmt)) {
         throw new Error('Transfer amount is less than the minimum amount');
       }
 
