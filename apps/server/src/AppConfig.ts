@@ -42,6 +42,14 @@ export function appConfig() {
         },
       },
       ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
+      queueTokensMinAmt: {
+        ETH: process.env.ETH_MIN_QUEUE_AMT,
+        WBTC: process.env.WBTC_MIN_QUEUE_AMT,
+        USDT: process.env.USDT_MIN_QUEUE_AMT,
+        USDC: process.env.USDC_MIN_QUEUE_AMT,
+        EUROC: process.env.EUROC_MIN_QUEUE_AMT,
+        DFI: process.env.DFI_MIN_QUEUE_AMT,
+      },
     },
   };
 }
