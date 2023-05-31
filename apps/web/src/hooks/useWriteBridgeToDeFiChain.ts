@@ -3,7 +3,7 @@
  */
 
 import BigNumber from "bignumber.js";
-import { ethers, utils } from "ethers";
+import { parseEther, parseUnits, toHex } from "viem";
 import { useEffect } from "react";
 import {
   useContractWrite,
@@ -14,6 +14,7 @@ import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
 import { FormOptions, useNetworkContext } from "@contexts/NetworkContext";
 import { ETHEREUM_SYMBOL } from "../constants";
+import { toUtf8Bytes } from "ethers/lib/utils";
 
 export interface EventErrorI {
   customErrorDisplay?:
@@ -26,7 +27,7 @@ interface BridgeToDeFiChainI {
   receiverAddress: string;
   transferAmount: BigNumber;
   tokenName: Erc20Token;
-  tokenDecimals: number | "gwei";
+  tokenDecimals: number;
   hasEnoughAllowance: boolean;
   onBridgeTxnSettled: () => void;
   setEventError: (error: EventErrorI | undefined) => void;
@@ -93,16 +94,16 @@ export default function useWriteBridgeToDeFiChain({
           : BridgeQueue.abi,
       functionName: "bridgeToDeFiChain",
       args: [
-        utils.hexlify(utils.toUtf8Bytes(receiverAddress)) as `0x${string}`,
+        toHex(toUtf8Bytes(receiverAddress)) as `0x${string}`,
         Erc20Tokens[tokenName].address,
         sendingFromETH
           ? 0 // ETH amount is set inside overrides' `value` field
-          : utils.parseUnits(transferAmount.toFixed(), tokenDecimals),
+          : parseUnits(`${transferAmount.toNumber()}`, tokenDecimals),
       ],
       ...(sendingFromETH
         ? {
             overrides: {
-              value: ethers.utils.parseEther(transferAmount.toFixed()),
+              value: parseEther(`${transferAmount.toNumber()}`),
             },
           }
         : {}),
