@@ -3,7 +3,7 @@
  */
 
 import BigNumber from "bignumber.js";
-import { parseEther, parseUnits, toHex } from "viem";
+import { parseEther, parseUnits, toHex, toBytes } from "viem";
 import { useEffect } from "react";
 import {
   useContractWrite,
@@ -14,7 +14,6 @@ import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
 import { FormOptions, useNetworkContext } from "@contexts/NetworkContext";
 import { ETHEREUM_SYMBOL } from "../constants";
-import { toUtf8Bytes } from "ethers/lib/utils";
 
 export interface EventErrorI {
   customErrorDisplay?:
@@ -94,7 +93,7 @@ export default function useWriteBridgeToDeFiChain({
           : BridgeQueue.abi,
       functionName: "bridgeToDeFiChain",
       args: [
-        toHex(toUtf8Bytes(receiverAddress)) as `0x${string}`,
+        toHex(toBytes(receiverAddress)) as `0x${string}`,
         Erc20Tokens[tokenName].address,
         sendingFromETH
           ? 0 // ETH amount is set inside overrides' `value` field
