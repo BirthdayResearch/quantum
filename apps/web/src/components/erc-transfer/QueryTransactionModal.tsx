@@ -10,7 +10,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
-import { ModalTypeToDisplay, Queue, Network, QueueStatus } from "types";
+import { ModalTypeToDisplay, Queue, Network } from "types";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 import mapTokenToNetworkName from "@utils/mapTokenToNetworkName";
 import {

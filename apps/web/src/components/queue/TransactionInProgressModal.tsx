@@ -81,14 +81,13 @@ export default function TransactionInProgressModal({
     return errMsg.substring(indexOfCutOff + 1);
   };
 
-  const requestRefund = async () => {
+  const requestRefund = async (): Promise<void> => {
     try {
       setFormStatus(FormStatus.RefundRequested);
-      const requestedRefundQueue = await refund({
+      await refund({
         txnHash: transactionHash,
       }).unwrap();
       setFormStatus(FormStatus.RefundRequestedStatusUpdateComplete);
-      return requestedRefundQueue;
     } catch (err) {
       // clean err msg
       const errMsg = err.data?.error ?? err.data.message;
@@ -101,6 +100,8 @@ export default function TransactionInProgressModal({
 
   useEffect(() => {
     if (formStatus === FormStatus.RefundRequestedStatusUpdateComplete) {
+      setFormStatus(FormStatus.BaseStatus);
+      setRequestRefundErrMsg(undefined);
       onTransactionFound(ModalTypeToDisplay.RefundRequested);
     }
   }, [formStatus]);
@@ -119,14 +120,7 @@ export default function TransactionInProgressModal({
   return (
     <>
       {formStatus === FormStatus.RefundRequested && (
-        <Modal
-          isOpen
-          onClose={() => {
-            onClose();
-            setFormStatus(FormStatus.BaseStatus);
-            setRequestRefundErrMsg(undefined);
-          }}
-        >
+        <Modal isOpen onClose={onClose}>
           <div className="flex flex-col items-center mt-6 mb-14">
             <div className="w-24 h-24 border border-brand-200 border-b-transparent rounded-full animate-spin" />
             <span className="font-bold text-2xl text-dark-900 mt-12">
@@ -138,7 +132,14 @@ export default function TransactionInProgressModal({
           </div>
         </Modal>
       )}
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        isOpen={isOpen}
+        onClose={() => {
+          setFormStatus(FormStatus.BaseStatus);
+          setRequestRefundErrMsg(undefined);
+          onClose();
+        }}
+      >
         <SuccessCopy
           containerClass="m-auto right-0 left-0 top-2"
           show={showSuccessCopy}
