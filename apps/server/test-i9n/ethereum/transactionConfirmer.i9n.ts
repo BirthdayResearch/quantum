@@ -117,7 +117,8 @@ describe('Bridge Service Integration Tests', () => {
         transactionHash: transactionCall.hash,
       },
     });
-    expect(JSON.parse(txReceipt.body)).toStrictEqual({ numberOfConfirmations: 0, isConfirmed: false });
+    expect(JSON.parse(txReceipt.body).statusCode).toStrictEqual(404);
+    expect(JSON.parse(txReceipt.body).message).toStrictEqual('Transaction is still pending');
 
     await hardhatNetwork.generate(1);
 
