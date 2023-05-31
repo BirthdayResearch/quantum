@@ -1,4 +1,5 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
+import { ConfigService } from '@nestjs/config';
 import { DeFiChainTransactionStatus, EthereumTransactionStatus, QueueStatus } from '@prisma/client';
 import { ethers } from 'ethers';
 import {
@@ -42,6 +43,11 @@ describe('Create Queue Service Integration Tests', () => {
       TestingModule.register(
         buildTestConfig({
           defichain: { key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
+          ethereum: {
+            queueTokensMinAmt: {
+              USDC: '3',
+            },
+          },
           startedHardhatContainer,
           testnet: { bridgeQueueContractAddress: bridgeQueueContract.address },
           startedPostgresContainer,
@@ -50,6 +56,7 @@ describe('Create Queue Service Integration Tests', () => {
       ),
     );
     const app = await testing.start();
+    app.get(ConfigService);
 
     // init postgres database
     prismaService = app.get<PrismaService>(PrismaService);
@@ -75,13 +82,33 @@ describe('Create Queue Service Integration Tests', () => {
     expect(JSON.parse(txReceipt.body).message).toBe('Invalid Ethereum transaction hash: wrong_transaction_test');
     expect(JSON.parse(txReceipt.body).statusCode).toBe(400);
   });
+  it('should throw error if below min amount', async () => {
+    const transactionCall = await bridgeQueueContract.bridgeToDeFiChain(
+      ethers.utils.toUtf8Bytes('bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g'),
+      musdcContract.address,
+      ethers.utils.parseUnits('2', '18'),
+    );
+    await hardhatNetwork.generate(1);
+
+    const txReceipt = await testing.inject({
+      method: 'POST',
+      url: `/ethereum/queue`,
+      payload: {
+        transactionHash: transactionCall.hash,
+      },
+    });
+    expect(txReceipt.statusCode).toStrictEqual(500);
+    expect(JSON.parse(txReceipt.body).error).toStrictEqual(
+      'API call for create Queue transaction was unsuccessful: Transfer amount is less than the minimum amount',
+    );
+  });
 
   it('Check if create queue transaction is stored in database', async () => {
     // Step 1: Call bridgeToDeFiChain( test defi wallet address, _tokenAddress, _amount) function (bridge 5 USDC) and mine the block
     const transactionCall = await bridgeQueueContract.bridgeToDeFiChain(
       ethers.utils.toUtf8Bytes('df1q4q49nwn7s8l6fsdpkmhvf0als6jawktg8urd3u'),
       musdcContract.address,
-      5,
+      ethers.utils.parseUnits('5', '18'),
     );
 
     await hardhatNetwork.generate(1);
