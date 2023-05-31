@@ -36,6 +36,7 @@ const useGetQueueTransactionQuery = () =>
   useWrappedLazyQuery(bridgeApi.useLazyGetQueueTransactionQuery);
 const useLazyGetEVMTxnDetailsQuery = () =>
   useWrappedLazyQuery(bridgeApi.useLazyGetEVMTxnDetailsQuery);
+const useRefundMutation = () => useWrappedMutation(bridgeApi.useRefundMutation);
 
 export {
   useGenerateAddressMutation,
@@ -54,5 +55,6 @@ export {
   useVerifyEthQueueTxnMutation,
   useGetQueueTransactionQuery,
   useLazyGetEVMTxnDetailsQuery,
+  useRefundMutation,
   bridgeApi,
 };

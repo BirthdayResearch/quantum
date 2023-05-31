@@ -226,5 +226,19 @@ export const bridgeApi = createApi({
       }),
       extraOptions: { maxRetries: 1 },
     }),
+    refund: builder.mutation<Queue, any>({
+      query: ({ baseUrl, txnHash }) => ({
+        url: `${baseUrl}/${PATH_ETHEREUM}/queue/refund`,
+        body: {
+          transactionHash: txnHash,
+        },
+        method: "POST",
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json; charset=UTF-8",
+        },
+      }),
+      extraOptions: { maxRetries: 0 },
+    }),
   }),
 });

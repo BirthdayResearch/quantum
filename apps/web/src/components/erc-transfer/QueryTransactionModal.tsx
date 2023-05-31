@@ -10,7 +10,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import Tooltip from "@components/commons/Tooltip";
 import useResponsive from "@hooks/useResponsive";
 import { useStorageContext } from "@contexts/StorageContext";
-import { ModalTypeToDisplay, Queue, Network } from "types";
+import { ModalTypeToDisplay, Queue, Network, QueueStatus } from "types";
 import checkEthTxHashHelper from "@utils/checkEthTxHashHelper";
 import mapTokenToNetworkName from "@utils/mapTokenToNetworkName";
 import {
@@ -51,10 +51,10 @@ export enum QueryTransactionModalType {
 const statusToModalTypeMap = {
   DRAFT: ModalTypeToDisplay.Processing,
   COMPLETED: ModalTypeToDisplay.Completed,
-  REFUND_REQUESTED: ModalTypeToDisplay.RefundInProgress,
-  // REFUND_REQUESTED: ModalTypeToDisplay.RefundRequested, // TODO: uncomment this to test REFUND_REQUESTED modal
+  // REFUND_REQUESTED: ModalTypeToDisplay.RefundInProgress,
+  REFUND_REQUESTED: ModalTypeToDisplay.RefundRequested, // TODO: uncomment this to test REFUND_REQUESTED modal
   REFUNDED: ModalTypeToDisplay.Refunded,
-  ERROR: ModalTypeToDisplay.Unsuccessful,
+  // ERROR: ModalTypeToDisplay.Unsuccessful,
   IN_PROGRESS: ModalTypeToDisplay.Pending,
 };
 
@@ -130,7 +130,14 @@ export default function QueryTransactionModal({
     }
 
     const modalType = statusToModalTypeMap[queuedTransaction.status];
-    if (modalType) {
+    const refundStatusList = ["IN_PROGRESS", "EXPIRED", "ERROR"];
+    const currentDate = new Date();
+    if (
+      refundStatusList.includes(queuedTransaction.status) &&
+      currentDate.getTime() >= new Date(queuedTransaction.expiryDate).getTime()
+    ) {
+      onTransactionFound(ModalTypeToDisplay.Unsuccessful);
+    } else if (modalType) {
       onTransactionFound(modalType);
     } else {
       // Handle case where status is not in the map
