@@ -74,6 +74,7 @@ export function buildTestConfig({
         },
       },
       ethWalletPrivKey: testnet?.ethWalletPrivKey,
+      queueTokensMinAmt: ethereum?.queueTokensMinAmt,
     },
   };
 }
@@ -95,6 +96,14 @@ type OptionalBuildTestConfigParams = {
   ethereum: {
     transferFee: string;
     supportedTokens: string;
+    queueTokensMinAmt: {
+      ETH: string;
+      WBTC: string;
+      USDT: string;
+      USDC: string;
+      EUROC: string;
+      DFI: string;
+    };
   };
   startedHardhatContainer: StartedHardhatNetworkContainer | StartedHardhatNetworkQueueContainer;
   testnet: {

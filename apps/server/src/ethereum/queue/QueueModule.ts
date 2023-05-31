@@ -8,19 +8,22 @@ import { EthersModule } from '../../modules/EthersModule';
 import { PrismaService } from '../../PrismaService';
 import { VerificationService } from '../services/VerificationService';
 import { QueueController } from './controllers/QueueController';
+import { RefundController } from './controllers/RefundController';
 import { QueueService } from './services/QueueService';
+import { RefundService } from './services/RefundService';
 
 @Module({
   providers: [
     PrismaService,
     QueueService,
+    RefundService,
     VerificationService,
     DeFiChainTransactionService,
     WhaleWalletProvider,
     WhaleApiClientProvider,
     WhaleApiService,
   ],
-  controllers: [QueueController],
+  controllers: [QueueController, RefundController],
   imports: [EthersModule],
 })
 export class QueueModule {}
