@@ -86,7 +86,7 @@ describe('Create Queue Service Integration Tests', () => {
     const transactionCall = await bridgeQueueContract.bridgeToDeFiChain(
       ethers.utils.toUtf8Bytes('bcrt1q0c78n7ahqhjl67qc0jaj5pzstlxykaj3lyal8g'),
       musdcContract.address,
-      ethers.utils.parseUnits('2', '18'),
+      2,
     );
     await hardhatNetwork.generate(1);
 
@@ -108,7 +108,7 @@ describe('Create Queue Service Integration Tests', () => {
     const transactionCall = await bridgeQueueContract.bridgeToDeFiChain(
       ethers.utils.toUtf8Bytes('df1q4q49nwn7s8l6fsdpkmhvf0als6jawktg8urd3u'),
       musdcContract.address,
-      ethers.utils.parseUnits('5', '18'),
+      5,
     );
 
     await hardhatNetwork.generate(1);

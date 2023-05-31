@@ -208,11 +208,12 @@ export class QueueService {
         dTokenDetails = getDTokenDetailsByWToken(wTokenSymbol, this.network);
         tokenMinAmt = queueTokensMinAmt[dTokenDetails.symbol];
       }
-      if (transferAmount.isLessThan(tokenMinAmt)) {
+      const bigNumAmount = new BigNumber(amount);
+      if (bigNumAmount.isLessThan(tokenMinAmt)) {
         throw new Error('Transfer amount is less than the minimum amount');
       }
 
-      if (transferAmount.isNaN() || transferAmount.isLessThanOrEqualTo(0)) {
+      if (bigNumAmount.isNaN() || bigNumAmount.isLessThanOrEqualTo(0)) {
         throw new Error('Transfer amount is less than or equal to zero');
       }
 
