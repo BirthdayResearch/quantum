@@ -90,3 +90,168 @@ export enum SupportedDFCTokenSymbols {
   DFI = 'DFI',
   EUROC = 'EUROC',
 }
+
+export enum Network {
+  Ethereum = 'Ethereum',
+  DeFiChain = 'DeFiChain',
+}
+
+export interface TokenDetailI<T> {
+  name: T;
+  subtitle?: string;
+  symbol: string;
+}
+
+export interface TokensI {
+  tokenA: TokenDetailI<string>;
+  tokenB: TokenDetailI<string>;
+}
+
+export interface NetworkOptionsI {
+  name: Network;
+  tokens: TokensI[];
+}
+
+export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI';
+export interface NetworkI<T> {
+  name: Network;
+  tokens: {
+    tokenA: TokenDetailI<T>;
+    tokenB: TokenDetailI<string>;
+  }[];
+}
+
+export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
+  {
+    name: Network.Ethereum,
+    tokens: [
+      {
+        tokenA: {
+          name: 'DFI',
+          subtitle: '(Ethereum)',
+          symbol: 'DFI',
+        },
+        tokenB: {
+          name: 'DFI',
+          symbol: 'DFI',
+        },
+      },
+      {
+        tokenA: {
+          name: 'WBTC',
+          symbol: 'WBTC',
+        },
+        tokenB: {
+          name: 'dBTC',
+          symbol: 'BTC',
+        },
+      },
+      {
+        tokenA: {
+          name: 'ETH',
+          symbol: 'ETH',
+        },
+        tokenB: {
+          name: 'dETH',
+          symbol: 'ETH',
+        },
+      },
+      {
+        tokenA: {
+          name: 'USDT',
+          symbol: 'USDT',
+        },
+        tokenB: {
+          name: 'dUSDT',
+          symbol: 'USDT',
+        },
+      },
+      {
+        tokenA: {
+          name: 'USDC',
+          symbol: 'USDC',
+        },
+        tokenB: {
+          name: 'dUSDC',
+          symbol: 'USDC',
+        },
+      },
+      {
+        tokenA: {
+          name: 'EUROC',
+          symbol: 'EUROC',
+        },
+        tokenB: {
+          name: 'dEUROC',
+          symbol: 'EUROC',
+        },
+      },
+    ],
+  },
+  {
+    name: Network.DeFiChain,
+    tokens: [
+      {
+        tokenA: {
+          name: 'DFI',
+          symbol: 'DFI',
+        },
+        tokenB: {
+          name: 'DFI',
+          subtitle: '(Ethereum)',
+          symbol: 'DFI',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dBTC',
+          symbol: 'BTC',
+        },
+        tokenB: {
+          name: 'WBTC',
+          symbol: 'WBTC',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dETH',
+          symbol: 'ETH',
+        },
+        tokenB: {
+          name: 'ETH',
+          symbol: 'ETH',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dUSDT',
+          symbol: 'USDT',
+        },
+        tokenB: {
+          name: 'USDT',
+          symbol: 'USDT',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dUSDC',
+          symbol: 'USDC',
+        },
+        tokenB: {
+          name: 'USDC',
+          symbol: 'USDC',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dEUROC',
+          symbol: 'EUROC',
+        },
+        tokenB: {
+          name: 'EUROC',
+          symbol: 'EUROC',
+        },
+      },
+    ],
+  },
+];

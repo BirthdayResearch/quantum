@@ -49,10 +49,11 @@ export class BridgeServerApp<App extends NestFastifyApplication = NestFastifyApp
         process.env.NODE_ENV === 'production'
           ? [
               'https://quantumbridge.app',
-              /https:\/\/([^.]*.\.)*quantumbridge\.app/g, // allow all subdomains of quantumbridge
-              /https:\/\/([^.]*.)--quantumbridge\.netlify\.app/g, // allow all netlify preview deployments
-              /https:\/\/([^.]*.)--admin-quantum\.netlify\.app/g, // allow all netlify preview deployments from admin
-              /https?:\/\/localhost(:\d+)?/g, // allow localhost connection
+              'https://admin.quantumbridge.app',
+              /https:\/\/([^.]*.\.)*quantumbridge\.app/, // allow all subdomains of quantumbridge
+              /https:\/\/([^.]*.)--quantumbridge\.netlify\.app/, // allow all netlify preview deployments
+              /https:\/\/([^.]*.)--admin-quantum\.netlify\.app/, // allow all netlify preview deployments from admin
+              /https?:\/\/localhost(:\d+)?/, // allow localhost connection
             ]
           : '*',
       allowedHeaders: '*',

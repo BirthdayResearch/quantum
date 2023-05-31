@@ -8,7 +8,6 @@ export async function bridgeImplementation(): Promise<BridgeQueue> {
   const bridgeQueue = await BridgeQueueFactory.deploy();
   await bridgeQueue.deployTransaction.wait(6);
   console.log('Bridge Queue address is ', bridgeQueue.address);
-  console.log('Verifying...');
   // This will verify the contract
   await verify({ contractAddress: bridgeQueue.address });
   return bridgeQueue;
