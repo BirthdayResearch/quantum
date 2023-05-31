@@ -65,6 +65,7 @@ export const EVM_CONFIRMATIONS_BLOCK_TOTAL = 65;
 export const DFC_CONFIRMATIONS_BLOCK_TOTAL = 35;
 
 export const ETHEREUM_MAINNET_ID = 1;
+export const GWEI_DECIMAL = 9; // Source: https://docs.ethers.org/v5/api/utils/display-logic/
 
 // QUEUE
 export const QUEUE_STORAGE_TXN_KEY = "unconfirmed-txn-queue";

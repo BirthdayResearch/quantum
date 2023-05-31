@@ -2,8 +2,7 @@
  * Hook to write `bridgeToDeFiChain` function from our own BridgeV1 contract
  */
 
-import BigNumber from "bignumber.js";
-import { parseEther, parseUnits, toHex, toBytes } from "viem";
+import { parseEther, parseUnits, toBytes, toHex } from "viem";
 import { useEffect } from "react";
 import {
   useContractWrite,
@@ -24,7 +23,7 @@ export interface EventErrorI {
 
 interface BridgeToDeFiChainI {
   receiverAddress: string;
-  transferAmount: BigNumber;
+  transferAmount: number;
   tokenName: Erc20Token;
   tokenDecimals: number;
   hasEnoughAllowance: boolean;
@@ -93,16 +92,16 @@ export default function useWriteBridgeToDeFiChain({
           : BridgeQueue.abi,
       functionName: "bridgeToDeFiChain",
       args: [
-        toHex(toBytes(receiverAddress)) as `0x${string}`,
+        toHex(new Uint8Array(toBytes(receiverAddress))),
         Erc20Tokens[tokenName].address,
         sendingFromETH
           ? 0 // ETH amount is set inside overrides' `value` field
-          : parseUnits(`${transferAmount.toNumber()}`, tokenDecimals),
+          : parseUnits(`${transferAmount}`, tokenDecimals).toString(),
       ],
       ...(sendingFromETH
         ? {
             overrides: {
-              value: parseEther(`${transferAmount.toNumber()}`),
+              value: parseEther(`${transferAmount}`),
             },
           }
         : {}),

@@ -2,7 +2,6 @@
  * Hook to write `approve` function from specific ERC20 token contract
  */
 
-import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import {
   erc20ABI,
@@ -45,13 +44,8 @@ export default function useWriteApproveToken({
       typeOfTransaction === FormOptions.INSTANT
         ? BridgeV1.address
         : BridgeQueue.address,
-      BigInt(Number.MAX_SAFE_INTEGER),
+      BigInt(Number.MAX_SAFE_INTEGER) as any,
     ],
-  });
-  console.log("WRITEAPPROVE:: ", {
-    ethers: ethers.constants.MaxInt256,
-    bigint: BigInt(Number.MAX_SAFE_INTEGER),
-    maxint: Number.MAX_SAFE_INTEGER,
   });
 
   // Write (ERC20 token) contract for `approve` function

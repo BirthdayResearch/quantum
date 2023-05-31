@@ -22,6 +22,7 @@ import {
   BridgeStatus,
   DISCLAIMER_MESSAGE,
   ETHEREUM_SYMBOL,
+  GWEI_DECIMAL,
 } from "../../constants";
 import {
   FormOptions,
@@ -78,11 +79,13 @@ export default function EvmToDeFiChainTransfer({
     enabled: !bridgingETH,
   });
 
-  const tokenDecimals = readTokenData?.[1] ?? "gwei";
-  const tokenAllowance = readTokenData?.[0] ?? BigNumber(0); // ethers.BigNumber.from(0);
-
+  const transferAmount = data.to.amount.toNumber();
+  const tokenDecimals = (readTokenData?.[1] as any)?.result ?? GWEI_DECIMAL;
+  const tokenAllowance = new BigNumber(
+    (readTokenData?.[0] as any)?.result.toString() ?? 0
+  );
   const hasEnoughAllowance = tokenAllowance.gte(
-    parseUnits(data.to.amount as any, tokenDecimals as any)
+    parseUnits(`${transferAmount}`, tokenDecimals).toString()
   );
 
   const {
@@ -93,8 +96,8 @@ export default function EvmToDeFiChainTransfer({
     transactionHash,
   } = useWriteBridgeToDeFiChain({
     receiverAddress: data.to.address,
-    transferAmount: data.to.amount,
     tokenName: data.from.tokenName as Erc20Token,
+    transferAmount,
     tokenDecimals,
     hasEnoughAllowance,
     onBridgeTxnSettled: () => setHasPendingTx(false),
@@ -230,10 +233,13 @@ export default function EvmToDeFiChainTransfer({
     if (!bridgingETH) {
       // Refetch token allowance
       const { data: refetchedData } = await refetchTokenData();
-      const latestTokenAllowance = refetchedData?.[0];
-      const latestTokenDecimals = refetchedData?.[1];
+      const latestTokenAllowance = new BigNumber(
+        (refetchedData?.[0] as any)?.result.toString() ?? 0
+      );
+      const latestTokenDecimals =
+        (refetchedData?.[1] as any)?.result ?? GWEI_DECIMAL;
       const hasInsufficientAllowance = latestTokenAllowance?.lt(
-        parseUnits(`${data.to.amount.toNumber()}`, latestTokenDecimals as any)
+        parseUnits(`${transferAmount}`, latestTokenDecimals).toString()
       );
       if (hasInsufficientAllowance) {
         setRequiresApproval(true);

@@ -154,7 +154,6 @@ export default function BridgeForm({
   });
 
   const maxAmount = new BigNumber(evmBalance?.formatted ?? 0);
-  console.log({ evmBalance });
   const [fromAddress, setFromAddress] = useState<string>(address || "");
   const [hasUnconfirmedTxn, setHasUnconfirmedTxn] = useState(false);
 
