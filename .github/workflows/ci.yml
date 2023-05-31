@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 8.5.0 # renovate: datasource=npm depName=pnpm
+          version: 8.3.1 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18.15.0
@@ -35,7 +35,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 8.5.0 # renovate: datasource=npm depName=pnpm
+          version: 8.3.1 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18.15.0
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 8.5.0 # renovate: datasource=npm depName=pnpm
+          version: 8.3.1 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18.15.0
@@ -73,7 +73,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 8.5.0 # renovate: datasource=npm depName=pnpm
+          version: 8.3.1 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18.15.0
@@ -91,7 +91,7 @@ jobs:
       - uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3.5.2
       - uses: pnpm/action-setup@c3b53f6a16e57305370b4ae5a540c2077a1d50dd # tag=v2.2.4
         with:
-          version: 8.5.0 # renovate: datasource=npm depName=pnpm
+          version: 8.3.1 # renovate: datasource=npm depName=pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
           node-version: 18.15.0
@@ -99,3 +99,25 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
       - run: pnpm test:hardhat
+
+  docker-buildx:
+    name: Docker Buildx
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        platform: [linux/amd64]
+    steps:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@e81a89b1732b9c48d79cd809d8d81d79c4647a18 # v2.1.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f03ac48505955848960e80bbb68046aa35c7b9e7 # v2.4.1
+
+      - name: Build bridge-api
+        uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671 # v4.0.0
+        with:
+          file: apps/server/Dockerfile
+          push: false
+          build-args: APP=bridge-api
+          platforms: ${{ matrix.platform }}
+          tags: ghcr.io/birthdayresearch/quantum-api:latest

@@ -58,7 +58,7 @@ export class QueueController {
    * @returns {Promise<EthereumQueue>}
    */
   @Post()
-  @Throttle(10, 60)
+  @Throttle(5, 60)
   queue(@Body('transactionHash', new EthereumTransactionValidationPipe()) transactionHash: string) {
     return this.queueService.createQueueTransaction(transactionHash);
   }

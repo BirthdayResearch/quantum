@@ -1,7 +1,6 @@
 import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { ConfigService } from '@nestjs/config';
 
-import { Network, NETWORK_TOKENS_LIST } from '../../src/AppConfig';
 import { BridgeServerTestingApp } from './BridgeServerTestingApp';
 import { buildTestConfig, TestingModule } from './TestingModule';
 
@@ -51,31 +50,5 @@ describe('Settings Controller Test', () => {
         supportedTokens: evmSupportedTokens,
       },
     });
-  });
-
-  it('should return correct supported tokens for both DeFiChain and Ethereum', async () => {
-    // make a request to the endpoint
-    const response = await testing.inject({
-      method: 'GET',
-      url: `/settings/supportedTokens`,
-    });
-
-    // parse the response
-    const supportedTokens = JSON.parse(response.payload);
-
-    // get the configured tokens
-    const supportedDfcTokens = config.get('defichain.supportedTokens')?.split(',');
-    const supportedEvmTokens = config.get('ethereum.supportedTokens')?.split(',');
-
-    // map to the expected format
-    const expectedSupportedTokens = NETWORK_TOKENS_LIST.map((network) => ({
-      ...network,
-      tokens: network.tokens.filter((token) =>
-        (network.name === Network.Ethereum ? supportedEvmTokens : supportedDfcTokens).includes(token.tokenA.symbol),
-      ),
-    }));
-
-    // compare the response with the expected value
-    expect(supportedTokens).toEqual(expectedSupportedTokens);
   });
 });

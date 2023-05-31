@@ -5,7 +5,6 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import { StartedHardhatNetworkContainer } from 'smartcontracts';
-import { StartedHardhatNetworkContainer as StartedHardhatNetworkQueueContainer } from 'smartcontracts-queue';
 
 import { AppConfig, DeepPartial } from '../../src/AppConfig';
 import { AppModule } from '../../src/AppModule';
@@ -54,8 +53,9 @@ export function buildTestConfig({
         bridgeProxy: {
           address: testnet?.bridgeContractAddress ?? '',
         },
+        // TODO: Update to the accurate address once deployed
         queueBridgeProxy: {
-          address: testnet?.bridgeQueueContractAddress ?? '',
+          address: testnet?.bridgeContractAddress ?? '',
         },
         USDC: {
           address: usdcAddress,
@@ -96,10 +96,9 @@ type OptionalBuildTestConfigParams = {
     transferFee: string;
     supportedTokens: string;
   };
-  startedHardhatContainer: StartedHardhatNetworkContainer | StartedHardhatNetworkQueueContainer;
+  startedHardhatContainer: StartedHardhatNetworkContainer;
   testnet: {
     bridgeContractAddress: string;
-    bridgeQueueContractAddress: string;
     ethWalletPrivKey: string;
   };
   usdcAddress: string;

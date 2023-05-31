@@ -1,1 +1,1 @@
-# Smart contracts for Queue
+# Smart contracts for second version of the bridge
