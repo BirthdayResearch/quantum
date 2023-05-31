@@ -9,11 +9,6 @@ export const FEES_INFO: TooltipInfoI = {
     "Fees to cover the cost of transactions on DeFiChain and Ethereum networks. For more information, visit our user guide.",
 };
 
-export const PROCESSING_TIME_INFO: TooltipInfoI = {
-  title: "Processing time",
-  content: "The estimated duration for processing your transaction on Queue.",
-};
-
 export const TOKEN_SUPPLY_INFO: TooltipInfoI = {
   title: "Token Supply",
   content:
@@ -57,16 +52,3 @@ export const EVM_CONFIRMATIONS_BLOCK_TOTAL = 65;
 export const DFC_CONFIRMATIONS_BLOCK_TOTAL = 35;
 
 export const ETHEREUM_MAINNET_ID = 1;
-
-// QUEUE
-export const QUEUE_STORAGE_TXN_KEY = "unconfirmed-txn-queue";
-export const QUEUE_STORAGE_UNCONFIRMED_TXN_HASH_KEY =
-  "unconfirmed-txn-hash-queue";
-export const QUEUE_STORAGE_CONFIRMED_TXN_HASH_KEY = "confirmed-txn-hash-queue";
-export const QUEUE_STORAGE_ALLOCATION_TXN_HASH_KEY =
-  "allocation-txn-hash-queue";
-export const QUEUE_STORAGE_REVERTED_TXN_HASH_KEY = "reverted-txn-hash-queue";
-export const QUEUE_STORAGE_UNSENT_FUND_TXN_HASH_KEY = "unsent-txn-hash-queue";
-
-export const QUEUE_STORAGE_DFC_ADDR_KEY = "unconfirmed-txn-dfc-address-queue";
-export const QUEUE_STORAGE_DFC_ADDR_DETAILS = "txn-dfc-address-details-queue";

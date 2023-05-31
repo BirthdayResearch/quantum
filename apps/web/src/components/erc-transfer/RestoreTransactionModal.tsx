@@ -14,65 +14,49 @@ import { useStorageContext } from "@contexts/StorageContext";
 export interface ModalConfigType {
   title: string;
   message: string;
-  inputLabel: string;
-  inputPlaceholder: string;
-  buttonLabel: string;
-  inputErrorMessage: string;
-  // contractType: ContractType; // TODO: handle type when new SC is merged
   onClose: () => void;
 }
 
-export enum ContractType {
-  Instant,
-  Queue,
-}
-
-export default function QueryTransactionModal({
+export default function RestoreTransactionModal({
   title,
   message,
-  inputLabel,
-  inputPlaceholder,
-  buttonLabel,
-  inputErrorMessage,
   onClose,
 }: ModalConfigType) {
   const { isMobile } = useResponsive();
   const { setStorage } = useStorageContext();
   const { BridgeV1, EthereumRpcUrl } = useContractContext();
 
-  const [transactionInput, setTransactionInput] = useState<string>("");
-  const [isFocused, setIsFocused] = useState(false);
-  const [isValidTransaction, setIsValidTransaction] = useState(true);
+  const [txnAddress, setTxnAddress] = useState<string>("");
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [isNotValidTxn, setIsNotValidTxn] = useState<boolean>(false);
   const [copiedFromClipboard, setCopiedFromClipboard] =
     useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState(false);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  useAutoResizeTextArea(textAreaRef.current, [transactionInput]);
+  useAutoResizeTextArea(textAreaRef.current, [
+    txnAddress,
+    "Enter Transaction ID",
+  ]);
 
   const provider = new ethers.providers.JsonRpcProvider(EthereumRpcUrl);
-  const bridgeIface = new ethers.utils.Interface(BridgeV1.abi); // TODO: use new abi from new SC
+  const bridgeIface = new ethers.utils.Interface(BridgeV1.abi);
 
   const checkTXnHash = async () => {
     try {
-      setIsLoading(true);
-      const receipt = await provider.getTransaction(transactionInput);
+      const receipt = await provider.getTransaction(txnAddress);
       const decodedData = bridgeIface.parseTransaction({ data: receipt.data });
       if (receipt && decodedData?.name !== "bridgeToDeFiChain") {
-        // TODO: add condition to check decodedData.name of new SC
-        setIsValidTransaction(false);
+        setIsNotValidTxn(true);
         return;
       }
       if (receipt) {
-        setStorage("unconfirmed", transactionInput);
-        setIsValidTransaction(true);
+        setStorage("unconfirmed", txnAddress);
+        setIsNotValidTxn(false);
         onClose();
         return;
       }
-      setIsValidTransaction(false);
+      setIsNotValidTxn(true);
     } catch (error) {
-      setIsValidTransaction(false);
-    } finally {
-      setIsLoading(false);
+      setIsNotValidTxn(true);
     }
   };
 
@@ -81,7 +65,7 @@ export default function QueryTransactionModal({
     setTimeout(() => {
       // Only added timeout for ref's unexplained delay
       const textArea = textAreaRef.current;
-      const cursorPosition = transactionInput.length;
+      const cursorPosition = txnAddress.length;
       if (textArea) {
         textArea.setSelectionRange(cursorPosition, cursorPosition);
         textArea.focus();
@@ -89,13 +73,13 @@ export default function QueryTransactionModal({
     }, 0);
   };
 
-  const invalidTxnHash = !!transactionInput && !isValidTransaction;
+  const invalidTxnHash = txnAddress && isNotValidTxn;
 
   const handlePasteBtnClick = async () => {
-    setIsValidTransaction(true);
+    setIsNotValidTxn(false);
     const copiedText = await navigator.clipboard.readText();
     if (copiedText) {
-      setTransactionInput(copiedText);
+      setTxnAddress(copiedText);
       setCopiedFromClipboard(true);
     }
   };
@@ -108,7 +92,7 @@ export default function QueryTransactionModal({
 
   return (
     <Modal isOpen onClose={onClose}>
-      <div className="flex flex-col mt-6 mb-4 w-full md:px-6">
+      <div className="flex flex-col mt-6 mb-14 w-full px-6">
         <div className="font-bold text-xl lg:text-2xl text-dark-900">
           {title}
         </div>
@@ -118,7 +102,7 @@ export default function QueryTransactionModal({
 
         <div className="md:h-5 lg:h-7 group relative flex items-center mt-8">
           <span className="text-xs font-semibold xl:tracking-wider lg:text-base text-dark-900">
-            {inputLabel}
+            Transaction ID
           </span>
           <div
             className={clsx(
@@ -146,7 +130,7 @@ export default function QueryTransactionModal({
           {/* Paste icon with tooltip */}
           <Tooltip
             content="Paste from clipboard"
-            containerClass="mr-3 shrink-0 cursor-pointer hover:bg-dark-200 active:dark-btn-pressed"
+            containerClass="mr-3 lg:mr-6 shrink-0 cursor-pointer hover:bg-dark-200 active:dark-btn-pressed"
             disableTooltip={isMobile}
           >
             <FiClipboard
@@ -165,11 +149,11 @@ export default function QueryTransactionModal({
                 ? "placeholder:text-dark-300"
                 : "placeholder:text-dark-500"
             )}
-            placeholder={inputPlaceholder}
-            value={transactionInput}
+            placeholder="Enter Transaction ID"
+            value={txnAddress}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            onChange={(e) => setTransactionInput(e.target.value)}
+            onChange={(e) => setTxnAddress(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") e.preventDefault();
             }}
@@ -177,13 +161,13 @@ export default function QueryTransactionModal({
           />
 
           {/* Clear icon */}
-          {transactionInput.length > 0 && (
+          {((isFocused && txnAddress) || (txnAddress && isNotValidTxn)) && (
             <IoCloseCircle
               size={20}
               className="ml-2 mr-1 shrink-0 cursor-pointer fill-dark-500"
               onMouseDown={() => {
-                setTransactionInput("");
-                setIsValidTransaction(true);
+                setTxnAddress("");
+                setIsNotValidTxn(false);
                 handleFocusWithCursor();
               }}
             />
@@ -192,20 +176,17 @@ export default function QueryTransactionModal({
 
         {/* Error messages */}
         {invalidTxnHash && (
-          <span className="block pt-2 text-xs lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
-            {inputErrorMessage}
-            {invalidTxnHash}
-            {isValidTransaction}
+          <span className="block px-4 pt-2 text-xs lg:px-6 lg:text-sm empty:before:content-['*'] empty:before:opacity-0 text-error">
+            Enter a valid Ethereum txid performed on Quantum
           </span>
         )}
 
-        <div className="mt-12 md:mt-8 lg:mt-10 flex justify-center">
+        <div className="mt-8 lg:px-[31px]">
           <ActionButton
-            label={isLoading ? "" : buttonLabel}
-            customStyle="bg-dark-1000 text-sm lg:text-lg lg:!py-3 lg:px-[72px] lg:w-fit min-w-[240px] min-h-[48px] lg:min-h-[52px]"
-            disabled={transactionInput === "" || isLoading}
+            label="Restore transaction"
+            customStyle="bg-dark-1000 md:px-6 text-lg lg:!py-3 lg:px-8 xl:px-14"
+            disabled={txnAddress === ""}
             onClick={checkTXnHash}
-            isLoading={isLoading}
           />
         </div>
       </div>

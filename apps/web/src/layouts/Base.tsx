@@ -31,7 +31,6 @@ import { store } from "@store/store";
 import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
-import { QueueStorageProvider } from "./contexts/QueueStorageContext";
 
 const metamask = new MetaMaskConnector({
   chains: [mainnet, goerli],
@@ -163,11 +162,9 @@ function Base({
                         <ContractProvider>
                           <ThemeProvider theme={initialTheme}>
                             <StorageProvider>
-                              <QueueStorageProvider>
-                                <ScreenContainer isBridgeUp={isBridgeUp}>
-                                  {children}
-                                </ScreenContainer>
-                              </QueueStorageProvider>
+                              <ScreenContainer isBridgeUp={isBridgeUp}>
+                                {children}
+                              </ScreenContainer>
                             </StorageProvider>
                           </ThemeProvider>
                         </ContractProvider>

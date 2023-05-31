@@ -20,10 +20,6 @@ import {
   DISCLAIMER_MESSAGE,
   ETHEREUM_SYMBOL,
 } from "../../constants";
-import {
-  FormOptions,
-  useNetworkContext,
-} from "../../layouts/contexts/NetworkContext";
 
 export default function EvmToDeFiChainTransfer({
   data,
@@ -44,9 +40,6 @@ export default function EvmToDeFiChainTransfer({
   const { BridgeV1, Erc20Tokens, ExplorerURL } = useContractContext();
   const bridgingETH = data.from.tokenSymbol === ETHEREUM_SYMBOL;
   const { setStorage } = useStorageContext();
-  // Todo: setQueueStorage from useStorageContext and update the contracts to cater for Queue
-
-  const { typeOfTransaction } = useNetworkContext();
 
   // Read details from token contract
   const erc20TokenContract = {
@@ -206,13 +199,6 @@ export default function EvmToDeFiChainTransfer({
     },
   };
 
-  let actionButtonMessage = "Add to queue";
-  if (typeOfTransaction === FormOptions.INSTANT) {
-    actionButtonMessage = isMobile
-      ? "Confirm transfer"
-      : "Confirm transfer on wallet";
-  }
-
   return (
     <>
       {errorMessage !== undefined && (
@@ -248,7 +234,7 @@ export default function EvmToDeFiChainTransfer({
         </Modal>
       )}
 
-      <AlertInfoMessage containerStyle="px-5 py-4 mt-14">
+      <AlertInfoMessage containerStyle="px-5 py-4 mt-8">
         <span className="text-left text-warning text-xs ml-3">
           {DISCLAIMER_MESSAGE}
         </span>
@@ -256,7 +242,7 @@ export default function EvmToDeFiChainTransfer({
       <div className={clsx("px-6 py-8", "md:px-[128px] lg:px-[72px] md:pt-16")}>
         <ActionButton
           testId="confirm-transfer-btn"
-          label={actionButtonMessage}
+          label={isMobile ? "Confirm transfer" : "Confirm transfer on wallet"}
           onClick={() => handleInitiateTransfer()}
           disabled={
             hasPendingTx ||

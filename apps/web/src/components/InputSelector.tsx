@@ -9,7 +9,7 @@ import { NetworkOptionsI, SelectionType, TokensI } from "types";
 
 interface SelectorI {
   disabled?: boolean;
-  label?: string;
+  label: string;
   type: SelectionType;
   popUpLabel: string;
   floatingObj: {
@@ -20,7 +20,6 @@ interface SelectorI {
   options?: NetworkOptionsI[] | TokensI[];
   onSelect?: (value: any) => void;
   value: NetworkOptionsI | TokensI;
-  isWithQuickInputCard?: boolean;
 }
 
 function Divider() {
@@ -158,7 +157,6 @@ export default function InputSelector({
   floatingObj,
   type,
   disabled = false,
-  isWithQuickInputCard = false,
 }: SelectorI) {
   const { floating, y, strategy } = floatingObj;
   const roundedBorderStyle =
@@ -167,35 +165,14 @@ export default function InputSelector({
     type === SelectionType.Network
       ? (value as NetworkOptionsI)
       : (value as TokensI).tokenA;
-
-  function getOuterButtonStyle(open: boolean) {
-    return [
-      "relative w-full outline-0",
-      disabled ? "cursor-default" : "",
-      type === SelectionType.Network ? "p-px pr-0" : "p-px",
-      open ? "bg-gradient-2 pr-px" : "bg-dark-200",
-      roundedBorderStyle,
-      !disabled ? "hover:bg-dark-500 hover:pr-px" : "",
-    ]
-      .filter(Boolean)
-      .join(" ");
-  }
-
   return (
     <div>
-      {label && (
-        <span className="text-dark-900 pl-3 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider tracking-normal lg:tracking-[0.02em] ">
-          {label}
-        </span>
-      )}
-
+      <span className="text-dark-900 pl-4 lg:pl-5 text-xs font-semibold lg:text-sm xl:tracking-wider">
+        {label}
+      </span>
       <Listbox value={value} onChange={onSelect}>
         {({ open }) => (
-          <div
-            className={clsx({
-              "mt-1 lg:mt-2 relative": !isWithQuickInputCard,
-            })}
-          >
+          <div className="relative mt-1 lg:mt-2">
             <Listbox.Button
               onClick={(event: { preventDefault: () => void }) => {
                 if (disabled) {
@@ -203,18 +180,18 @@ export default function InputSelector({
                 }
               }}
               className={clsx(
-                isWithQuickInputCard
-                  ? "w-full !border-l my-2.5 border-dark-300 bg-transparent p-0"
-                  : getOuterButtonStyle(open)
+                "relative w-full outline-0",
+                disabled && "cursor-default",
+                type === SelectionType.Network ? "p-px pr-0" : "p-px",
+                open ? "bg-gradient-2 pr-px" : "bg-dark-200",
+                roundedBorderStyle,
+                !disabled && "hover:bg-dark-500 hover:pr-px"
               )}
             >
               <div
                 className={clsx(
-                  "flex h-full w-full flex-row items-center justify-between py-2.5 px-3 text-left lg:px-4 lg:py-3.5",
-                  roundedBorderStyle,
-                  isWithQuickInputCard
-                    ? "bg-transparent"
-                    : "dark-card-bg-image bg-dark-100"
+                  "dark-card-bg-image flex h-full w-full flex-row items-center justify-between bg-dark-100 py-2.5 px-3 text-left lg:px-4 lg:py-3.5",
+                  roundedBorderStyle
                 )}
               >
                 <div className="flex flex-row items-center">
@@ -258,10 +235,9 @@ export default function InputSelector({
                     top: y ?? "",
                   }}
                   className={clsx(
-                    "absolute z-10 mt-2 overflow-auto rounded-lg p-px outline-0",
+                    "absolute z-10 mt-2 w-full w-56 overflow-auto rounded-lg p-px outline-0",
                     { "right-0": type !== SelectionType.Network },
-                    open ? "bg-gradient-2" : "bg-dark-200",
-                    isWithQuickInputCard ? "md:w-5/6 w-full" : "w-full"
+                    open ? "bg-gradient-2" : "bg-dark-200"
                   )}
                 >
                   <div className="rounded-lg bg-dark-00 pt-4 pb-2">

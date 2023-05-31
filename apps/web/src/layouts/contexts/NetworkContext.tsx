@@ -14,7 +14,7 @@ import {
   TokensI,
 } from "types";
 
-export interface NetworkContextI {
+interface NetworkContextI {
   selectedNetworkA: NetworkOptionsI;
   selectedTokensA: TokensI;
   selectedNetworkB: NetworkOptionsI;
@@ -23,17 +23,6 @@ export interface NetworkContextI {
   setSelectedTokensA: (tokenA: TokensI) => void;
   setSelectedNetworkB: (networkB: NetworkOptionsI) => void;
   setSelectedTokensB: (tokenB: TokensI) => void;
-  selectedQueueNetworkA: NetworkOptionsI;
-  selectedQueueTokensA: TokensI;
-  selectedQueueNetworkB: NetworkOptionsI;
-  typeOfTransaction: FormOptions;
-  selectedQueueTokensB: TokensI;
-  setSelectedQueueNetworkA: (networkA: NetworkOptionsI) => void;
-  setSelectedQueueTokensA: (tokenA: TokensI) => void;
-  setSelectedQueueNetworkB: (networkB: NetworkOptionsI) => void;
-  setSelectedQueueTokensB: (tokenB: TokensI) => void;
-  setTypeOfTransaction: (transactionType: FormOptions) => void;
-
   resetNetworkSelection: () => void;
 }
 
@@ -213,18 +202,9 @@ export function useNetworkContext(): NetworkContextI {
   return useContext(NetworkContext);
 }
 
-export enum FormOptions {
-  INSTANT = "Instant",
-  QUEUE = "Queue",
-}
-
 export function NetworkProvider({
   children,
 }: PropsWithChildren<{}>): JSX.Element | null {
-  const [typeOfTransaction, setTypeOfTransaction] = useState<FormOptions>(
-    FormOptions.INSTANT
-  );
-
   const [defaultNetworkA, defaultNetworkB] = networks;
   const [selectedNetworkA, setSelectedNetworkA] =
     useState<NetworkOptionsI>(defaultNetworkA);
@@ -237,109 +217,35 @@ export function NetworkProvider({
     defaultNetworkB.tokens[0]
   );
 
-  // Queue
-  const [defaultQueueNetworkA, defaultQueueNetworkB] = networks;
-  const [selectedQueueNetworkA, setSelectedQueueNetworkA] =
-    useState<NetworkOptionsI>(defaultQueueNetworkA);
-  const [selectedQueueTokensA, setSelectedQueueTokensA] = useState<TokensI>(
-    defaultQueueNetworkA.tokens[0]
-  );
-  const [selectedQueueNetworkB, setSelectedQueueNetworkB] =
-    useState<NetworkOptionsI>(defaultQueueNetworkB);
-  const [selectedQueueTokensB, setSelectedQueueTokensB] = useState<TokensI>(
-    defaultQueueNetworkB.tokens[0]
-  );
-
-  // To get form config depending on the FormOption if its Instant or Queue
-  function getFormConfigs() {
-    let selectedFormNetworkA;
-    let setFormSelectedNetworkB;
-    let setFormSelectedTokensA;
-    let selectedFormTokensB;
-
-    let selectedFormNetworkB;
-    let selectedFormTokensA;
-    let setFormSelectedTokensB;
-
-    if (typeOfTransaction === FormOptions.INSTANT) {
-      selectedFormNetworkA = selectedNetworkA;
-      setFormSelectedNetworkB = setSelectedNetworkB;
-      setFormSelectedTokensA = setSelectedTokensA;
-      selectedFormTokensB = selectedTokensB;
-
-      selectedFormNetworkB = selectedNetworkB;
-      selectedFormTokensA = selectedTokensA;
-      setFormSelectedTokensB = setSelectedTokensB;
-    } else {
-      selectedFormNetworkA = selectedQueueNetworkA;
-      setFormSelectedNetworkB = setSelectedQueueNetworkB;
-      setFormSelectedTokensA = setSelectedQueueTokensA;
-      selectedFormTokensB = selectedQueueTokensB;
-
-      selectedFormNetworkB = selectedQueueNetworkB;
-      selectedFormTokensA = selectedQueueTokensA;
-      setFormSelectedTokensB = setSelectedQueueTokensB;
-    }
-
-    return {
-      selectedFormNetworkA,
-      setFormSelectedNetworkB,
-      setFormSelectedTokensA,
-      selectedFormTokensB,
-      selectedFormNetworkB,
-      selectedFormTokensA,
-      setFormSelectedTokensB,
-    };
-  }
-
   useEffect(() => {
-    const {
-      selectedFormNetworkA,
-      setFormSelectedNetworkB,
-      setFormSelectedTokensA,
-      selectedFormTokensB,
-    } = getFormConfigs();
-
     const networkB = networks.find(
-      (network) => network.name !== selectedFormNetworkA.name
+      (network) => network.name !== selectedNetworkA.name
     );
     if (networkB !== undefined) {
-      setFormSelectedNetworkB(networkB);
-      const tokens = selectedFormNetworkA.tokens.find(
-        (item) => item.tokenA.name === selectedFormTokensB.tokenA.name
+      setSelectedNetworkB(networkB);
+      const tokens = selectedNetworkA.tokens.find(
+        (item) => item.tokenA.name === selectedTokensB.tokenA.name
       );
       if (tokens !== undefined) {
-        setFormSelectedTokensA(tokens);
+        setSelectedTokensA(tokens);
       }
     }
-  }, [selectedNetworkA, selectedQueueNetworkA, typeOfTransaction]);
+  }, [selectedNetworkA]);
 
   useEffect(() => {
-    const {
-      selectedFormNetworkB,
-      selectedFormTokensA,
-      setFormSelectedTokensB,
-    } = getFormConfigs();
-
-    const tokens = selectedFormNetworkB.tokens.find(
-      (item) => item.tokenA.name === selectedFormTokensA.tokenB.name
+    const tokens = selectedNetworkB.tokens.find(
+      (item) => item.tokenA.name === selectedTokensA.tokenB.name
     );
     if (tokens !== undefined) {
-      setFormSelectedTokensB(tokens);
+      setSelectedTokensB(tokens);
     }
-  }, [selectedTokensA, selectedQueueTokensA, typeOfTransaction]);
+  }, [selectedTokensA]);
 
   const resetNetworkSelection = () => {
     setSelectedNetworkA(defaultNetworkA);
     setSelectedTokensA(defaultNetworkA.tokens[0]);
     setSelectedNetworkB(defaultNetworkB);
     setSelectedTokensB(defaultNetworkB.tokens[0]);
-
-    // Queue
-    setSelectedQueueNetworkA(defaultQueueNetworkA);
-    setSelectedQueueTokensA(defaultQueueNetworkA.tokens[0]);
-    setSelectedQueueNetworkB(defaultQueueNetworkB);
-    setSelectedQueueTokensB(defaultQueueNetworkB.tokens[0]);
   };
 
   const context: NetworkContextI = useMemo(
@@ -352,28 +258,10 @@ export function NetworkProvider({
       setSelectedTokensA,
       setSelectedNetworkB,
       setSelectedTokensB,
-
-      selectedQueueNetworkA,
-      selectedQueueTokensA,
-      selectedQueueNetworkB,
-      selectedQueueTokensB,
-      setSelectedQueueNetworkA,
-      setSelectedQueueTokensA,
-      setSelectedQueueNetworkB,
-      setSelectedQueueTokensB,
-
-      typeOfTransaction,
-      setTypeOfTransaction,
       resetNetworkSelection,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      selectedTokensA,
-      selectedTokensB,
-      selectedQueueTokensA,
-      selectedQueueTokensB,
-      typeOfTransaction,
-    ]
+    [selectedTokensA, selectedTokensB]
   );
 
   return (

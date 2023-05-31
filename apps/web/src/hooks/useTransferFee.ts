@@ -1,6 +1,6 @@
 import BigNumber from "bignumber.js";
 import { useEffect, useState } from "react";
-import { useNetworkContext, FormOptions } from "@contexts/NetworkContext";
+import { useNetworkContext } from "@contexts/NetworkContext";
 import { useLazyBridgeSettingsQuery } from "@store/index";
 import { Network } from "types";
 
@@ -9,13 +9,7 @@ import { Network } from "types";
  * Any changes to the fee logic can be updated here
  */
 export default function useTransferFee(transferAmount: string | number) {
-  const {
-    selectedNetworkA,
-    selectedTokensA,
-    selectedQueueNetworkA,
-    selectedQueueTokensA,
-    typeOfTransaction,
-  } = useNetworkContext();
+  const { selectedNetworkA, selectedTokensA } = useNetworkContext();
 
   const [trigger] = useLazyBridgeSettingsQuery();
   const [dfcFee, setDfcFee] = useState<`${number}` | number>(0);
@@ -28,20 +22,10 @@ export default function useTransferFee(transferAmount: string | number) {
       if (data?.ethereum.transferFee) setEvmFee(data?.ethereum.transferFee);
     }
     getBridgeSettings();
-  }, [selectedTokensA, selectedQueueTokensA]);
+  }, [selectedTokensA]);
 
-  const selectedNetwork =
-    typeOfTransaction === FormOptions.INSTANT
-      ? selectedNetworkA
-      : selectedQueueNetworkA;
-
-  const selectedTokens =
-    typeOfTransaction === FormOptions.INSTANT
-      ? selectedTokensA
-      : selectedQueueTokensA;
-
-  const isSendingFromEvm = selectedNetwork.name === Network.Ethereum;
-  const feeSymbol = selectedTokens.tokenA.name;
+  const isSendingFromEvm = selectedNetworkA.name === Network.Ethereum;
+  const feeSymbol = selectedTokensA.tokenA.name;
   const fee = new BigNumber(transferAmount || 0).multipliedBy(
     isSendingFromEvm ? evmFee : dfcFee
   );

@@ -74,18 +74,6 @@ export interface UnconfirmedTxnI {
   dfcUniqueAddress?: string;
 }
 
-export interface UnconfirmedQueueTxnI {
-  selectedQueueNetworkA: NetworkOptionsI;
-  selectedQueueTokensA: TokensI;
-  selectedQueueNetworkB: NetworkOptionsI;
-  selectedQueueTokensB: TokensI;
-  networkEnv: EnvironmentNetwork;
-  amount: string;
-  toAddress: string;
-  fromAddress: string;
-  dfcUniqueAddress?: string;
-}
-
 export interface RowDataI {
   address: string;
   networkName: Network;
