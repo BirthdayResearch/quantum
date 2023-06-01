@@ -64,7 +64,8 @@ describe('Create Queue Service Integration Tests', () => {
 
   afterAll(async () => {
     // teardown database
-    await prismaService.bridgeEventTransactions.deleteMany({});
+    await prismaService.adminEthereumQueue.deleteMany({});
+    await prismaService.ethereumQueue.deleteMany({});
     await startedPostgresContainer.stop();
     await hardhatNetwork.stop();
     await testing.stop();
