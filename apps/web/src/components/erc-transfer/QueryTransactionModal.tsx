@@ -132,7 +132,7 @@ export default function QueryTransactionModal({
     const currentDate = new Date();
     if (
       refundStatusList.includes(queuedTransaction.status) &&
-      currentDate.getTime() >= new Date(queuedTransaction.expiryDate).getTime()
+      currentDate.getTime() >= queuedTransaction.expiryDate.getTime()
     ) {
       onTransactionFound(ModalTypeToDisplay.Unsuccessful);
     } else if (modalType) {
