@@ -80,9 +80,9 @@ export default function EvmToDeFiChainTransfer({
   });
 
   const transferAmount = data.to.amount.toNumber();
-  const tokenDecimals = (readTokenData?.[1] as any)?.result ?? GWEI_DECIMAL;
+  const tokenDecimals = readTokenData?.[1]?.result ?? GWEI_DECIMAL;
   const tokenAllowance = new BigNumber(
-    (readTokenData?.[0] as any)?.result.toString() ?? 0
+    readTokenData?.[0]?.result?.toString() ?? 0
   );
   const hasEnoughAllowance = tokenAllowance.gte(
     parseUnits(`${transferAmount}`, tokenDecimals).toString()
@@ -234,10 +234,9 @@ export default function EvmToDeFiChainTransfer({
       // Refetch token allowance
       const { data: refetchedData } = await refetchTokenData();
       const latestTokenAllowance = new BigNumber(
-        (refetchedData?.[0] as any)?.result.toString() ?? 0
+        refetchedData?.[0]?.result?.toString() ?? 0
       );
-      const latestTokenDecimals =
-        (refetchedData?.[1] as any)?.result ?? GWEI_DECIMAL;
+      const latestTokenDecimals = refetchedData?.[1]?.result ?? GWEI_DECIMAL;
       const hasInsufficientAllowance = latestTokenAllowance?.lt(
         parseUnits(`${transferAmount}`, latestTokenDecimals).toString()
       );
