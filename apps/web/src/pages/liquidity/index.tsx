@@ -5,8 +5,8 @@ import { EnvironmentNetwork } from "@waveshq/walletkit-core";
 import OverviewList from "@components/OverviewList";
 import { useBridgeBalancesMutation } from "@store/index";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import BASE_URLS from "../../config/networkUrl";
 import EnvironmentNetworkSwitch from "@components/EnvironmentNetworkSwitch";
+import BASE_URLS from "../../config/networkUrl";
 
 export default function LiquidityOverview({ defaultBalances }) {
   const { getPOBUrl } = useDeFiScanContext();
