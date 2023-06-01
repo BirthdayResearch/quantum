@@ -29,7 +29,7 @@
     ]
   },
   "dependencies": {
-    "@prisma/client": "^4.14.1",
+    "@prisma/client": "^4.15.0",
     "@waveshq/walletkit-core": "^0.46.0",
     "@waveshq/walletkit-ui": "^0.46.0",
     "@waveshq/standard-api-fastify": "^0.51.2",
@@ -52,7 +52,7 @@
     "@types/node": "^18.16.1",
     "@types/supertest": "^2.0.12",
     "light-my-request": "5.9.1",
-    "prisma": "^4.14.1",
+    "prisma": "^4.15.0",
     "shuffle-seed": "^1.1.6",
     "smartcontracts": "workspace:0.0.0",
     "smartcontracts-queue": "workspace:0.0.0",
