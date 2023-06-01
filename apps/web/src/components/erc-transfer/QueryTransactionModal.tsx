@@ -52,9 +52,7 @@ const statusToModalTypeMap = {
   DRAFT: ModalTypeToDisplay.Processing,
   COMPLETED: ModalTypeToDisplay.Completed,
   REFUND_REQUESTED: ModalTypeToDisplay.RefundInProgress,
-  // REFUND_REQUESTED: ModalTypeToDisplay.RefundRequested, // TODO: uncomment this to test REFUND_REQUESTED modal
   REFUNDED: ModalTypeToDisplay.Refunded,
-  ERROR: ModalTypeToDisplay.Unsuccessful,
   IN_PROGRESS: ModalTypeToDisplay.Pending,
 };
 
@@ -103,7 +101,8 @@ export default function QueryTransactionModal({
     if (queuedTransaction.adminQueue && setAdminSendTxHash !== undefined) {
       const adminQueueTxHash = queuedTransaction.adminQueue.sendTransactionHash;
       if (
-        queuedTransaction.status === "COMPLETED" &&
+        (queuedTransaction.status === "COMPLETED" ||
+          queuedTransaction.status === "REFUNDED") &&
         adminQueueTxHash !== undefined &&
         adminQueueTxHash !== null
       ) {
@@ -130,7 +129,14 @@ export default function QueryTransactionModal({
     }
 
     const modalType = statusToModalTypeMap[queuedTransaction.status];
-    if (modalType) {
+    const refundStatusList = ["IN_PROGRESS", "EXPIRED", "ERROR"];
+    const currentDate = new Date();
+    if (
+      refundStatusList.includes(queuedTransaction.status) &&
+      currentDate.getTime() >= new Date(queuedTransaction.expiryDate).getTime()
+    ) {
+      onTransactionFound(ModalTypeToDisplay.Unsuccessful);
+    } else if (modalType) {
       onTransactionFound(modalType);
     } else {
       // Handle case where status is not in the map

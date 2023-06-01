@@ -97,10 +97,10 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.Completed]: dayjs(initiatedDate).format(
       "DD/MM/YYYY, HH:mm A"
     ),
-    [ModalTypeToDisplay.RefundRequested]: `${amount} ${ethSymbolToDisplay}`,
+    [ModalTypeToDisplay.RefundRequested]: `${amount} ${dfcSymbolToDisplay}`,
   };
   const secondRowResult = {
-    [ModalTypeToDisplay.Refunded]: transactionHash,
+    [ModalTypeToDisplay.Refunded]: adminQueueSendTxHash,
     [ModalTypeToDisplay.Completed]: `${amount} ${dfcSymbolToDisplay}`,
     [ModalTypeToDisplay.RefundRequested]: destinationAddress,
   };
