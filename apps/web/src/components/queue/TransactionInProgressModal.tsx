@@ -25,9 +25,8 @@ interface TransactionInProgressModalProps {
 }
 
 export enum FormStatus {
-  BaseStatus = "Base status",
+  RefundInProgress = "Refund in progress",
   RefundRequested = "Refund requested",
-  RefundRequestedStatusUpdateComplete = "Refund requested status update complete",
   RefundRequestFailed = "Refund request failed",
 }
 
@@ -72,9 +71,7 @@ export default function TransactionInProgressModal({
   const { amount, token, transactionHash, initiatedDate, destinationAddress } =
     queueModalDetails ?? {};
   const [refund] = useRefundMutation();
-  const [formStatus, setFormStatus] = useState<FormStatus>(
-    FormStatus.BaseStatus
-  );
+  const [formStatus, setFormStatus] = useState<FormStatus>();
   const handleOnCopy = (text) => {
     copy(text);
     setShowSuccessCopy(true);
@@ -82,19 +79,19 @@ export default function TransactionInProgressModal({
 
   const requestRefund = async (): Promise<void> => {
     try {
-      setFormStatus(FormStatus.RefundRequested);
+      setFormStatus(FormStatus.RefundInProgress);
       await refund({
         txnHash: transactionHash,
       }).unwrap();
-      setFormStatus(FormStatus.RefundRequestedStatusUpdateComplete);
+      setFormStatus(FormStatus.RefundRequested);
     } catch (err) {
       setFormStatus(FormStatus.RefundRequestFailed);
     }
   };
 
   useEffect(() => {
-    if (formStatus === FormStatus.RefundRequestedStatusUpdateComplete) {
-      setFormStatus(FormStatus.BaseStatus);
+    if (formStatus === FormStatus.RefundRequested) {
+      setFormStatus(undefined); // set back to initial state
       onTransactionFound(ModalTypeToDisplay.RefundRequested);
     }
   }, [formStatus]);
@@ -130,7 +127,7 @@ export default function TransactionInProgressModal({
         <Modal
           isOpen
           onClose={() => {
-            setFormStatus(FormStatus.BaseStatus);
+            setFormStatus(undefined); // set back to initial state
             onClose();
           }}
         >
@@ -156,7 +153,7 @@ export default function TransactionInProgressModal({
               label="Try again"
               customStyle="!text-lg !px-[72px] !py-3 !w-fit mt-12 bg-dark-1000 font-semibold"
               onClick={() => {
-                setFormStatus(FormStatus.BaseStatus);
+                setFormStatus(undefined);
               }}
             />
             <ActionButton
@@ -176,7 +173,7 @@ export default function TransactionInProgressModal({
       <Modal
         isOpen={isOpen}
         onClose={() => {
-          setFormStatus(FormStatus.BaseStatus);
+          setFormStatus(undefined); // set back to initial state
           onClose();
         }}
       >
