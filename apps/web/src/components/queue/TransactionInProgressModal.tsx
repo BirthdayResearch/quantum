@@ -25,10 +25,10 @@ interface TransactionInProgressModalProps {
 }
 
 export enum FormStatus {
-  BaseStatus,
-  RefundRequested,
-  RefundRequestedStatusUpdateComplete,
-  RefundRequestFailed,
+  BaseStatus = "Base status",
+  RefundRequested = "Refund requested",
+  RefundRequestedStatusUpdateComplete = "Refund requested status update complete",
+  RefundRequestFailed = "Refund request failed",
 }
 
 const titles = {
@@ -72,18 +72,12 @@ export default function TransactionInProgressModal({
   const { amount, token, transactionHash, initiatedDate, destinationAddress } =
     queueModalDetails ?? {};
   const [refund] = useRefundMutation();
-  const [requestRefundErrMsg, setRequestRefundErrMsg] = useState<string>();
   const [formStatus, setFormStatus] = useState<FormStatus>(
     FormStatus.BaseStatus
   );
   const handleOnCopy = (text) => {
     copy(text);
     setShowSuccessCopy(true);
-  };
-
-  const cleanErrorMessage = (errMsg: string) => {
-    const indexOfCutOff = errMsg.indexOf(":");
-    return errMsg.substring(indexOfCutOff + 1);
   };
 
   const requestRefund = async (): Promise<void> => {
@@ -94,19 +88,13 @@ export default function TransactionInProgressModal({
       }).unwrap();
       setFormStatus(FormStatus.RefundRequestedStatusUpdateComplete);
     } catch (err) {
-      // clean err msg
-      const errMsg = err.data?.error ?? err.data.message;
-      const cleanErrMsg = cleanErrorMessage(errMsg);
-
       setFormStatus(FormStatus.RefundRequestFailed);
-      setRequestRefundErrMsg(cleanErrMsg);
     }
   };
 
   useEffect(() => {
     if (formStatus === FormStatus.RefundRequestedStatusUpdateComplete) {
       setFormStatus(FormStatus.BaseStatus);
-      setRequestRefundErrMsg(undefined);
       onTransactionFound(ModalTypeToDisplay.RefundRequested);
     }
   }, [formStatus]);
@@ -143,7 +131,6 @@ export default function TransactionInProgressModal({
           isOpen
           onClose={() => {
             setFormStatus(FormStatus.BaseStatus);
-            setRequestRefundErrMsg(undefined);
             onClose();
           }}
         >
@@ -190,7 +177,6 @@ export default function TransactionInProgressModal({
         isOpen={isOpen}
         onClose={() => {
           setFormStatus(FormStatus.BaseStatus);
-          setRequestRefundErrMsg(undefined);
           onClose();
         }}
       >
@@ -271,11 +257,6 @@ export default function TransactionInProgressModal({
                   await requestRefund();
                 }}
               />
-              {requestRefundErrMsg && (
-                <span className="text-[#E54545] text-xs mt-1">
-                  {requestRefundErrMsg}
-                </span>
-              )}
             </div>
           )}
         </div>
