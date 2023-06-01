@@ -1,3 +1,5 @@
+import { goerli, mainnet } from "wagmi";
+
 interface TooltipInfoI {
   title: string;
   content: string;
@@ -64,7 +66,8 @@ export const CONFIRMATIONS_BLOCK_TOTAL = 100; // 65 in EVM, 35 in DFC
 export const EVM_CONFIRMATIONS_BLOCK_TOTAL = 65;
 export const DFC_CONFIRMATIONS_BLOCK_TOTAL = 35;
 
-export const ETHEREUM_MAINNET_ID = 1;
+export const ETHEREUM_MAINNET_ID = mainnet.id;
+export const ETHEREUM_TESTNET_ID = goerli.id;
 
 // QUEUE
 export const QUEUE_STORAGE_TXN_KEY = "unconfirmed-txn-queue";
