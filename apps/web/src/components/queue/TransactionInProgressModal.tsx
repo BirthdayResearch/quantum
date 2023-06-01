@@ -24,11 +24,19 @@ interface TransactionInProgressModalProps {
   onTransactionFound: (modalTypeToDisplay: any) => void;
 }
 
+export enum FormStatus {
+  BaseStatus,
+  RefundRequested,
+  RefundRequestedStatusUpdateComplete,
+  RefundRequestFailed,
+}
+
 const titles = {
   [ModalTypeToDisplay.Pending]: "Transaction in queue",
   [ModalTypeToDisplay.Processing]: "Transaction processing",
   [ModalTypeToDisplay.RefundInProgress]: "Refund in progress",
   [ModalTypeToDisplay.Unsuccessful]: "Transaction unsuccessful",
+  [FormStatus.RefundRequestFailed]: "Refund request unsuccessful",
 };
 
 const descriptions = {
@@ -40,6 +48,8 @@ const descriptions = {
     "Refund will be processed within the next 72 hours.",
   [ModalTypeToDisplay.Unsuccessful]:
     "The queue transaction couldn't be processed. Please try again.",
+  [FormStatus.RefundRequestFailed]:
+    "We regret to inform you that the refund request was not successful",
 };
 
 const amountLabel = {
@@ -48,13 +58,6 @@ const amountLabel = {
   [ModalTypeToDisplay.RefundInProgress]: "Amount to refund",
   [ModalTypeToDisplay.Unsuccessful]: "Amount to receive",
 };
-
-export enum FormStatus {
-  BaseStatus,
-  RefundRequested,
-  RefundRequestedStatusUpdateComplete,
-  RefundRequestFailed,
-}
 
 export default function TransactionInProgressModal({
   type,
@@ -151,7 +154,7 @@ export default function TransactionInProgressModal({
             />
 
             <span className="font-bold text-2xl text-dark-900 text-center mt-10">
-              Refund request unsuccessful
+              {titles[FormStatus.RefundRequestFailed]}
             </span>
             <span
               className={clsx(
@@ -159,7 +162,7 @@ export default function TransactionInProgressModal({
                 "text-dark-700 text-center text-[18px] leading-6"
               )}
             >
-              We regret to inform you that the refund request was not successful
+              {descriptions[FormStatus.RefundRequestFailed]}
             </span>
 
             <ActionButton

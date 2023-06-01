@@ -51,10 +51,8 @@ export enum QueryTransactionModalType {
 const statusToModalTypeMap = {
   DRAFT: ModalTypeToDisplay.Processing,
   COMPLETED: ModalTypeToDisplay.Completed,
-  // REFUND_REQUESTED: ModalTypeToDisplay.RefundInProgress,
-  REFUND_REQUESTED: ModalTypeToDisplay.RefundRequested, // TODO: uncomment this to test REFUND_REQUESTED modal
+  REFUND_REQUESTED: ModalTypeToDisplay.RefundRequested,
   REFUNDED: ModalTypeToDisplay.Refunded,
-  // ERROR: ModalTypeToDisplay.Unsuccessful,
   IN_PROGRESS: ModalTypeToDisplay.Pending,
 };
 
