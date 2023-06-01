@@ -71,13 +71,12 @@ export default function StepLastClaim({
 
   // Prepare write contract for `claimFund` function
   const [fee] = useTransferFee(data.to.amount.toString());
-  const amountLessFee = BigNumber.max(data.to.amount.minus(fee), 0).toFixed(
-    6,
-    BigNumber.ROUND_DOWN
-  );
+  const amountLessFee = BigNumber(
+    BigNumber.max(data.to.amount.minus(fee), 0).toFixed(6, BigNumber.ROUND_DOWN)
+  ).toNumber();
   const parsedAmount = isTokenETH
-    ? parseEther(amountLessFee as any)
-    : parseUnits(amountLessFee as any, tokenDecimals as any);
+    ? parseEther(`${amountLessFee}`)
+    : parseUnits(`${amountLessFee}`, tokenDecimals as number);
 
   const {
     config: bridgeConfig,
