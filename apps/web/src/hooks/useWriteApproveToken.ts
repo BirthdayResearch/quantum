@@ -87,7 +87,7 @@ export default function useWriteApproveToken({
     writeApprove: () => {
       // ETH doesn not require approval
       if (
-        tokenConfig.address !== Erc20Tokens.ETH.address &&
+        tokenConfig.request.address !== Erc20Tokens.ETH.address &&
         tokenName !== "ETH"
       ) {
         writeApprove?.();
