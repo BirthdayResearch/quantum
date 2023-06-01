@@ -101,7 +101,8 @@ export default function QueryTransactionModal({
     if (queuedTransaction.adminQueue && setAdminSendTxHash !== undefined) {
       const adminQueueTxHash = queuedTransaction.adminQueue.sendTransactionHash;
       if (
-        queuedTransaction.status === "COMPLETED" &&
+        (queuedTransaction.status === "COMPLETED" ||
+          queuedTransaction.status === "REFUNDED") &&
         adminQueueTxHash !== undefined &&
         adminQueueTxHash !== null
       ) {

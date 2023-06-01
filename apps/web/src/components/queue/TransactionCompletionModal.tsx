@@ -100,7 +100,7 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.RefundRequested]: `${amount} ${dfcSymbolToDisplay}`,
   };
   const secondRowResult = {
-    [ModalTypeToDisplay.Refunded]: transactionHash,
+    [ModalTypeToDisplay.Refunded]: adminQueueSendTxHash,
     [ModalTypeToDisplay.Completed]: `${amount} ${dfcSymbolToDisplay}`,
     [ModalTypeToDisplay.RefundRequested]: destinationAddress,
   };
