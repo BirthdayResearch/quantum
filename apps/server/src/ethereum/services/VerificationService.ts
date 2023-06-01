@@ -28,9 +28,19 @@ export interface VerifyIfValidTxnDto {
   errorMsg?: ErrorMsgTypes;
 }
 
+type ContractInformationType = {
+  [key in ContractType]: {
+    interface: readonly Object[];
+    name: string;
+    signature: string;
+    deploymentBlockHeight: number;
+    deploymentTxIndex: number;
+  };
+};
+
 @Injectable()
 export class VerificationService {
-  private readonly contract: any;
+  private contract: ContractInformationType;
 
   constructor(
     @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
@@ -41,7 +51,7 @@ export class VerificationService {
         interface: BridgeV1__factory.abi,
         name: 'bridgeToDeFiChain',
         signature: 'bridgeToDeFiChain(bytes,address,uint256)',
-        deploymentBlockNo: Number(
+        deploymentBlockHeight: Number(
           this.configService.getOrThrow('ethereum.contracts.bridgeProxy.deploymentBlockNumber'),
         ),
         deploymentTxIndex: Number(
@@ -52,7 +62,7 @@ export class VerificationService {
         interface: BridgeQueue__factory.abi,
         name: 'bridgeToDeFiChain',
         signature: 'bridgeToDeFiChain(bytes,address,uint256)',
-        deploymentBlockNo: Number(
+        deploymentBlockHeight: Number(
           this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.deploymentBlockNumber'),
         ),
         deploymentTxIndex: Number(
@@ -97,8 +107,8 @@ export class VerificationService {
     }
 
     if (
-      txReceipt.blockNumber < this.contract[contractType].deploymentBlockNo ||
-      (txReceipt.blockNumber === this.contract[contractType].deploymentBlockNo &&
+      txReceipt.blockNumber < this.contract[contractType].deploymentBlockHeight ||
+      (txReceipt.blockNumber === this.contract[contractType].deploymentBlockHeight &&
         txReceipt.transactionIndex <= this.contract[contractType].deploymentTxIndex)
     )
       throw new BadRequestException(ErrorMsgTypes.TxSentBeforeDeployment);
