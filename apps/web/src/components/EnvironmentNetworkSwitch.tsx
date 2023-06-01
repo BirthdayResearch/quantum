@@ -19,14 +19,11 @@ export default function EnvironmentNetworkSwitch({
     if (chain === undefined) {
       return;
     }
-    setTimeout(() => {
-      // update network one tick later if MM chain changes
-      updateNetworkEnv(
-        chain?.id === ETHEREUM_MAINNET_ID
-          ? EnvironmentNetwork.MainNet
-          : EnvironmentNetwork.TestNet
-      );
-    });
+    updateNetworkEnv(
+      chain?.id === ETHEREUM_MAINNET_ID
+        ? EnvironmentNetwork.MainNet
+        : EnvironmentNetwork.TestNet
+    );
   }, [chain]);
 
   const handleOnClick = async () => {

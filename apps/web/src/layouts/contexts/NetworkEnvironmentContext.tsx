@@ -76,7 +76,7 @@ export function NetworkEnvironmentProvider({
     setNetworkEnv(initialNetwork);
     updateRoute(initialNetwork);
     updateWhaleNetwork(initialNetwork);
-  }, [initialNetwork, chain]);
+  }, [initialNetwork]);
 
   const context: NetworkContextI = useMemo(
     () => ({
