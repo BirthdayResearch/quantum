@@ -1,5 +1,6 @@
 import * as React from "react";
 import { useEffect, useState } from "react";
+import clsx from "clsx";
 import Modal from "@components/commons/Modal";
 import dayjs from "dayjs";
 import { FiArrowUpRight } from "react-icons/fi";
@@ -13,7 +14,6 @@ import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import { SuccessCopy } from "@components/QrAddress";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 import { useRefundMutation } from "../../store";
-import clsx from "clsx";
 
 interface TransactionInProgressModalProps {
   type?: ModalTypeToDisplay;
@@ -147,7 +147,7 @@ export default function TransactionInProgressModal({
           <div className="flex flex-col items-center mt-6 mb-14">
             <IoMdInformationCircleOutline
               size={73.33}
-              className={"rotate-180 text-[#E54545]"}
+              className="rotate-180 text-[#E54545]"
             />
 
             <span className="font-bold text-2xl text-dark-900 text-center mt-10">
