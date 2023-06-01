@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Modal from "@components/commons/Modal";
 import dayjs from "dayjs";
 import { FiArrowUpRight } from "react-icons/fi";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 import { ModalTypeToDisplay } from "types";
 import ActionButton from "@components/commons/ActionButton";
 import Link from "next/link";
@@ -12,6 +13,7 @@ import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import { SuccessCopy } from "@components/QrAddress";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 import { useRefundMutation } from "../../store";
+import clsx from "clsx";
 
 interface TransactionInProgressModalProps {
   type?: ModalTypeToDisplay;
@@ -129,6 +131,55 @@ export default function TransactionInProgressModal({
             <span className="text-dark-900 mt-2 text-center">
               {descriptions[ModalTypeToDisplay.RefundInProgress]}
             </span>
+          </div>
+        </Modal>
+      )}
+
+      {formStatus === FormStatus.RefundRequestFailed && (
+        <Modal
+          isOpen
+          onClose={() => {
+            setFormStatus(FormStatus.BaseStatus);
+            setRequestRefundErrMsg(undefined);
+            onClose();
+          }}
+        >
+          <div className="flex flex-col items-center mt-6 mb-14">
+            <IoMdInformationCircleOutline
+              size={73.33}
+              className={"rotate-180 text-[#E54545]"}
+            />
+
+            <span className="font-bold text-2xl text-dark-900 text-center mt-10">
+              Refund request unsuccessful
+            </span>
+            <span
+              className={clsx(
+                "mt-2 w-5/6",
+                "text-dark-700 text-center text-[18px] leading-6"
+              )}
+            >
+              We regret to inform you that the refund request was not successful
+            </span>
+
+            <ActionButton
+              label="Try again"
+              customStyle="!text-lg !px-[72px] !py-3 !w-fit mt-12 bg-dark-1000 font-semibold"
+              onClick={() => {
+                setFormStatus(FormStatus.BaseStatus);
+              }}
+            />
+            <ActionButton
+              label="Get support"
+              variant="secondary"
+              customStyle="!px-[72px] !py-3 !w-fit mt-2"
+              onClick={() => {
+                window.open(
+                  "https://docs.google.com/forms/d/e/1FAIpQLSewBvBntogPdXe5KIlwfYp7X_ODPAMwrRVL1R6T1k5LdUq52A/viewform",
+                  "_blank"
+                );
+              }}
+            />
           </div>
         </Modal>
       )}
