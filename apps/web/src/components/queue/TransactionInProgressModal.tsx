@@ -5,7 +5,7 @@ import Modal from "@components/commons/Modal";
 import dayjs from "dayjs";
 import { FiArrowUpRight } from "react-icons/fi";
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { ModalTypeToDisplay } from "types";
+import { ModalTypeToDisplay, Network } from "types";
 import ActionButton from "@components/commons/ActionButton";
 import Link from "next/link";
 import truncateTextFromMiddle from "@utils/textHelper";
@@ -14,6 +14,7 @@ import useCopyToClipboard from "@hooks/useCopyToClipboard";
 import { SuccessCopy } from "@components/QrAddress";
 import GoToAnotherTransaction from "./GoToAnotherTransaction";
 import { useRefundMutation } from "../../store";
+import mapTokenToNetworkName from "../../utils/mapTokenToNetworkName";
 
 interface TransactionInProgressModalProps {
   type?: ModalTypeToDisplay;
@@ -70,6 +71,7 @@ export default function TransactionInProgressModal({
   const [showSuccessCopy, setShowSuccessCopy] = useState(false);
   const { amount, token, transactionHash, initiatedDate, destinationAddress } =
     queueModalDetails ?? {};
+  const tokenToDisplay = mapTokenToNetworkName(Network.DeFiChain, token);
   const [refund] = useRefundMutation();
   const [formStatus, setFormStatus] = useState<FormStatus>();
   const handleOnCopy = (text) => {
@@ -227,7 +229,7 @@ export default function TransactionInProgressModal({
           </div>
           <div className="flex items-center justify-between md:mt-8 mt-10">
             <span className="text-dark-700">{amountLabel[type]}</span>
-            <span className="text-dark-1000">{`${amount} ${token}`}</span>
+            <span className="text-dark-1000">{`${amount} ${tokenToDisplay}`}</span>
           </div>
           {type === ModalTypeToDisplay.RefundInProgress && (
             <div className="flex justify-between md:mt-8 mt-10">
