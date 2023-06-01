@@ -81,10 +81,6 @@ export default function TransactionCompletionModal({
   const dfcSymbolToDisplay = mapTokenToNetworkName(Network.DeFiChain, token);
   const ethSymbolToDisplay = mapTokenToNetworkName(Network.Ethereum, token);
 
-  console.log(token);
-  console.log(dfcSymbolToDisplay);
-  console.log(ethSymbolToDisplay);
-
   const handleOnCopy = (text) => {
     copy(text);
     setShowSuccessCopy(true);
