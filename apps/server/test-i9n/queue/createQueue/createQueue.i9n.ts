@@ -71,6 +71,16 @@ describe('Create Queue Service Integration Tests', () => {
     await testing.stop();
   });
 
+  it('Validates that the symbol inputted is supported by the bridge', async () => {
+    const txReceipt = await testing.inject({
+      method: 'GET',
+      url: `/ethereum/balance/invalid_symbol`,
+    });
+    expect(JSON.parse(txReceipt.body).error).toBe('Bad Request');
+    expect(JSON.parse(txReceipt.body).message).toBe('Token: "invalid_symbol" is not supported');
+    expect(JSON.parse(txReceipt.body).statusCode).toBe(400);
+  });
+
   it('Validates that the transaction inputted is of the correct format', async () => {
     const txReceipt = await testing.inject({
       method: 'POST',
