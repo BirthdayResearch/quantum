@@ -1,12 +1,10 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useNetwork } from "wagmi";
 import { ModalTypeToDisplay } from "types";
 import ConnectButton from "./ConnectButton";
 import Banner from "./Banner";
 import Navigation from "./Navigation";
-import EnvironmentNetworkSwitch from "./EnvironmentNetworkSwitch";
 import AnnouncementBanner from "./AnnouncementBanner";
 import QueryTransactionModal, {
   QueryTransactionModalType,
@@ -21,7 +19,6 @@ export default function Header({
 }: {
   isBridgeUp: boolean;
 }): JSX.Element {
-  const { chain } = useNetwork();
   const [modalToDisplay, setModalToDisplay] = useState<
     ModalTypeToDisplay | undefined
   >();
