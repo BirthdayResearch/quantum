@@ -63,7 +63,6 @@ export default function Header({
             onClick={() => setModalToDisplay(ModalTypeToDisplay.Search)}
           />
           <ConnectButton />
-          {chain === undefined && <EnvironmentNetworkSwitch />}
 
           {/* Search tx modal */}
           <QueryTransactionModal

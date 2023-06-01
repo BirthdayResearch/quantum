@@ -6,6 +6,7 @@ import OverviewList from "@components/OverviewList";
 import { useBridgeBalancesMutation } from "@store/index";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
 import BASE_URLS from "../../config/networkUrl";
+import EnvironmentNetworkSwitch from "@components/EnvironmentNetworkSwitch";
 
 export default function LiquidityOverview({ defaultBalances }) {
   const { getPOBUrl } = useDeFiScanContext();
@@ -26,9 +27,10 @@ export default function LiquidityOverview({ defaultBalances }) {
     <section className="relative flex flex-col" data-testid="liquidityOverview">
       <div className="justify-between md:flex-row w-full px-0 md:px-12 lg:px-[120px]">
         <div className="flex flex-col justify-between px-6 md:px-0 my-6 md:mb-8 md:mt-0 lg:mt-12">
-          <h2 className="text-dark-900 font-bold text-xl lg:text-2xl">
-            Liquidity overview
-          </h2>
+          <div className="flex text-dark-900 font-bold text-xl lg:text-2xl">
+            <h2 className="mr-3">Liquidity overview</h2>
+            <EnvironmentNetworkSwitch />
+          </div>
           <div className="mt-1">
             <span className="text-dark-700 text-sm md:test-base">
               The current liquidity of each token available on Quantum. For
