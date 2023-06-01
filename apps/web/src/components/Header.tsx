@@ -94,6 +94,9 @@ export default function Header({
             onBack={() => {
               resetModalDetails();
             }}
+            onTransactionFound={(modalTypeToDisplay) => {
+              setModalToDisplay(modalTypeToDisplay);
+            }}
           />
           <TransactionCompletionModal
             isOpen={
