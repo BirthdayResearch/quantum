@@ -1,4 +1,5 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { BigNumber as EthBigNumber, ethers } from 'ethers';
 import { BridgeV1__factory } from 'smartcontracts';
 import { BridgeQueue__factory } from 'smartcontracts-queue';
@@ -10,19 +11,6 @@ export enum ContractType {
   queue = 'queue',
 }
 
-const contract = {
-  [ContractType.instant]: {
-    interface: BridgeV1__factory.abi,
-    name: 'bridgeToDeFiChain',
-    signature: 'bridgeToDeFiChain(bytes,address,uint256)',
-  },
-  [ContractType.queue]: {
-    interface: BridgeQueue__factory.abi,
-    name: 'bridgeToDeFiChain',
-    signature: 'bridgeToDeFiChain(bytes,address,uint256)',
-  },
-};
-
 export enum ErrorMsgTypes {
   InaccurateNameAndSignature = 'Decoded function name or signature is inaccurate',
   PendingTxn = 'Transaction is still pending',
@@ -30,6 +18,7 @@ export enum ErrorMsgTypes {
   RevertedTxn = 'Transaction Reverted',
   TxnNotFound = 'Transaction not found',
   QueueNotFound = 'Queue not found',
+  TxSentBeforeDeployment = 'This transaction is sent before deployment',
 }
 export interface VerifyIfValidTxnDto {
   parsedTxnData?: {
@@ -41,7 +30,37 @@ export interface VerifyIfValidTxnDto {
 
 @Injectable()
 export class VerificationService {
-  constructor(@Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider) {}
+  private readonly contract: any;
+
+  constructor(
+    @Inject(ETHERS_RPC_PROVIDER) readonly ethersRpcProvider: ethers.providers.StaticJsonRpcProvider,
+    private configService: ConfigService,
+  ) {
+    this.contract = {
+      [ContractType.instant]: {
+        interface: BridgeV1__factory.abi,
+        name: 'bridgeToDeFiChain',
+        signature: 'bridgeToDeFiChain(bytes,address,uint256)',
+        deploymentBlockNo: Number(
+          this.configService.getOrThrow('ethereum.contracts.bridgeProxy.deploymentBlockNumber'),
+        ),
+        deploymentTxIndex: Number(
+          this.configService.getOrThrow('ethereum.contracts.bridgeProxy.deploymentTxIndexInBlock'),
+        ),
+      },
+      [ContractType.queue]: {
+        interface: BridgeQueue__factory.abi,
+        name: 'bridgeToDeFiChain',
+        signature: 'bridgeToDeFiChain(bytes,address,uint256)',
+        deploymentBlockNo: Number(
+          this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.deploymentBlockNumber'),
+        ),
+        deploymentTxIndex: Number(
+          this.configService.getOrThrow('ethereum.contracts.queueBridgeProxy.deploymentTxIndexInBlock'),
+        ),
+      },
+    };
+  }
 
   async verifyIfValidTxn(
     transactionHash: string,
@@ -55,8 +74,8 @@ export class VerificationService {
 
     // Sanity check that the decoded function name and signature are correct
     if (
-      parsedTxnData.parsedTxnData.name !== contract[contractType].name ||
-      parsedTxnData.parsedTxnData.signature !== contract[contractType].signature
+      parsedTxnData.parsedTxnData.name !== this.contract[contractType].name ||
+      parsedTxnData.parsedTxnData.signature !== this.contract[contractType].signature
     ) {
       throw new BadRequestException(ErrorMsgTypes.InaccurateNameAndSignature);
     }
@@ -77,6 +96,12 @@ export class VerificationService {
       throw new BadRequestException(ErrorMsgTypes.RevertedTxn);
     }
 
+    if (
+      txReceipt.blockNumber < this.contract[contractType].deploymentBlockNo ||
+      (txReceipt.blockNumber === this.contract[contractType].deploymentBlockNo &&
+        txReceipt.transactionIndex <= this.contract[contractType].deploymentTxIndex)
+    )
+      throw new BadRequestException(ErrorMsgTypes.TxSentBeforeDeployment);
     // TODO: Validate the txns event logs here through this.ethersRpcProvider.getLogs()
 
     return { parsedTxnData };
@@ -93,7 +118,7 @@ export class VerificationService {
     if (onChainTxnDetail === null) {
       throw new NotFoundException(ErrorMsgTypes.PendingTxn);
     }
-    const etherInterface = new ethers.utils.Interface(contract[contractType].interface);
+    const etherInterface = new ethers.utils.Interface(this.contract[contractType].interface);
     const parsedTxnData = etherInterface.parseTransaction({
       data: onChainTxnDetail.data,
       value: onChainTxnDetail.value,

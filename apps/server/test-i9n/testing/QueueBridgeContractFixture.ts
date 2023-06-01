@@ -1,4 +1,5 @@
 import { BigNumberish, constants, Signer } from 'ethers';
+import { getContractAddress } from 'ethers/lib/utils';
 import {
   BridgeQueue,
   BridgeQueue__factory,
@@ -16,9 +17,18 @@ export class QueueBridgeContractFixture {
   // The default signer used to deploy contracts
   public defaultAdminSigner: Signer;
 
+  public wrongTxHash: string;
+
+  public calculatedBridgeQueueProxyAddress: string;
+
+  public deploymentTxHash: string;
+
   constructor(private readonly hardhatNetwork: HardhatNetwork) {
     this.contractManager = hardhatNetwork.contracts;
     this.defaultAdminSigner = hardhatNetwork.contractSigner;
+    this.wrongTxHash = '';
+    this.calculatedBridgeQueueProxyAddress = '';
+    this.deploymentTxHash = '';
   }
 
   static readonly Contracts = {
@@ -168,6 +178,24 @@ export class QueueBridgeContractFixture {
       [musdt.address, musdc.address, mwbtc.address, meuroc.address, dfi.address, constants.AddressZero],
     ]);
 
+    this.calculatedBridgeQueueProxyAddress = getContractAddress({
+      from: adminAndOperationalAddress,
+      nonce: (await this.defaultAdminSigner.getTransactionCount()) + 1,
+    });
+
+    this.wrongTxHash = (
+      await this.defaultAdminSigner.sendTransaction({
+        to: this.calculatedBridgeQueueProxyAddress,
+        data: BridgeQueue__factory.createInterface().encodeFunctionData('bridgeToDeFiChain', [
+          '0x',
+          constants.AddressZero,
+          10,
+        ]),
+      })
+    ).hash;
+
+    await this.hardhatNetwork.generate(1);
+
     // Deploying proxy contract
     const queueBridgeProxy = await this.contractManager.deployContract<BridgeQueueProxy>({
       deploymentName: QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName,
@@ -176,6 +204,10 @@ export class QueueBridgeContractFixture {
       abi: BridgeQueueProxy__factory.abi,
     });
     await this.hardhatNetwork.generate(1);
+
+    this.deploymentTxHash = this.contractManager.getDeploymentTxHashForContract(
+      QueueBridgeContractFixture.Contracts.BridgeQueueProxy.deploymentName,
+    );
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const queueBridge = BridgeQueue__factory.connect(queueBridgeProxy.address, this.defaultAdminSigner);

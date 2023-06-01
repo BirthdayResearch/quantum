@@ -53,9 +53,13 @@ export function buildTestConfig({
       contracts: {
         bridgeProxy: {
           address: testnet?.bridgeContractAddress ?? '',
+          deploymentBlockNumber: testnet?.bridgeProxyDeploymentBlockNumber ?? '',
+          deploymentTxIndexInBlock: testnet?.bridgeProxyDeploymentTransactionIndex ?? '',
         },
         queueBridgeProxy: {
           address: testnet?.bridgeQueueContractAddress ?? '',
+          deploymentBlockNumber: testnet?.bridgeQueueProxyDeploymentBlockNumber ?? '',
+          deploymentTxIndexInBlock: testnet?.bridgeQueueProxyDeploymentTransactionIndex ?? '',
         },
         USDC: {
           address: usdcAddress,
@@ -109,6 +113,10 @@ type OptionalBuildTestConfigParams = {
   testnet: {
     bridgeContractAddress: string;
     bridgeQueueContractAddress: string;
+    bridgeProxyDeploymentBlockNumber: string;
+    bridgeProxyDeploymentTransactionIndex: string;
+    bridgeQueueProxyDeploymentBlockNumber: string;
+    bridgeQueueProxyDeploymentTransactionIndex: string;
     ethWalletPrivKey: string;
   };
   usdcAddress: string;

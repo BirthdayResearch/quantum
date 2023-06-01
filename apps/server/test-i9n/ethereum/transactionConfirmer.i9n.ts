@@ -37,13 +37,19 @@ describe('Bridge Service Integration Tests', () => {
     ({ bridgeProxy: bridgeContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
+    const { blockNumber: bridgeProxyDeploymentBlockNumber, transactionIndex: bridgeProxyDeploymentTransactionIndex } =
+      await startedHardhatContainer.call('eth_getTransactionByHash', [bridgeContractFixture.deploymentTxHash]);
     // initialize config variables
     testing = new BridgeServerTestingApp(
       TestingModule.register(
         buildTestConfig({
           defichain: { key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
           startedHardhatContainer,
-          testnet: { bridgeContractAddress: bridgeContract.address },
+          testnet: {
+            bridgeContractAddress: bridgeContract.address,
+            bridgeProxyDeploymentBlockNumber: bridgeProxyDeploymentBlockNumber.toString(),
+            bridgeProxyDeploymentTransactionIndex: bridgeProxyDeploymentTransactionIndex.toString(),
+          },
           startedPostgresContainer,
           usdcAddress: musdcContract.address,
         }),
