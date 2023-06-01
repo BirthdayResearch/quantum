@@ -29,6 +29,7 @@ export enum ErrorMsgTypes {
   InaccurateContractAddress = 'Contract Address in the Transaction Receipt is inaccurate',
   RevertedTxn = 'Transaction Reverted',
   TxnNotFound = 'Transaction not found',
+  QueueNotFound = 'Queue not found',
 }
 export interface VerifyIfValidTxnDto {
   parsedTxnData?: {
