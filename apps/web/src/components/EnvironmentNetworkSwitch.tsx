@@ -16,11 +16,17 @@ export default function EnvironmentNetworkSwitch({
   const { chain } = useNetwork();
 
   useEffect(() => {
-    updateNetworkEnv(
-      chain === undefined || chain?.id === ETHEREUM_MAINNET_ID
-        ? EnvironmentNetwork.MainNet
-        : EnvironmentNetwork.TestNet
-    );
+    if (chain === undefined) {
+      return;
+    }
+    setTimeout(() => {
+      // update network one tick later if MM chain changes
+      updateNetworkEnv(
+        chain?.id === ETHEREUM_MAINNET_ID
+          ? EnvironmentNetwork.MainNet
+          : EnvironmentNetwork.TestNet
+      );
+    });
   }, [chain]);
 
   const handleOnClick = async () => {
