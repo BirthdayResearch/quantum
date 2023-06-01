@@ -81,6 +81,10 @@ export default function TransactionCompletionModal({
   const dfcSymbolToDisplay = mapTokenToNetworkName(Network.DeFiChain, token);
   const ethSymbolToDisplay = mapTokenToNetworkName(Network.Ethereum, token);
 
+  console.log(token);
+  console.log(dfcSymbolToDisplay);
+  console.log(ethSymbolToDisplay);
+
   const handleOnCopy = (text) => {
     copy(text);
     setShowSuccessCopy(true);
@@ -97,7 +101,7 @@ export default function TransactionCompletionModal({
     [ModalTypeToDisplay.Completed]: dayjs(initiatedDate).format(
       "DD/MM/YYYY, HH:mm A"
     ),
-    [ModalTypeToDisplay.RefundRequested]: `${amount} ${ethSymbolToDisplay}`,
+    [ModalTypeToDisplay.RefundRequested]: `${amount} ${dfcSymbolToDisplay}`,
   };
   const secondRowResult = {
     [ModalTypeToDisplay.Refunded]: transactionHash,
