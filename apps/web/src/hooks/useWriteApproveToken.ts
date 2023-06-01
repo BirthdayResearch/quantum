@@ -44,7 +44,7 @@ export default function useWriteApproveToken({
       typeOfTransaction === FormOptions.INSTANT
         ? BridgeV1.address
         : BridgeQueue.address,
-      BigInt(Number.MAX_SAFE_INTEGER) as any,
+      BigInt(Number.MAX_SAFE_INTEGER),
     ],
   });
 
