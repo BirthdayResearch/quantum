@@ -59,12 +59,13 @@ export default function EnvironmentNetworkSwitch({
     <button
       data-testid="network-env-switch"
       type="button"
-      className={clsx(
-        "flex items-center rounded-[37px] dark-section-bg border border-dark-card-stroke px-3 py-2 hover:dark-btn-hover hover:border-dark-500",
-        {
-          "pointer-events-none": disabled,
-        }
-      )}
+      className={clsx("flex items-center rounded-[37px] border px-3 py-2", {
+        "pointer-events-none": disabled,
+        "bg-dark-network-tag-1 hover:bg-dark-network-tag-hover-1 border-dark-network-tag-1 hover:border-dark-network-tag-hover-1":
+          currentNetworkEnv === EnvironmentNetwork.MainNet,
+        "bg-dark-network-tag-2 hover:bg-dark-network-tag-hover-2 border-dark-network-tag-2 hover:border-dark-network-tag-hover-2":
+          currentNetworkEnv !== EnvironmentNetwork.MainNet,
+      })}
       onClick={handleOnClick}
       disabled={disabled}
     >
