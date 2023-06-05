@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import * as ethers from "ethers";
+import { isAddress } from "viem";
 import { useAccount } from "wagmi";
 import { FiClipboard } from "react-icons/fi";
 import { IoCloseCircle } from "react-icons/io5";
@@ -91,7 +91,7 @@ export default function WalletAddressInput({
   const validateAddressInput = (input: string): void => {
     let isValid = false;
     if (blockchain === Network.Ethereum) {
-      isValid = ethers.utils.isAddress(input);
+      isValid = isAddress(input);
     } else {
       const decodedAddress = fromAddress(
         input,

@@ -3,7 +3,6 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { FiAlertCircle, FiCheck } from "react-icons/fi";
-import { utils } from "ethers";
 import {
   erc20ABI,
   useContractRead,
@@ -11,6 +10,7 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
+import { parseEther, parseUnits } from "viem";
 import { useRouter } from "next/router";
 import { useContractContext } from "@contexts/ContractContext";
 import { useStorageContext } from "@contexts/StorageContext";
@@ -71,13 +71,12 @@ export default function StepLastClaim({
 
   // Prepare write contract for `claimFund` function
   const [fee] = useTransferFee(data.to.amount.toString());
-  const amountLessFee = BigNumber.max(data.to.amount.minus(fee), 0).toFixed(
-    6,
-    BigNumber.ROUND_DOWN
-  );
+  const amountLessFee = BigNumber(
+    BigNumber.max(data.to.amount.minus(fee), 0).toFixed(6, BigNumber.ROUND_DOWN)
+  ).toNumber();
   const parsedAmount = isTokenETH
-    ? utils.parseEther(amountLessFee)
-    : utils.parseUnits(amountLessFee, tokenDecimals);
+    ? parseEther(`${amountLessFee}`)
+    : parseUnits(`${amountLessFee}`, tokenDecimals as number);
 
   const {
     config: bridgeConfig,

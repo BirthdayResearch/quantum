@@ -1,6 +1,7 @@
-import { ethers, utils } from "ethers";
+import { parseUnits } from "viem";
 import { erc20ABI, useContractReads } from "wagmi";
 import { useEffect, useState } from "react";
+import BigNumber from "bignumber.js";
 import clsx from "clsx";
 import { useContractContext } from "@contexts/ContractContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
@@ -21,6 +22,7 @@ import {
   BridgeStatus,
   DISCLAIMER_MESSAGE,
   ETHEREUM_SYMBOL,
+  GWEI_DECIMAL,
 } from "../../constants";
 import {
   FormOptions,
@@ -77,11 +79,13 @@ export default function EvmToDeFiChainTransfer({
     enabled: !bridgingETH,
   });
 
-  const tokenDecimals = readTokenData?.[1] ?? "gwei";
-  const tokenAllowance = readTokenData?.[0] ?? ethers.BigNumber.from(0);
-
+  const transferAmount = data.to.amount.toNumber();
+  const tokenDecimals = readTokenData?.[1]?.result ?? GWEI_DECIMAL;
+  const tokenAllowance = new BigNumber(
+    readTokenData?.[0]?.result?.toString() ?? 0
+  );
   const hasEnoughAllowance = tokenAllowance.gte(
-    utils.parseUnits(data.to.amount.toFixed(), tokenDecimals)
+    parseUnits(`${transferAmount}`, tokenDecimals).toString()
   );
 
   const {
@@ -92,8 +96,8 @@ export default function EvmToDeFiChainTransfer({
     transactionHash,
   } = useWriteBridgeToDeFiChain({
     receiverAddress: data.to.address,
-    transferAmount: data.to.amount,
     tokenName: data.from.tokenName as Erc20Token,
+    transferAmount,
     tokenDecimals,
     hasEnoughAllowance,
     onBridgeTxnSettled: () => setHasPendingTx(false),
@@ -229,10 +233,12 @@ export default function EvmToDeFiChainTransfer({
     if (!bridgingETH) {
       // Refetch token allowance
       const { data: refetchedData } = await refetchTokenData();
-      const latestTokenAllowance = refetchedData?.[0];
-      const latestTokenDecimals = refetchedData?.[1];
+      const latestTokenAllowance = new BigNumber(
+        refetchedData?.[0]?.result?.toString() ?? 0
+      );
+      const latestTokenDecimals = refetchedData?.[1]?.result ?? GWEI_DECIMAL;
       const hasInsufficientAllowance = latestTokenAllowance?.lt(
-        utils.parseUnits(data.to.amount.toFixed(), latestTokenDecimals)
+        parseUnits(`${transferAmount}`, latestTokenDecimals).toString()
       );
       if (hasInsufficientAllowance) {
         setRequiresApproval(true);

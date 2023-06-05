@@ -2,8 +2,7 @@
  * Hook to write `bridgeToDeFiChain` function from our own BridgeV1 contract
  */
 
-import BigNumber from "bignumber.js";
-import { ethers, utils } from "ethers";
+import { parseEther, parseUnits, toBytes, toHex } from "viem";
 import { useEffect } from "react";
 import {
   useContractWrite,
@@ -24,9 +23,9 @@ export interface EventErrorI {
 
 interface BridgeToDeFiChainI {
   receiverAddress: string;
-  transferAmount: BigNumber;
+  transferAmount: number;
   tokenName: Erc20Token;
-  tokenDecimals: number | "gwei";
+  tokenDecimals: number;
   hasEnoughAllowance: boolean;
   onBridgeTxnSettled: () => void;
   setEventError: (error: EventErrorI | undefined) => void;
@@ -93,17 +92,15 @@ export default function useWriteBridgeToDeFiChain({
           : BridgeQueue.abi,
       functionName: "bridgeToDeFiChain",
       args: [
-        utils.hexlify(utils.toUtf8Bytes(receiverAddress)) as `0x${string}`,
+        toHex(new Uint8Array(toBytes(receiverAddress))),
         Erc20Tokens[tokenName].address,
         sendingFromETH
-          ? 0 // ETH amount is set inside overrides' `value` field
-          : utils.parseUnits(transferAmount.toFixed(), tokenDecimals),
+          ? 0 // ETH amount is set inside `value` field below
+          : parseUnits(`${transferAmount}`, tokenDecimals).toString(),
       ],
       ...(sendingFromETH
         ? {
-            overrides: {
-              value: ethers.utils.parseEther(transferAmount.toFixed()),
-            },
+            value: parseEther(`${transferAmount}`),
           }
         : {}),
       onError: handlePrepContractError,

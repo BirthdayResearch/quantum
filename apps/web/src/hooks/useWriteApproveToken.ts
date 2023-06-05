@@ -2,7 +2,6 @@
  * Hook to write `approve` function from specific ERC20 token contract
  */
 
-import { ethers } from "ethers";
 import { useEffect, useState } from "react";
 import {
   erc20ABI,
@@ -45,7 +44,7 @@ export default function useWriteApproveToken({
       typeOfTransaction === FormOptions.INSTANT
         ? BridgeV1.address
         : BridgeQueue.address,
-      ethers.constants.MaxInt256,
+      BigInt(Number.MAX_SAFE_INTEGER),
     ],
   });
 
@@ -88,7 +87,7 @@ export default function useWriteApproveToken({
     writeApprove: () => {
       // ETH doesn not require approval
       if (
-        tokenConfig.address !== Erc20Tokens.ETH.address &&
+        tokenConfig.request.address !== Erc20Tokens.ETH.address &&
         tokenName !== "ETH"
       ) {
         writeApprove?.();

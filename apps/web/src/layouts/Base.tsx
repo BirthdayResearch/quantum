@@ -9,12 +9,12 @@ import {
   siteTitle,
   website,
 } from "@components/siteInfo";
-import { configureChains, createClient, WagmiConfig } from "wagmi";
+import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { goerli, mainnet } from "wagmi/chains";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
-import { ConnectKitProvider, getDefaultClient } from "connectkit";
+import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import { getInitialTheme, ThemeProvider } from "@contexts/ThemeProvider";
 import { NetworkEnvironmentProvider } from "@contexts/NetworkEnvironmentContext";
 import { NetworkProvider } from "@contexts/NetworkContext";
@@ -53,8 +53,8 @@ const { chains } = configureChains(
   ]
 );
 
-const client = createClient(
-  getDefaultClient({
+const config = createConfig(
+  getDefaultConfig({
     autoConnect: true,
     chains,
     appName,
@@ -154,7 +154,7 @@ function Base({
       </Head>
 
       <Provider store={store}>
-        <WagmiConfig client={client}>
+        <WagmiConfig config={config}>
           <ConnectKitProvider mode="dark" options={{ initialChainId: 0 }}>
             {mounted && (
               <NetworkProvider>
