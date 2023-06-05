@@ -65,13 +65,19 @@ describe('QueueBridgeContractFixture Integration Tests', () => {
 
     // Then the Bridge contracts should be deployed on chain
     const { musdc, musdt, queueBridgeImplementation, queueBridgeProxy } = bridgeContractFixture.contracts;
-
+    // Check whether the address is calculated correctly
+    expect(queueBridgeProxy.address).toStrictEqual(bridgeContractFixture.calculatedBridgeQueueProxyAddress);
     await expect(
       hardhatNetwork.ethersRpcProvider.getCode(queueBridgeImplementation.address),
     ).resolves.not.toStrictEqual('0x');
     await expect(hardhatNetwork.ethersRpcProvider.getCode(queueBridgeProxy.address)).resolves.not.toStrictEqual('0x');
     await expect(hardhatNetwork.ethersRpcProvider.getCode(musdc.address)).resolves.not.toStrictEqual('0x');
     await expect(hardhatNetwork.ethersRpcProvider.getCode(musdt.address)).resolves.not.toStrictEqual('0x');
+    // check whether the wrongTxHash is successful
+    const wrongTxHashStatus = (
+      await hardhatNetwork.ethersRpcProvider.getTransactionReceipt(bridgeContractFixture.wrongTxHash)
+    ).status;
+    expect(wrongTxHashStatus).toStrictEqual(1);
   });
 
   it('should be able to mint tokens for a specified EOA', async () => {

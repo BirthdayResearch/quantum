@@ -38,6 +38,11 @@ describe('Create Queue Service Integration Tests', () => {
     ({ queueBridgeProxy: bridgeQueueContract, musdc: musdcContract } =
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
+    const {
+      blockNumber: bridgeQueueProxyDeploymentBlockNumber,
+      transactionIndex: bridgeQueueProxyDeploymentTransactionIndex,
+    } = await startedHardhatContainer.call('eth_getTransactionByHash', [bridgeContractFixture.deploymentTxHash]);
+
     // initialize config variables
     testing = new BridgeServerTestingApp(
       TestingModule.register(
@@ -49,7 +54,11 @@ describe('Create Queue Service Integration Tests', () => {
             },
           },
           startedHardhatContainer,
-          testnet: { bridgeQueueContractAddress: bridgeQueueContract.address },
+          testnet: {
+            bridgeQueueContractAddress: bridgeQueueContract.address,
+            bridgeProxyDeploymentBlockNumber: bridgeQueueProxyDeploymentBlockNumber.toString(),
+            bridgeProxyDeploymentTransactionIndex: bridgeQueueProxyDeploymentTransactionIndex.toString(),
+          },
           startedPostgresContainer,
           usdcAddress: musdcContract.address,
         }),

@@ -21,9 +21,13 @@ export function appConfig() {
       contracts: {
         bridgeProxy: {
           address: process.env.BRIDGE_PROXY_ADDRESS,
+          deploymentBlockNumber: process.env.BRIDGE_PROXY_DEPLOYMENT_BLOCK_NUMBER,
+          deploymentTxIndexInBlock: process.env.BRIDGE_PROXY_TX_INDEX_IN_BLOCK,
         },
         queueBridgeProxy: {
           address: process.env.QUANTUM_QUEUE_PROXY_ADDRESS,
+          deploymentBlockNumber: process.env.QUEUE_BRIDGE_PROXY_DEPLOYMENT_BLOCK_NUMBER,
+          deploymentTxIndexInBlock: process.env.QUEUE_BRIDGE_PROXY_TX_INDEX_IN_BLOCK,
         },
         [SupportedEVMTokenSymbols.USDT]: {
           address: process.env.USDT_ADDRESS,

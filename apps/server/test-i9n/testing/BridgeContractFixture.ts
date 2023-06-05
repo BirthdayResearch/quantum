@@ -1,4 +1,5 @@
 import { BigNumberish, constants, ethers, Signer } from 'ethers';
+import { getContractAddress } from 'ethers/lib/utils';
 import {
   BridgeProxy,
   BridgeProxy__factory,
@@ -16,9 +17,18 @@ export class BridgeContractFixture {
   // The default signer used to deploy contracts
   public adminAndOperationalSigner: Signer;
 
+  public wrongTxHash: string;
+
+  public calculatedBridgeProxyAddress: string;
+
+  public deploymentTxHash: string;
+
   constructor(private readonly hardhatNetwork: HardhatNetwork) {
     this.contractManager = hardhatNetwork.contracts;
     this.adminAndOperationalSigner = hardhatNetwork.contractSigner;
+    this.wrongTxHash = '';
+    this.calculatedBridgeProxyAddress = '';
+    this.deploymentTxHash = '';
   }
 
   static readonly Contracts = {
@@ -111,6 +121,23 @@ export class BridgeContractFixture {
 
     const adminAndOperationalAddress = await this.adminAndOperationalSigner.getAddress();
 
+    this.calculatedBridgeProxyAddress = getContractAddress({
+      from: adminAndOperationalAddress,
+      nonce: (await this.adminAndOperationalSigner.getTransactionCount()) + 1,
+    });
+
+    this.wrongTxHash = (
+      await this.adminAndOperationalSigner.sendTransaction({
+        to: this.calculatedBridgeProxyAddress,
+        data: BridgeV1__factory.createInterface().encodeFunctionData('bridgeToDeFiChain', [
+          '0x',
+          constants.AddressZero,
+          10,
+        ]),
+      })
+    ).hash;
+
+    await this.hardhatNetwork.generate(1);
     // Deployment arguments for the Proxy contract
     const encodedData = BridgeV1__factory.createInterface().encodeFunctionData('initialize', [
       // admin address
@@ -138,6 +165,9 @@ export class BridgeContractFixture {
       abi: BridgeProxy__factory.abi,
     });
     await this.hardhatNetwork.generate(1);
+    this.deploymentTxHash = this.contractManager.getDeploymentTxHashForContract(
+      BridgeContractFixture.Contracts.BridgeProxy.deploymentName,
+    );
 
     // Deploy MockUSDT
     const musdt = await this.contractManager.deployContract<TestToken>({
