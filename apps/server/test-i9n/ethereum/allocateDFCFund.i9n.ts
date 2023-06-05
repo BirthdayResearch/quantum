@@ -73,6 +73,8 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
       bridgeContractFixture.contractsWithAdminAndOperationalSigner);
     defichain = await new DeFiChainStubContainer().start();
     const whaleURL = await defichain.getWhaleURL();
+    const { blockNumber: bridgeProxyDeploymentBlockNumber, transactionIndex: bridgeProxyDeploymentTransactionIndex } =
+      await startedHardhatContainer.call('eth_getTransactionByHash', [bridgeContractFixture.deploymentTxHash]);
     // initialize config variables
     testing = new BridgeServerTestingApp(
       TestingModule.register(
@@ -80,7 +82,11 @@ describe('Bridge Service Allocate DFC Fund Integration Tests', () => {
           startedHardhatContainer,
           defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
           ethereum: { transferFee: '0' },
-          testnet: { bridgeContractAddress: bridgeContract.address },
+          testnet: {
+            bridgeContractAddress: bridgeContract.address,
+            bridgeProxyDeploymentBlockNumber,
+            bridgeProxyDeploymentTransactionIndex,
+          },
           startedPostgresContainer,
           usdcAddress: musdcContract.address,
         }),
