@@ -32,7 +32,7 @@
     "react-secure-storage": "^1.2.2",
     "sass": "^1.62.1",
     "viem": "^0.3.41",
-    "wagmi": "^1.0.9"
+    "wagmi": "^1.1.0"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.10.7",
