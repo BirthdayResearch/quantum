@@ -28,10 +28,14 @@ export async function deployBridgeProxy({
     flushReceiveAddress,
   ]);
   const bridgeProxy = await bridgeProxyContract.deploy(bridgeV1Address, encodedData);
-  await bridgeProxy.deployed();
+  await bridgeProxy.deployTransaction.wait(6);
   console.log('Proxy Address: ', bridgeProxy.address);
   console.log('Verifying...');
-  await verify({ contractAddress: bridgeProxy.address, args: [bridgeV1Address, encodedData] });
+  await verify({
+    contractAddress: bridgeProxy.address,
+    args: [bridgeV1Address, encodedData],
+    contract: 'contracts/BridgeProxy.sol:BridgeProxy',
+  });
   return bridgeProxy;
 }
 

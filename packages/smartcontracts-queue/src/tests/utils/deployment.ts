@@ -14,8 +14,8 @@ export async function deployContracts(): Promise<BridgeQueueDeploymentResult> {
   await bridgeQueue.deployed();
   const BridgeQueueProxyFactory = await ethers.getContractFactory('BridgeQueueProxy');
   const ERC20 = await ethers.getContractFactory('TestToken');
-  const testToken3 = await ERC20.deploy('Test3', 'T3');
-  const testToken4 = await ERC20.deploy('Test4', 'T4');
+  const testToken3 = await ERC20.deploy('Test3', 'T3', 18);
+  const testToken4 = await ERC20.deploy('Test4', 'T4', 18);
   // deployment arguments for the Proxy contract
   const encodedData = BridgeQueue__factory.createInterface().encodeFunctionData('initialize', [
     // default admin address
@@ -33,8 +33,8 @@ export async function deployContracts(): Promise<BridgeQueueDeploymentResult> {
   await bridgeProxy.deployed();
   const proxyBridge = BridgeQueueFactory.attach(bridgeProxy.address);
   // Deploying ERC20 tokens
-  const testToken = await ERC20.deploy('Test', 'T');
-  const testToken2 = await ERC20.deploy('Test2', 'T2');
+  const testToken = await ERC20.deploy('Test', 'T', 18);
+  const testToken2 = await ERC20.deploy('Test2', 'T2', 18);
 
   return {
     proxyBridge,

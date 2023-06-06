@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ethers } from 'hardhat';
 
 import { bridgeImplementation } from './deployBridgeImplementation';
@@ -11,27 +12,18 @@ require('dotenv').config({
 // when deploying, replace the following values with the correct ones
 const minDelay = 259200; // 3 days
 const TIMELOCK_ADMIN_ADDRESS = ''; // Multi sig wallet
-const BRIDGE_WITHDRAW_ADDRESS = ''; // Multi sig wallet
-const RELAYER_ADDRESS = '';
-const TX_FEE_ADDRESS = '';
-const FLUSH_ADDRESS = '';
+const BRIDGE_WITHDRAW_ADDRESS = '0x17D6bb95cCF124324995F08204132cdf75048284'; // Multi sig wallet
+const RELAYER_ADDRESS = '0x17D6bb95cCF124324995F08204132cdf75048284';
+const TX_FEE_ADDRESS = '0x17D6bb95cCF124324995F08204132cdf75048284';
+const FLUSH_ADDRESS = '0x17D6bb95cCF124324995F08204132cdf75048284';
 
-// Run this script to deploy all contracts on mainnet.
-// npx hardhat run --network mainnet ./scripts/mainnetContractsDeployment.ts
-
-// Run this script to deploy all contracts on Goerli testnet.
-// npx hardhat run --network goerli ./scripts/mainnetContractsDeployment.ts
+// Run this script to deploy all contracts on sepolia.
+// npx hardhat run --network sepolia ./scripts/mainnetContractsDeployment.ts --config hardhat.config.ts
 
 async function main() {
-  const timelockController = await deployTimelockController({
-    minDelay,
-    proposers: [TIMELOCK_ADMIN_ADDRESS],
-    executors: [TIMELOCK_ADMIN_ADDRESS],
-    admin: ethers.constants.AddressZero,
-  });
   const bridgeV1 = await bridgeImplementation();
   await deployBridgeProxy({
-    adminAddress: timelockController.address,
+    adminAddress: '0x7A5A990EBaC71e56538C9311A6E080fe6e6Cdf0A',
     withdrawAddress: BRIDGE_WITHDRAW_ADDRESS,
     relayerAddress: RELAYER_ADDRESS,
     bridgeV1Address: bridgeV1.address,
