@@ -12,7 +12,7 @@ import {
 import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
 import { FormOptions, useNetworkContext } from "@contexts/NetworkContext";
-import { ETHEREUM_SYMBOL } from "../constants";
+import { ETHEREUM_SYMBOL, METAMASK_REJECT_MESSAGE } from "../constants";
 
 export interface EventErrorI {
   customErrorDisplay?:
@@ -67,7 +67,7 @@ export default function useWriteBridgeToDeFiChain({
   const handleWriteContractError = (err) => {
     let customErrorMessage;
     let customErrorDisplay: EventErrorI["customErrorDisplay"];
-    if (err?.name === "UserRejectedRequestError") {
+    if (err?.message?.includes(METAMASK_REJECT_MESSAGE)) {
       customErrorDisplay = "UserRejectedRequestError";
       customErrorMessage =
         "The transaction was rejected in your wallet. No funds have been transferred. Please retry your transaction.";

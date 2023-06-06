@@ -13,6 +13,7 @@ import { useContractContext } from "@contexts/ContractContext";
 import { Erc20Token } from "types";
 import Logging from "@api/logging";
 import { FormOptions, useNetworkContext } from "@contexts/NetworkContext";
+import { METAMASK_REJECT_MESSAGE } from "../constants";
 
 interface ApproveTokenI {
   tokenName: Erc20Token;
@@ -70,7 +71,7 @@ export default function useWriteApproveToken({
 
   useEffect(() => {
     if (writeApproveError || approveTxnError) {
-      if (writeApproveError?.message?.includes("User rejected request")) {
+      if (writeApproveError?.message?.includes(METAMASK_REJECT_MESSAGE)) {
         setErrorMessage(
           "The transaction was rejected in your wallet. No funds have been transferred. Please retry your transaction."
         );

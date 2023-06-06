@@ -24,7 +24,7 @@ import useTransferFee from "@hooks/useTransferFee";
 import useTimeCounter from "@hooks/useTimeCounter";
 import Logging from "@api/logging";
 import { getDuration } from "@utils/durationHelper";
-import { ETHEREUM_SYMBOL } from "../../constants";
+import { ETHEREUM_SYMBOL, METAMASK_REJECT_MESSAGE } from "../../constants";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again. If the error persists get in touch with us.";
@@ -172,6 +172,9 @@ export default function StepLastClaim({
       } else {
         err = CLAIM_INPUT_ERROR;
       }
+    }
+    if (err?.includes(METAMASK_REJECT_MESSAGE)) {
+      err = METAMASK_REJECT_MESSAGE;
     }
     setError(err);
   }, [writeClaimTxnError, claimTxnError]);

@@ -31,6 +31,8 @@ export const TRANSACTION_ERROR_INFO: TooltipInfoI = {
 export const DISCLAIMER_MESSAGE =
   "Transactions are irreversible. Ensure the amount and DeFiChain address is correct.";
 
+export const METAMASK_REJECT_MESSAGE = "User rejected the request";
+
 export const DFC_TO_API_RESET_TIME_LIMIT = 1000 * 60; // 1 min api reset time
 
 export const DFC_TO_ERC_RESET_FORM_TIME_LIMIT = 1000 * 60 * 60 * 24; // 1 Day address expiry time
