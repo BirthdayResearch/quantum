@@ -167,7 +167,7 @@ BridgeQueue Contract address: [0x180520fffecb138a042b473aa131673deff40cdb](https
 
 BridgeQueueProxy Contract address: [0xba188cdec7b48e6f1079256208b96f067e385ff1](https://etherscan.io/address/0xba188cdec7b48e6f1079256208b96f067e385ff1)
 
-## Testnet Addresses
+## Goerli Testnet Addresses
 
 ### MWBTC
 
@@ -200,6 +200,48 @@ BridgeV1 Contract address: [0x57762d794587EdF59f2087DCD6D99eB0105b1A8f](https://
 ### BridgeProxy
 
 BridgeProxy Contract address: [0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef](https://goerli.etherscan.io/address/0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef)
+
+## Sepolia Testnet Addresses
+
+###
+
+Mock USDT : [0x5e19180828c6942b42e3cE860C564610e064fEee](https://sepolia.etherscan.io/address/0x5e19180828c6942b42e3cE860C564610e064fEee)
+
+###
+
+Mock USDC : [0x754028ed11D02f8f255410d32704839C33142b44](https://sepolia.etherscan.io/address/0x754028ed11D02f8f255410d32704839C33142b44)
+
+###
+
+Mock EUROC : [0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd](https://sepolia.etherscan.io/address/0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd)
+
+###
+
+Mock DFI : [0x1f84B07483AC2D5f212a7bF14184310baE087448](https://sepolia.etherscan.io/address/0x1f84B07483AC2D5f212a7bF14184310baE087448)
+
+###
+
+Mock WBTC : [0x8B3d701B187D8Eb8c0b9368AebbAAFC62D3fa0e1](https://sepolia.etherscan.io/address/0x8B3d701B187D8Eb8c0b9368AebbAAFC62D3fa0e1)
+
+###
+
+Timelock Controller: [0x7A5A990EBaC71e56538C9311A6E080fe6e6Cdf0A](https://sepolia.etherscan.io/address/0x7A5A990EBaC71e56538C9311A6E080fe6e6Cdf0A)
+
+###
+
+Bridge Queue Proxy: [0x964B2feE939aa623869c7380f4e83789f98b2e88](https://sepolia.etherscan.io/address/0x964B2feE939aa623869c7380f4e83789f98b2e88)
+
+###
+
+Bridge Queue: [0x29D6d5f8ad010b548D0dC68d8b50c043c4bED1Cc](https://sepolia.etherscan.io/address/0x29D6d5f8ad010b548D0dC68d8b50c043c4bED1Cc)
+
+###
+
+Bridge V1 Proxy: [0x62cAa18a745b3d61E81f64e5B47c1A21dE8155bA](https://sepolia.etherscan.io/address/0x62cAa18a745b3d61E81f64e5B47c1A21dE8155bA)
+
+###
+
+Bridge V1: [0xD321B5EfB5E8E3aE630d13DB2A00eB50eEBEFd4E](https://sepolia.etherscan.io/address/0xD321B5EfB5E8E3aE630d13DB2A00eB50eEBEFd4E)
 
 ## Fund Bridge ERC20 tokens
 
