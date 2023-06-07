@@ -186,7 +186,7 @@ export default function TransactionInProgressModal({
         <div className="flex flex-col md:mt-6 md:mb-4 w-full md:px-6 h-full md:h-auto -mt-[60px]">
           {type === ModalTypeToDisplay.Unsuccessful && (
             <Link
-              href="https://birthdayresearch.notion.site/Error-Codes-d5c0bfd68359466e88223791e69adb4f"
+              href="https://birthday-research.gitbook.io/quantum-documentation/troubleshooting/error-codes"
               target="_blank"
               rel="noopener noreferrer"
               className="underline"
