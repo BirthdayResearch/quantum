@@ -11,8 +11,8 @@ export default function mapTokenToNetworkName(
   const networkToSearch =
     network === Network.Ethereum ? ethNetwork : dfcNetwork;
   const symbolToDisplay = networkToSearch.tokens.find(
-    (option) => option.tokenA.symbol === symbol
-  )?.tokenA.name;
+    (option) => option.tokenB.symbol === symbol
+  )?.tokenB.name;
 
   return symbolToDisplay;
 }
