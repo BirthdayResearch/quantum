@@ -184,7 +184,7 @@ export default function QueryTransactionModal({
 
     const ethSymbolToDisplay = mapTokenToNetworkName(
       Network.Ethereum,
-      txnDetails.symbol
+      txnDetails.symbol === "BTC" ? "WBTC" : txnDetails.symbol
     );
     const dfcSymbolToDisplay = mapTokenToNetworkName(
       Network.DeFiChain,
