@@ -263,7 +263,7 @@ export default function EvmToDeFiChainTransfer({
     [BridgeStatus.QueueingTransaction]: {
       title: "Queueing transaction",
       message:
-        "Do not close your browser or hit refresh as the bridge process your transaction queue.",
+        "Do not close your browser while Quantum adds your transaction to Queue.",
     },
   };
 
