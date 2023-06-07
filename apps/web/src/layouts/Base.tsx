@@ -10,7 +10,7 @@ import {
   website,
 } from "@components/siteInfo";
 import { configureChains, createClient, WagmiConfig } from "wagmi";
-import { goerli, mainnet } from "wagmi/chains";
+import { sepolia, mainnet } from "wagmi/chains";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
@@ -33,11 +33,11 @@ import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
 
 const metamask = new MetaMaskConnector({
-  chains: [mainnet, goerli],
+  chains: [mainnet, sepolia],
 });
 
 const { chains } = configureChains(
-  [goerli, mainnet],
+  [sepolia, mainnet],
   [
     jsonRpcProvider({
       rpc: (chain) => {

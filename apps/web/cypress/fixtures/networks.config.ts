@@ -1,9 +1,10 @@
+// eslint-disable-next-line import/prefer-default-export
 export const networkConfigs = [
   {
     network: "TestNet",
     dfcAddress: "tf1qsckyp02vdzaf95cjl5dr95n8stcalze0pfswcp",
     evmAddress:
-      "https://goerli.etherscan.io/address/0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef",
+      "https://sepolia.etherscan.io/address/0x62caa18a745b3d61e81f64e5b47c1a21de8155ba",
     balancesUrl: "https://testnet.api.quantumbridge.app/balances",
   },
   {
