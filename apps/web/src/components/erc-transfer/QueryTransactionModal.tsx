@@ -184,6 +184,8 @@ export default function QueryTransactionModal({
 
     const ethSymbolToDisplay = mapTokenToNetworkName(
       Network.Ethereum,
+      // symbol and name for BTC for evm should both be WBTC https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
+      // however as we are storing as BTC in the DB we would check for WBTC if symbol is BTC for Eth network
       txnDetails.symbol === "BTC" ? "WBTC" : txnDetails.symbol
     );
     const dfcSymbolToDisplay = mapTokenToNetworkName(
