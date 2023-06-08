@@ -26,7 +26,7 @@
   },
   "engines": {
     "node": "^18.0.0 || ^16.16.0",
-    "pnpm": ">=8.6.0"
+    "pnpm": ">=8.6.1"
   },
-  "^0.51.0Manager": "pnpm@8.6.0"
+  "packageManager": "pnpm@8.6.1"
 }
