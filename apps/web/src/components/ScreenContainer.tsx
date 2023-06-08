@@ -3,10 +3,6 @@ import Header from "@components/Header";
 import clsx from "clsx";
 import { useRouter } from "next/router";
 import Maintenance from "./Maintenance";
-import {
-  FormOptions,
-  useNetworkContext,
-} from "../layouts/contexts/NetworkContext";
 
 export default function ScreenContainer({
   children,
@@ -17,7 +13,6 @@ export default function ScreenContainer({
 }): JSX.Element {
   const router = useRouter();
   const is404 = router.pathname === "/404";
-  const { typeOfTransaction } = useNetworkContext();
   // background picture has 2 conditions/designs: connected wallet bg design vs preconnected wallet bg design
   const bgPicture =
     !isBridgeUp || is404
