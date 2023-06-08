@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import {
+  erc20ABI,
   useContractWrite,
   usePrepareContractWrite,
   useWaitForTransaction,
@@ -33,20 +34,23 @@ export default function useWriteApproveToken({
 
   const erc20TokenContract = {
     address: Erc20Tokens[tokenName].address,
-    abi: [
-      {
-        constant: false,
-        inputs: [
-          { name: "_spender", type: "address" },
-          { name: "_value", type: "uint256" },
-        ],
-        name: "approve",
-        outputs: [],
-        payable: false,
-        stateMutability: "nonpayable",
-        type: "function",
-      },
-    ],
+    abi:
+      tokenName === "USDT"
+        ? [
+            {
+              constant: false,
+              inputs: [
+                { name: "_spender", type: "address" },
+                { name: "_value", type: "uint256" },
+              ],
+              name: "approve",
+              outputs: [],
+              payable: false,
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+          ]
+        : erc20ABI,
   };
 
   // Prepare write (ERC20 token) contract for `approve` function
