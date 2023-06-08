@@ -36,7 +36,7 @@ export default function useWriteApproveToken({
     address: Erc20Tokens[tokenName].address,
     abi:
       tokenName === "USDT"
-        ? [
+        ? ([
             {
               constant: false,
               inputs: [
@@ -49,7 +49,7 @@ export default function useWriteApproveToken({
               stateMutability: "nonpayable",
               type: "function",
             },
-          ]
+          ] as any)
         : erc20ABI,
   };
 
