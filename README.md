@@ -229,11 +229,11 @@ Timelock Controller: [0x7A5A990EBaC71e56538C9311A6E080fe6e6Cdf0A](https://sepoli
 
 ###
 
-Bridge Queue Proxy: [0x964B2feE939aa623869c7380f4e83789f98b2e88](https://sepolia.etherscan.io/address/0x964B2feE939aa623869c7380f4e83789f98b2e88)
+Bridge Queue Proxy: [0x29D6d5f8ad010b548D0dC68d8b50c043c4bED1Cc](https://sepolia.etherscan.io/address/0x29D6d5f8ad010b548D0dC68d8b50c043c4bED1Cc)
 
 ###
 
-Bridge Queue: [0x29D6d5f8ad010b548D0dC68d8b50c043c4bED1Cc](https://sepolia.etherscan.io/address/0x29D6d5f8ad010b548D0dC68d8b50c043c4bED1Cc)
+Bridge Queue: [0x964B2feE939aa623869c7380f4e83789f98b2e88](https://sepolia.etherscan.io/address/0x964B2feE939aa623869c7380f4e83789f98b2e88)
 
 ###
 
