@@ -28,8 +28,15 @@ const useLazyBridgeSettingsQuery = () =>
   useWrappedLazyQuery(bridgeApi.useLazyBridgeSettingsQuery);
 const useLazyBridgeAnnouncements = () =>
   useWrappedLazyQuery(bridgeApi.useLazyBridgeAnnouncementsQuery, true);
+const useQueueTransactionMutation = () =>
+  useWrappedMutation(bridgeApi.useQueueTransactionMutation);
+const useVerifyEthQueueTxnMutation = () =>
+  useWrappedMutation(bridgeApi.useVerifyEthQueueTxnMutation);
+const useGetQueueTransactionQuery = () =>
+  useWrappedLazyQuery(bridgeApi.useLazyGetQueueTransactionQuery);
 const useLazyGetEVMTxnDetailsQuery = () =>
   useWrappedLazyQuery(bridgeApi.useLazyGetEVMTxnDetailsQuery);
+const useRefundMutation = () => useWrappedMutation(bridgeApi.useRefundMutation);
 
 export {
   useGenerateAddressMutation,
@@ -44,6 +51,10 @@ export {
   useBridgeVersionQuery,
   useLazyBridgeSettingsQuery,
   useLazyBridgeAnnouncements,
+  useQueueTransactionMutation,
+  useVerifyEthQueueTxnMutation,
+  useGetQueueTransactionQuery,
   useLazyGetEVMTxnDetailsQuery,
+  useRefundMutation,
   bridgeApi,
 };

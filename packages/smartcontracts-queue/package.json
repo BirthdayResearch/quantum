@@ -52,9 +52,9 @@
     ]
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.6.1",
-    "@birthdayresearch/sticky-testcontainers": "^0.6.1",
-    "@birthdayresearch/sticky-turbo-jest": "^0.6.1",
+    "@birthdayresearch/eslint-config": "^0.6.2",
+    "@birthdayresearch/sticky-testcontainers": "^0.6.2",
+    "@birthdayresearch/sticky-turbo-jest": "^0.6.2",
     "@nomicfoundation/hardhat-toolbox": "^2.0.2",
     "hardhat": "2.14.0",
     "@openzeppelin/contracts": "4.8.3",
@@ -62,7 +62,7 @@
     "ethers": "~5.7.2",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
-    "@birthdayresearch/sticky-typescript": "^0.6.1",
+    "@birthdayresearch/sticky-typescript": "^0.6.2",
     "dotenv": "^16.1.4",
     "cross-fetch": "^3.1.6"
   },

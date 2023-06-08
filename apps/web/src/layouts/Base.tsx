@@ -14,7 +14,7 @@ import { sepolia, mainnet } from "wagmi/chains";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
-import { ConnectKitProvider, getDefaultClient } from "connectkit";
+import { ConnectKitProvider, getDefaultConfig } from "connectkit";
 import { getInitialTheme, ThemeProvider } from "@contexts/ThemeProvider";
 import { NetworkEnvironmentProvider } from "@contexts/NetworkEnvironmentContext";
 import { NetworkProvider } from "@contexts/NetworkContext";
@@ -31,6 +31,7 @@ import { store } from "@store/store";
 import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
+import { QueueStorageProvider } from "./contexts/QueueStorageContext";
 
 const metamask = new MetaMaskConnector({
   chains: [mainnet, sepolia],
@@ -52,8 +53,8 @@ const { chains } = configureChains(
   ]
 );
 
-const client = createClient(
-  getDefaultClient({
+const config = createConfig(
+  getDefaultConfig({
     autoConnect: true,
     chains,
     appName,
@@ -153,7 +154,7 @@ function Base({
       </Head>
 
       <Provider store={store}>
-        <WagmiConfig client={client}>
+        <WagmiConfig config={config}>
           <ConnectKitProvider mode="dark" options={{ initialChainId: 0 }}>
             {mounted && (
               <NetworkProvider>
@@ -164,9 +165,11 @@ function Base({
                         <ContractProvider>
                           <ThemeProvider theme={initialTheme}>
                             <StorageProvider>
-                              <ScreenContainer isBridgeUp={isBridgeUp}>
-                                {children}
-                              </ScreenContainer>
+                              <QueueStorageProvider>
+                                <ScreenContainer isBridgeUp={isBridgeUp}>
+                                  {children}
+                                </ScreenContainer>
+                              </QueueStorageProvider>
                             </StorageProvider>
                           </ThemeProvider>
                         </ContractProvider>
