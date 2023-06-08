@@ -34,7 +34,23 @@ export default function useWriteApproveToken({
 
   const erc20TokenContract = {
     address: Erc20Tokens[tokenName].address,
-    abi: erc20ABI,
+    abi:
+      tokenName === "USDT"
+        ? ([
+            {
+              constant: false,
+              inputs: [
+                { name: "_spender", type: "address" },
+                { name: "_value", type: "uint256" },
+              ],
+              name: "approve",
+              outputs: [],
+              payable: false,
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+          ] as any)
+        : erc20ABI,
   };
 
   // Prepare write (ERC20 token) contract for `approve` function
