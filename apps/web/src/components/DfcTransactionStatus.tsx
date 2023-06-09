@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { FormOptions } from "@contexts/NetworkContext";
 import ConfirmationProgress from "./TransactionConfirmationProgressBar";
 import { DFC_CONFIRMATIONS_BLOCK_TOTAL } from "../constants";
 import useResponsive from "../hooks/useResponsive";
@@ -39,11 +40,10 @@ export default function DfcTransactionStatus({
           confirmationBlocksTotal={DFC_CONFIRMATIONS_BLOCK_TOTAL}
           confirmationBlocksCurrent={numOfConfirmations}
           isConfirmed={isConfirmed}
-          isReverted={false}
-          isUnsentFund={false}
           isApiSuccess={isApiSuccess}
           txnType="DeFiChain"
           showCircular={isConfirmed}
+          activeTab={FormOptions.INSTANT}
         />
       </div>
       <div

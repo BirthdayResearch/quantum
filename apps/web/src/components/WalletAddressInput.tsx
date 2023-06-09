@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
-import * as ethers from "ethers";
+import { isAddress } from "viem";
 import { useAccount } from "wagmi";
 import { FiClipboard } from "react-icons/fi";
 import { IoCloseCircle } from "react-icons/io5";
@@ -27,6 +27,7 @@ interface Props {
   onAddressInputError: (hasError: boolean) => void;
   isPrimary?: boolean;
   customMessage?: string;
+  testId: string;
 }
 
 /**
@@ -73,6 +74,7 @@ export default function WalletAddressInput({
   onAddressInputError,
   isPrimary = true,
   customMessage,
+  testId,
 }: Props): JSX.Element {
   const [isValidAddress, setIsValidAddress] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -89,7 +91,7 @@ export default function WalletAddressInput({
   const validateAddressInput = (input: string): void => {
     let isValid = false;
     if (blockchain === Network.Ethereum) {
-      isValid = ethers.utils.isAddress(input);
+      isValid = isAddress(input);
     } else {
       const decodedAddress = fromAddress(
         input,
@@ -187,7 +189,7 @@ export default function WalletAddressInput({
             isPrimary,
         })}
       >
-        <span className="pl-5 text-xs font-semibold xl:tracking-wider lg:text-sm text-dark-900">
+        <span className="pl-5 text-xs font-semibold xl:tracking-wider lg:text-sm text-dark-900 tracking-normal lg:tracking-[0.02em] ">
           {label}
         </span>
         {/*  Network environment */}
@@ -250,7 +252,7 @@ export default function WalletAddressInput({
 
         {/* Textarea input */}
         <textarea
-          data-testid="receiver-address"
+          data-testid={testId}
           ref={textAreaRef}
           className={clsx(
             `max-h-36 grow resize-none bg-transparent text-sm tracking-[0.01em] text-dark-1000 focus:outline-none py-0.5`,
