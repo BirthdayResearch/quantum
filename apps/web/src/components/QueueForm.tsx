@@ -5,89 +5,42 @@ import { FiRefreshCw } from "react-icons/fi";
 import { useAccount, useBalance } from "wagmi";
 import { ConnectKitButton } from "connectkit";
 import { autoUpdate, shift, size, useFloating } from "@floating-ui/react-dom";
-import {
-  networks,
-  useNetworkContext,
-  FormOptions,
-} from "@contexts/NetworkContext";
 import { useNetworkEnvironmentContext } from "@contexts/NetworkEnvironmentContext";
-import {
-  Network,
-  NetworkOptionsI,
-  SelectionType,
-  TokenBalances,
-  TokensI,
-} from "types";
-import SwitchIcon from "@components/icons/SwitchIcon";
+import { Network, TokenBalances } from "types";
 import UtilityModal, {
   ModalConfigType,
 } from "@components/commons/UtilityModal";
-import ArrowDownIcon from "@components/icons/ArrowDownIcon";
 import ActionButton from "@components/commons/ActionButton";
 import IconTooltip from "@components/commons/IconTooltip";
 import NumericFormat from "@components/commons/NumericFormat";
 import { QuickInputCard } from "@components/commons/QuickInputCard";
-import TransactionStatus from "@components/TransactionStatus";
 import { useContractContext } from "@contexts/ContractContext";
-import { useStorageContext } from "@contexts/StorageContext";
+import { useQueueStorageContext } from "@contexts/QueueStorageContext";
 import { useGetAddressDetailMutation } from "@store/index";
 import dayjs from "dayjs";
-import useWatchEthTxn from "@hooks/useWatchEthTxn";
 import useTransferFee from "@hooks/useTransferFee";
 import useCheckBalance from "@hooks/useCheckBalance";
 import debounce from "@utils/debounce";
-import InputSelector from "./InputSelector";
+import useWatchEthQueueTxn from "@hooks/useWatchEthQueueTxn";
 import WalletAddressInput from "./WalletAddressInput";
 import ConfirmTransferModal from "./ConfirmTransferModal";
 import {
   DFC_TO_ERC_RESET_FORM_TIME_LIMIT,
   ETHEREUM_SYMBOL,
   FEES_INFO,
-  CONFIRMATIONS_BLOCK_TOTAL,
   EVM_CONFIRMATIONS_BLOCK_TOTAL,
-  DFC_CONFIRMATIONS_BLOCK_TOTAL,
 } from "../constants";
-import Tooltip from "./commons/Tooltip";
+import {
+  useNetworkContext,
+  FormOptions,
+} from "../layouts/contexts/NetworkContext";
 import QueryTransactionModal, {
   QueryTransactionModalType,
 } from "./erc-transfer/QueryTransactionModal";
 import useInputValidation from "../hooks/useInputValidation";
+import QueueTransactionStatus from "./QueueTransactionStatus";
 
-function SwitchButton({
-  onClick,
-  disabled = false,
-}: {
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <div className="my-4 flex flex-row rounded">
-      <div className="mt-5 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-      <Tooltip content="Switch source" containerClass="py-0">
-        <button
-          title="switch-source-button"
-          type="button"
-          onClick={onClick}
-          disabled={disabled}
-          className={clsx(
-            "dark-card-bg dark-bg-card-section group flex h-10 w-10 items-center justify-center rounded-full",
-            { "pointer-events-none": disabled }
-          )}
-        >
-          <div className="hidden group-hover:hidden lg:block">
-            <ArrowDownIcon size={20} className="fill-dark-700" />
-          </div>
-          <div className="group-hover:block lg:hidden">
-            <SwitchIcon size={20} className="fill-dark-700" />
-          </div>
-        </button>
-      </Tooltip>
-      <div className="mt-5 flex w-full flex-1 justify-between border-t border-dark-300 border-opacity-50" />
-    </div>
-  );
-}
-
-export default function BridgeForm({
+export default function QueueForm({
   hasPendingTxn,
   activeTab,
   setActiveTab,
@@ -97,14 +50,14 @@ export default function BridgeForm({
   setActiveTab: Dispatch<SetStateAction<FormOptions>>;
 }) {
   const {
-    selectedNetworkA,
-    selectedTokensA,
-    selectedNetworkB,
-    selectedTokensB,
-    setSelectedNetworkA,
-    setSelectedTokensA,
-    setSelectedNetworkB,
-    setSelectedTokensB,
+    selectedQueueNetworkA,
+    selectedQueueTokensA,
+    selectedQueueNetworkB,
+    selectedQueueTokensB,
+    setSelectedQueueNetworkA,
+    setSelectedQueueTokensA,
+    setSelectedQueueNetworkB,
+    setSelectedQueueTokensB,
     resetNetworkSelection,
   } = useNetworkContext();
 
@@ -114,14 +67,14 @@ export default function BridgeForm({
   const {
     dfcAddress,
     dfcAddressDetails,
-    destinationAddress,
     txnForm,
     transferAmount,
     transferDisplaySymbolA,
     transferDisplaySymbolB,
     setStorage,
     txnHash,
-  } = useStorageContext();
+    createdQueueTxnHash,
+  } = useQueueStorageContext();
 
   const [amount, setAmount] = useState<string>("");
   const [amountErr, setAmountErr] = useState<string>("");
@@ -136,9 +89,11 @@ export default function BridgeForm({
 
   const [fee, feeSymbol] = useTransferFee(amount);
 
-  const { ethTxnStatus, dfcTxnStatus, isApiSuccess } = useWatchEthTxn();
+  const { ethQueueTxnStatus, isQueueApiSuccess } = useWatchEthQueueTxn();
+
   const { address, isConnected } = useAccount();
-  const isSendingFromEthNetwork = selectedNetworkA.name === Network.Ethereum;
+  const isSendingFromEthNetwork =
+    selectedQueueNetworkA.name === Network.Ethereum;
   const {
     data: evmBalance,
     refetch: refetchEvmBalance,
@@ -148,8 +103,8 @@ export default function BridgeForm({
     enabled: isSendingFromEthNetwork,
     watch: false,
     ...(isSendingFromEthNetwork &&
-      selectedTokensA.tokenA.name !== ETHEREUM_SYMBOL && {
-        token: Erc20Tokens[selectedTokensA.tokenA.name].address,
+      selectedQueueTokensA.tokenA.name !== ETHEREUM_SYMBOL && {
+        token: Erc20Tokens[selectedQueueTokensA.tokenA.name].address,
       }),
   });
 
@@ -163,9 +118,10 @@ export default function BridgeForm({
   const [isBalanceSufficient, setIsBalanceSufficient] = useState(true);
   const [tokenBalances, setTokenBalances] = useState<TokenBalances | {}>({});
   const [isVerifyingTransaction, setIsVerifyingTransaction] = useState(false);
+
   async function getBalanceFn(): Promise<TokenBalances | {}> {
-    const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
-    const balance = await getBalance(selectedTokensA.tokenB.symbol);
+    const key = `${selectedQueueNetworkA.name}-${selectedQueueTokensA.tokenB.symbol}`;
+    const balance = await getBalance(selectedQueueTokensA.tokenB.symbol);
     const updatedBalances = {
       ...tokenBalances,
       [key]: balance,
@@ -182,7 +138,7 @@ export default function BridgeForm({
   async function verifySufficientHWBalance(
     refetch?: boolean
   ): Promise<boolean | undefined> {
-    const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
+    const key = `${selectedQueueNetworkA.name}-${selectedQueueTokensA.tokenB.symbol}`;
     const balance = (refetch ? await getBalanceFn() : tokenBalances)[key];
 
     if (balance === null || new BigNumber(balance).lte(0)) {
@@ -204,68 +160,68 @@ export default function BridgeForm({
 
   useEffect(() => {
     verifySufficientHWBalance();
-  }, [selectedNetworkA, selectedTokensA, networkEnv, tokenBalances, amount]);
+  }, [
+    selectedQueueNetworkA,
+    selectedQueueTokensA,
+    networkEnv,
+    tokenBalances,
+    amount,
+  ]);
 
   useEffect(() => {
     checkBalance();
-  }, [selectedNetworkA, selectedTokensA, networkEnv]);
+  }, [selectedQueueNetworkA, selectedQueueTokensA, networkEnv]);
 
   const isFormValid =
     amount && new BigNumber(amount).gt(0) && !amountErr && !hasAddressInputErr;
 
-  const switchNetwork = () => {
-    setSelectedNetworkA(selectedNetworkB);
-  };
-
   const { onInputChange, validateAmountInput } = useInputValidation(
     setAmount,
     maxAmount,
-    selectedNetworkB,
+    selectedQueueNetworkB,
     setAmountErr
   );
 
   const onTransferTokens = async (): Promise<void> => {
     setIsVerifyingTransaction(true);
-    const isBalanceSufficientVerified = await verifySufficientHWBalance(true);
-    if (isBalanceSufficientVerified) {
-      if (isSendingFromEthNetwork) {
-        // Revalidate entered amount after refetching EVM balance
-        const refetchedEvmBalance = await refetchEvmBalance();
-        if (
-          validateAmountInput(
-            amount,
-            new BigNumber(refetchedEvmBalance.data?.formatted ?? 0)
-          )
-        ) {
-          setIsVerifyingTransaction(false);
-          return;
-        }
-      }
-      if (!hasUnconfirmedTxn) {
-        const newTxn = {
-          selectedNetworkA,
-          selectedTokensA,
-          selectedNetworkB,
-          selectedTokensB,
-          networkEnv,
+
+    if (isSendingFromEthNetwork) {
+      // Revalidate entered amount after refetching EVM balance
+      const refetchedEvmBalance = await refetchEvmBalance();
+      if (
+        validateAmountInput(
           amount,
-          fromAddress,
-          toAddress: addressInput,
-        };
-        setStorage("txn-form", JSON.stringify(newTxn));
+          new BigNumber(refetchedEvmBalance.data?.formatted ?? 0)
+        )
+      ) {
+        setIsVerifyingTransaction(false);
+        return;
       }
-      setShowConfirmModal(true);
     }
+    if (!hasUnconfirmedTxn) {
+      const newTxn = {
+        selectedQueueNetworkA,
+        selectedQueueTokensA,
+        selectedQueueNetworkB,
+        selectedQueueTokensB,
+        networkEnv,
+        amount,
+        fromAddress,
+        toAddress: addressInput,
+      };
+      setStorage("txn-form-queue", JSON.stringify(newTxn));
+    }
+    setShowConfirmModal(true);
+
     setIsVerifyingTransaction(false);
   };
 
   const onResetTransferForm = () => {
     setUtilityModalData(null);
-    setStorage("txn-form", null);
-    setStorage("destination-address", null);
-    setStorage("dfc-address", null);
-    setStorage("dfc-address-details", null);
-    setStorage("transfer-amount", null);
+    setStorage("txn-form-queue", null);
+    setStorage("dfc-address-queue", null);
+    setStorage("dfc-address-details-queue", null);
+    setStorage("transfer-amount-queue", null);
     setHasUnconfirmedTxn(false);
     setAmount("");
     setAddressInput("");
@@ -276,9 +232,10 @@ export default function BridgeForm({
   };
 
   const onDone = () => {
-    setStorage("confirmed", null);
-    setStorage("allocationTxnHash", null);
-    setStorage("reverted", null);
+    setStorage("confirmed-queue", null);
+    setStorage("allocation-txn-hash-queue", null);
+    setStorage("reverted-queue", null);
+    setStorage("created-queue-txn-hash", null);
     onResetTransferForm();
   };
 
@@ -297,6 +254,24 @@ export default function BridgeForm({
       default:
         return "Connect wallet";
     }
+  };
+
+  const getNumberOfConfirmations = () => {
+    let numOfConfirmations = BigNumber.min(
+      ethQueueTxnStatus?.numberOfConfirmations,
+      EVM_CONFIRMATIONS_BLOCK_TOTAL
+    ).toString();
+
+    if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
+      numOfConfirmations = EVM_CONFIRMATIONS_BLOCK_TOTAL.toString();
+    } else if (
+      txnHash.reverted !== undefined ||
+      createdQueueTxnHash === undefined
+    ) {
+      numOfConfirmations = "0";
+    }
+
+    return numOfConfirmations;
   };
 
   const UtilityModalMessage = {
@@ -347,25 +322,25 @@ export default function BridgeForm({
     const localData = txnForm;
 
     if (localData && networkEnv === localData.networkEnv) {
-      setStorage("destination-address", localData.toAddress);
-      setStorage("transfer-amount", localData.amount);
+      setStorage("dfc-address-queue", localData.toAddress);
+      setStorage("transfer-amount-queue", localData.amount);
       setStorage(
-        "transfer-display-symbol-A",
-        localData.selectedTokensA.tokenA.name
+        "transfer-display-symbol-A-queue",
+        localData.selectedQueueTokensA.tokenA.name
       );
       setStorage(
-        "transfer-display-symbol-B",
-        localData.selectedTokensB.tokenA.name
+        "transfer-display-symbol-B-queue",
+        localData.selectedQueueTokensB.tokenA.name
       );
       // Load data from storage
       setHasUnconfirmedTxn(true);
       setAmount(localData.amount);
       setAddressInput(localData.toAddress);
       setFromAddress(localData.fromAddress ?? address);
-      setSelectedNetworkA(localData.selectedNetworkA);
-      setSelectedTokensA(localData.selectedTokensA);
-      setSelectedNetworkB(localData.selectedNetworkB);
-      setSelectedTokensB(localData.selectedTokensB);
+      setSelectedQueueNetworkA(localData.selectedQueueNetworkA);
+      setSelectedQueueTokensA(localData.selectedQueueTokensA);
+      setSelectedQueueNetworkB(localData.selectedQueueNetworkB);
+      setSelectedQueueTokensB(localData.selectedQueueTokensB);
       updateNetworkEnv(localData.networkEnv);
     } else {
       setHasUnconfirmedTxn(false);
@@ -383,17 +358,20 @@ export default function BridgeForm({
         }).unwrap();
         const diff = dayjs().diff(dayjs(addressDetailRes?.createdAt));
         if (diff > DFC_TO_ERC_RESET_FORM_TIME_LIMIT) {
-          setStorage("txn-form", null);
-          setStorage("dfc-address", null);
+          setStorage("txn-form-queue", null);
+          setStorage("dfc-address-queue", null);
         } else {
           // TODO: Improve setStorage by not forcing stringified JSON
-          setStorage("dfc-address-details", JSON.stringify(addressDetailRes));
+          setStorage(
+            "dfc-address-details-queue",
+            JSON.stringify(addressDetailRes)
+          );
         }
       } else {
-        setStorage("dfc-address-details", null);
+        setStorage("dfc-address-details-queue", null);
       }
     } catch {
-      setStorage("dfc-address-details", null);
+      setStorage("dfc-address-details-queue", null);
     }
   };
 
@@ -401,7 +379,7 @@ export default function BridgeForm({
     fetchAddressDetail(dfcAddress);
   }, [networkEnv, dfcAddress]);
 
-  const { y, reference, floating, strategy, refs } = useFloating({
+  const { y, floating, strategy, refs } = useFloating({
     placement: "bottom-end",
     middleware: [
       shift(),
@@ -429,59 +407,36 @@ export default function BridgeForm({
     floating,
   };
 
-  const getNumberOfConfirmations = () => {
-    let numOfConfirmations = BigNumber.min(
-      ethTxnStatus?.numberOfConfirmations,
-      EVM_CONFIRMATIONS_BLOCK_TOTAL
-    ).toString();
-
-    if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
-      numOfConfirmations = CONFIRMATIONS_BLOCK_TOTAL.toString();
-    } else if (txnHash.reverted !== undefined) {
-      numOfConfirmations = "0";
-    }
-
-    return numOfConfirmations;
-  };
-
   return (
     <div
       className={clsx(
-        "w-full md:w-[calc(100%+2px)] lg:w-full p-6 pb-10 pt-8 lg:pt-6 lg:p-10",
+        "w-full md:w-[calc(100%+2px)] lg:w-full p-6 pt-8 pb-10 lg:p-10 lg:pt-6",
         "dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl",
-        activeTab === FormOptions.INSTANT ? "block" : "hidden"
+        activeTab === FormOptions.QUEUE ? "block" : "hidden"
       )}
     >
-      {txnHash.unconfirmed ||
-      txnHash.confirmed ||
-      txnHash.reverted ||
-      txnHash.unsentFund ? (
+      {createdQueueTxnHash &&
+      (txnHash.unconfirmed ||
+        txnHash.confirmed ||
+        txnHash.reverted ||
+        txnHash.unsentFund) ? (
         <>
-          <TransactionStatus
+          <QueueTransactionStatus
             txnHash={
               txnHash.unsentFund ??
               txnHash.reverted ??
               txnHash.confirmed ??
               txnHash.unconfirmed
             }
-            allocationTxnHash={txnHash.allocationTxn}
             isReverted={txnHash.reverted !== undefined}
             isConfirmed={txnHash.confirmed !== undefined} // isConfirmed on both EVM and DFC
             isUnsentFund={txnHash.unsentFund !== undefined}
-            ethTxnStatusIsConfirmed={ethTxnStatus.isConfirmed}
-            dfcTxnStatusIsConfirmed={dfcTxnStatus.isConfirmed}
-            numberOfEvmConfirmations={
-              txnHash.confirmed !== undefined
-                ? EVM_CONFIRMATIONS_BLOCK_TOTAL.toString()
-                : getNumberOfConfirmations()
-            }
-            numberOfDfcConfirmations={
-              txnHash.confirmed !== undefined
-                ? DFC_CONFIRMATIONS_BLOCK_TOTAL.toString()
-                : dfcTxnStatus.numberOfConfirmations
-            }
-            isApiSuccess={isApiSuccess || txnHash.reverted !== undefined}
+            numberOfEvmConfirmations={getNumberOfConfirmations()}
+            isApiSuccess={isQueueApiSuccess || txnHash.reverted !== undefined}
+            destinationAddress={dfcAddress}
+            amount={transferAmount}
+            symbolToReceive={transferDisplaySymbolB}
           />
           <div className="flex flex-col space-y-7">
             <div className="flex flex-row justify-between">
@@ -493,7 +448,7 @@ export default function BridgeForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(transferAmount || amount || 0).minus(fee),
+                  new BigNumber(transferAmount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
@@ -508,7 +463,7 @@ export default function BridgeForm({
                 </span>
               </div>
               <span className="max-w-[50%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base">
-                {destinationAddress || addressInput}
+                {dfcAddress}
               </span>
             </div>
             <div className="flex flex-row justify-between">
@@ -540,7 +495,7 @@ export default function BridgeForm({
               <NumericFormat
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
-                  new BigNumber(transferAmount || amount || 0).minus(fee),
+                  new BigNumber(transferAmount || 0).minus(fee),
                   0
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
@@ -554,46 +509,16 @@ export default function BridgeForm({
         <>
           <section className="flex flex-col lg:px-5 px-3 gap-y-1">
             <span className="text-dark-900 lg:font-bold font-semibold lg:text-xl text-[16px] leading-5">
-              Bridge your tokens instantly
+              Queue beyond active liquidity
             </span>
             <span className="lg:text-[16px] lg:leading-5 text-sm text-dark-700">
-              For transactions within active liquidity.
+              Transactions will be queued and may take up to 72 hours to be
+              fulfilled.
             </span>
           </section>
 
-          <div
-            className="flex flex-row items-center lg:mt-10 md:mt-8 mt-6"
-            ref={reference}
-          >
-            <div className="w-1/2">
-              <InputSelector
-                label="Source Network"
-                popUpLabel="Select source"
-                options={networks}
-                floatingObj={floatingObj}
-                type={SelectionType.Network}
-                onSelect={(value: NetworkOptionsI) =>
-                  setSelectedNetworkA(value)
-                }
-                value={selectedNetworkA}
-                disabled={hasUnconfirmedTxn}
-              />
-            </div>
-            <div className="w-1/2">
-              <InputSelector
-                label="Token"
-                popUpLabel="Select token"
-                options={selectedNetworkA.tokens}
-                floatingObj={floatingObj}
-                type={SelectionType.Token}
-                onSelect={(value: TokensI) => setSelectedTokensA(value)}
-                value={selectedTokensA}
-                disabled={hasUnconfirmedTxn}
-              />
-            </div>
-          </div>
-          <div className="mt-4">
-            <span className="pl-3 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-sm">
+          <div className="lg:mt-10 md:mt-8 mt-6">
+            <span className="pl-3 text-xs font-semibold text-dark-900 lg:pl-5 lg:text-sm tracking-normal lg:tracking-[0.02em] ">
               Amount to transfer
             </span>
             <QuickInputCard
@@ -601,9 +526,14 @@ export default function BridgeForm({
               onChange={onInputChange}
               value={amount}
               error={amountErr}
-              showAmountsBtn={selectedNetworkA.name === Network.Ethereum}
+              showAmountsBtn={selectedQueueNetworkA.name === Network.Ethereum}
               disabled={hasUnconfirmedTxn}
-              testId="instant-amount-input"
+              floatingObj={floatingObj}
+              showTokenDropdown
+              tokenDropDownValue={selectedQueueTokensA}
+              options={selectedQueueNetworkA.tokens}
+              setSelectedTokens={setSelectedQueueTokensA}
+              testId="queue-amount-input"
             />
             {isConnected && (
               <div className="flex flex-row pl-3 md:pl-5 lg:pl-6 mt-2 items-center">
@@ -612,7 +542,7 @@ export default function BridgeForm({
                     {amountErr}
                   </span>
                 ) : (
-                  selectedNetworkA.name === Network.Ethereum && (
+                  selectedQueueNetworkA.name === Network.Ethereum && (
                     <>
                       <span className="text-xs lg:text-sm text-dark-700">
                         Available:
@@ -622,7 +552,7 @@ export default function BridgeForm({
                         value={maxAmount.toFixed(5, BigNumber.ROUND_FLOOR)}
                         decimalScale={5}
                         thousandSeparator
-                        suffix={` ${selectedTokensA.tokenA.name}`}
+                        suffix={` ${selectedQueueTokensA.tokenA.name}`}
                       />
                       <FiRefreshCw
                         onClick={onRefreshEvmBalance}
@@ -637,34 +567,10 @@ export default function BridgeForm({
               </div>
             )}
           </div>
-          <SwitchButton onClick={switchNetwork} disabled={hasUnconfirmedTxn} />
-
-          <div className="flex flex-row items-end mb-4">
-            <div className="w-1/2">
-              <InputSelector
-                label="Destination Network"
-                disabled
-                popUpLabel="Select destination"
-                floatingObj={floatingObj}
-                type={SelectionType.Network}
-                value={selectedNetworkB}
-              />
-            </div>
-            <div className="w-1/2">
-              <InputSelector
-                disabled
-                label="Token to Receive"
-                popUpLabel="Select token"
-                floatingObj={floatingObj}
-                type={SelectionType.Token}
-                value={selectedTokensB}
-              />
-            </div>
-          </div>
-          <div className="mb-6">
+          <div className="mb-6 mt-8 md:mt-6 lg:mt-7">
             <WalletAddressInput
-              label="Address"
-              blockchain={selectedNetworkB.name as Network}
+              label="Destination Address"
+              blockchain={selectedQueueNetworkB.name as Network}
               addressInput={addressInput}
               onAddressInputChange={(addrInput) => setAddressInput(addrInput)}
               onAddressInputError={(hasError) =>
@@ -672,7 +578,7 @@ export default function BridgeForm({
               }
               disabled={!isConnected}
               readOnly={hasUnconfirmedTxn}
-              testId="instant-receiver-address"
+              testId="queue-receiver-address"
             />
           </div>
           <div className="flex flex-row justify-between items-center px-3 lg:px-5 mt-6 lg:mt-0">
@@ -706,20 +612,17 @@ export default function BridgeForm({
                 0
               ).toFixed(6, BigNumber.ROUND_FLOOR)}
               thousandSeparator
-              suffix={` ${selectedTokensB.tokenA.name}`}
+              suffix={` ${selectedQueueTokensB.tokenA.name}`}
               trimTrailingZeros
             />
           </div>
         </>
       )}
+
       <div className="mt-[50px] mx-auto w-[290px] lg:w-[344px]">
         {txnHash.confirmed !== undefined || txnHash.reverted !== undefined ? (
           <>
-            <ActionButton
-              label="Done"
-              onClick={() => onDone()}
-              customStyle="mt-6"
-            />
+            <ActionButton label="Done" onClick={() => onDone()} />
             <span
               className={clsx(
                 "flex pt-3 text-xs text-center text-dark-700 lg:text-sm"
@@ -733,21 +636,17 @@ export default function BridgeForm({
           <ConnectKitButton.Custom>
             {({ show }) => (
               <ActionButton
-                testId="instant-transfer-btn"
+                testId="queue-transfer-btn"
                 label={getActionBtnLabel()}
                 isLoading={hasPendingTxn || isVerifyingTransaction}
-                disabled={
-                  (isConnected && !isFormValid) ||
-                  hasPendingTxn ||
-                  !isBalanceSufficient
-                }
+                disabled={(isConnected && !isFormValid) || hasPendingTxn}
                 onClick={!isConnected ? show : () => onTransferTokens()}
               />
             )}
           </ConnectKitButton.Custom>
         )}
         {isConnected &&
-          selectedNetworkA.name === Network.Ethereum &&
+          selectedQueueNetworkA.name === Network.Ethereum &&
           !amount &&
           !addressInput &&
           !hasPendingTxn &&
@@ -776,23 +675,28 @@ export default function BridgeForm({
           </div>
         )}
 
-        {!isBalanceSufficient && !hasPendingTxn && (
-          <div className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}>
-            <span className="text-dark-700">
-              Amount entered exceeds active liquidity. Use&nbsp;
-            </span>
-            <button
-              className="text-dark-1000 font-semibold"
-              onClick={() => setActiveTab(FormOptions.QUEUE)}
-              type="button"
+        {isBalanceSufficient &&
+          !hasPendingTxn &&
+          amount !== "" &&
+          !ethQueueTxnStatus.isConfirmed && (
+            <div
+              className={clsx("lg:pt-5 pt-4 text-center lg:text-sm text-xs")}
             >
-              Queue
-            </button>
-            <span className="text-dark-700">
-              &nbsp;or lower the transaction amount.
-            </span>
-          </div>
-        )}
+              <span className="text-dark-700">
+                Amount entered is within the active limit. Use&nbsp;
+              </span>
+              <button
+                className="text-dark-1000 font-semibold"
+                onClick={() => setActiveTab(FormOptions.INSTANT)}
+                type="button"
+              >
+                Instant
+              </button>
+              <span className="text-dark-700">
+                &nbsp;for faster processing.
+              </span>
+            </div>
+          )}
       </div>
       <ConfirmTransferModal
         show={showConfirmModal}
@@ -823,7 +727,7 @@ export default function BridgeForm({
         buttonLabel="Restore transaction"
         onClose={() => setShowErcToDfcRestoreModal(false)}
         isOpen={showErcToDfcRestoreModal}
-        type={QueryTransactionModalType.RecoverInstantTransaction}
+        type={QueryTransactionModalType.RecoverQueueTransaction}
       />
     </div>
   );

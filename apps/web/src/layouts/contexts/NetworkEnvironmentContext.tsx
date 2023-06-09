@@ -37,7 +37,7 @@ export function NetworkEnvironmentProvider({
   const { chain } = useNetwork();
   const isEthereumMainNet = chain?.id === ETHEREUM_MAINNET_ID;
 
-  function getNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
+  function getInitialNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
     if (chain === undefined || process.env.NODE_ENV === "development") {
       return env.networks.includes(n) ? n : defaultNetwork;
     }
@@ -47,7 +47,7 @@ export function NetworkEnvironmentProvider({
       : EnvironmentNetwork.TestNet;
   }
 
-  const initialNetwork = getNetwork(networkQuery as EnvironmentNetwork);
+  const initialNetwork = getInitialNetwork(networkQuery as EnvironmentNetwork);
   const [networkEnv, setNetworkEnv] =
     useState<EnvironmentNetwork>(initialNetwork);
 
@@ -76,7 +76,7 @@ export function NetworkEnvironmentProvider({
     setNetworkEnv(initialNetwork);
     updateRoute(initialNetwork);
     updateWhaleNetwork(initialNetwork);
-  }, [initialNetwork, chain]);
+  }, [initialNetwork]);
 
   const context: NetworkContextI = useMemo(
     () => ({
@@ -84,7 +84,7 @@ export function NetworkEnvironmentProvider({
       updateNetworkEnv: handleNetworkEnvChange,
       resetNetworkEnv,
     }),
-    [networkEnv]
+    [networkEnv, router]
   );
 
   return (

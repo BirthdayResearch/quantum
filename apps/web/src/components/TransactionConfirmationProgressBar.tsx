@@ -2,6 +2,7 @@ import { CircularProgressbarWithChildren } from "react-circular-progressbar";
 import { useEffect, useState } from "react";
 import clsx from "clsx";
 import ContentLoader from "react-content-loader";
+import { FormOptions } from "@contexts/NetworkContext";
 import useResponsive from "../hooks/useResponsive";
 
 function SkeletonLoader({ isDesktop }: { isDesktop: boolean }) {
@@ -31,20 +32,18 @@ export default function ConfirmationProgress({
   confirmationBlocksTotal,
   confirmationBlocksCurrent,
   isConfirmed,
-  isReverted,
-  isUnsentFund,
   isApiSuccess,
   txnType,
   showCircular = false,
+  activeTab,
 }: {
   confirmationBlocksTotal: number;
   confirmationBlocksCurrent: string;
   isConfirmed: boolean;
-  isReverted: boolean;
-  isUnsentFund: boolean;
   isApiSuccess: boolean;
   txnType: string;
   showCircular?: boolean;
+  activeTab: FormOptions;
 }) {
   const { isLg } = useResponsive();
   const [valuePercentage, setValuePercentage] = useState<number>(0);
@@ -63,14 +62,14 @@ export default function ConfirmationProgress({
             <defs>
               {isConfirmed ? (
                 <linearGradient
-                  id="circularProgress"
+                  id={`circularProgress_${activeTab}`}
                   gradientTransform="rotate(90)"
                 >
                   <stop offset="0%" stopColor="#0CC72C" />
                 </linearGradient>
               ) : (
                 <linearGradient
-                  id="circularProgress"
+                  id={`circularProgress_${activeTab}`}
                   gradientTransform="rotate(90)"
                 >
                   <stop offset="0%" stopColor="#FF00FF" />
@@ -84,13 +83,13 @@ export default function ConfirmationProgress({
             strokeWidth={3}
             counterClockwise
             styles={{
-              path: { stroke: 'url("#circularProgress")' },
+              path: { stroke: `url("#circularProgress_${activeTab}")` },
               trail: { stroke: "#2B2B2B" },
             }}
           >
             <div className="text-center">
               {isApiSuccess || isConfirmed ? (
-                <div className="text-lg font-bold text-dark-1000">{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
+                <div className="text-lg font-semibold text-dark-1000">{`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}`}</div>
               ) : (
                 <SkeletonLoader isDesktop />
               )}
@@ -105,13 +104,7 @@ export default function ConfirmationProgress({
         <div>
           <div className="flex text-sm text-dark-700">
             {isApiSuccess || isConfirmed ? (
-              <span
-                className={clsx("font-semibold text-brand-100", {
-                  "text-valid": isConfirmed,
-                  "text-warning": isReverted,
-                  "text-error": isUnsentFund,
-                })}
-              >
+              <span className="font-semibold text-dark-1000">
                 {`${confirmationBlocksCurrent} of ${confirmationBlocksTotal}\u00A0`}
               </span>
             ) : (
@@ -123,7 +116,7 @@ export default function ConfirmationProgress({
             <div
               style={{ width: `${valuePercentage}%` }}
               className={clsx(
-                "h-full rounded-md mt-1",
+                "h-full rounded-md mt-2",
                 isConfirmed ? "bg-valid" : "bg-brand-100"
               )}
             />

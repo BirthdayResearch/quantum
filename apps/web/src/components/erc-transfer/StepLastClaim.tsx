@@ -3,7 +3,6 @@ import clsx from "clsx";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { FiAlertCircle, FiCheck } from "react-icons/fi";
-import { utils } from "ethers";
 import {
   erc20ABI,
   useContractRead,
@@ -11,6 +10,7 @@ import {
   usePrepareContractWrite,
   useWaitForTransaction,
 } from "wagmi";
+import { parseEther, parseUnits } from "viem";
 import { useRouter } from "next/router";
 import { useContractContext } from "@contexts/ContractContext";
 import { useStorageContext } from "@contexts/StorageContext";
@@ -24,7 +24,7 @@ import useTransferFee from "@hooks/useTransferFee";
 import useTimeCounter from "@hooks/useTimeCounter";
 import Logging from "@api/logging";
 import { getDuration } from "@utils/durationHelper";
-import { ETHEREUM_SYMBOL } from "../../constants";
+import { ETHEREUM_SYMBOL, METAMASK_REJECT_MESSAGE } from "../../constants";
 
 const CLAIM_INPUT_ERROR =
   "Check your connection and try again. If the error persists get in touch with us.";
@@ -71,13 +71,12 @@ export default function StepLastClaim({
 
   // Prepare write contract for `claimFund` function
   const [fee] = useTransferFee(data.to.amount.toString());
-  const amountLessFee = BigNumber.max(data.to.amount.minus(fee), 0).toFixed(
-    6,
-    BigNumber.ROUND_DOWN
-  );
+  const amountLessFee = BigNumber(
+    BigNumber.max(data.to.amount.minus(fee), 0).toFixed(6, BigNumber.ROUND_DOWN)
+  ).toNumber();
   const parsedAmount = isTokenETH
-    ? utils.parseEther(amountLessFee)
-    : utils.parseUnits(amountLessFee, tokenDecimals);
+    ? parseEther(`${amountLessFee}`)
+    : parseUnits(`${amountLessFee}`, tokenDecimals as number);
 
   const {
     config: bridgeConfig,
@@ -173,6 +172,9 @@ export default function StepLastClaim({
       } else {
         err = CLAIM_INPUT_ERROR;
       }
+    }
+    if (err?.includes(METAMASK_REJECT_MESSAGE)) {
+      err = METAMASK_REJECT_MESSAGE;
     }
     setError(err);
   }, [writeClaimTxnError, claimTxnError]);
