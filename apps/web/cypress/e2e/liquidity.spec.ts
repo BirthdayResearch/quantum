@@ -26,12 +26,12 @@ networkConfigs.forEach((networkItem) => {
 
       it("should check that Addresses links are correct", () => {
         evmSymbols.forEach((symbol) => {
-          cy.findByTestId(symbol + "-Ethereum-address")
+          cy.findByTestId(`${symbol}-Ethereum-address`)
             .and("have.attr", "href")
             .and("include", networkItem.evmAddress);
         });
         dfcSymbols.forEach((symbol) => {
-          cy.findByTestId(symbol + "-DeFiChain-address")
+          cy.findByTestId(`${symbol}-DeFiChain-address`)
             .and("have.attr", "href")
             .and("include", networkItem.dfcAddress);
         });
