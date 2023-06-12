@@ -14,9 +14,9 @@ export const getDTokenDetailsByWToken = (
   switch (network) {
     case EnvironmentNetwork.RemotePlayground:
       wTokenToDTokenMap = {
-        DFI: {
+        MDFI: {
           id: '0',
-          symbol: 'MDFI',
+          symbol: 'DFI',
         },
         ETH: {
           id: '2',
@@ -42,7 +42,7 @@ export const getDTokenDetailsByWToken = (
       break;
     case EnvironmentNetwork.LocalPlayground:
       wTokenToDTokenMap = {
-        DFI: {
+        MDFI: {
           id: '0',
           symbol: 'MDFI',
         },
@@ -71,7 +71,7 @@ export const getDTokenDetailsByWToken = (
     case EnvironmentNetwork.DevNet:
     case EnvironmentNetwork.TestNet:
       wTokenToDTokenMap = {
-        DFI: {
+        MDFI: {
           id: '0',
           symbol: 'MDFI',
         },
