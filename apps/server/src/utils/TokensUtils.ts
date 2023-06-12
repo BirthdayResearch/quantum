@@ -16,7 +16,7 @@ export const getDTokenDetailsByWToken = (
       wTokenToDTokenMap = {
         DFI: {
           id: '0',
-          symbol: 'DFI',
+          symbol: 'MDFI',
         },
         ETH: {
           id: '2',
@@ -24,19 +24,19 @@ export const getDTokenDetailsByWToken = (
         },
         MWBTC: {
           id: '1',
-          symbol: 'BTC',
+          symbol: 'MWBTC',
         },
         MUSDT: {
           id: '3',
-          symbol: 'USDT',
+          symbol: 'MUSDT',
         },
         MUSDC: {
           id: '5',
-          symbol: 'USDC',
+          symbol: 'MUSDC',
         },
         MEURC: {
           id: '12',
-          symbol: 'EUROC',
+          symbol: 'MEUROC',
         },
       };
       break;
@@ -44,7 +44,7 @@ export const getDTokenDetailsByWToken = (
       wTokenToDTokenMap = {
         DFI: {
           id: '0',
-          symbol: 'DFI',
+          symbol: 'MDFI',
         },
         ETH: {
           id: '2',
@@ -52,19 +52,19 @@ export const getDTokenDetailsByWToken = (
         },
         MWBTC: {
           id: '1',
-          symbol: 'BTC',
+          symbol: 'MWBTC',
         },
         MUSDT: {
           id: '3',
-          symbol: 'USDT',
+          symbol: 'MUSDT',
         },
         MUSDC: {
           id: '5',
-          symbol: 'USDC',
+          symbol: 'MUSDC',
         },
         MEURC: {
           id: '12',
-          symbol: 'EUROC',
+          symbol: 'MEUROC',
         },
       };
       break;
@@ -73,7 +73,7 @@ export const getDTokenDetailsByWToken = (
       wTokenToDTokenMap = {
         DFI: {
           id: '0',
-          symbol: 'DFI',
+          symbol: 'MDFI',
         },
         ETH: {
           id: '2',
@@ -81,19 +81,19 @@ export const getDTokenDetailsByWToken = (
         },
         MWBTC: {
           id: '1',
-          symbol: 'BTC',
+          symbol: 'MWBTC',
         },
         MUSDT: {
           id: '5',
-          symbol: 'USDT',
+          symbol: 'MUSDT',
         },
         MUSDC: {
           id: '22',
-          symbol: 'USDC',
+          symbol: 'MUSDC',
         },
         MEURC: {
           id: '25',
-          symbol: 'EUROC',
+          symbol: 'MEUROC',
         },
       };
       break;
