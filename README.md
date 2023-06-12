@@ -9,15 +9,15 @@
 
 ## Quantum Bridge
 
-All smart contracts will be deployed on Goerli testnet for testing purposes.
+All smart contracts will be deployed on Sepolia testnet for testing purposes.
 
 ### How to get ether on a testnet to make testnet transactions?
 
-Users can get the GoerliETH via Goerli Faucet(https://goerlifaucet.com/)
+Users can get the SepoliaETH via Sepolia Faucet(https://sepoliafaucet.com/)
 
 ### How to get ERC20 tokens to test bridging functionality?
 
-The MUSDT and MUSDC contract have been deployed on Goerli for testing. Users will be able to mint tokens by calling the `mint()` function with the respective EOA (Externally Owned Account) or contract address and amount.
+The MUSDT and MUSDC contract have been deployed on Sepolia for testing. Users will be able to mint tokens by calling the `mint()` function with the respective EOA (Externally Owned Account) or contract address and amount.
 
 ### When bridging from DeFiChain, what is the expected signed message?
 
@@ -120,11 +120,11 @@ Only address with admin role can change `tokenCap`.
 
 `grantRole` and `revokeRole` will be used to grant a role to new addresses and revoke the existing addresses role respectively. Only Admin address can make these changes.
 
-## Deployed Smart Contracts on Goerli testnet
+## Deployed Smart Contracts on Sepolia testnet
 
 ### Deploy ERC20 tokens 'MUSDT' & 'MUSDC'
 
-To deploy ERC20 tokens user will have to run a command `npx hardhat run --network goerli ./scripts/deployERC20.ts` in smartContract directory.
+To deploy ERC20 tokens user will have to run a command `npx hardhat run --network sepolia ./scripts/deployERC20.ts` in smartContract directory.
 
 To verify the said tokens and other contracts, there would be a prompt on terminal after running the deployment command that devs will need to run after.
 
@@ -134,16 +134,12 @@ Devs need to deploy the `BridgeV1` implementation contract before the `BridgePro
 
 This follows the [proxy pattern](https://blog.openzeppelin.com/proxy-patterns/), with the behaviour being inherited from `OpenZeppelin` proxy contracts.
 
-`BridgeV1` can be deployed with the command `npx hardhat run --network goerli ./scripts/deployBridgeImplementation.ts`
+`BridgeV1` can be deployed with the command `npx hardhat run --network sepolia ./scripts/deployBridgeImplementation.ts`
 
-`BridgeProxy` can be deployed with `npx hardhat run --network goerli ./scripts/deployBridgeProxy.ts`
+`BridgeProxy` can be deployed with `npx hardhat run --network sepolia ./scripts/deployBridgeProxy.ts`
 
 Before running the above command, following `vars` need to be addressed:
 `ADMIN_ADDRESS`, `OPERATIONAL_ADDRESS`, `RELAYER_ADDRESS`, `TRANSACTION_FEE` & `BRIDGE_IMPLEMENTATION_ADDRESS` aka `BridgeV1` contract address.
-
-## Mint and Approve on Goerli Testnet
-
-To Mint the test tokens and Approve the Bridge Contract devs will have to run a command `npx hardhat run --network goerli ./scripts/mintTestToken.ts` in smartContract directory. Script will mint `100_000` tokens.
 
 ## Mainnet Addresses
 
@@ -166,40 +162,6 @@ BridgeQueue Contract address: [0x180520fffecb138a042b473aa131673deff40cdb](https
 ### BridgeQueueProxy
 
 BridgeQueueProxy Contract address: [0xba188cdec7b48e6f1079256208b96f067e385ff1](https://etherscan.io/address/0xba188cdec7b48e6f1079256208b96f067e385ff1)
-
-## Goerli Testnet Addresses
-
-### MWBTC
-
-MWBTC Contract address: [0xD723D679d1A3b23d0Aafe4C0812f61DDA84fc043](https://goerli.etherscan.io/address/0xd723d679d1a3b23d0aafe4c0812f61dda84fc043)
-
-### MUSDT
-
-MUSDT Contract address: [0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF](https://goerli.etherscan.io/address/0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF)
-
-### MUSDC
-
-MUSDC Contract address: [0xB200af2b733B831Fbb3d98b13076BC33F605aD58](https://goerli.etherscan.io/address/0xB200af2b733B831Fbb3d98b13076BC33F605aD58)
-
-### MEUROC
-
-MEUROC Contract address: [0x5ea4bbB3204522f3Ac65137D1E12027D9848231A](https://goerli.etherscan.io/address/0x5ea4bbB3204522f3Ac65137D1E12027D9848231A)
-
-### DFI
-
-DFI Contract address: [0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673](https://goerli.etherscan.io/address/0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673)
-
-### TimeLock
-
-Time lock Contract address: [0x78B29c165d2faFc78b76A029F0014cAd89900DCa](https://goerli.etherscan.io/address/0x78B29c165d2faFc78b76A029F0014cAd89900DCa)
-
-### BridgeV1
-
-BridgeV1 Contract address: [0x57762d794587EdF59f2087DCD6D99eB0105b1A8f](https://goerli.etherscan.io/address/0x57762d794587EdF59f2087DCD6D99eB0105b1A8f)
-
-### BridgeProxy
-
-BridgeProxy Contract address: [0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef](https://goerli.etherscan.io/address/0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef)
 
 ## Sepolia Testnet Addresses
 

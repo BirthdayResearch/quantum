@@ -24,19 +24,19 @@ export const getDTokenDetailsByWToken = (
         },
         MWBTC: {
           id: '1',
-          symbol: 'MWBTC',
+          symbol: 'BTC',
         },
         MUSDT: {
           id: '3',
-          symbol: 'MUSDT',
+          symbol: 'USDT',
         },
         MUSDC: {
           id: '5',
-          symbol: 'MUSDC',
+          symbol: 'USDC',
         },
         MEURC: {
           id: '12',
-          symbol: 'MEUROC',
+          symbol: 'EUROC',
         },
       };
       break;
@@ -52,19 +52,19 @@ export const getDTokenDetailsByWToken = (
         },
         MWBTC: {
           id: '1',
-          symbol: 'MWBTC',
+          symbol: 'BTC',
         },
         MUSDT: {
           id: '3',
-          symbol: 'MUSDT',
+          symbol: 'USDT',
         },
         MUSDC: {
           id: '5',
-          symbol: 'MUSDC',
+          symbol: 'USDC',
         },
         MEURC: {
           id: '12',
-          symbol: 'MEUROC',
+          symbol: 'EUROC',
         },
       };
       break;
@@ -81,19 +81,19 @@ export const getDTokenDetailsByWToken = (
         },
         MWBTC: {
           id: '1',
-          symbol: 'MWBTC',
+          symbol: 'BTC',
         },
         MUSDT: {
           id: '5',
-          symbol: 'MUSDT',
+          symbol: 'USDT',
         },
         MUSDC: {
           id: '22',
-          symbol: 'MUSDC',
+          symbol: 'USDC',
         },
         MEURC: {
           id: '25',
-          symbol: 'MEUROC',
+          symbol: 'EUROC',
         },
       };
       break;
