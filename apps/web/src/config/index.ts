@@ -36,7 +36,7 @@ export const TESTNET_CONFIG: ContractContextI = {
     abi: BridgeV1Testnet,
   },
   BridgeQueue: {
-    address: "0x747d2a57d737085AC588e780BB593d5754B9f793",
+    address: "0x29D6d5f8ad010b548D0dC68d8b50c043c4bED1Cc",
     abi: BridgeQueueTestnet,
   },
   HotWalletAddress: "tf1qsckyp02vdzaf95cjl5dr95n8stcalze0pfswcp",
