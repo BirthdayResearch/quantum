@@ -44,7 +44,7 @@ export const getDTokenDetailsByWToken = (
       wTokenToDTokenMap = {
         MDFI: {
           id: '0',
-          symbol: 'MDFI',
+          symbol: 'DFI',
         },
         ETH: {
           id: '2',
@@ -73,7 +73,7 @@ export const getDTokenDetailsByWToken = (
       wTokenToDTokenMap = {
         MDFI: {
           id: '0',
-          symbol: 'MDFI',
+          symbol: 'DFI',
         },
         ETH: {
           id: '2',
