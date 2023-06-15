@@ -1,40 +1,49 @@
 {
-  "private": true,
   "name": "smartcontracts",
   "version": "0.0.0",
+  "private": true,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "postinstall": "pnpm run generate:contract-types",
     "build": "pnpm run generate:contract-types && tsc -b ./tsconfig.build.json",
     "build:docker": "docker build -t bridge-packages/hardhatnetwork:0.0.0 .",
-    "test": "jest --coverage",
-    "test:hardhat": "pnpm run generate:contract-types && hardhat test --config ./src/hardhat.config.ts",
     "clean": "rm -rf dist && rm -f tsconfig.build.tsbuildinfo && hardhat clean --config ./src/hardhat.config.ts",
     "generate:contract-types": "hardhat compile --config ./src/hardhat.config.ts",
-    "lint": "eslint . --fix"
+    "postinstall": "pnpm run generate:contract-types",
+    "lint": "eslint . --fix",
+    "test": "jest --coverage",
+    "test:hardhat": "pnpm run generate:contract-types && hardhat test --config ./src/hardhat.config.ts"
   },
-  "eslintConfig": {
-    "extends": [
-      "@birthdayresearch"
+  "lint-staged": {
+    "*": [
+      "prettier --write --ignore-unknown"
     ],
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "prettier": "@birthdayresearch/sticky-prettier",
+  "eslintConfig": {
     "parserOptions": {
       "project": "./tsconfig.json"
     },
+    "extends": [
+      "@birthdayresearch"
+    ],
     "overrides": [
       {
         "files": [
           "*.ts"
         ],
         "rules": {
-          "check-file/filename-naming-convention": "off",
-          "import/no-default-export": "off",
           "no-console": "off",
           "no-underscore-dangle": "off",
-          "import/extensions": "off"
+          "check-file/filename-naming-convention": "off",
+          "import/extensions": "off",
+          "import/no-default-export": "off"
         }
       }
     ]
@@ -45,17 +54,17 @@
     "reporters": [
       "default"
     ],
-    "testTimeout": 300000,
     "testPathIgnorePatterns": [
       "/node_modules/",
       "<rootDir>/src/test"
-    ]
+    ],
+    "testTimeout": 300000
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.6.2",
+    "@birthdayresearch/eslint-config": "^0.8.5",
     "@birthdayresearch/sticky-testcontainers": "^0.6.2",
-    "@birthdayresearch/sticky-turbo-jest": "^0.6.2",
-    "@birthdayresearch/sticky-typescript": "^0.6.2",
+    "@birthdayresearch/sticky-turbo-jest": "^0.8.5",
+    "@birthdayresearch/sticky-typescript": "^0.8.5",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "1.0.6",
@@ -74,14 +83,5 @@
     "hardhat": "2.14.0",
     "mocha": "10.2.0",
     "ts-node": "10.9.1"
-  },
-  "prettier": "@birthdayresearch/sticky-prettier",
-  "lint-staged": {
-    "*": [
-      "prettier --write --ignore-unknown"
-    ],
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix"
-    ]
   }
 }
