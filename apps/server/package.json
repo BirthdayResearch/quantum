@@ -32,7 +32,7 @@
     "@prisma/client": "^4.15.0",
     "@waveshq/walletkit-core": "^0.48.0",
     "@waveshq/walletkit-ui": "^0.48.0",
-    "@waveshq/standard-api-fastify": "^0.52.1",
+    "@waveshq/standard-api-fastify": "^0.54.0",
     "bignumber.js": "^9.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
