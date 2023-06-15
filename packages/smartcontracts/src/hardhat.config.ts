@@ -109,11 +109,10 @@ const config: HardhatUserConfig = {
       // could be larger than the stipulated max size in EIP-170
       allowUnlimitedContractSize: true,
     },
-    goerli: {
-      url: process.env.GOERLI_URL || '',
+    sepolia: {
+      url: process.env.SEPOLIA_URL || '',
       accounts: process.env.PRIVATE_KEY !== undefined ? [process.env.PRIVATE_KEY] : [],
-      gasPrice: 30000000000, // this is 30 Gwei
-      chainId: 5,
+      chainId: 11155111,
     },
     mainnet: {
       url: process.env.MAINNET_URL || '',

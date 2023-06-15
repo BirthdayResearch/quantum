@@ -27,25 +27,25 @@ export const MAINNET_CONFIG: ContractContextI = {
   },
 };
 
-// Goerli
+// Sepolia
 export const TESTNET_CONFIG: ContractContextI = {
-  EthereumRpcUrl: "https://rpc.ankr.com/eth_goerli",
-  ExplorerURL: "https://goerli.etherscan.io",
+  EthereumRpcUrl: "https://rpc.ankr.com/eth_sepolia",
+  ExplorerURL: "https://sepolia.etherscan.io",
   BridgeV1: {
-    address: "0x96E5E1d6377ffA08B9c08B066f430e33e3c4C9ef",
+    address: "0x62cAa18a745b3d61E81f64e5B47c1A21dE8155bA",
     abi: BridgeV1Testnet,
   },
   BridgeQueue: {
-    address: "0x747d2a57d737085AC588e780BB593d5754B9f793",
+    address: "0x29D6d5f8ad010b548D0dC68d8b50c043c4bED1Cc",
     abi: BridgeQueueTestnet,
   },
   HotWalletAddress: "tf1qsckyp02vdzaf95cjl5dr95n8stcalze0pfswcp",
   Erc20Tokens: {
-    WBTC: { address: "0xD723D679d1A3b23d0Aafe4C0812f61DDA84fc043" },
-    USDT: { address: "0xA218A0EA9a888e3f6E2dfFdf4066885f596F07bF" },
-    USDC: { address: "0xB200af2b733B831Fbb3d98b13076BC33F605aD58" },
+    WBTC: { address: "0x8B3d701B187D8Eb8c0b9368AebbAAFC62D3fa0e1" },
+    USDT: { address: "0x5e19180828c6942b42e3cE860C564610e064fEee" },
+    USDC: { address: "0x754028ed11D02f8f255410d32704839C33142b44" },
     ETH: { address: "0x0000000000000000000000000000000000000000" },
-    EUROC: { address: "0x5ea4bbB3204522f3Ac65137D1E12027D9848231A" },
-    DFI: { address: "0xe5442CC9BA0FF56E4E2Edae51129bF3A1b45d673" },
+    EUROC: { address: "0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd" },
+    DFI: { address: "0x1f84B07483AC2D5f212a7bF14184310baE087448" },
   },
 };
