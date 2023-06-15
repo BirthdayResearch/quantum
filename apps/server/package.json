@@ -35,6 +35,16 @@
     },
     "extends": [
       "@birthdayresearch"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "*.ts"
+        ],
+        "rules": {
+          "unused-imports/no-unused-vars": "warn"
+        }
+      }
     ]
   },
   "dependencies": {
