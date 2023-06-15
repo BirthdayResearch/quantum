@@ -3,23 +3,32 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "prepare": "npx prisma generate",
-    "dev": "pnpm run migration:dev && nest start --watch",
     "build": "tsc -b ./tsconfig.build.json",
+    "clean": "rm -rf dist",
+    "dev": "pnpm run migration:dev && nest start --watch",
+    "docker:pull": "docker pull ghcr.io/jellyfishsdk/whale-api:3.30.0 && docker pull ghcr.io/jellyfishsdk/playground-api:3.30.0 && docker pull defi/defichain:3.2.7 && docker pull postgres:15.2-alpine",
     "generate:migrations": "./with-db migrate dev && pnpm prisma format",
     "generate:prisma": "prisma generate",
-    "clean": "rm -rf dist",
     "lint": "eslint .",
-    "playground:start": "docker-compose rm -fsv && docker-compose -f ../../docker-compose.yml --env-file ./.env up",
-    "migration:deploy": "npx prisma migrate deploy",
     "migration:create": "npx prisma migrate dev --create-only",
+    "migration:deploy": "npx prisma migrate deploy",
     "migration:dev": "npx prisma migrate dev",
+    "playground:start": "docker-compose rm -fsv && docker-compose -f ../../docker-compose.yml --env-file ./.env up",
+    "prepare": "npx prisma generate",
     "test": "jest --maxWorkers=4 --coverage --forceExit --passWithNoTests",
-    "test:unit": "jest --selectProjects test:unit",
-    "test:i9n": "jest --selectProjects test:i9n",
     "test:e2e": "jest --selectProjects test:e2e",
-    "docker:pull": "docker pull ghcr.io/jellyfishsdk/whale-api:3.30.0 && docker pull ghcr.io/jellyfishsdk/playground-api:3.30.0 && docker pull defi/defichain:3.2.7 && docker pull postgres:15.2-alpine"
+    "test:i9n": "jest --selectProjects test:i9n",
+    "test:unit": "jest --selectProjects test:unit"
   },
+  "lint-staged": {
+    "*": [
+      "prettier --write --ignore-unknown"
+    ],
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ]
+  },
+  "prettier": "@birthdayresearch/sticky-prettier",
   "eslintConfig": {
     "parserOptions": {
       "project": "./tsconfig.json"
@@ -30,9 +39,9 @@
   },
   "dependencies": {
     "@prisma/client": "^4.15.0",
+    "@waveshq/standard-api-fastify": "^0.54.0",
     "@waveshq/walletkit-core": "^0.48.0",
     "@waveshq/walletkit-ui": "^0.48.0",
-    "@waveshq/standard-api-fastify": "^0.52.1",
     "bignumber.js": "^9.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -41,11 +50,11 @@
     "pg": "^8.11.0"
   },
   "devDependencies": {
-    "@birthdayresearch/eslint-config": "^0.6.2",
-    "@birthdayresearch/sticky-prettier": "^0.6.2",
-    "@birthdayresearch/sticky-testcontainers": "^0.6.2",
-    "@birthdayresearch/sticky-turbo-jest": "^0.6.2",
-    "@birthdayresearch/sticky-typescript": "^0.6.2",
+    "@birthdayresearch/eslint-config": "^0.8.5",
+    "@birthdayresearch/sticky-prettier": "^0.8.5",
+    "@birthdayresearch/sticky-testcontainers": "^0.8.5",
+    "@birthdayresearch/sticky-turbo-jest": "^0.8.5",
+    "@birthdayresearch/sticky-typescript": "^0.8.5",
     "@jest/test-sequencer": "^29.5.0",
     "@types/express": "^4.17.17",
     "@types/jest": "^29.5.2",
@@ -63,14 +72,5 @@
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0"
-  },
-  "lint-staged": {
-    "*": [
-      "prettier --write --ignore-unknown"
-    ],
-    "*.{js,jsx,ts,tsx}": [
-      "eslint --fix"
-    ]
-  },
-  "prettier": "@birthdayresearch/sticky-prettier"
+  }
 }
