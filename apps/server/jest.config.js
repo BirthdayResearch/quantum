@@ -1,10 +1,10 @@
 module.exports = {
-  preset: '@birthdayresearch/sticky-turbo-jest',
+  preset: '@stickyjs/turbo-jest',
   testSequencer: require.resolve('./jest.sequencer'),
   projects: [
     {
       displayName: 'test:i9n',
-      preset: '@birthdayresearch/sticky-turbo-jest',
+      preset: '@stickyjs/turbo-jest',
       testRegex: '.*\\.i9n\\.ts$',
     },
   ],
