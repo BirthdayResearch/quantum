@@ -70,7 +70,7 @@
     "@types/jest": "^29.5.2",
     "@types/node": "^18.16.1",
     "@types/supertest": "^2.0.12",
-    "light-my-request": "5.9.2",
+    "light-my-request": "5.10.0",
     "prisma": "^4.15.0",
     "shuffle-seed": "^1.1.6",
     "smartcontracts": "workspace:0.0.0",
