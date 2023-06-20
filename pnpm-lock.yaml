@@ -186,8 +186,8 @@ importers:
         specifier: ^4.1.1
         version: 4.1.1
       '@netlify/plugin-nextjs':
-        specifier: ^4.37.4
-        version: 4.37.4
+        specifier: ^4.38.0
+        version: 4.38.0
       '@tailwindcss/typography':
         specifier: ^0.5.9
         version: 0.5.9(tailwindcss@3.3.2)
@@ -3189,7 +3189,7 @@ packages:
       '@motionone/easing': 10.15.1
       '@motionone/types': 10.15.1
       '@motionone/utils': 10.15.1
-      tslib: 2.5.2
+      tslib: 2.5.3
     dev: false
 
   /@motionone/dom@10.12.0:
@@ -3200,7 +3200,7 @@ packages:
       '@motionone/types': 10.15.1
       '@motionone/utils': 10.15.1
       hey-listen: 1.0.8
-      tslib: 2.5.2
+      tslib: 2.5.3
     dev: false
 
   /@motionone/dom@10.16.2:
@@ -3218,7 +3218,7 @@ packages:
     resolution: {integrity: sha512-6hIHBSV+ZVehf9dcKZLT7p5PEKHGhDwky2k8RKkmOvUoYP3S+dXsKupyZpqx5apjd9f+php4vXk4LuS+ADsrWw==}
     dependencies:
       '@motionone/utils': 10.15.1
-      tslib: 2.5.2
+      tslib: 2.5.3
     dev: false
 
   /@motionone/generators@10.15.1:
@@ -3226,7 +3226,7 @@ packages:
     dependencies:
       '@motionone/types': 10.15.1
       '@motionone/utils': 10.15.1
-      tslib: 2.5.2
+      tslib: 2.5.3
     dev: false
 
   /@motionone/svelte@10.16.2:
@@ -3245,7 +3245,7 @@ packages:
     dependencies:
       '@motionone/types': 10.15.1
       hey-listen: 1.0.8
-      tslib: 2.5.2
+      tslib: 2.5.3
     dev: false
 
   /@motionone/vue@10.16.2:
@@ -3760,8 +3760,8 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@netlify/plugin-nextjs@4.37.4:
-    resolution: {integrity: sha512-3LMKzF/EMnsE8EAc6i3BVUBcnwTC0K80fMPprdVo6L315dkqgCNXhOOvsBWyG14U8yhgd2YuD+X78kykfvQtqA==}
+  /@netlify/plugin-nextjs@4.38.0:
+    resolution: {integrity: sha512-aMgdH5l7OU0MnjN2bPVDLGGbbLyclbxaEl8fij6MwgYyte9UVnsUVggl1TOG86KgHMbMYpdrtRJoh6LwV+PHOg==}
     engines: {node: '>=12.0.0'}
     dependencies:
       '@netlify/esbuild': 0.14.39
@@ -3784,7 +3784,7 @@ packages:
       pathe: 0.2.0
       pretty-bytes: 5.6.0
       regexp-tree: 0.1.24
-      semver: 7.3.8
+      semver: 7.5.1
       slash: 3.0.0
       tiny-glob: 0.2.9
     transitivePeerDependencies:
@@ -5452,7 +5452,7 @@ packages:
       debug: 4.3.4(supports-color@5.5.0)
       globby: 11.1.0
       is-glob: 4.0.3
-      semver: 7.3.8
+      semver: 7.5.1
       tsutils: 3.21.0(typescript@4.9.5)
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -9814,7 +9814,7 @@ packages:
   /framesync@6.0.1:
     resolution: {integrity: sha512-fUY88kXvGiIItgNC7wcTOl0SNRCVXMKSWW2Yzfmn7EKNc+MpCzcz9DhdHcdjbrtN3c6R4H5dTY2jiCpPdysEjA==}
     dependencies:
-      tslib: 2.5.2
+      tslib: 2.5.3
     dev: false
 
   /fresh@0.5.2:
@@ -13481,7 +13481,7 @@ packages:
       framesync: 6.0.1
       hey-listen: 1.0.8
       style-value-types: 5.0.0
-      tslib: 2.5.2
+      tslib: 2.5.3
     dev: false
 
   /postcss-import@15.1.0(postcss@8.4.24):
@@ -14572,7 +14572,7 @@ packages:
   /rxjs@7.8.1:
     resolution: {integrity: sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==}
     dependencies:
-      tslib: 2.5.2
+      tslib: 2.5.3
 
   /safe-buffer@5.1.2:
     resolution: {integrity: sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==}
@@ -15294,7 +15294,7 @@ packages:
     resolution: {integrity: sha512-08yq36Ikn4kx4YU6RD7jWEv27v4V+PUsOGa4n/as8Et3CuODMJQ00ENeAVXAeydX4Z2j1XHZF1K2sX4mGl18fA==}
     dependencies:
       hey-listen: 1.0.8
-      tslib: 2.5.2
+      tslib: 2.5.3
     dev: false
 
   /styled-components@5.3.8(react-dom@18.2.0)(react-is@18.2.0)(react@18.2.0):
@@ -15878,6 +15878,7 @@ packages:
 
   /tslib@2.5.2:
     resolution: {integrity: sha512-5svOrSA2w3iGFDs1HibEVBGbDrAY82bFQ3HZ3ixB+88nsbsWQoKqDRb5UBYAUPEzbBn6dAp5gRNXglySbx1MlA==}
+    dev: false
 
   /tslib@2.5.3:
     resolution: {integrity: sha512-mSxlJJwl3BMEQCUNnxXBU9jP4JBktcEGhURcPR6VQVlnP0FdDEsIaz0C35dXNGLyRfrATNofF0F5p2KPxQgB+w==}
