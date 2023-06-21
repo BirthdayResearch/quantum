@@ -62,7 +62,6 @@
     "testTimeout": 300000
   },
   "devDependencies": {
-    "@birthdayresearch/sticky-testcontainers": "^0.6.2",
     "@ethersproject/abi": "5.7.0",
     "@ethersproject/providers": "5.7.2",
     "@nomicfoundation/hardhat-chai-matchers": "1.0.6",
@@ -71,6 +70,7 @@
     "@openzeppelin/contracts": "4.8.2",
     "@openzeppelin/contracts-upgradeable": "4.8.2",
     "@stickyjs/eslint-config": "^1.1.1",
+    "@stickyjs/testcontainers": "^1.1.1",
     "@stickyjs/turbo-jest": "^1.1.1",
     "@stickyjs/typescript": "^1.1.1",
     "@typechain/ethers-v5": "10.2.1",

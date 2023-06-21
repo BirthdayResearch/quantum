@@ -1,4 +1,4 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 
 import { StatsDto } from '../../../src/ethereum/EthereumInterface';
 import { StartedDeFiChainStubContainer } from '../../defichain/containers/DeFiChainStubContainer';

@@ -1,8 +1,8 @@
 import * as child_process from 'node:child_process';
 
-import { StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 import { EnvironmentNetwork } from '@waveshq/walletkit-core';
 import { StartedHardhatNetworkContainer } from 'smartcontracts';
 import { StartedHardhatNetworkContainer as StartedHardhatNetworkQueueContainer } from 'smartcontracts-queue';
