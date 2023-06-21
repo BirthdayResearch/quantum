@@ -6,4 +6,4 @@ async function bootstrap() {
   await app.start();
 }
 
-bootstrap();
+void bootstrap();

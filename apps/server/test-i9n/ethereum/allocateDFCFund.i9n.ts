@@ -1,7 +1,7 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
 import { ConfigService } from '@nestjs/config';
 import { EthereumTransactionStatus } from '@prisma/client';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 import BigNumber from 'bignumber.js';
 import { ContractTransaction, ethers } from 'ethers';
 import {

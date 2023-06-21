@@ -1,6 +1,6 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { ConfigService } from '@nestjs/config';
 import { DeFiChainTransactionStatus, EthereumTransactionStatus, QueueStatus } from '@prisma/client';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 import { ethers } from 'ethers';
 import {
   BridgeQueue,

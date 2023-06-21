@@ -1,5 +1,5 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 import {
   BridgeV1,
   HardhatNetwork,

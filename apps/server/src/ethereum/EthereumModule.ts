@@ -1,4 +1,5 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
 
 import { WhaleApiClientProvider } from '../defichain/providers/WhaleApiClientProvider';
 import { WhaleWalletProvider } from '../defichain/providers/WhaleWalletProvider';

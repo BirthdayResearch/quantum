@@ -1,6 +1,6 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { fromAddress } from '@defichain/jellyfish-address';
 import { WhaleWalletAccount } from '@defichain/whale-api-wallet';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 
 import { WhaleWalletProvider } from '../../src/defichain/providers/WhaleWalletProvider';
 import { PrismaService } from '../../src/PrismaService';

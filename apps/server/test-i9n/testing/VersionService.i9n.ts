@@ -1,5 +1,5 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { ConfigService } from '@nestjs/config';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 
 import { StartedDeFiChainStubContainer } from '../defichain/containers/DeFiChainStubContainer';
 import { BridgeServerTestingApp } from './BridgeServerTestingApp';

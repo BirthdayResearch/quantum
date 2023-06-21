@@ -1,7 +1,7 @@
 import { describe } from 'node:test';
 
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { DeFiChainTransactionStatus, QueueStatus } from '@prisma/client';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 
 import { PrismaService } from '../../src/PrismaService';
 import { BridgeServerTestingApp } from '../testing/BridgeServerTestingApp';
