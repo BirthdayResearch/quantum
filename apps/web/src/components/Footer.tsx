@@ -71,7 +71,7 @@ export default function Footer() {
           <div className="font-semibold">Version {data?.v ?? "0.0.0"}</div>
           <div>
             Quantum is a proud development of Birthday Research — the blockchain
-            R&D arm of Cake DeFi
+            R&D arm of Cake Group
           </div>
           <div className="flex flex-row justify-between pt-[19px] md:pt-[26px] lg:pt-2 items-end md:items-start">
             <div className="flex flex-col md:flex-row md:items-end">

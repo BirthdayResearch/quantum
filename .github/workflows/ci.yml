@@ -19,7 +19,7 @@ jobs:
       - run: corepack enable pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
-          node-version: 18.15.0
+          node-version-file: '.nvmrc'
           cache: "pnpm"
 
       - run: pnpm install --frozen-lockfile
@@ -34,7 +34,7 @@ jobs:
       - run: corepack enable pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
-          node-version: 18.15.0
+          node-version-file: '.nvmrc'
           cache: "pnpm"
 
       - run: pnpm install --frozen-lockfile
@@ -48,7 +48,7 @@ jobs:
       - run: corepack enable pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
-          node-version: 18.15.0
+          node-version-file: '.nvmrc'
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -68,7 +68,7 @@ jobs:
       - run: corepack enable pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
-          node-version: 18.15.0
+          node-version-file: '.nvmrc'
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -84,7 +84,7 @@ jobs:
       - run: corepack enable pnpm
       - uses: actions/setup-node@64ed1c7eab4cce3362f8c340dee64e5eaeef8f7c # v3.6.0
         with:
-          node-version: 18.15.0
+          node-version-file: '.nvmrc'
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
