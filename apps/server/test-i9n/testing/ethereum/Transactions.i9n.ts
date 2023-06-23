@@ -1,4 +1,4 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 import { SupportedEVMTokenSymbols } from 'src/AppConfig';
 
 import { TransactionsDto } from '../../../src/ethereum/EthereumInterface';

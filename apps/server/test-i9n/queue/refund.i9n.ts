@@ -1,5 +1,5 @@
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { QueueStatus } from '@prisma/client';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 import BigNumber from 'bignumber.js';
 import { ethers } from 'ethers';
 import { ShellBridgeV1__factory } from 'smartcontracts';

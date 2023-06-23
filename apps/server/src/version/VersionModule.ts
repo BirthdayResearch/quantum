@@ -1,4 +1,5 @@
-import { CacheModule, Module } from '@nestjs/common';
+import { CacheModule } from '@nestjs/cache-manager';
+import { Module } from '@nestjs/common';
 
 import { SemaphoreCache } from '../libs/caches/SemaphoreCache';
 import { VersionController } from './VersionController';

@@ -1,7 +1,7 @@
 import { describe } from 'node:test';
 
-import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@birthdayresearch/sticky-testcontainers';
 import { EthereumTransactionStatus, QueueStatus } from '@prisma/client';
+import { PostgreSqlContainer, StartedPostgreSqlContainer } from '@stickyjs/testcontainers';
 
 import { Queue } from '../../src/ethereum/queue/model/Queue';
 import { PrismaService } from '../../src/PrismaService';
