@@ -58,7 +58,7 @@
     "class-validator": "^0.14.0",
     "ethers": "^5.7.2",
     "joi": "^17.9.2",
-    "pg": "^8.11.0"
+    "pg": "^8.11.1"
   },
   "devDependencies": {
     "@jest/test-sequencer": "^29.5.0",
