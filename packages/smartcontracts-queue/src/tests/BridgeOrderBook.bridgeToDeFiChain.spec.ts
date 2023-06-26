@@ -3,7 +3,7 @@ import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 
-import { BridgeQueue, TestToken } from '../generated';
+import { BridgeQueue, BridgeQueue__factory, TestToken } from '../generated';
 import { deployContracts } from './utils/deployment';
 import { toWei } from './utils/mathUtils';
 
@@ -321,6 +321,11 @@ describe('Bridge order tests', () => {
       const { proxyBridge, testToken3, testToken4 } = await loadFixture(deployContracts);
       expect(await proxyBridge.supportedTokens(testToken3.address)).to.equal(true);
       expect(await proxyBridge.supportedTokens(testToken4.address)).to.equal(true);
+    });
+
+    it('encoded data', () => {
+      const data = BridgeQueue__factory.createInterface().encodeFunctionData('changeTxFee', [0]);
+      console.log('datadatadatadatadatadatadatadatadatadatadatadatadata', data);
     });
   });
 });
