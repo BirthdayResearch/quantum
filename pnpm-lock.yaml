@@ -270,8 +270,8 @@ importers:
         specifier: 4.3.7
         version: 4.3.7
       cross-fetch:
-        specifier: ^3.1.6
-        version: 3.1.6
+        specifier: ^3.1.8
+        version: 3.1.8
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
@@ -318,8 +318,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1(typescript@5.1.3)
       cross-fetch:
-        specifier: ^3.1.6
-        version: 3.1.6
+        specifier: ^3.1.8
+        version: 3.1.8
       dotenv:
         specifier: ^16.3.1
         version: 16.3.1
@@ -1774,7 +1774,7 @@ packages:
     dependencies:
       '@defichain/jellyfish-api-core': 3.32.0(defichain@3.32.0)
       abort-controller: 3.0.0
-      cross-fetch: 3.1.6
+      cross-fetch: 3.1.8
       defichain: 3.32.0
     transitivePeerDependencies:
       - encoding
@@ -1836,7 +1836,7 @@ packages:
       '@defichain/jellyfish-crypto': 3.32.0(defichain@3.32.0)
       '@defichain/jellyfish-network': 3.32.0(defichain@3.32.0)
       '@defichain/testcontainers': 3.32.0(@types/tar-fs@2.0.1)(defichain@3.32.0)
-      cross-fetch: 3.1.6
+      cross-fetch: 3.1.8
       defichain: 3.32.0
     transitivePeerDependencies:
       - '@types/tar-fs'
@@ -1919,7 +1919,7 @@ packages:
       defichain: ^3.32.0
     dependencies:
       abort-controller: 3.0.0
-      cross-fetch: 3.1.6
+      cross-fetch: 3.1.8
       defichain: 3.32.0
       url-search-params-polyfill: 8.1.1
     transitivePeerDependencies:
@@ -1946,7 +1946,7 @@ packages:
     dependencies:
       '@defichain/jellyfish-network': 3.32.0(defichain@3.32.0)
       '@types/tar-fs': 2.0.1
-      cross-fetch: 3.1.6
+      cross-fetch: 3.1.8
       defichain: 3.32.0
       dockerode: 3.3.5
       tar-fs: 2.1.1
@@ -1965,7 +1965,7 @@ packages:
       '@defichain/jellyfish-api-core': 3.32.0(defichain@3.32.0)
       '@defichain/jellyfish-api-jsonrpc': 3.32.0(defichain@3.32.0)
       abort-controller: 3.0.0
-      cross-fetch: 3.1.6
+      cross-fetch: 3.1.8
       defichain: 3.32.0
       url-search-params-polyfill: 8.1.1
     transitivePeerDependencies:
@@ -3328,7 +3328,7 @@ packages:
       micromatch: 4.0.5
       mkdirp: 1.0.4
       murmurhash: 2.0.1
-      node-fetch: 2.6.11
+      node-fetch: 2.6.12
       ufo: 1.1.2
       unstorage: 1.7.0
     transitivePeerDependencies:
@@ -3905,7 +3905,7 @@ packages:
     dependencies:
       chalk: 4.1.2
       consola: 2.15.3
-      node-fetch: 2.6.11
+      node-fetch: 2.6.12
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -4010,7 +4010,7 @@ packages:
   /@safe-global/safe-gateway-typescript-sdk@3.7.3:
     resolution: {integrity: sha512-O6JCgXNZWG0Vv8FnOEjKfcbsP0WxGvoPJk5ufqUrsyBlHup16It6oaLnn+25nXFLBZOHI1bz8429JlqAc2t2hg==}
     dependencies:
-      cross-fetch: 3.1.6
+      cross-fetch: 3.1.8
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -4225,7 +4225,7 @@ packages:
       buffer: 6.0.3
       fast-stable-stringify: 1.0.0
       jayson: 4.1.0
-      node-fetch: 2.6.11
+      node-fetch: 2.6.12
       rpc-websockets: 7.5.1
       superstruct: 0.14.2
     transitivePeerDependencies:
@@ -5408,7 +5408,7 @@ packages:
     dependencies:
       '@walletconnect/jsonrpc-utils': 1.0.8
       '@walletconnect/safe-json': 1.0.2
-      cross-fetch: 3.1.6
+      cross-fetch: 3.1.8
       tslib: 1.14.1
     transitivePeerDependencies:
       - encoding
@@ -7740,10 +7740,10 @@ packages:
       - encoding
     dev: true
 
-  /cross-fetch@3.1.6:
-    resolution: {integrity: sha512-riRvo06crlE8HiqOwIpQhxwdOk4fOeR7FVM/wXoxchFEqMNUjvbs3bfo4OTgMEMHzppd4DxFBDbyySj8Cv781g==}
+  /cross-fetch@3.1.8:
+    resolution: {integrity: sha512-cvA+JwZoU0Xq+h6WkMvAUqPEYy92Obet6UdKLfW60qn99ftItKjB5T+BkyWOFWe2pUyfQ+IJHmpOTznqk1M6Kg==}
     dependencies:
-      node-fetch: 2.6.11
+      node-fetch: 2.6.12
     transitivePeerDependencies:
       - encoding
 
@@ -12732,6 +12732,17 @@ packages:
 
   /node-fetch@2.6.11:
     resolution: {integrity: sha512-4I6pdBY1EthSqDmJkiNk3JIT8cswwR9nfeW/cPdUagJYEQG7R95WRH74wpz7ma8Gh/9dI9FP+OU+0E4FvtA55w==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+
+  /node-fetch@2.6.12:
+    resolution: {integrity: sha512-C/fGU2E8ToujUivIO0H+tpQ6HWo4eEmchoPIoXtxCrVghxdKq+QOHqEZW7tuP3KlV3bC8FRMO5nMCC7Zm1VP6g==}
     engines: {node: 4.x || >=6.0.0}
     peerDependencies:
       encoding: ^0.1.0
