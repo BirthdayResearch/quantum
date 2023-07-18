@@ -183,8 +183,8 @@ importers:
         specifier: ^3.10.8
         version: 3.10.8(@babel/core@7.22.5)(@babel/preset-env@7.22.5)(babel-loader@9.1.2)(cypress@12.16.0)(webpack@5.88.1)
       '@netlify/plugin-lighthouse':
-        specifier: ^4.1.1
-        version: 4.1.1
+        specifier: ^5.0.0
+        version: 5.0.0
       '@netlify/plugin-nextjs':
         specifier: ^4.39.0
         version: 4.39.0
@@ -3394,8 +3394,8 @@ packages:
       - encoding
       - supports-color
 
-  /@netlify/plugin-lighthouse@4.1.1:
-    resolution: {integrity: sha512-eFNzOBOkmNpN9oBro7PSYim/eGZNUJDfV4lJf32HcA2lCzv2fmuZECid7BlfAY3B1KGFh7oT66Z2Pa/OUVbnJw==}
+  /@netlify/plugin-lighthouse@5.0.0:
+    resolution: {integrity: sha512-tCaoVYxCU3OB592vChtFkANzUL4kDUNaIk9VCGp3qBecBnH+yFrILUlcqy2d08Is4ecstjTacyHqV+ixKbNYGQ==}
     engines: {node: '>=14.15 <20'}
     dependencies:
       chalk: 4.1.2

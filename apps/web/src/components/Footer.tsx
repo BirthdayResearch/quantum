@@ -68,7 +68,18 @@ export default function Footer() {
           </div>
         </div>
         <div className="pl-1 flex-row justify-between">
-          <div className="font-semibold">Version {data?.v ?? "0.0.0"}</div>
+          <div className="flex flex-row">
+            <div className="font-semibold">Version {data?.v ?? "0.0.0"}</div>
+            <span className="mx-2">|</span>
+            <a
+              href="https://status.quantumbridge.app"
+              target="_blank"
+              rel="noreferrer"
+              className="pb-2 md:pb-0 pr-2 mr-2"
+            >
+              Status
+            </a>
+          </div>
           <div>
             Quantum is a proud development of Birthday Research — the blockchain
             R&D arm of Cake Group
