@@ -73,7 +73,7 @@ describe('Get and List from EthereumQueue table', () => {
 
     const data = JSON.parse(resp.body);
     expect(data.message).toStrictEqual(
-      'Invalid query parameter value. See the acceptable values: DRAFT, IN_PROGRESS, COMPLETED, ERROR, REJECTED, EXPIRED, REFUND_REQUESTED, REFUNDED',
+      'Invalid query parameter value. See the acceptable values: DRAFT, IN_PROGRESS, COMPLETED, ERROR, REJECTED, EXPIRED, REFUND_REQUESTED, REPROCESSED',
     );
   });
 
@@ -85,7 +85,7 @@ describe('Get and List from EthereumQueue table', () => {
 
     const data = JSON.parse(resp.body);
     expect(data.message).toStrictEqual(
-      'Invalid query parameter value. See the acceptable values: DRAFT, IN_PROGRESS, COMPLETED, ERROR, REJECTED, EXPIRED, REFUND_REQUESTED, REFUNDED',
+      'Invalid query parameter value. See the acceptable values: DRAFT, IN_PROGRESS, COMPLETED, ERROR, REJECTED, EXPIRED, REFUND_REQUESTED, REPROCESSED',
     );
   });
 

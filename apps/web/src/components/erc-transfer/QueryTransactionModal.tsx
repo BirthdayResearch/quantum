@@ -52,7 +52,7 @@ const statusToModalTypeMap = {
   DRAFT: ModalTypeToDisplay.Processing,
   COMPLETED: ModalTypeToDisplay.Completed,
   REFUND_REQUESTED: ModalTypeToDisplay.RefundInProgress,
-  REFUNDED: ModalTypeToDisplay.Refunded,
+  REPROCESSED: ModalTypeToDisplay.Refunded,
   IN_PROGRESS: ModalTypeToDisplay.Pending,
 };
 
@@ -99,7 +99,7 @@ export default function QueryTransactionModal({
       const adminQueueTxHash = queuedTransaction.adminQueue.sendTransactionHash;
       if (
         (queuedTransaction.status === "COMPLETED" ||
-          queuedTransaction.status === "REFUNDED") &&
+          queuedTransaction.status === "REPROCESSED") &&
         adminQueueTxHash !== undefined &&
         adminQueueTxHash !== null
       ) {

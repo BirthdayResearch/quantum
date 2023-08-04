@@ -170,7 +170,7 @@ export type QueueStatus =
   | "REJECTED"
   | "EXPIRED"
   | "REFUND_REQUESTED"
-  | "REFUNDED";
+  | "REPROCESSED";
 
 /* To differentiate modal to display search queue tx */
 export enum ModalTypeToDisplay {

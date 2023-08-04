@@ -182,10 +182,10 @@ describe('Request Refund Testing', () => {
     expect(queue.error).toEqual('API call for refund was unsuccessful: Unable to request refund for queue');
   });
 
-  it('Should throw error when requesting refund for transaction that is in REFUNDED status', async () => {
+  it('Should throw error when requesting refund for transaction that is in REPROCESSED status', async () => {
     await prismaService.ethereumQueue.update({
       where: { transactionHash: validTxnHash },
-      data: { status: QueueStatus.REFUNDED },
+      data: { status: QueueStatus.REPROCESSED },
     });
 
     const resp = await testing.inject({
