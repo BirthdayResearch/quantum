@@ -44,6 +44,15 @@ export function appConfig() {
         [SupportedEVMTokenSymbols.DFI]: {
           address: process.env.DFI_ADDRESS,
         },
+        [SupportedEVMTokenSymbols.MATIC]: {
+          address: process.env.MATIC_ADDRESS,
+        },
+        [SupportedEVMTokenSymbols.SOL]: {
+          address: process.env.SOL_ADDRESS,
+        },
+        [SupportedEVMTokenSymbols.DOT]: {
+          address: process.env.DOT_ADDRESS,
+        },
       },
       ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
       queueTokensMinAmt: {
@@ -53,6 +62,9 @@ export function appConfig() {
         USDC: process.env.USDC_MIN_QUEUE_AMT,
         EUROC: process.env.EUROC_MIN_QUEUE_AMT,
         DFI: process.env.DFI_MIN_QUEUE_AMT,
+        MATIC: process.env.MATIC_MIN_QUEUE_AMT,
+        SOL: process.env.SOL_MIN_QUEUE_AMT,
+        DOT: process.env.DOT_MIN_QUEUE_AMT,
       },
     },
   };
@@ -85,6 +97,9 @@ export enum SupportedEVMTokenSymbols {
   ETH = 'ETH',
   EUROC = 'EUROC',
   DFI = 'DFI',
+  MATIC = 'MATIC',
+  SOL = 'SOL',
+  DOT = 'DOT',
 }
 export enum SupportedDFCTokenSymbols {
   USDC = 'USDC',
@@ -93,6 +108,9 @@ export enum SupportedDFCTokenSymbols {
   ETH = 'ETH',
   DFI = 'DFI',
   EUROC = 'EUROC',
+  MATIC = 'MATIC',
+  SOL = 'SOL',
+  DOT = 'DOT',
 }
 
 export enum Network {
@@ -116,7 +134,7 @@ export interface NetworkOptionsI {
   tokens: TokensI[];
 }
 
-export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI';
+export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI' | 'MATIC' | 'SOL' | 'DOT';
 export interface NetworkI<T> {
   name: Network;
   tokens: {
@@ -190,6 +208,36 @@ export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
           symbol: 'EUROC',
         },
       },
+      {
+        tokenA: {
+          name: 'MATIC',
+          symbol: 'MATIC',
+        },
+        tokenB: {
+          name: 'dMATIC',
+          symbol: 'MATIC',
+        },
+      },
+      {
+        tokenA: {
+          name: 'SOL',
+          symbol: 'SOL',
+        },
+        tokenB: {
+          name: 'dSOL',
+          symbol: 'SOL',
+        },
+      },
+      {
+        tokenA: {
+          name: 'DOT',
+          symbol: 'DOT',
+        },
+        tokenB: {
+          name: 'dDOT',
+          symbol: 'DOT',
+        },
+      },
     ],
   },
   {
@@ -254,6 +302,36 @@ export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
         tokenB: {
           name: 'EUROC',
           symbol: 'EUROC',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dMATIC',
+          symbol: 'MATIC',
+        },
+        tokenB: {
+          name: 'MATIC',
+          symbol: 'MATIC',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dSOL',
+          symbol: 'SOL',
+        },
+        tokenB: {
+          name: 'SOL',
+          symbol: 'SOL',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dDOT',
+          symbol: 'DOT',
+        },
+        tokenB: {
+          name: 'DOT',
+          symbol: 'DOT',
         },
       },
     ],

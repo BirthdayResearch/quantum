@@ -38,6 +38,18 @@ export const getDTokenDetailsByWToken = (
           id: '12',
           symbol: 'EUROC',
         },
+        MMATIC: {
+          id: '0000', // TODO: Update with proper playground id
+          symbol: 'MATIC',
+        },
+        MSOL: {
+          id: '0000', // TODO: Update with proper playground id
+          symbol: 'SOL',
+        },
+        MDOT: {
+          id: '0000', // TODO: Update with proper playground id
+          symbol: 'DOT',
+        },
       };
       break;
     case EnvironmentNetwork.LocalPlayground:
@@ -65,6 +77,18 @@ export const getDTokenDetailsByWToken = (
         MEURC: {
           id: '12',
           symbol: 'EUROC',
+        },
+        MMATIC: {
+          id: '0000', // TODO: Update with proper local playground id
+          symbol: 'MATIC',
+        },
+        MSOL: {
+          id: '0000', // TODO: Update with proper local playground id
+          symbol: 'SOL',
+        },
+        MDOT: {
+          id: '0000', // TODO: Update with proper local playground id
+          symbol: 'DOT',
         },
       };
       break;
@@ -95,6 +119,18 @@ export const getDTokenDetailsByWToken = (
           id: '25',
           symbol: 'EUROC',
         },
+        MMATIC: {
+          id: '0000', // TODO: Update with proper testnet id
+          symbol: 'MATIC',
+        },
+        MSOL: {
+          id: '0000', // TODO: Update with proper testnet id
+          symbol: 'SOL',
+        },
+        MDOT: {
+          id: '0000', // TODO: Update with proper testnet id
+          symbol: 'DOT',
+        },
       };
       break;
     case EnvironmentNetwork.MainNet:
@@ -123,6 +159,18 @@ export const getDTokenDetailsByWToken = (
         EUROC: {
           id: '216',
           symbol: 'EUROC',
+        },
+        MATIC: {
+          id: '0000', // TODO: Update with proper mainnet id
+          symbol: 'MATIC',
+        },
+        SOL: {
+          id: '0000', // TODO: Update with proper mainnet id
+          symbol: 'SOL',
+        },
+        DOT: {
+          id: '0000', // TODO: Update with proper mainnet id
+          symbol: 'DOT',
         },
       };
       break;
