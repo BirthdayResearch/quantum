@@ -50,9 +50,8 @@ export const TESTNET_CONFIG: ContractContextI = {
     ETH: { address: "0x0000000000000000000000000000000000000000" },
     EUROC: { address: "0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd" },
     DFI: { address: "0x1f84B07483AC2D5f212a7bF14184310baE087448" },
-    // TODO: Update with proper token addresses for sepolia
-    MATIC: { address: "0xxxxx" },
-    SOL: { address: "0xxxxx" },
-    BDOT: { address: "0xxxxx" },
+    MATIC: { address: "0x0B36470228F0B8C8E0313ba0C4356520F50cE85b" },
+    SOL: { address: "0xFfFD764E713e4c145681706957F60C560dF9E578" },
+    BDOT: { address: "0x4338166E7Ce3f110AFfe37c6Ea0cb4D320B0a96C" },
   },
 };
