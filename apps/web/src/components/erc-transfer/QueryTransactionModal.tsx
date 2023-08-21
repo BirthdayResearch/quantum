@@ -143,7 +143,7 @@ export default function QueryTransactionModal({
 
   const getQueueToken = (tokenASymbol: string) => {
     const tokens = selectedQueueNetworkA.tokens.find(
-      (token) => token.tokenB.symbol === tokenASymbol,
+      (token) => token.tokenB.symbol === tokenASymbol
     );
     return tokens;
   };
@@ -182,15 +182,27 @@ export default function QueryTransactionModal({
     setStorage("transfer-amount", txnDetails.amount.toString());
     setStorage("destination-address", txnDetails.toAddress);
 
+    let ercSymbol = txnDetails.symbol;
+    switch (txnDetails.symbol) {
+      case "BTC":
+        ercSymbol = "WBTC";
+        break;
+      case "DOT":
+        ercSymbol = "BDOT";
+        break;
+      default:
+        ercSymbol = txnDetails.symbol;
+    }
+
     const ethSymbolToDisplay = mapTokenToNetworkName(
       Network.Ethereum,
       // symbol and name for BTC for evm should both be WBTC https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
       // however as we are storing as BTC in the DB we would check for WBTC if symbol is BTC for Eth network
-      txnDetails.symbol === "BTC" ? "WBTC" : txnDetails.symbol,
+      ercSymbol
     );
     const dfcSymbolToDisplay = mapTokenToNetworkName(
       Network.DeFiChain,
-      txnDetails.symbol,
+      txnDetails.symbol
     );
     if (ethSymbolToDisplay && dfcSymbolToDisplay) {
       setStorage("transfer-display-symbol-A", ethSymbolToDisplay);
@@ -243,12 +255,12 @@ export default function QueryTransactionModal({
     } catch (error) {
       if (type === QueryTransactionModalType.RecoverInstantTransaction) {
         setInputErrorMessage(
-          "Invalid transaction hash. Please only enter instant transaction hash.",
+          "Invalid transaction hash. Please only enter instant transaction hash."
         );
       } else {
         // search queue and recover queue
         setInputErrorMessage(
-          "Invalid transaction hash. Please only enter queued transaction hash.",
+          "Invalid transaction hash. Please only enter queued transaction hash."
         );
       }
       setIsValidTransaction(false);
@@ -309,7 +321,7 @@ export default function QueryTransactionModal({
           <div
             className={clsx(
               "absolute right-0 rounded bg-valid px-2 py-1 text-2xs text-dark-00 transition duration-300 lg:text-xs",
-              copiedFromClipboard ? "opacity-100" : "opacity-0",
+              copiedFromClipboard ? "opacity-100" : "opacity-0"
             )}
           >
             Added from clipboard
@@ -326,7 +338,7 @@ export default function QueryTransactionModal({
               "border-dark-300 hover:border-dark-500": !(
                 invalidTxnHash || isFocused
               ),
-            },
+            }
           )}
         >
           {/* Paste icon with tooltip */}
@@ -349,7 +361,7 @@ export default function QueryTransactionModal({
               `w-full h-6 grow resize-none bg-transparent text-sm lg:text-base leading-5 tracking-[0.01em] text-dark-1000 focus:outline-none`,
               isFocused
                 ? "placeholder:text-dark-300"
-                : "placeholder:text-dark-500",
+                : "placeholder:text-dark-500"
             )}
             placeholder={inputPlaceholder}
             value={transactionInput}

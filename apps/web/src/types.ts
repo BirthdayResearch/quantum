@@ -110,7 +110,7 @@ export type Erc20Token =
   | "DFI"
   | "MATIC"
   | "SOL"
-  | "DOT";
+  | "BDOT";
 
 interface ContractConfigI {
   address: `0x${string}`;

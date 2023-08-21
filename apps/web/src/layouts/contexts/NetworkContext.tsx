@@ -150,9 +150,9 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
       },
       {
         tokenA: {
-          name: "DOT",
-          symbol: "DOT",
-          icon: "/tokens/DOT.svg",
+          name: "BDOT",
+          symbol: "BDOT",
+          icon: "/tokens/bDOT.svg",
         },
         tokenB: {
           name: "dDOT",
@@ -270,9 +270,9 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/dDOT.svg",
         },
         tokenB: {
-          name: "DOT",
-          symbol: "DOT",
-          icon: "/tokens/DOT.svg",
+          name: "BDOT",
+          symbol: "BDOT",
+          icon: "/tokens/bDOT.svg",
         },
       },
     ],
