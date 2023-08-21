@@ -141,7 +141,7 @@ importers:
         version: 0.4.4(tailwindcss@3.3.3)
       '@waveshq/standard-web':
         specifier: ^1.0.14
-        version: 1.0.14(@babel/core@7.22.5)(redux@4.2.1)(sass@1.63.6)
+        version: 1.0.14(@babel/core@7.22.5)(redux@4.2.1)(sass@1.66.1)
       axios:
         specifier: ^1.4.0
         version: 1.4.0
@@ -170,8 +170,8 @@ importers:
         specifier: ^1.2.2
         version: 1.2.2
       sass:
-        specifier: ^1.63.6
-        version: 1.63.6
+        specifier: ^1.66.1
+        version: 1.66.1
       viem:
         specifier: ^1.3.0
         version: 1.3.0(typescript@5.1.6)
@@ -199,7 +199,7 @@ importers:
         version: 18.16.18
       '@waveshq/standard-web-linter':
         specifier: ^1.0.14
-        version: 1.0.14(@babel/core@7.22.5)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.63.6)
+        version: 1.0.14(@babel/core@7.22.5)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.66.1)
       autoprefixer:
         specifier: ^10.4.14
         version: 10.4.14(postcss@8.4.24)
@@ -5904,7 +5904,7 @@ packages:
       - supports-color
     dev: false
 
-  /@waveshq/standard-web-linter@1.0.14(@babel/core@7.22.5)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.63.6):
+  /@waveshq/standard-web-linter@1.0.14(@babel/core@7.22.5)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)(sass@1.66.1):
     resolution: {integrity: sha512-4KLrWD0Wpv69gqQFnRn5boNxqVD1Fc8d0cYWR44ezEVTJO3fOi25GlqFNaw7Q2HDsHVQ6EGAi2riT01h35ZBTA==}
     dependencies:
       eslint: 8.44.0
@@ -5922,7 +5922,7 @@ packages:
       eslint-plugin-simple-import-sort: 10.0.0(eslint@8.44.0)
       husky: 8.0.3
       lint-staged: 13.2.3
-      next: 13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.63.6)
+      next: 13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.66.1)
       prettier: 2.8.8
       typescript: 4.9.5
     transitivePeerDependencies:
@@ -5978,7 +5978,7 @@ packages:
       - supports-color
     dev: false
 
-  /@waveshq/standard-web@1.0.14(@babel/core@7.22.5)(redux@4.2.1)(sass@1.63.6):
+  /@waveshq/standard-web@1.0.14(@babel/core@7.22.5)(redux@4.2.1)(sass@1.66.1):
     resolution: {integrity: sha512-qwQzxKCLuoKaRJETPI4NxrPIxQzTUQ3AyZg56vGeVEjq+bhrVeYkL1PW27LsX3btRuZ2rhTaYQcgH+mXq3bS6Q==}
     dependencies:
       '@netlify/ipx': 1.4.1
@@ -5987,7 +5987,7 @@ packages:
       '@types/react-dom': 18.2.6
       follow-redirects: 1.15.2(debug@4.3.4)
       million: 2.4.9
-      next: 13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.63.6)
+      next: 13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.66.1)
       next-sitemap: 4.1.8(next@13.4.10)
       nextjs-progressbar: 0.0.16(next@13.4.10)(react@18.2.0)
       react: 18.2.0
@@ -12824,7 +12824,7 @@ packages:
       '@next/env': 13.4.10
       fast-glob: 3.2.12
       minimist: 1.2.8
-      next: 13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.63.6)
+      next: 13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.66.1)
     dev: false
 
   /next-sitemap@4.1.8(next@13.4.7):
@@ -12841,7 +12841,7 @@ packages:
       next: 13.4.7(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)
     dev: false
 
-  /next@13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.63.6):
+  /next@13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.66.1):
     resolution: {integrity: sha512-4ep6aKxVTQ7rkUW2fBLhpBr/5oceCuf4KmlUpvG/aXuDTIf9mexNSpabUD6RWPspu6wiJJvozZREhXhueYO36A==}
     engines: {node: '>=16.8.0'}
     hasBin: true
@@ -12866,7 +12866,7 @@ packages:
       postcss: 8.4.14
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sass: 1.63.6
+      sass: 1.66.1
       styled-jsx: 5.1.1(@babel/core@7.22.5)(react@18.2.0)
       watchpack: 2.4.0
       zod: 3.21.4
@@ -12934,7 +12934,7 @@ packages:
       react: '>= 16.0.0'
     dependencies:
       '@types/nprogress': 0.2.0
-      next: 13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.63.6)
+      next: 13.4.10(@babel/core@7.22.5)(react-dom@18.2.0)(react@18.2.0)(sass@1.66.1)
       nprogress: 0.2.0
       prop-types: 15.8.1
       react: 18.2.0
@@ -14894,8 +14894,8 @@ packages:
   /safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
 
-  /sass@1.63.6:
-    resolution: {integrity: sha512-MJuxGMHzaOW7ipp+1KdELtqKbfAWbH7OLIdoSMnVe3EXPMTmxTmlaZDCTsgIpPCs3w99lLo9/zDKkOrJuT5byw==}
+  /sass@1.66.1:
+    resolution: {integrity: sha512-50c+zTsZOJVgFfTgwwEzkjA3/QACgdNsKueWPyAR0mRINIvLAStVQBbPg14iuqEQ74NPDbXzJARJ/O4SI1zftA==}
     engines: {node: '>=14.0.0'}
     hasBin: true
     dependencies:
