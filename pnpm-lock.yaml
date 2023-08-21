@@ -25,17 +25,17 @@ importers:
   apps/server:
     dependencies:
       '@prisma/client':
-        specifier: ^4.16.2
-        version: 4.16.2(prisma@4.16.2)
+        specifier: ^5.1.1
+        version: 5.1.1(prisma@5.1.1)
       '@waveshq/standard-api-fastify':
         specifier: ^1.0.14
-        version: 1.0.14(@prisma/client@4.16.2)(class-transformer@0.5.1)(class-validator@0.14.0)(pino-http@8.3.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.1.6)
+        version: 1.0.14(@prisma/client@5.1.1)(class-transformer@0.5.1)(class-validator@0.14.0)(pino-http@8.3.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.1.6)
       '@waveshq/walletkit-core':
         specifier: ^0.51.0
         version: 0.51.0
       '@waveshq/walletkit-ui':
         specifier: ^0.51.0
-        version: 0.51.0(@babel/core@7.22.5)(@types/node@20.3.2)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@5.1.6)
+        version: 0.51.0(@babel/core@7.22.5)(@types/node@20.3.2)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@5.1.6)
       bignumber.js:
         specifier: ^9.1.1
         version: 9.1.1
@@ -89,8 +89,8 @@ importers:
         specifier: 5.10.0
         version: 5.10.0
       prisma:
-        specifier: ^4.16.2
-        version: 4.16.2
+        specifier: ^5.1.1
+        version: 5.1.1
       shuffle-seed:
         specifier: ^1.1.6
         version: 1.1.6
@@ -2036,6 +2036,7 @@ packages:
 
   /@emotion/memoize@0.7.4:
     resolution: {integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -3051,7 +3052,7 @@ packages:
       - chokidar
     dev: false
 
-  /@nestjs/terminus@10.0.1(@nestjs/common@10.1.0)(@nestjs/core@10.1.0)(@prisma/client@4.16.2)(reflect-metadata@0.1.13)(rxjs@7.8.1):
+  /@nestjs/terminus@10.0.1(@nestjs/common@10.1.0)(@nestjs/core@10.1.0)(@prisma/client@5.1.1)(reflect-metadata@0.1.13)(rxjs@7.8.1):
     resolution: {integrity: sha512-orQmQFdwN4QC2Oo30BrxEKzKAVeVluWQElgIe16NGvm597VqRH4b1GbKldVg6H8adehd/nR6RdCUyFozRdl2rA==}
     peerDependencies:
       '@grpc/grpc-js': '*'
@@ -3101,7 +3102,7 @@ packages:
     dependencies:
       '@nestjs/common': 10.1.0(class-transformer@0.5.1)(class-validator@0.14.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/core': 10.1.0(@nestjs/common@10.1.0)(reflect-metadata@0.1.13)(rxjs@7.8.1)
-      '@prisma/client': 4.16.2(prisma@4.16.2)
+      '@prisma/client': 5.1.1(prisma@5.1.1)
       boxen: 5.1.2
       check-disk-space: 3.4.0
       reflect-metadata: 0.1.13
@@ -4064,9 +4065,9 @@ packages:
       picocolors: 1.0.0
       tslib: 2.6.0
 
-  /@prisma/client@4.16.2(prisma@4.16.2):
-    resolution: {integrity: sha512-qCoEyxv1ZrQ4bKy39GnylE8Zq31IRmm8bNhNbZx7bF2cU5aiCCnSa93J2imF88MBjn7J9eUQneNxUQVJdl/rPQ==}
-    engines: {node: '>=14.17'}
+  /@prisma/client@5.1.1(prisma@5.1.1):
+    resolution: {integrity: sha512-fxcCeK5pMQGcgCqCrWsi+I2rpIbk0rAhdrN+ke7f34tIrgPwA68ensrpin+9+fZvuV2OtzHmuipwduSY6HswdA==}
+    engines: {node: '>=16.13'}
     requiresBuild: true
     peerDependencies:
       prisma: '*'
@@ -4074,16 +4075,16 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 4.16.1-1.4bc8b6e1b66cb932731fb1bdbbc550d1e010de81
-      prisma: 4.16.2
+      '@prisma/engines-version': 5.1.1-1.6a3747c37ff169c90047725a05a6ef02e32ac97e
+      prisma: 5.1.1
     dev: false
 
-  /@prisma/engines-version@4.16.1-1.4bc8b6e1b66cb932731fb1bdbbc550d1e010de81:
-    resolution: {integrity: sha512-q617EUWfRIDTriWADZ4YiWRZXCa/WuhNgLTVd+HqWLffjMSPzyM5uOWoauX91wvQClSKZU4pzI4JJLQ9Kl62Qg==}
+  /@prisma/engines-version@5.1.1-1.6a3747c37ff169c90047725a05a6ef02e32ac97e:
+    resolution: {integrity: sha512-owZqbY/wucbr65bXJ/ljrHPgQU5xXTSkmcE/JcbqE1kusuAXV/TLN3/exmz21SZ5rJ7WDkyk70J2G/n68iogbQ==}
     dev: false
 
-  /@prisma/engines@4.16.2:
-    resolution: {integrity: sha512-vx1nxVvN4QeT/cepQce68deh/Turxy5Mr+4L4zClFuK1GlxN3+ivxfuv+ej/gvidWn1cE1uAhW7ALLNlYbRUAw==}
+  /@prisma/engines@5.1.1:
+    resolution: {integrity: sha512-NV/4nVNWFZSJCCIA3HIFJbbDKO/NARc9ej0tX5S9k2EVbkrFJC4Xt9b0u4rNZWL4V+F5LAjvta8vzEUw0rw+HA==}
     requiresBuild: true
 
   /@reduxjs/toolkit@1.9.5(react-redux@8.1.1)(react@18.2.0):
@@ -5802,7 +5803,7 @@ packages:
       tslib: 1.14.1
     dev: false
 
-  /@waveshq/standard-api-fastify@1.0.14(@prisma/client@4.16.2)(class-transformer@0.5.1)(class-validator@0.14.0)(pino-http@8.3.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.1.6):
+  /@waveshq/standard-api-fastify@1.0.14(@prisma/client@5.1.1)(class-transformer@0.5.1)(class-validator@0.14.0)(pino-http@8.3.3)(reflect-metadata@0.1.13)(rxjs@7.8.1)(typescript@5.1.6):
     resolution: {integrity: sha512-AoEybGLhJvDtgQDLb0idZyu78WxrI/2PNcpDwQtssZ7uiFRuuCTGS+tshACyNrRKEsEVzfiDffmSj6jHKhKKhA==}
     dependencies:
       '@fastify/compress': 6.4.0
@@ -5815,7 +5816,7 @@ packages:
       '@nestjs/jwt': 10.1.0(@nestjs/common@10.1.0)
       '@nestjs/platform-fastify': 10.1.0(@nestjs/common@10.1.0)(@nestjs/core@10.1.0)
       '@nestjs/schematics': 10.0.1(chokidar@3.5.3)(typescript@5.1.6)
-      '@nestjs/terminus': 10.0.1(@nestjs/common@10.1.0)(@nestjs/core@10.1.0)(@prisma/client@4.16.2)(reflect-metadata@0.1.13)(rxjs@7.8.1)
+      '@nestjs/terminus': 10.0.1(@nestjs/common@10.1.0)(@nestjs/core@10.1.0)(@prisma/client@5.1.1)(reflect-metadata@0.1.13)(rxjs@7.8.1)
       '@nestjs/testing': 10.1.0(@nestjs/common@10.1.0)(@nestjs/core@10.1.0)
       '@nestjs/throttler': 4.2.1(@nestjs/common@10.1.0)(@nestjs/core@10.1.0)(reflect-metadata@0.1.13)
       '@stickyjs/typescript': 1.2.2(typescript@5.1.6)
@@ -6017,7 +6018,7 @@ packages:
       - supports-color
     dev: false
 
-  /@waveshq/standard-web@1.0.6(@babel/core@7.22.5):
+  /@waveshq/standard-web@1.0.6(@babel/core@7.22.5)(redux@4.2.1):
     resolution: {integrity: sha512-YI9xOkrL/dJVzbpBCwkpd4xeesDFjze0JhOe4c9KPjga5X8X/63fCpMth0/LfCo7BitcHEYSrKfciL+KilKdsw==}
     dependencies:
       '@netlify/ipx': 1.4.1
@@ -6067,12 +6068,12 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@waveshq/walletkit-ui@0.51.0(@babel/core@7.22.5)(@types/node@20.3.2)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@5.1.6):
+  /@waveshq/walletkit-ui@0.51.0(@babel/core@7.22.5)(@types/node@20.3.2)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@5.1.6):
     resolution: {integrity: sha512-+OF0KAwGhS6QwMlpfThFRRQXGgt/WxbI3qGNR6e8gBYBaTCQ5FZOZfm6zRLSmmXNA5yjYs9boAtkIkZtfzjLQA==}
     dependencies:
       '@stickyjs/jest': 1.2.0(@babel/core@7.22.5)(@types/node@20.3.2)(ts-node@10.9.1)(typescript@5.1.6)
       '@waveshq/standard-defichain-jellyfishsdk': 1.0.6(@types/tar-fs@2.0.1)
-      '@waveshq/standard-web': 1.0.6(@babel/core@7.22.5)
+      '@waveshq/standard-web': 1.0.6(@babel/core@7.22.5)(redux@4.2.1)
       '@waveshq/standard-web-linter': 1.0.6(@babel/core@7.22.5)(@typescript-eslint/eslint-plugin@5.62.0)(@typescript-eslint/parser@5.62.0)(react-dom@18.2.0)(react@18.2.0)
       '@waveshq/walletkit-core': 0.51.0
       bignumber.js: 9.1.1
@@ -6395,6 +6396,7 @@ packages:
   /amdefine@1.0.1:
     resolution: {integrity: sha512-S2Hw0TtNkMJhIabBwIojKL9YHO5T0n5eNqWJ7Lrlel/zDbftQpxpapi8tZs3X1HWa+u+QeydGmzzNU0m09+Rcg==}
     engines: {node: '>=0.4.2'}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -7187,6 +7189,7 @@ packages:
   /buildcheck@0.0.6:
     resolution: {integrity: sha512-8f9ZJCUXyT1M35Jx7MkBgmBMo3oHTTBIPLiY9xyL0pl3T5RwcPEY8cUHr5LBNfu/fk6c2T4DJZuVM/8ZZT2D2A==}
     engines: {node: '>=10.0.0'}
+    requiresBuild: true
     optional: true
 
   /bundle-name@3.0.0:
@@ -13965,13 +13968,13 @@ packages:
       ansi-styles: 5.2.0
       react-is: 18.2.0
 
-  /prisma@4.16.2:
-    resolution: {integrity: sha512-SYCsBvDf0/7XSJyf2cHTLjLeTLVXYfqp7pG5eEVafFLeT0u/hLFz/9W196nDRGUOo1JfPatAEb+uEnTQImQC1g==}
-    engines: {node: '>=14.17'}
+  /prisma@5.1.1:
+    resolution: {integrity: sha512-WJFG/U7sMmcc6TjJTTifTfpI6Wjoh55xl4AzopVwAdyK68L9/ogNo8QQ2cxuUjJf/Wa82z/uhyh3wMzvRIBphg==}
+    engines: {node: '>=16.13'}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@prisma/engines': 4.16.2
+      '@prisma/engines': 5.1.1
 
   /process-nextick-args@2.0.1:
     resolution: {integrity: sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==}
