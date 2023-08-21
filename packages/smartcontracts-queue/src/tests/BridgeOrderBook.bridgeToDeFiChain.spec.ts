@@ -122,9 +122,8 @@ describe('Bridge order tests', () => {
     describe('Change community wallet', () => {
       it('Should be able to change community wallet', async () => {
         let communityWalletSigner: SignerWithAddress;
-        ({ proxyBridge, defaultAdminSigner, arbitrarySigner, communityWalletSigner } = await loadFixture(
-          deployContracts,
-        ));
+        ({ proxyBridge, defaultAdminSigner, arbitrarySigner, communityWalletSigner } =
+          await loadFixture(deployContracts));
         await expect(proxyBridge.connect(defaultAdminSigner).changeCommunityWallet(arbitrarySigner.address))
           .to.emit(proxyBridge, 'COMMUNITY_WALLET_CHANGED')
           .withArgs(communityWalletSigner.address, arbitrarySigner.address);
@@ -183,9 +182,8 @@ describe('Bridge order tests', () => {
       });
 
       it('Should be able to bridge when all requirements are satisfied', async () => {
-        const { proxyBridge, defaultAdminSigner, coldWalletSigner, communityWalletSigner } = await loadFixture(
-          deployContracts,
-        );
+        const { proxyBridge, defaultAdminSigner, coldWalletSigner, communityWalletSigner } =
+          await loadFixture(deployContracts);
 
         await proxyBridge.connect(defaultAdminSigner).addSupportedToken(ethers.constants.AddressZero);
 
@@ -208,9 +206,8 @@ describe('Bridge order tests', () => {
       });
 
       it('Change the txFee, should calculate correctly the amount being bridged', async () => {
-        const { proxyBridge, defaultAdminSigner, communityWalletSigner, coldWalletSigner } = await loadFixture(
-          deployContracts,
-        );
+        const { proxyBridge, defaultAdminSigner, communityWalletSigner, coldWalletSigner } =
+          await loadFixture(deployContracts);
 
         await proxyBridge.connect(defaultAdminSigner).changeTxFee(1000);
 

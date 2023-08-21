@@ -43,7 +43,7 @@ function TokenOrNetworkInfo({
           data-testid={`${testId}-name`}
           className={clsx(
             "ml-2 lg:ml-3 block truncate text-dark-1000 text-base text-left",
-            nameClass
+            nameClass,
           )}
         >
           {token.name}
@@ -103,7 +103,7 @@ function BorderDiv({
       className={clsx(
         "border-gradient-6 relative bg-dark-00/50 rounded-[15px]",
         "before:absolute before:content-[''] before:inset-0 before:p-px before:rounded-[15px] before:z-[-1]",
-        className
+        className,
       )}
     >
       {children}
@@ -134,7 +134,7 @@ function TokenDetails({
     <div
       className={clsx(
         "flex flex-col md:w-1/2 lg:w-full lg:flex-row space-y-5 lg:space-y-0 justify-between items-center",
-        containerClass
+        containerClass,
       )}
     >
       <div className="w-full lg:w-2/12">
@@ -218,7 +218,7 @@ export default function OverviewList({ balances }) {
           amount={getAmount(item.tokenB.symbol, firstNetwork.name)}
           containerClass={clsx(
             "border-t-[0.5px] md:border-t-0 md:border-l-[0.5px] lg:border-l-0 lg:border-t-[0.5px] border-dark-200",
-            "pt-4 md:pt-0 lg:pt-5 md:pl-5 lg:pl-0"
+            "pt-4 md:pt-0 lg:pt-5 md:pl-5 lg:pl-0",
           )}
         />
       </>

@@ -58,7 +58,7 @@ export async function getServerSideProps({ query }) {
   let defaultBalances = {};
   try {
     const res = await fetch(
-      `https://wallet.defichain.com/api/v0/bridge/status`
+      `https://wallet.defichain.com/api/v0/bridge/status`,
     );
     const [data, statusCode] = await Promise.all([res.json(), res.status]);
     if (statusCode === 200) {

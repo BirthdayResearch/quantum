@@ -9,7 +9,10 @@ import { WhaleApiClientProvider } from '../providers/WhaleApiClientProvider';
 export class WhaleApiService {
   private network: EnvironmentNetwork;
 
-  constructor(private readonly clientProvider: WhaleApiClientProvider, private configService: ConfigService) {
+  constructor(
+    private readonly clientProvider: WhaleApiClientProvider,
+    private configService: ConfigService,
+  ) {
     this.network = configService.getOrThrow<EnvironmentNetwork>(`defichain.network`);
   }
 

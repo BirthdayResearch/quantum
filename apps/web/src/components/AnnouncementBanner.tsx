@@ -21,13 +21,13 @@ export default function AnnouncementBanner() {
     url?: string;
   }>();
   const [hiddenAnnouncements, setHiddenAnnouncements] = useState<string[]>(
-    getStorageItem(HIDDEN_ANNOUNCEMENTS_KEY) ?? []
+    getStorageItem(HIDDEN_ANNOUNCEMENTS_KEY) ?? [],
   );
 
   async function getAnnouncements() {
     const { data } = await trigger({});
     const announcementData: BridgeAnnouncement | undefined = data?.find(
-      ({ version }) => satisfies(appVersion, version)
+      ({ version }) => satisfies(appVersion, version),
     );
     if (announcementData) {
       setAnnouncement({

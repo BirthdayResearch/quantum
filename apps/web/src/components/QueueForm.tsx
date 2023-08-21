@@ -136,7 +136,7 @@ export default function QueueForm({
   }, 200);
 
   async function verifySufficientHWBalance(
-    refetch?: boolean
+    refetch?: boolean,
   ): Promise<boolean | undefined> {
     const key = `${selectedQueueNetworkA.name}-${selectedQueueTokensA.tokenB.symbol}`;
     const balance = (refetch ? await getBalanceFn() : tokenBalances)[key];
@@ -148,7 +148,7 @@ export default function QueueForm({
 
     if (balance) {
       const isSufficientBalance = new BigNumber(balance).isGreaterThanOrEqualTo(
-        amount !== "" ? amount : 0
+        amount !== "" ? amount : 0,
       );
 
       setIsBalanceSufficient(isSufficientBalance);
@@ -179,7 +179,7 @@ export default function QueueForm({
     setAmount,
     maxAmount,
     selectedQueueNetworkB,
-    setAmountErr
+    setAmountErr,
   );
 
   const onTransferTokens = async (): Promise<void> => {
@@ -191,7 +191,7 @@ export default function QueueForm({
       if (
         validateAmountInput(
           amount,
-          new BigNumber(refetchedEvmBalance.data?.formatted ?? 0)
+          new BigNumber(refetchedEvmBalance.data?.formatted ?? 0),
         )
       ) {
         setIsVerifyingTransaction(false);
@@ -259,7 +259,7 @@ export default function QueueForm({
   const getNumberOfConfirmations = () => {
     let numOfConfirmations = BigNumber.min(
       ethQueueTxnStatus?.numberOfConfirmations,
-      EVM_CONFIRMATIONS_BLOCK_TOTAL
+      EVM_CONFIRMATIONS_BLOCK_TOTAL,
     ).toString();
 
     if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
@@ -308,7 +308,9 @@ export default function QueueForm({
       }
 
       setShowConfirmModal(false);
-    } else setUtilityModalData(UtilityModalMessage.leaveTransaction);
+    } else {
+      setUtilityModalData(UtilityModalMessage.leaveTransaction);
+    }
   }
 
   useEffect(() => {
@@ -326,11 +328,11 @@ export default function QueueForm({
       setStorage("transfer-amount-queue", localData.amount);
       setStorage(
         "transfer-display-symbol-A-queue",
-        localData.selectedQueueTokensA.tokenA.name
+        localData.selectedQueueTokensA.tokenA.name,
       );
       setStorage(
         "transfer-display-symbol-B-queue",
-        localData.selectedQueueTokensB.tokenA.name
+        localData.selectedQueueTokensB.tokenA.name,
       );
       // Load data from storage
       setHasUnconfirmedTxn(true);
@@ -349,7 +351,7 @@ export default function QueueForm({
   }, [networkEnv, txnForm]);
 
   const fetchAddressDetail = async (
-    localDfcAddress: string | undefined
+    localDfcAddress: string | undefined,
   ): Promise<void> => {
     try {
       if (localDfcAddress) {
@@ -364,7 +366,7 @@ export default function QueueForm({
           // TODO: Improve setStorage by not forcing stringified JSON
           setStorage(
             "dfc-address-details-queue",
-            JSON.stringify(addressDetailRes)
+            JSON.stringify(addressDetailRes),
           );
         }
       } else {
@@ -413,7 +415,7 @@ export default function QueueForm({
         "w-full md:w-[calc(100%+2px)] lg:w-full p-6 pt-8 pb-10 lg:p-10 lg:pt-6",
         "dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl",
-        activeTab === FormOptions.QUEUE ? "block" : "hidden"
+        activeTab === FormOptions.QUEUE ? "block" : "hidden",
       )}
     >
       {createdQueueTxnHash &&
@@ -449,7 +451,7 @@ export default function QueueForm({
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
                   new BigNumber(transferAmount || 0).minus(fee),
-                  0
+                  0,
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
                 suffix={` ${transferDisplaySymbolA}`}
@@ -496,7 +498,7 @@ export default function QueueForm({
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
                   new BigNumber(transferAmount || 0).minus(fee),
-                  0
+                  0,
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
                 suffix={` ${transferDisplaySymbolB}`}
@@ -609,7 +611,7 @@ export default function QueueForm({
               className="max-w-[70%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-lg lg:leading-6 font-bold"
               value={BigNumber.max(
                 new BigNumber(amount || 0).minus(fee),
-                0
+                0,
               ).toFixed(6, BigNumber.ROUND_FLOOR)}
               thousandSeparator
               suffix={` ${selectedQueueTokensB.tokenA.name}`}
@@ -625,7 +627,7 @@ export default function QueueForm({
             <ActionButton label="Done" onClick={() => onDone()} />
             <span
               className={clsx(
-                "flex pt-3 text-xs text-center text-dark-700 lg:text-sm"
+                "flex pt-3 text-xs text-center text-dark-700 lg:text-sm",
               )}
             >
               Transaction details will be cleared upon exiting this window. Do

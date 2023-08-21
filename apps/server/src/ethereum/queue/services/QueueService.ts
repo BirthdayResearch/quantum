@@ -325,9 +325,8 @@ export class QueueService {
 
   async defichainVerify(transactionHash: string): Promise<VerifyQueueTransactionDto> {
     try {
-      const { blockHash, blockHeight, numberOfConfirmations } = await this.deFiChainTransactionService.getTxn(
-        transactionHash,
-      );
+      const { blockHash, blockHeight, numberOfConfirmations } =
+        await this.deFiChainTransactionService.getTxn(transactionHash);
 
       if (numberOfConfirmations < this.MIN_REQUIRED_DFC_CONFIRMATION) {
         return { numberOfConfirmations, isConfirmed: false };

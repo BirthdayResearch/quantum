@@ -46,14 +46,14 @@ function RowData({
           alt={data.networkName}
           className={clsx(
             "hidden w-7 h-7 ml-2",
-            "md:block md:w-9 md:h-9 md:ml-0"
+            "md:block md:w-9 md:h-9 md:ml-0",
           )}
         />
         <div className={clsx("flex flex-col w-1/2", "md:grow md:w-auto")}>
           <span
             className={clsx(
               "text-sm text-dark-900 !leading-5 break-all",
-              "md:text-base md:w-5/6"
+              "md:text-base md:w-5/6",
             )}
           >
             {data.address}
@@ -67,14 +67,14 @@ function RowData({
         <div
           className={clsx(
             "flex flex-col self-center w-1/2",
-            "md:self-end md:w-auto"
+            "md:self-end md:w-auto",
           )}
         >
           <NumericFormat
             className={clsx(
               "!text-xl font-bold leading-6 text-right",
               "md:text-lg md:font-semibold",
-              data.amount.isPositive() ? "text-valid" : "text-error"
+              data.amount.isPositive() ? "text-valid" : "text-error",
             )}
             value={data.amount.toFixed(6, BigNumber.ROUND_FLOOR)}
             thousandSeparator
@@ -88,7 +88,7 @@ function RowData({
               alt={data.tokenName}
               className={clsx(
                 "w-5 h-5 order-last",
-                "md:w-4 md:h-4 md:order-none"
+                "md:w-4 md:h-4 md:order-none",
               )}
             />
             <span className="text-sm text-dark-700 mt-0.5 md:mt-0">

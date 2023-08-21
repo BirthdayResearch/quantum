@@ -58,7 +58,7 @@ export default function DfcTransactionStatus({
             {
               "pt-0": isConfirmed && isMd,
               "text-center": isMobile && isConfirmed,
-            }
+            },
           )}
         >
           {title}

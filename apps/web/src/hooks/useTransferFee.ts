@@ -24,8 +24,12 @@ export default function useTransferFee(transferAmount: string | number) {
   useEffect(() => {
     async function getBridgeSettings() {
       const { data } = await trigger({});
-      if (data?.defichain.transferFee) setDfcFee(data?.defichain.transferFee);
-      if (data?.ethereum.transferFee) setEvmFee(data?.ethereum.transferFee);
+      if (data?.defichain.transferFee) {
+        setDfcFee(data?.defichain.transferFee);
+      }
+      if (data?.ethereum.transferFee) {
+        setEvmFee(data?.ethereum.transferFee);
+      }
     }
     getBridgeSettings();
   }, [selectedTokensA, selectedQueueTokensA]);
@@ -43,7 +47,7 @@ export default function useTransferFee(transferAmount: string | number) {
   const isSendingFromEvm = selectedNetwork.name === Network.Ethereum;
   const feeSymbol = selectedTokens.tokenA.name;
   const fee = new BigNumber(transferAmount || 0).multipliedBy(
-    isSendingFromEvm ? evmFee : dfcFee
+    isSendingFromEvm ? evmFee : dfcFee,
   );
 
   return [fee, feeSymbol];

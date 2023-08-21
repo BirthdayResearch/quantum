@@ -42,7 +42,7 @@ function NetworkOptions({ options }: { options: NetworkOptionsI[] }) {
               <div
                 className={clsx(
                   "px-5 lg:px-6 py-3 my-1 lg:my-2",
-                  active && "bg-dark-gradient-1"
+                  active && "bg-dark-gradient-1",
                 )}
               >
                 <div className="flex flex-row justify-between items-center">
@@ -91,7 +91,7 @@ function TokenOptions({ options }: { options: TokensI[] }) {
                   {
                     "py-4 lg:py-5": option.tokenA.symbol !== "DFI",
                     "py-3 lg:py-4": option.tokenA.symbol === "DFI",
-                  }
+                  },
                 )}
               >
                 <div className="flex flex-row items-center justify-between">
@@ -205,7 +205,7 @@ export default function InputSelector({
               className={clsx(
                 isWithQuickInputCard
                   ? "w-full !border-l my-2.5 border-dark-300 bg-transparent p-0"
-                  : getOuterButtonStyle(open)
+                  : getOuterButtonStyle(open),
               )}
             >
               <div
@@ -214,7 +214,7 @@ export default function InputSelector({
                   roundedBorderStyle,
                   isWithQuickInputCard
                     ? "bg-transparent"
-                    : "dark-card-bg-image bg-dark-100"
+                    : "dark-card-bg-image bg-dark-100",
                 )}
               >
                 <div className="flex flex-row items-center">
@@ -237,7 +237,7 @@ export default function InputSelector({
                         "h-4 w-4 text-dark-900 transition-[transform] lg:h-5 lg:w-5",
                         {
                           "rotate-180": open,
-                        }
+                        },
                       )}
                     />
                   </span>
@@ -261,7 +261,7 @@ export default function InputSelector({
                     "absolute z-10 mt-2 overflow-auto rounded-lg p-px outline-0",
                     { "right-0": type !== SelectionType.Network },
                     open ? "bg-gradient-2" : "bg-dark-200",
-                    isWithQuickInputCard ? "md:w-5/6 w-full" : "w-full"
+                    isWithQuickInputCard ? "md:w-5/6 w-full" : "w-full",
                   )}
                 >
                   <div className="rounded-lg bg-dark-00 pt-4 pb-2">

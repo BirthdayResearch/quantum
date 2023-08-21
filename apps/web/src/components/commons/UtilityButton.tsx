@@ -51,7 +51,7 @@ export default function UtilityButton({
           "dark-cta-pressed": isLoading,
           "pointer-events-none opacity-30": disabled || isLoading,
         },
-        disabled && disabledClass
+        disabled && disabledClass,
       )}
       disabled={disabled}
       onClick={onClick}

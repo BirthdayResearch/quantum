@@ -60,19 +60,22 @@ export default function StepLastClaim({
       functionName: "decimals",
       cacheOnBlock: true,
       enabled: !isTokenETH, // skip native ETH
-    }
+    },
   );
 
   const [isClaimExpired, setIsClaimExpired] = useState(false);
   const { timeRemaining } = useTimeCounter(
     dayjs(new Date(signedClaim.deadline * 1000)).diff(dayjs()),
-    () => setIsClaimExpired(true)
+    () => setIsClaimExpired(true),
   );
 
   // Prepare write contract for `claimFund` function
   const [fee] = useTransferFee(data.to.amount.toString());
   const amountLessFee = BigNumber(
-    BigNumber.max(data.to.amount.minus(fee), 0).toFixed(6, BigNumber.ROUND_DOWN)
+    BigNumber.max(data.to.amount.minus(fee), 0).toFixed(
+      6,
+      BigNumber.ROUND_DOWN,
+    ),
   ).toNumber();
   const parsedAmount = isTokenETH
     ? parseEther(`${amountLessFee}`)
@@ -188,7 +191,7 @@ export default function StepLastClaim({
 
   const claimDurationLeft = getDuration(
     timeRemaining.dividedBy(1000).toNumber(),
-    { hrs: "hrs" }
+    { hrs: "hrs" },
   );
 
   const StatusMessage = {
@@ -240,7 +243,7 @@ export default function StepLastClaim({
                 onClick={() =>
                   window.open(
                     `${ExplorerURL}/tx/${claimFundData?.hash}`,
-                    "_blank"
+                    "_blank",
                   )
                 }
               />
@@ -284,7 +287,7 @@ export default function StepLastClaim({
           <div
             className={clsx(
               "text-sm text-center lowercase mt-2",
-              timeRemaining.lt(ONE_HOUR) ? "text-error" : "text-warning"
+              timeRemaining.lt(ONE_HOUR) ? "text-error" : "text-warning",
             )}
           >
             <span className="font-semibold">{claimDurationLeft}</span>

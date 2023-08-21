@@ -71,7 +71,7 @@ function SwitchButton({
           disabled={disabled}
           className={clsx(
             "dark-card-bg dark-bg-card-section group flex h-10 w-10 items-center justify-center rounded-full",
-            { "pointer-events-none": disabled }
+            { "pointer-events-none": disabled },
           )}
         >
           <div className="hidden group-hover:hidden lg:block">
@@ -180,7 +180,7 @@ export default function BridgeForm({
   }, 200);
 
   async function verifySufficientHWBalance(
-    refetch?: boolean
+    refetch?: boolean,
   ): Promise<boolean | undefined> {
     const key = `${selectedNetworkA.name}-${selectedTokensA.tokenB.symbol}`;
     const balance = (refetch ? await getBalanceFn() : tokenBalances)[key];
@@ -192,7 +192,7 @@ export default function BridgeForm({
 
     if (balance) {
       const isSufficientBalance = new BigNumber(balance).isGreaterThanOrEqualTo(
-        amount !== "" ? amount : 0
+        amount !== "" ? amount : 0,
       );
 
       setIsBalanceSufficient(isSufficientBalance);
@@ -221,7 +221,7 @@ export default function BridgeForm({
     setAmount,
     maxAmount,
     selectedNetworkB,
-    setAmountErr
+    setAmountErr,
   );
 
   const onTransferTokens = async (): Promise<void> => {
@@ -234,7 +234,7 @@ export default function BridgeForm({
         if (
           validateAmountInput(
             amount,
-            new BigNumber(refetchedEvmBalance.data?.formatted ?? 0)
+            new BigNumber(refetchedEvmBalance.data?.formatted ?? 0),
           )
         ) {
           setIsVerifyingTransaction(false);
@@ -333,7 +333,9 @@ export default function BridgeForm({
       }
 
       setShowConfirmModal(false);
-    } else setUtilityModalData(UtilityModalMessage.leaveTransaction);
+    } else {
+      setUtilityModalData(UtilityModalMessage.leaveTransaction);
+    }
   }
 
   useEffect(() => {
@@ -351,11 +353,11 @@ export default function BridgeForm({
       setStorage("transfer-amount", localData.amount);
       setStorage(
         "transfer-display-symbol-A",
-        localData.selectedTokensA.tokenA.name
+        localData.selectedTokensA.tokenA.name,
       );
       setStorage(
         "transfer-display-symbol-B",
-        localData.selectedTokensB.tokenA.name
+        localData.selectedTokensB.tokenA.name,
       );
       // Load data from storage
       setHasUnconfirmedTxn(true);
@@ -374,7 +376,7 @@ export default function BridgeForm({
   }, [networkEnv, txnForm]);
 
   const fetchAddressDetail = async (
-    localDfcAddress: string | undefined
+    localDfcAddress: string | undefined,
   ): Promise<void> => {
     try {
       if (localDfcAddress) {
@@ -432,7 +434,7 @@ export default function BridgeForm({
   const getNumberOfConfirmations = () => {
     let numOfConfirmations = BigNumber.min(
       ethTxnStatus?.numberOfConfirmations,
-      EVM_CONFIRMATIONS_BLOCK_TOTAL
+      EVM_CONFIRMATIONS_BLOCK_TOTAL,
     ).toString();
 
     if (txnHash.confirmed !== undefined || txnHash.unsentFund !== undefined) {
@@ -450,7 +452,7 @@ export default function BridgeForm({
         "w-full md:w-[calc(100%+2px)] lg:w-full p-6 pb-10 pt-8 lg:pt-6 lg:p-10",
         "dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 border-t-0 rounded-b-lg lg:rounded-b-xl",
-        activeTab === FormOptions.INSTANT ? "block" : "hidden"
+        activeTab === FormOptions.INSTANT ? "block" : "hidden",
       )}
     >
       {txnHash.unconfirmed ||
@@ -494,7 +496,7 @@ export default function BridgeForm({
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
                   new BigNumber(transferAmount || amount || 0).minus(fee),
-                  0
+                  0,
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
                 suffix={` ${transferDisplaySymbolA}`}
@@ -541,7 +543,7 @@ export default function BridgeForm({
                 className="block break-words text-right text-dark-1000 text-sm leading-5 lg:text-base"
                 value={BigNumber.max(
                   new BigNumber(transferAmount || amount || 0).minus(fee),
-                  0
+                  0,
                 ).toFixed(6, BigNumber.ROUND_FLOOR)}
                 thousandSeparator
                 suffix={` ${transferDisplaySymbolB}`}
@@ -703,7 +705,7 @@ export default function BridgeForm({
               className="max-w-[70%] block break-words text-right text-dark-1000 text-sm leading-5 lg:text-lg lg:leading-6 font-bold"
               value={BigNumber.max(
                 new BigNumber(amount || 0).minus(fee),
-                0
+                0,
               ).toFixed(6, BigNumber.ROUND_FLOOR)}
               thousandSeparator
               suffix={` ${selectedTokensB.tokenA.name}`}
@@ -722,7 +724,7 @@ export default function BridgeForm({
             />
             <span
               className={clsx(
-                "flex pt-3 text-xs text-center text-dark-700 lg:text-sm"
+                "flex pt-3 text-xs text-center text-dark-700 lg:text-sm",
               )}
             >
               Transaction details will be cleared upon exiting this window. Do

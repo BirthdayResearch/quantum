@@ -22,7 +22,7 @@ export default function EnvironmentNetworkSwitch({
     updateNetworkEnv(
       chain?.id === ETHEREUM_MAINNET_ID
         ? EnvironmentNetwork.MainNet
-        : EnvironmentNetwork.TestNet
+        : EnvironmentNetwork.TestNet,
     );
   }, [chain]);
 
@@ -71,7 +71,7 @@ export default function EnvironmentNetworkSwitch({
           "w-2 h-2 rounded-full mr-1",
           currentNetworkEnv === EnvironmentNetwork.MainNet
             ? "bg-valid"
-            : "bg-warning"
+            : "bg-warning",
         )}
       />
       <span className="text-dark-1000 text-2xs font-bold tracking-widest uppercase">

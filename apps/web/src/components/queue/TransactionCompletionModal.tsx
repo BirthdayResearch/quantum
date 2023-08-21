@@ -95,7 +95,7 @@ export default function TransactionCompletionModal({
   const firstRowResult = {
     [ModalTypeToDisplay.Refunded]: `${amount} ${ethSymbolToDisplay}`,
     [ModalTypeToDisplay.Completed]: dayjs(initiatedDate).format(
-      "DD/MM/YYYY, HH:mm A"
+      "DD/MM/YYYY, HH:mm A",
     ),
     [ModalTypeToDisplay.RefundRequested]: `${amount} ${dfcSymbolToDisplay}`,
   };
@@ -106,7 +106,7 @@ export default function TransactionCompletionModal({
   };
   const thirdRowResult = {
     [ModalTypeToDisplay.Refunded]: dayjs(initiatedDate).format(
-      "DD/MM/YYYY, HH:mm A"
+      "DD/MM/YYYY, HH:mm A",
     ),
     [ModalTypeToDisplay.Completed]: destinationAddress,
   };
@@ -154,7 +154,7 @@ export default function TransactionCompletionModal({
               },
               {
                 "md:w-8/12": type !== ModalTypeToDisplay.RefundRequested,
-              }
+              },
             )}
           >
             {descriptions[type]}
@@ -218,7 +218,7 @@ export default function TransactionCompletionModal({
             {
               "md:mt-[104px] md:mb-4":
                 type !== ModalTypeToDisplay.RefundRequested,
-            }
+            },
           )}
         >
           <ActionButton
@@ -230,7 +230,7 @@ export default function TransactionCompletionModal({
               window.open(
                 externalLinkButtonUrls[type],
                 "_blank",
-                "noopener noreferrer"
+                "noopener noreferrer",
               );
             }}
           />

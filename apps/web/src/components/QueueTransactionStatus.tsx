@@ -47,7 +47,7 @@ export default function QueueTransactionStatus({
 
   const confirmationBlocksCurrent = BigNumber.min(
     EVM_CONFIRMATIONS_BLOCK_TOTAL,
-    new BigNumber(numberOfEvmConfirmations)
+    new BigNumber(numberOfEvmConfirmations),
   ).toFixed();
 
   const [throttledTimeOut] = useTimeout(() => {
@@ -57,12 +57,12 @@ export default function QueueTransactionStatus({
     if (isUnsentFund) {
       setTitle("Transaction failed");
       setDescription(
-        "We encountered an error while processing your transaction. Please try again after a few minutes."
+        "We encountered an error while processing your transaction. Please try again after a few minutes.",
       );
     } else if (isReverted) {
       setTitle("Transaction is reverted");
       setDescription(
-        "Something went wrong as the transaction was being processed. Please wait for the required confirmations to proceed with your transaction."
+        "Something went wrong as the transaction was being processed. Please wait for the required confirmations to proceed with your transaction.",
       );
     } else if (isConfirmed) {
       setTitle("Transaction confirmed");
@@ -70,7 +70,7 @@ export default function QueueTransactionStatus({
     } else {
       setTitle("Awaiting confirmation");
       setDescription(
-        "Please wait as we are processing your transaction. Once completed, it will be added to Queue."
+        "Please wait as we are processing your transaction. Once completed, it will be added to Queue.",
       );
     }
   }, [isConfirmed, isReverted, isUnsentFund]);
@@ -93,7 +93,7 @@ export default function QueueTransactionStatus({
           setIsThrottleLimitReached(true);
           throttledTimeOut();
           setDescription(
-            "Retry limit has been reached, please wait for a minute and try again"
+            "Retry limit has been reached, please wait for a minute and try again",
           );
         } else if (data?.error?.includes("Fund already allocated")) {
           setStorage("confirmed-queue", txnHash);
@@ -115,7 +115,7 @@ export default function QueueTransactionStatus({
           "border-dark-card-stroke": isConfirmed,
           "pb-6": isMd,
           "pt-2 pb-6": !isMd,
-        }
+        },
       )}
     >
       {!isLg && !isUnsentFund && (

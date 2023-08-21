@@ -17,7 +17,7 @@ export function SuccessCopy({
       className={clsx(
         "absolute md:w-full text-center",
         show ? "opacity-100" : "opacity-0",
-        containerClass
+        containerClass,
       )}
     >
       <span className="rounded bg-valid px-2 py-1 text-xs text-dark-00  transition duration-300 md:text-xs">
@@ -54,7 +54,7 @@ export default function QrAddress({
     <div
       className={clsx(
         "flex flex-row items-center w-full",
-        "md:flex-col md:w-[164px]"
+        "md:flex-col md:w-[164px]",
       )}
     >
       <SuccessCopy
@@ -81,7 +81,7 @@ export default function QrAddress({
             className={clsx(
               "text-dark-700 break-all focus-visible:outline-none text-left",
               "text-xs cursor-pointer hover:underline",
-              "md:text-center md:mt-2"
+              "md:text-center md:mt-2",
             )}
             onClick={() => handleOnCopy(dfcUniqueAddress)}
           >

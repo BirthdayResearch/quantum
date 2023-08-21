@@ -48,7 +48,7 @@ export default function ActionButton({
           "dark-cta-pressed": isLoading,
           "pointer-events-none": disabled || isLoading,
         },
-        customStyle ?? defaultStyle
+        customStyle ?? defaultStyle,
       )}
       disabled={disabled}
       onClick={onClick}

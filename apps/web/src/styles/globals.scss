@@ -167,7 +167,8 @@ body {
   }
   .border-gradient-6::before {
     background: var(--accent-gradient-6);
-    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
       linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
@@ -189,7 +190,8 @@ body {
     background: var(--ui-dark-button-pressed) border-box;
   }
   .dark-bg-gradient-1 {
-    background: linear-gradient(#000000, #000000) padding-box,
+    background:
+      linear-gradient(#000000, #000000) padding-box,
       var(--accent-gradient-1) border-box;
   }
   .dark-cta-hover {
@@ -205,8 +207,11 @@ body {
     position: absolute;
     z-index: -1;
     background: var(--accent-gradient-2);
-    mask: linear-gradient(#000000 0 0) content-box, linear-gradient(#000000 0 0);
-    -webkit-mask: linear-gradient(#000000 0 0) content-box,
+    mask:
+      linear-gradient(#000000 0 0) content-box,
+      linear-gradient(#000000 0 0);
+    -webkit-mask:
+      linear-gradient(#000000 0 0) content-box,
       linear-gradient(#000000 0 0);
     mask-composite: exclude;
     -webkit-mask-composite: xor;
@@ -216,7 +221,8 @@ body {
     background: var(--ui-light-card-bg) border-box;
   }
   .light-bg-gradient-1 {
-    background: linear-gradient(#ffffff, #ffffff) padding-box,
+    background:
+      linear-gradient(#ffffff, #ffffff) padding-box,
       var(--accent-gradient-1) border-box;
   }
   .bg-dark-gradient-1 {

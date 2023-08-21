@@ -45,13 +45,13 @@ networkConfigs.forEach((networkItem) => {
             const apiSymbol = symbol.replaceAll("d", "");
             cy.getLiquidityBySymbolChain(symbol, "DeFiChain").should(
               "include",
-              BigNumber(response.body.DFC[apiSymbol]).toFixed(8)
+              BigNumber(response.body.DFC[apiSymbol]).toFixed(8),
             );
           });
           evmSymbols.forEach((symbol) => {
             cy.getLiquidityBySymbolChain(symbol, "Ethereum").should(
               "include",
-              BigNumber(response.body.EVM[symbol]).toFixed(8)
+              BigNumber(response.body.EVM[symbol]).toFixed(8),
             );
           });
         });
@@ -79,15 +79,15 @@ networkConfigs.forEach((networkItem) => {
         it("should check responsive design for the Liquidity table elements", () => {
           cy.get("svg[data-testid='liquidity-mobile-dropdownArrow']").should(
             "have.length",
-            6
+            6,
           );
           cy.viewport(desktopViewPort);
           cy.get("svg[data-testid='liquidity-mobile-dropdownArrow']").should(
             "have.length",
-            0
+            0,
           );
         });
       });
-    }
+    },
   );
 });

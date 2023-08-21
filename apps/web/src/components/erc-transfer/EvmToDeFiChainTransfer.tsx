@@ -42,7 +42,7 @@ export default function EvmToDeFiChainTransfer({
   const [hasPendingTx, setHasPendingTx] = useState(false);
   const [requiresApproval, setRequiresApproval] = useState(false);
   const [bridgeStatus, setBridgeStatus] = useState<BridgeStatus>(
-    BridgeStatus.NoTxCreated
+    BridgeStatus.NoTxCreated,
   );
   const { isMobile } = useResponsive();
   const { networkEnv } = useNetworkEnvironmentContext();
@@ -82,10 +82,10 @@ export default function EvmToDeFiChainTransfer({
   const transferAmount = data.to.amount.toNumber();
   const tokenDecimals = (readTokenData?.[1]?.result ?? GWEI_DECIMAL) as number;
   const tokenAllowance = new BigNumber(
-    readTokenData?.[0]?.result?.toString() ?? 0
+    readTokenData?.[0]?.result?.toString() ?? 0,
   );
   const hasEnoughAllowance = tokenAllowance.gte(
-    parseUnits(`${transferAmount}`, tokenDecimals).toString()
+    parseUnits(`${transferAmount}`, tokenDecimals).toString(),
   );
 
   const {
@@ -118,7 +118,7 @@ export default function EvmToDeFiChainTransfer({
 
   const handleCreateQueueTransaction = async (
     txnHash: string,
-    isFirstAttempt: boolean = true
+    isFirstAttempt: boolean = true,
   ): Promise<void> => {
     const sleepTimeBeforeFirstApiCall = 15000;
     const sleepTimeBeforeRetryApiCall = 10000;
@@ -126,7 +126,7 @@ export default function EvmToDeFiChainTransfer({
       await sleep(
         isFirstAttempt
           ? sleepTimeBeforeFirstApiCall
-          : sleepTimeBeforeRetryApiCall
+          : sleepTimeBeforeRetryApiCall,
       );
       await queueTransaction({ txnHash }).unwrap();
       // only after queue has been created successfully then we set the form to null
@@ -234,12 +234,12 @@ export default function EvmToDeFiChainTransfer({
       // Refetch token allowance
       const { data: refetchedData } = await refetchTokenData();
       const latestTokenAllowance = new BigNumber(
-        refetchedData?.[0]?.result?.toString() ?? 0
+        refetchedData?.[0]?.result?.toString() ?? 0,
       );
       const latestTokenDecimals = (refetchedData?.[1]?.result ??
         GWEI_DECIMAL) as number;
       const hasInsufficientAllowance = latestTokenAllowance?.lt(
-        parseUnits(`${transferAmount}`, latestTokenDecimals).toString()
+        parseUnits(`${transferAmount}`, latestTokenDecimals).toString(),
       );
       if (hasInsufficientAllowance) {
         setRequiresApproval(true);

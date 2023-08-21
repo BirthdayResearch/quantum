@@ -87,7 +87,7 @@ function SetAmountButton({
         "w-full bg-dark-700 hover:hover-text-gradient-1 bg-clip-text",
         {
           "border-r-[0.5px] border-dark-300/50": hasBorder,
-        }
+        },
       )}
       onClick={(): void => {
         onClick(value);
@@ -124,7 +124,7 @@ export function QuickInputCard({
         { "pointer-events-none bg-dark-100": disabled },
         error === ""
           ? "border-dark-300 hover:border-dark-500 focus-within:!border-transparent focus-within:before:dark-gradient-2 focus-within:before:-inset-[1px] focus-within:before:rounded-lg focus-within:before:p-px"
-          : "border-error"
+          : "border-error",
       )}
     >
       <div className="flex">
@@ -136,7 +136,7 @@ export function QuickInputCard({
           <input
             data-testid={testId}
             className={clsx(
-              "w-full max-h-36 grow resize-none bg-transparent text-base text-dark-1000 focus:outline-none caret-dark-1000 placeholder-dark-500 hover:placeholder-dark-800 focus:placeholder-dark-300"
+              "w-full max-h-36 grow resize-none bg-transparent text-base text-dark-1000 focus:outline-none caret-dark-1000 placeholder-dark-500 hover:placeholder-dark-800 focus:placeholder-dark-300",
             )}
             placeholder="0.00"
             value={value}

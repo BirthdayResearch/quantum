@@ -28,7 +28,7 @@ const staggeredBaseQueryWithBailOut = retry(
   },
   {
     maxRetries: 0,
-  }
+  },
 );
 
 export const PATH_DFC_WALLET = "defichain/wallet";

@@ -145,7 +145,7 @@ export default function TransactionInProgressModal({
             <span
               className={clsx(
                 "mt-2 w-5/6",
-                "text-dark-700 text-center text-[18px] leading-6"
+                "text-dark-700 text-center text-[18px] leading-6",
               )}
             >
               {descriptions[FormStatus.RefundRequestFailed]}
@@ -165,7 +165,7 @@ export default function TransactionInProgressModal({
               onClick={() => {
                 window.open(
                   "https://docs.google.com/forms/d/e/1FAIpQLSewBvBntogPdXe5KIlwfYp7X_ODPAMwrRVL1R6T1k5LdUq52A/viewform",
-                  "_blank"
+                  "_blank",
                 );
               }}
             />

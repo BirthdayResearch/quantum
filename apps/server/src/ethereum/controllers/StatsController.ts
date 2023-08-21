@@ -6,7 +6,10 @@ import { EthereumStatsService } from '../services/EthereumStatsService';
 
 @Controller()
 export class StatsController {
-  constructor(private readonly ethereumStatsService: EthereumStatsService, protected readonly cache: SemaphoreCache) {}
+  constructor(
+    private readonly ethereumStatsService: EthereumStatsService,
+    protected readonly cache: SemaphoreCache,
+  ) {}
 
   @Get('stats/')
   async getStats(@Query('date') date?: StatsQueryDto): Promise<StatsDto> {
