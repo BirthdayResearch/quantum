@@ -24,6 +24,10 @@ export const MAINNET_CONFIG: ContractContextI = {
     ETH: { address: "0x0000000000000000000000000000000000000000" },
     EUROC: { address: "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c" },
     DFI: { address: "0x8fc8f8269ebca376d046ce292dc7eac40c8d358a" },
+    // TODO: Update with proper token addresses for mainnet
+    MATIC: { address: "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0" },
+    SOL: { address: "0xd31a59c85ae9d8edefec411d448f90841571b89c" },
+    DOT: { address: "0xxxxx" },
   },
 };
 
@@ -47,5 +51,9 @@ export const TESTNET_CONFIG: ContractContextI = {
     ETH: { address: "0x0000000000000000000000000000000000000000" },
     EUROC: { address: "0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd" },
     DFI: { address: "0x1f84B07483AC2D5f212a7bF14184310baE087448" },
+    // TODO: Update with proper token addresses for sepolia
+    MATIC: { address: "0xxxxx" },
+    SOL: { address: "0xxxxx" },
+    DOT: { address: "0xxxxx" },
   },
 };

@@ -124,6 +124,42 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/dEUROC.svg",
         },
       },
+      {
+        tokenA: {
+          name: "MATIC",
+          symbol: "MATIC",
+          icon: "/tokens/MATIC.svg",
+        },
+        tokenB: {
+          name: "dMATIC",
+          symbol: "MATIC",
+          icon: "/tokens/dMATIC.svg",
+        },
+      },
+      {
+        tokenA: {
+          name: "SOL",
+          symbol: "SOL",
+          icon: "/tokens/SOL.svg",
+        },
+        tokenB: {
+          name: "dSOL",
+          symbol: "SOL",
+          icon: "/tokens/dSOL.svg",
+        },
+      },
+      {
+        tokenA: {
+          name: "DOT",
+          symbol: "DOT",
+          icon: "/tokens/DOT.svg",
+        },
+        tokenB: {
+          name: "dDOT",
+          symbol: "DOT",
+          icon: "/tokens/dDOT.svg",
+        },
+      },
     ],
   },
   {
@@ -203,6 +239,42 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/EUROC.svg",
         },
       },
+      {
+        tokenA: {
+          name: "dMATIC",
+          symbol: "MATIC",
+          icon: "/tokens/dMATIC.svg",
+        },
+        tokenB: {
+          name: "MATIC",
+          symbol: "MATIC",
+          icon: "/tokens/MATIC.svg",
+        },
+      },
+      {
+        tokenA: {
+          name: "dSOL",
+          symbol: "SOL",
+          icon: "/tokens/dSOL.svg",
+        },
+        tokenB: {
+          name: "SOL",
+          symbol: "SOL",
+          icon: "/tokens/SOL.svg",
+        },
+      },
+      {
+        tokenA: {
+          name: "dDOT",
+          symbol: "DOT",
+          icon: "/tokens/dDOT.svg",
+        },
+        tokenB: {
+          name: "DOT",
+          symbol: "DOT",
+          icon: "/tokens/DOT.svg",
+        },
+      },
     ],
   },
 ];
@@ -222,19 +294,19 @@ export function NetworkProvider({
   children,
 }: PropsWithChildren<{}>): JSX.Element | null {
   const [typeOfTransaction, setTypeOfTransaction] = useState<FormOptions>(
-    FormOptions.INSTANT,
+    FormOptions.INSTANT
   );
 
   const [defaultNetworkA, defaultNetworkB] = networks;
   const [selectedNetworkA, setSelectedNetworkA] =
     useState<NetworkOptionsI>(defaultNetworkA);
   const [selectedTokensA, setSelectedTokensA] = useState<TokensI>(
-    defaultNetworkA.tokens[0],
+    defaultNetworkA.tokens[0]
   );
   const [selectedNetworkB, setSelectedNetworkB] =
     useState<NetworkOptionsI>(defaultNetworkB);
   const [selectedTokensB, setSelectedTokensB] = useState<TokensI>(
-    defaultNetworkB.tokens[0],
+    defaultNetworkB.tokens[0]
   );
 
   // Queue
@@ -242,12 +314,12 @@ export function NetworkProvider({
   const [selectedQueueNetworkA, setSelectedQueueNetworkA] =
     useState<NetworkOptionsI>(defaultQueueNetworkA);
   const [selectedQueueTokensA, setSelectedQueueTokensA] = useState<TokensI>(
-    defaultQueueNetworkA.tokens[0],
+    defaultQueueNetworkA.tokens[0]
   );
   const [selectedQueueNetworkB, setSelectedQueueNetworkB] =
     useState<NetworkOptionsI>(defaultQueueNetworkB);
   const [selectedQueueTokensB, setSelectedQueueTokensB] = useState<TokensI>(
-    defaultQueueNetworkB.tokens[0],
+    defaultQueueNetworkB.tokens[0]
   );
 
   // To get form config depending on the FormOption if its Instant or Queue
@@ -301,12 +373,12 @@ export function NetworkProvider({
     } = getFormConfigs();
 
     const networkB = networks.find(
-      (network) => network.name !== selectedFormNetworkA.name,
+      (network) => network.name !== selectedFormNetworkA.name
     );
     if (networkB !== undefined) {
       setFormSelectedNetworkB(networkB);
       const tokens = selectedFormNetworkA.tokens.find(
-        (item) => item.tokenA.name === selectedFormTokensB.tokenA.name,
+        (item) => item.tokenA.name === selectedFormTokensB.tokenA.name
       );
       if (tokens !== undefined) {
         setFormSelectedTokensA(tokens);
@@ -322,7 +394,7 @@ export function NetworkProvider({
     } = getFormConfigs();
 
     const tokens = selectedFormNetworkB.tokens.find(
-      (item) => item.tokenA.name === selectedFormTokensA.tokenB.name,
+      (item) => item.tokenA.name === selectedFormTokensA.tokenB.name
     );
     if (tokens !== undefined) {
       setFormSelectedTokensB(tokens);
@@ -373,7 +445,7 @@ export function NetworkProvider({
       selectedQueueTokensA,
       selectedQueueTokensB,
       typeOfTransaction,
-    ],
+    ]
   );
 
   return (

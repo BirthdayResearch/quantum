@@ -101,7 +101,16 @@ export interface TransferData {
   to: RowDataI;
 }
 
-export type Erc20Token = "WBTC" | "USDT" | "USDC" | "ETH" | "EUROC" | "DFI";
+export type Erc20Token =
+  | "WBTC"
+  | "USDT"
+  | "USDC"
+  | "ETH"
+  | "EUROC"
+  | "DFI"
+  | "MATIC"
+  | "SOL"
+  | "DOT";
 
 interface ContractConfigI {
   address: `0x${string}`;
