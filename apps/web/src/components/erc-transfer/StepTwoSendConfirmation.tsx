@@ -76,7 +76,7 @@ export default function StepTwoSendConfirmation({
   const [isLoading, setIsLoading] = useState(false);
   const [isAddressExpired, setIsAddressExpired] = useState(false);
   const [createdBeforeInMSec, setCreatedBeforeInMSec] = useState(
-    getTimeDifference(addressDetail?.createdAt)
+    getTimeDifference(addressDetail?.createdAt),
   );
   const [addressGenerationError, setAddressGenerationError] = useState("");
   const [generateAddress] = useGenerateAddressMutation();
@@ -102,14 +102,14 @@ export default function StepTwoSendConfirmation({
           setStorage("dfc-address", address);
           setStorage(
             "dfc-address-details",
-            JSON.stringify({ address, createdAt, refundAddress })
+            JSON.stringify({ address, createdAt, refundAddress }),
           );
           setAddressGenerationError("");
           setDfcUniqueAddress(address);
         } catch ({ data }) {
           if (data?.statusCode === HttpStatusCode.TooManyRequests) {
             setAddressGenerationError(
-              "Address generation limit reached, please wait for a minute and try again"
+              "Address generation limit reached, please wait for a minute and try again",
             );
           } else {
             setAddressGenerationError(data?.error);
@@ -120,7 +120,7 @@ export default function StepTwoSendConfirmation({
         }
       }
     }, 200),
-    [dfcAddress]
+    [dfcAddress],
   );
 
   useEffect(() => {
@@ -139,7 +139,7 @@ export default function StepTwoSendConfirmation({
             {
               "md:border-error":
                 isAddressExpired || addressGenerationError !== "",
-            }
+            },
           )}
         >
           {isLoading ? (
@@ -203,7 +203,7 @@ export default function StepTwoSendConfirmation({
           <p
             className={clsx(
               "text-sm text-dark-700 mt-1 text-center md:text-left",
-              "md:mt-2"
+              "md:mt-2",
             )}
           >
             Use a DeFiChain wallet to send your funds for verification before

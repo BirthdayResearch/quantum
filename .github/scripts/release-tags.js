@@ -35,7 +35,7 @@ module.exports = ({ context }) => {
     return getPullRequestTag(domain, app, context);
   }
   throw new Error(
-    "Release Violation: Could not determine the required release tags."
+    "Release Violation: Could not determine the required release tags.",
   );
 };
 
@@ -60,12 +60,12 @@ function getReleaseTag(domain, app, context) {
   const semver = context.payload.release.tag_name;
   if (semver.match(/^v[0-9]+\.[0-9]+\.[0-9]+$/) === null) {
     throw new Error(
-      `Release Violation: Provided version '${semver}' is not valid semver.`
+      `Release Violation: Provided version '${semver}' is not valid semver.`,
     );
   }
   return `ghcr.io/${domain}/${app}:latest,ghcr.io/${domain}/${app}:${semver.replace(
     "v",
-    ""
+    "",
   )}`;
 }
 

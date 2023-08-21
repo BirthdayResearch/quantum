@@ -7,7 +7,10 @@ import { VersionModel } from './VersionInterface';
 
 @Controller('version')
 export class VersionController {
-  constructor(private configService: ConfigService, protected readonly cache: SemaphoreCache) {}
+  constructor(
+    private configService: ConfigService,
+    protected readonly cache: SemaphoreCache,
+  ) {}
 
   @SkipThrottle()
   @Get()

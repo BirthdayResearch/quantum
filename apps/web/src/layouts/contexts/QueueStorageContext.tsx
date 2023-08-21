@@ -48,7 +48,7 @@ interface StorageContextQueueI {
   - To serve as a global state that syncs with the local storage
 */
 const StorageContextQueue = createContext<StorageContextQueueI>(
-  undefined as any
+  undefined as any,
 );
 
 export function useQueueStorageContext(): StorageContextQueueI {

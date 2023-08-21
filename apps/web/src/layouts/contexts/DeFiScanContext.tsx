@@ -30,7 +30,7 @@ function getNetworkParams(network: EnvironmentNetwork): string {
 export function getTxURLByNetwork(
   network: EnvironmentNetwork,
   txid: string,
-  rawtx?: string
+  rawtx?: string,
 ): string {
   let baseUrl = `${baseDefiScanUrl}/transactions/${txid}`;
 
@@ -55,7 +55,7 @@ export function getPOBURLByNetwork(network: EnvironmentNetwork): string {
 
 export function getAddressUrlByNetwork(
   network: EnvironmentNetwork,
-  address: string
+  address: string,
 ): string {
   let baseUrl = `${baseDefiScanUrl}/address/${address}`;
   baseUrl += getNetworkParams(network);
@@ -65,7 +65,7 @@ export function getAddressUrlByNetwork(
 export function getURLByNetwork(
   path: string,
   network: EnvironmentNetwork,
-  id: number | string
+  id: number | string,
 ): string {
   return `${baseDefiScanUrl}/${path}/${id}${getNetworkParams(network)}`;
 }
@@ -86,7 +86,7 @@ export function DeFiScanProvider({
       getAddressUrl: (address: string): string =>
         getAddressUrlByNetwork(networkEnv, address),
     }),
-    [networkEnv]
+    [networkEnv],
   );
 
   return (

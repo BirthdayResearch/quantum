@@ -30,7 +30,7 @@ export default function ScreenContainer({
       <div
         className={clsx(
           "absolute top-0 left-0 z-auto h-full w-full bg-cover bg-local bg-clip-padding bg-top bg-no-repeat bg-origin-padding mix-blend-screen lg:bg-top",
-          bgPicture
+          bgPicture,
         )}
       />
       <Footer />

@@ -1,7 +1,11 @@
 import { BadRequestException, PipeTransform } from '@nestjs/common';
 
 export class EnumValidationPipe<T extends Record<string, string>> implements PipeTransform {
-  constructor(private enumType: T, private defaultValue?: T[keyof T], private exceptionFactory?: () => Error) {}
+  constructor(
+    private enumType: T,
+    private defaultValue?: T[keyof T],
+    private exceptionFactory?: () => Error,
+  ) {}
 
   transform(value: any): any {
     if (!value && this.defaultValue !== undefined) {

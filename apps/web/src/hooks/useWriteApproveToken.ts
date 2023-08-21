@@ -89,7 +89,7 @@ export default function useWriteApproveToken({
     if (writeApproveError || approveTxnError) {
       if (writeApproveError?.message?.includes(METAMASK_REJECT_MESSAGE)) {
         setErrorMessage(
-          "The transaction was rejected in your wallet. No funds have been transferred. Please retry your transaction."
+          "The transaction was rejected in your wallet. No funds have been transferred. Please retry your transaction.",
         );
       } else {
         setErrorMessage(writeApproveError?.message ?? approveTxnError?.message);

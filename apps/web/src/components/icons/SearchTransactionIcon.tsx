@@ -10,7 +10,7 @@ export default function SearchTransactionIcon({
     <div
       className={clsx(
         "relative mr-2 p-3 rounded-full border-[1px] border-dark-300/50 bg-dark-00 items-center flex justify-center w-[66px] h-[66px] -mt-14 md:mt-0",
-        customStyle
+        customStyle,
       )}
     >
       <div className={clsx("relative w-[33px] h-[33px]")}>

@@ -50,7 +50,7 @@ export default function ConfirmationProgress({
 
   useEffect(() => {
     setValuePercentage(
-      (Number(confirmationBlocksCurrent) * 100) / confirmationBlocksTotal
+      (Number(confirmationBlocksCurrent) * 100) / confirmationBlocksTotal,
     );
   }, [confirmationBlocksCurrent]);
 
@@ -117,7 +117,7 @@ export default function ConfirmationProgress({
               style={{ width: `${valuePercentage}%` }}
               className={clsx(
                 "h-full rounded-md mt-2",
-                isConfirmed ? "bg-valid" : "bg-brand-100"
+                isConfirmed ? "bg-valid" : "bg-brand-100",
               )}
             />
           </div>

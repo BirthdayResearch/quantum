@@ -6,7 +6,7 @@ const useInputValidation = (
   setAmount: Dispatch<SetStateAction<string>>,
   maxAmount: BigNumber,
   selectedFormNetworkB: NetworkOptionsI,
-  setAmountErr: Dispatch<SetStateAction<string>>
+  setAmountErr: Dispatch<SetStateAction<string>>,
 ) => {
   const validateAmountInput = (value: string, maxValue: BigNumber) => {
     const isSendingToDFC = selectedFormNetworkB.name === Network.DeFiChain;
@@ -17,7 +17,7 @@ const useInputValidation = (
     if (
       isSendingToDFC &&
       new BigNumber(value).lt(
-        new BigNumber(1).dividedBy(new BigNumber(10).pow(8))
+        new BigNumber(1).dividedBy(new BigNumber(10).pow(8)),
       )
     ) {
       err = "Invalid Amount";

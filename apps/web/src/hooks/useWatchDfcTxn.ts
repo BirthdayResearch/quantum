@@ -31,7 +31,7 @@ export default function useWatchDfcTxn(txnId?: string) {
     setIsApiSuccess(false);
     const pollConfirmEthTxn = async function poll(
       transactionId?: string,
-      stopPolling?: boolean
+      stopPolling?: boolean,
     ) {
       try {
         if (

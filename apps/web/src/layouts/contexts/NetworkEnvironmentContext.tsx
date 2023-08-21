@@ -19,7 +19,7 @@ interface NetworkContextI {
 }
 
 const NetworkEnvironmentContext = createContext<NetworkContextI>(
-  undefined as any
+  undefined as any,
 );
 
 export function useNetworkEnvironmentContext(): NetworkContextI {
@@ -58,7 +58,7 @@ export function NetworkEnvironmentProvider({
         query: value === defaultNetwork ? {} : { network: value },
       },
       undefined,
-      { shallow: true }
+      { shallow: true },
     );
   };
 
@@ -84,7 +84,7 @@ export function NetworkEnvironmentProvider({
       updateNetworkEnv: handleNetworkEnvChange,
       resetNetworkEnv,
     }),
-    [networkEnv, router]
+    [networkEnv, router],
   );
 
   return (

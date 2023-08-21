@@ -22,13 +22,13 @@ export default function AddressError({
     <div
       className={clsx(
         "flex flex-row items-center justify-center",
-        "md:flex-col md:mt-8"
+        "md:flex-col md:mt-8",
       )}
     >
       <div
         className={clsx(
           "flex p-10 justify-center items-center border-[0.5px] border-error rounded",
-          "md:border-transparent md:p-0"
+          "md:border-transparent md:p-0",
         )}
       >
         <FiAlertCircle size={isMobile ? 32 : 48} className="text-dark-1000" />
@@ -36,13 +36,13 @@ export default function AddressError({
       <div
         className={clsx(
           "flex flex-col ml-4 justify-center items-center",
-          "md:ml-0 md:items-center"
+          "md:ml-0 md:items-center",
         )}
       >
         <span
           className={clsx(
             "text-left text-xs text-dark-900 mb-4",
-            "md:text-center md:mt-6"
+            "md:text-center md:mt-6",
           )}
         >
           {error}

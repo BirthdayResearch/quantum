@@ -16,7 +16,7 @@ function Tab({
     setTypeOfTransaction(
       FormOptions.INSTANT === formTabOptions
         ? FormOptions.INSTANT
-        : FormOptions.QUEUE
+        : FormOptions.QUEUE,
     );
   }
 
@@ -29,12 +29,12 @@ function Tab({
       }}
       className={clsx(
         "py-[17px] relative border-dark-200 w-full",
-        label === FormOptions.INSTANT ? "border-r-[0.5px]" : "border-l-[0.5px]"
+        label === FormOptions.INSTANT ? "border-r-[0.5px]" : "border-l-[0.5px]",
       )}
     >
       <span
         className={clsx(
-          "text-dark-900 font-semibold lg:text-[14px] lg:leading-4 text-xs"
+          "text-dark-900 font-semibold lg:text-[14px] lg:leading-4 text-xs",
         )}
       >
         {label}
@@ -62,7 +62,7 @@ export default function FormTab({
       className={clsx(
         "flex flex-row justify-evenly dark-card-bg-image backdrop-blur-[18px]",
         "border border-dark-200 md:rounded-t-[20px] rounded-t-[15px]",
-        "lg:w-full md:w-[calc(100%+2px)] w-full"
+        "lg:w-full md:w-[calc(100%+2px)] w-full",
       )}
     >
       <Tab

@@ -76,7 +76,7 @@ export default function StepThreeVerification({
   const { Erc20Tokens } = useContractContext();
   const [trigger] = useLazyVerifyQuery();
   const [title, setTitle] = useState<TitleLabel | RejectedLabelType>(
-    TitleLabel.Rejected
+    TitleLabel.Rejected,
   );
 
   const [txnId, setTxnId] = useState<string | undefined>(undefined);
@@ -97,10 +97,10 @@ export default function StepThreeVerification({
     </span>
   );
   const [content, setContent] = useState<ContentLabel | JSX.Element>(
-    contentLabelRejected
+    contentLabelRejected,
   );
   const [buttonLabel, setButtonLabel] = useState<ButtonLabel>(
-    ButtonLabel.Rejected
+    ButtonLabel.Rejected,
   );
 
   const { txnForm: txn, dfcAddress } = useStorageContext();
@@ -141,7 +141,7 @@ export default function StepThreeVerification({
           } else {
             setContent(contentLabelRejected);
             setTitle(
-              `Something went wrong (Error code ${response.statusCode})`
+              `Something went wrong (Error code ${response.statusCode})`,
             );
             setValidationSuccess(false);
             setIsValidating(false);
@@ -200,14 +200,14 @@ export default function StepThreeVerification({
             <div
               className={clsx(
                 "relative max-w-max mx-auto flex flex-row order-1 mt-6 justify-start border-[0.5px] border-dark-200 rounded",
-                "md:w-2/5 md:flex-col md:shrink-0 md:order-none px-6 pt-6 pb-3 md:mt-0"
+                "md:w-2/5 md:flex-col md:shrink-0 md:order-none px-6 pt-6 pb-3 md:mt-0",
               )}
             >
               <QrAddress dfcUniqueAddress={dfcAddress}>
                 <div
                   className={clsx(
                     "flex justify-left mt-3",
-                    "md:justify-center"
+                    "md:justify-center",
                   )}
                 >
                   <ValidationStatus
@@ -224,7 +224,7 @@ export default function StepThreeVerification({
           <div
             className={clsx(
               "flex flex-col grow text-center",
-              "md:text-left md:mt-4"
+              "md:text-left md:mt-4",
             )}
           >
             <span className="font-semibold text-dark-900 tracking-[0.01em] md:tracking-wider">
