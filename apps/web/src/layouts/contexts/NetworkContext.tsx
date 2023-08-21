@@ -136,6 +136,7 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/dMATIC.svg",
         },
       },
+      /* TODO: Uncomment once ready
       {
         tokenA: {
           name: "SOL",
@@ -159,7 +160,7 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           symbol: "DOT",
           icon: "/tokens/dDOT.svg",
         },
-      },
+      }, */
     ],
   },
   {
@@ -251,6 +252,7 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/MATIC.svg",
         },
       },
+      /* TODO: Uncomment once ready
       {
         tokenA: {
           name: "dSOL",
@@ -274,7 +276,7 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           symbol: "BDOT",
           icon: "/tokens/bDOT.svg",
         },
-      },
+      }, */
     ],
   },
 ];
@@ -294,19 +296,19 @@ export function NetworkProvider({
   children,
 }: PropsWithChildren<{}>): JSX.Element | null {
   const [typeOfTransaction, setTypeOfTransaction] = useState<FormOptions>(
-    FormOptions.INSTANT
+    FormOptions.INSTANT,
   );
 
   const [defaultNetworkA, defaultNetworkB] = networks;
   const [selectedNetworkA, setSelectedNetworkA] =
     useState<NetworkOptionsI>(defaultNetworkA);
   const [selectedTokensA, setSelectedTokensA] = useState<TokensI>(
-    defaultNetworkA.tokens[0]
+    defaultNetworkA.tokens[0],
   );
   const [selectedNetworkB, setSelectedNetworkB] =
     useState<NetworkOptionsI>(defaultNetworkB);
   const [selectedTokensB, setSelectedTokensB] = useState<TokensI>(
-    defaultNetworkB.tokens[0]
+    defaultNetworkB.tokens[0],
   );
 
   // Queue
@@ -314,12 +316,12 @@ export function NetworkProvider({
   const [selectedQueueNetworkA, setSelectedQueueNetworkA] =
     useState<NetworkOptionsI>(defaultQueueNetworkA);
   const [selectedQueueTokensA, setSelectedQueueTokensA] = useState<TokensI>(
-    defaultQueueNetworkA.tokens[0]
+    defaultQueueNetworkA.tokens[0],
   );
   const [selectedQueueNetworkB, setSelectedQueueNetworkB] =
     useState<NetworkOptionsI>(defaultQueueNetworkB);
   const [selectedQueueTokensB, setSelectedQueueTokensB] = useState<TokensI>(
-    defaultQueueNetworkB.tokens[0]
+    defaultQueueNetworkB.tokens[0],
   );
 
   // To get form config depending on the FormOption if its Instant or Queue
@@ -373,12 +375,12 @@ export function NetworkProvider({
     } = getFormConfigs();
 
     const networkB = networks.find(
-      (network) => network.name !== selectedFormNetworkA.name
+      (network) => network.name !== selectedFormNetworkA.name,
     );
     if (networkB !== undefined) {
       setFormSelectedNetworkB(networkB);
       const tokens = selectedFormNetworkA.tokens.find(
-        (item) => item.tokenA.name === selectedFormTokensB.tokenA.name
+        (item) => item.tokenA.name === selectedFormTokensB.tokenA.name,
       );
       if (tokens !== undefined) {
         setFormSelectedTokensA(tokens);
@@ -394,7 +396,7 @@ export function NetworkProvider({
     } = getFormConfigs();
 
     const tokens = selectedFormNetworkB.tokens.find(
-      (item) => item.tokenA.name === selectedFormTokensA.tokenB.name
+      (item) => item.tokenA.name === selectedFormTokensA.tokenB.name,
     );
     if (tokens !== undefined) {
       setFormSelectedTokensB(tokens);
@@ -445,7 +447,7 @@ export function NetworkProvider({
       selectedQueueTokensA,
       selectedQueueTokensB,
       typeOfTransaction,
-    ]
+    ],
   );
 
   return (
