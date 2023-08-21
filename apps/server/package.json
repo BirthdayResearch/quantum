@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.1.1",
-    "@waveshq/standard-api-fastify": "^1.7.1",
+    "@waveshq/standard-api-fastify": "^1.7.2",
     "@waveshq/walletkit-core": "^0.52.0",
     "@waveshq/walletkit-ui": "^0.52.0",
     "bignumber.js": "^9.1.1",

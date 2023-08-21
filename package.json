@@ -17,7 +17,7 @@
     "migration:deploy": "turbo run migration:deploy"
   },
   "dependencies": {
-    "@waveshq/standard-defichain-jellyfishsdk": "^1.7.1"
+    "@waveshq/standard-defichain-jellyfishsdk": "^1.7.2"
   },
   "devDependencies": {
     "@stickyjs/turbo": "^1.2.8",
