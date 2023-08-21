@@ -50,8 +50,8 @@ export function appConfig() {
         [SupportedEVMTokenSymbols.SOL]: {
           address: process.env.SOL_ADDRESS,
         },
-        [SupportedEVMTokenSymbols.DOT]: {
-          address: process.env.DOT_ADDRESS,
+        [SupportedEVMTokenSymbols.BDOT]: {
+          address: process.env.BDOT_ADDRESS,
         },
       },
       ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
@@ -64,7 +64,7 @@ export function appConfig() {
         DFI: process.env.DFI_MIN_QUEUE_AMT,
         MATIC: process.env.MATIC_MIN_QUEUE_AMT,
         SOL: process.env.SOL_MIN_QUEUE_AMT,
-        DOT: process.env.DOT_MIN_QUEUE_AMT,
+        BDOT: process.env.BDOT_MIN_QUEUE_AMT,
       },
     },
   };
@@ -99,7 +99,7 @@ export enum SupportedEVMTokenSymbols {
   DFI = 'DFI',
   MATIC = 'MATIC',
   SOL = 'SOL',
-  DOT = 'DOT',
+  BDOT = 'BDOT',
 }
 export enum SupportedDFCTokenSymbols {
   USDC = 'USDC',
@@ -134,7 +134,7 @@ export interface NetworkOptionsI {
   tokens: TokensI[];
 }
 
-export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI' | 'MATIC' | 'SOL' | 'DOT';
+export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI' | 'MATIC' | 'SOL' | 'BDOT';
 export interface NetworkI<T> {
   name: Network;
   tokens: {
@@ -230,8 +230,8 @@ export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
       },
       {
         tokenA: {
-          name: 'DOT',
-          symbol: 'DOT',
+          name: 'BDOT',
+          symbol: 'BDOT',
         },
         tokenB: {
           name: 'dDOT',
@@ -330,8 +330,8 @@ export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
           symbol: 'DOT',
         },
         tokenB: {
-          name: 'DOT',
-          symbol: 'DOT',
+          name: 'BDOT',
+          symbol: 'BDOT',
         },
       },
     ],

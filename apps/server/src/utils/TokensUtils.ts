@@ -46,7 +46,7 @@ export const getDTokenDetailsByWToken = (
           id: '0000', // TODO: Update with proper playground id
           symbol: 'SOL',
         },
-        MDOT: {
+        MBDOT: {
           id: '0000', // TODO: Update with proper playground id
           symbol: 'DOT',
         },
@@ -86,7 +86,7 @@ export const getDTokenDetailsByWToken = (
           id: '0000', // TODO: Update with proper local playground id
           symbol: 'SOL',
         },
-        MDOT: {
+        MBDOT: {
           id: '0000', // TODO: Update with proper local playground id
           symbol: 'DOT',
         },
@@ -127,7 +127,7 @@ export const getDTokenDetailsByWToken = (
           id: '0000', // TODO: Update with proper testnet id
           symbol: 'SOL',
         },
-        MDOT: {
+        MBDOT: {
           id: '0000', // TODO: Update with proper testnet id
           symbol: 'DOT',
         },
@@ -168,7 +168,7 @@ export const getDTokenDetailsByWToken = (
           id: '0000', // TODO: Update with proper mainnet id
           symbol: 'SOL',
         },
-        DOT: {
+        BDOT: {
           id: '0000', // TODO: Update with proper mainnet id
           symbol: 'DOT',
         },

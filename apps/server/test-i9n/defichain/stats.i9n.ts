@@ -121,6 +121,9 @@ describe('DeFiChain Stats Testing', () => {
     expect(parsedPayload.amountBridged).toHaveProperty('ETH');
     expect(parsedPayload.amountBridged).toHaveProperty('DFI');
     expect(parsedPayload.amountBridged).toHaveProperty('EUROC');
+    expect(parsedPayload.amountBridged).toHaveProperty('MATIC');
+    expect(parsedPayload.amountBridged).toHaveProperty('SOL');
+    expect(parsedPayload.amountBridged).toHaveProperty('DOT');
 
     expect(parsedPayload.totalBridgedAmount).toHaveProperty('USDC');
     expect(parsedPayload.totalBridgedAmount).toHaveProperty('USDT');
@@ -128,6 +131,9 @@ describe('DeFiChain Stats Testing', () => {
     expect(parsedPayload.totalBridgedAmount).toHaveProperty('ETH');
     expect(parsedPayload.totalBridgedAmount).toHaveProperty('DFI');
     expect(parsedPayload.totalBridgedAmount).toHaveProperty('EUROC');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('MATIC');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('SOL');
+    expect(parsedPayload.totalBridgedAmount).toHaveProperty('DOT');
   }
 
   it('should verify fund is displayed accurately in endpoint', async () => {
