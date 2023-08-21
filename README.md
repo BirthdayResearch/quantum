@@ -187,6 +187,10 @@ Mock WBTC : [0x8B3d701B187D8Eb8c0b9368AebbAAFC62D3fa0e1](https://sepolia.ethersc
 
 ###
 
+Mock MaticToken: [0x0B36470228F0B8C8E0313ba0C4356520F50cE85b](https://sepolia.etherscan.io/address/0x0B36470228F0B8C8E0313ba0C4356520F50cE85b)
+
+###
+
 Timelock Controller: [0x7A5A990EBaC71e56538C9311A6E080fe6e6Cdf0A](https://sepolia.etherscan.io/address/0x7A5A990EBaC71e56538C9311A6E080fe6e6Cdf0A)
 
 ###
