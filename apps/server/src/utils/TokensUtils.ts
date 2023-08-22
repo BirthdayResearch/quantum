@@ -120,15 +120,15 @@ export const getDTokenDetailsByWToken = (
           symbol: 'EUROC',
         },
         MMATIC: {
-          id: '0000', // TODO: Update with proper testnet id
+          id: '30',
           symbol: 'MATIC',
         },
         MSOL: {
-          id: '0000', // TODO: Update with proper testnet id
+          id: '28',
           symbol: 'SOL',
         },
         MBDOT: {
-          id: '0000', // TODO: Update with proper testnet id
+          id: '29',
           symbol: 'DOT',
         },
       };
