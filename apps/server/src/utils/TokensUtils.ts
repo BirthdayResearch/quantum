@@ -39,7 +39,7 @@ export const getDTokenDetailsByWToken = (
           symbol: 'EUROC',
         },
         MMATIC: {
-          id: '0000', // TODO: Update with proper playground id
+          id: '13',
           symbol: 'MATIC',
         },
       };
@@ -71,7 +71,7 @@ export const getDTokenDetailsByWToken = (
           symbol: 'EUROC',
         },
         MMATIC: {
-          id: '0000', // TODO: Update with proper local playground id
+          id: '13',
           symbol: 'MATIC',
         },
       };
