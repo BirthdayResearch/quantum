@@ -42,14 +42,6 @@ export const getDTokenDetailsByWToken = (
           id: '0000', // TODO: Update with proper playground id
           symbol: 'MATIC',
         },
-        MSOL: {
-          id: '0000', // TODO: Update with proper playground id
-          symbol: 'SOL',
-        },
-        MBDOT: {
-          id: '0000', // TODO: Update with proper playground id
-          symbol: 'DOT',
-        },
       };
       break;
     case EnvironmentNetwork.LocalPlayground:
@@ -81,14 +73,6 @@ export const getDTokenDetailsByWToken = (
         MMATIC: {
           id: '0000', // TODO: Update with proper local playground id
           symbol: 'MATIC',
-        },
-        MSOL: {
-          id: '0000', // TODO: Update with proper local playground id
-          symbol: 'SOL',
-        },
-        MBDOT: {
-          id: '0000', // TODO: Update with proper local playground id
-          symbol: 'DOT',
         },
       };
       break;
@@ -123,14 +107,6 @@ export const getDTokenDetailsByWToken = (
           id: '30',
           symbol: 'MATIC',
         },
-        MSOL: {
-          id: '28',
-          symbol: 'SOL',
-        },
-        MBDOT: {
-          id: '29',
-          symbol: 'DOT',
-        },
       };
       break;
     case EnvironmentNetwork.MainNet:
@@ -163,14 +139,6 @@ export const getDTokenDetailsByWToken = (
         MATIC: {
           id: '228',
           symbol: 'MATIC',
-        },
-        SOL: {
-          id: '226',
-          symbol: 'SOL',
-        },
-        BDOT: {
-          id: '227',
-          symbol: 'DOT',
         },
       };
       break;

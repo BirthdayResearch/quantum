@@ -269,7 +269,5 @@ export interface BridgeContracts {
   mwbtc: TestToken;
   meuroc: TestToken;
   mmatic: TestToken;
-  msol: TestToken;
-  mbdot: TestToken;
   dfi: TestToken;
 }

@@ -9,8 +9,6 @@ export enum TokenSymbol {
   'EUROC' = 'EUROC',
   'DFI' = 'DFI',
   'MATIC' = 'MATIC',
-  'SOL' = 'SOL',
-  'DOT' = 'DOT',
 }
 
 export class VerifyObject {

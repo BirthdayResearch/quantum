@@ -64,9 +64,6 @@ export class EthereumStatsService {
         if (tokenSymbol === TokenSymbol.BTC) {
           tokenSymbol = SupportedEVMTokenSymbols.WBTC;
         }
-        if (tokenSymbol === TokenSymbol.DOT) {
-          tokenSymbol = SupportedEVMTokenSymbols.BDOT;
-        }
         if (tokenSymbol && tokenSymbol in SupportedEVMTokenSymbols) {
           amountBridgedBigN[tokenSymbol as SupportedEVMTokenSymbols] = amountBridgedBigN[
             tokenSymbol as SupportedEVMTokenSymbols
@@ -94,9 +91,6 @@ export class EthereumStatsService {
         let { tokenSymbol } = total;
         if ((tokenSymbol as string) === TokenSymbol.BTC) {
           tokenSymbol = SupportedEVMTokenSymbols.WBTC;
-        }
-        if ((tokenSymbol as string) === TokenSymbol.DOT) {
-          tokenSymbol = SupportedEVMTokenSymbols.BDOT;
         }
         if (tokenSymbol && tokenSymbol in SupportedEVMTokenSymbols) {
           totalBridgedAmount[tokenSymbol as SupportedEVMTokenSymbols] = BigNumber(total.totalAmount)

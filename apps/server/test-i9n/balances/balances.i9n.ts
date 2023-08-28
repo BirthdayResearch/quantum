@@ -37,8 +37,6 @@ describe('DeFiChain Send Transaction Testing', () => {
   let mwbtcContract: TestToken;
   let meurocContract: TestToken;
   let mmaticContract: TestToken;
-  let msolContract: TestToken;
-  let mbdotContract: TestToken;
 
   beforeAll(async () => {
     startedPostgresContainer = await new PostgreSqlContainer().start();
@@ -56,8 +54,6 @@ describe('DeFiChain Send Transaction Testing', () => {
       mwbtc: mwbtcContract,
       meuroc: meurocContract,
       mmatic: mmaticContract,
-      msol: msolContract,
-      mbdot: mbdotContract,
     } = bridgeContractFixture.contractsWithAdminAndOperationalSigner);
 
     defichain = await new DeFiChainStubContainer().start();
@@ -75,8 +71,6 @@ describe('DeFiChain Send Transaction Testing', () => {
         wbtcAddress: mwbtcContract.address,
         eurocAddress: meurocContract.address,
         maticAddress: mmaticContract.address,
-        solAddress: msolContract.address,
-        bdotAddress: mbdotContract.address,
         defichain: { whaleURL, key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC },
       }),
     );
@@ -113,16 +107,12 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(new BigNumber(response.DFC.DFI)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.DFC.EUROC)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.DFC.MATIC)).toStrictEqual(new BigNumber(0));
-    expect(new BigNumber(response.DFC.SOL)).toStrictEqual(new BigNumber(0));
-    expect(new BigNumber(response.DFC.DOT)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.ETH)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.USDC)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.USDT)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.WBTC)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.EUROC)).toStrictEqual(new BigNumber(0));
     expect(new BigNumber(response.EVM.MATIC)).toStrictEqual(new BigNumber(0));
-    expect(new BigNumber(response.EVM.SOL)).toStrictEqual(new BigNumber(0));
-    expect(new BigNumber(response.EVM.BDOT)).toStrictEqual(new BigNumber(0));
   });
 
   it('When adding funds to DFC wallet Should return updated balances of DFC hot wallets ', async () => {
@@ -208,32 +198,6 @@ describe('DeFiChain Send Transaction Testing', () => {
     );
     await defichain.generateBlock();
 
-    // Send 3 SOL to hotwallet
-    await defichain.playgroundClient?.rpc.call(
-      'sendtokenstoaddress',
-      [
-        {},
-        {
-          [hotWalletAddress]: `3@SOL`,
-        },
-      ],
-      'number',
-    );
-    await defichain.generateBlock();
-
-    // Send 4 DOT to hotwallet
-    await defichain.playgroundClient?.rpc.call(
-      'sendtokenstoaddress',
-      [
-        {},
-        {
-          [hotWalletAddress]: `4@DOT`,
-        },
-      ],
-      'number',
-    );
-    await defichain.generateBlock();
-
     const initialResponse = await testing.inject({
       method: 'GET',
       url: `/balances`,
@@ -247,8 +211,6 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(new BigNumber(response.DFC.DFI)).toStrictEqual(new BigNumber(6));
     expect(new BigNumber(response.DFC.EUROC)).toStrictEqual(new BigNumber(5));
     expect(new BigNumber(response.DFC.MATIC)).toStrictEqual(new BigNumber(2));
-    expect(new BigNumber(response.DFC.SOL)).toStrictEqual(new BigNumber(3));
-    expect(new BigNumber(response.DFC.DOT)).toStrictEqual(new BigNumber(4));
   });
 
   it('When adding funds to EVM wallet Should return updated balances of EVM hot wallets ', async () => {
@@ -262,10 +224,6 @@ describe('DeFiChain Send Transaction Testing', () => {
     await meurocContract.mint(bridgeContract.address, ethers.utils.parseEther('7'));
     // Mint 2 MATIC to hotwallet
     await mmaticContract.mint(bridgeContract.address, ethers.utils.parseEther('2'));
-    // Mint 3 SOL to hotwallet
-    await msolContract.mint(bridgeContract.address, ethers.utils.parseEther('3'));
-    // Mint 4 BDOT to hotwallet
-    await mbdotContract.mint(bridgeContract.address, ethers.utils.parseEther('4'));
     await hardhatNetwork.generate(1);
 
     const initialResponse = await testing.inject({
@@ -279,7 +237,5 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(new BigNumber(response.EVM.WBTC)).toStrictEqual(new BigNumber(8));
     expect(new BigNumber(response.EVM.EUROC)).toStrictEqual(new BigNumber(7));
     expect(new BigNumber(response.EVM.MATIC)).toStrictEqual(new BigNumber(2));
-    expect(new BigNumber(response.EVM.SOL)).toStrictEqual(new BigNumber(3));
-    expect(new BigNumber(response.EVM.BDOT)).toStrictEqual(new BigNumber(4));
   });
 });
