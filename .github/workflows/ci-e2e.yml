@@ -51,7 +51,7 @@ jobs:
       - uses: cypress-io/github-action@248bde77443c376edc45906ede03a1aba9da0462 # v5.8.4
         with:
           config-file: cypress.config.js
-          install: false
+          install: true
           record: true
           parallel: true
           start: pnpm dev
