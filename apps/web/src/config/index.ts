@@ -25,8 +25,6 @@ export const MAINNET_CONFIG: ContractContextI = {
     EUROC: { address: "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c" },
     DFI: { address: "0x8fc8f8269ebca376d046ce292dc7eac40c8d358a" },
     MATIC: { address: "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0" },
-    SOL: { address: "0xd31a59c85ae9d8edefec411d448f90841571b89c" },
-    BDOT: { address: "0x7884f51dc1410387371ce61747cb6264e1daee0b" },
   },
 };
 
@@ -51,7 +49,5 @@ export const TESTNET_CONFIG: ContractContextI = {
     EUROC: { address: "0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd" },
     DFI: { address: "0x1f84B07483AC2D5f212a7bF14184310baE087448" },
     MATIC: { address: "0x0B36470228F0B8C8E0313ba0C4356520F50cE85b" },
-    SOL: { address: "0xFfFD764E713e4c145681706957F60C560dF9E578" },
-    BDOT: { address: "0x4338166E7Ce3f110AFfe37c6Ea0cb4D320B0a96C" },
   },
 };

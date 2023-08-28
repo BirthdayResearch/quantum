@@ -108,9 +108,7 @@ export type Erc20Token =
   | "ETH"
   | "EUROC"
   | "DFI"
-  | "MATIC"
-  | "SOL"
-  | "BDOT";
+  | "MATIC";
 
 interface ContractConfigI {
   address: `0x${string}`;
