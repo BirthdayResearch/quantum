@@ -11,9 +11,13 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
+ENV PUPPETEER_SKIP_DOWNLOAD=false
+ENV CYPRESS_INSTALL_BINARY=0
+
 COPY package.json .npmrc ./
 COPY src ./src
 
-RUN pnpm install
+RUN pnpm fetch
+RUN pnpm install -r --offline
 
 CMD npx hardhat --config ./src/hardhat.config.ts node
