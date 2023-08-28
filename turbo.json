@@ -16,7 +16,7 @@
       "dependsOn": ["^build"]
     },
     "build": {
-      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
+      "inputs": ["tsconfig.json", "tsconfig.build.json", "pnpm-lock.yaml", "src/**"],
       "outputs": ["dist/**", ".next/**"],
       "dependsOn": [
         "^build",
@@ -26,7 +26,7 @@
       ]
     },
     "build:docker": {
-      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
+      "inputs": ["tsconfig.json", "tsconfig.build.json", "pnpm-lock.yaml", "src/**"],
       "dependsOn": ["^build"]
     },
     "playground:start": {
