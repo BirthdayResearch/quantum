@@ -16,4 +16,4 @@ COPY src ./src
 
 RUN pnpm install
 
-CMD hardhat --config ./src/hardhat.config.ts node
+CMD npx hardhat --config ./src/hardhat.config.ts node
