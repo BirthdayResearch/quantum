@@ -6,7 +6,7 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "moduleResolution": "nodenext",
-    "module": "ES2022"
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext"
   }
 }
