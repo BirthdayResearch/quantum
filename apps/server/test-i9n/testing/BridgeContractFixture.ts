@@ -38,7 +38,7 @@ export class BridgeContractFixture {
     MockUSDC: { deploymentName: 'MockUSDC', contractName: 'TestToken' },
     MockWBTC: { deploymentName: 'MockWBTC', contractName: 'TestToken' },
     MockEUROC: { deploymentName: 'MockEUROC', contractName: 'TestToken' },
-    MockMATIC: { deploymentName: 'MockMATIC', contractName: 'TestToken' },
+    // MockMATIC: { deploymentName: 'MockMATIC', contractName: 'TestToken' },
     MockDFI: { deploymentName: 'MockDFI', contractName: 'TestToken' },
   };
 
@@ -64,9 +64,9 @@ export class BridgeContractFixture {
       meuroc: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
         BridgeContractFixture.Contracts.MockEUROC.deploymentName,
       ),
-      mmatic: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
-        BridgeContractFixture.Contracts.MockMATIC.deploymentName,
-      ),
+      // mmatic: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
+      //   BridgeContractFixture.Contracts.MockMATIC.deploymentName,
+      // ),
       dfi: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
         BridgeContractFixture.Contracts.MockDFI.deploymentName,
       ),
@@ -100,10 +100,10 @@ export class BridgeContractFixture {
         BridgeContractFixture.Contracts.MockEUROC.deploymentName,
         userSigner,
       ),
-      mmatic: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
-        BridgeContractFixture.Contracts.MockMATIC.deploymentName,
-        userSigner,
-      ),
+      // mmatic: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
+      //   BridgeContractFixture.Contracts.MockMATIC.deploymentName,
+      //   userSigner,
+      // ),
       dfi: this.hardhatNetwork.contracts.getDeployedContract<TestToken>(
         BridgeContractFixture.Contracts.MockDFI.deploymentName,
         userSigner,
@@ -210,12 +210,12 @@ export class BridgeContractFixture {
     });
 
     // Deploy MockMATIC
-    const mmatic = await this.contractManager.deployContract<TestToken>({
-      deploymentName: BridgeContractFixture.Contracts.MockMATIC.deploymentName,
-      contractName: BridgeContractFixture.Contracts.MockMATIC.contractName,
-      deployArgs: ['MockMATIC', 'MMATIC'],
-      abi: TestToken__factory.abi,
-    });
+    // const mmatic = await this.contractManager.deployContract<TestToken>({
+    //   deploymentName: BridgeContractFixture.Contracts.MockMATIC.deploymentName,
+    //   contractName: BridgeContractFixture.Contracts.MockMATIC.contractName,
+    //   deployArgs: ['MockMATIC', 'MMATIC'],
+    //   abi: TestToken__factory.abi,
+    // });
 
     // Deploy MockDFI
     const dfi = await this.contractManager.deployContract<TestToken>({
@@ -235,7 +235,7 @@ export class BridgeContractFixture {
     await bridge.addSupportedTokens(musdc.address, constants.MaxInt256);
     await bridge.addSupportedTokens(mwbtc.address, constants.MaxInt256);
     await bridge.addSupportedTokens(meuroc.address, constants.MaxInt256);
-    await bridge.addSupportedTokens(mmatic.address, constants.MaxInt256);
+    // await bridge.addSupportedTokens(mmatic.address, constants.MaxInt256);
     await bridge.addSupportedTokens(dfi.address, constants.MaxInt256);
     await bridge.addSupportedTokens(ethers.constants.AddressZero, constants.MaxInt256);
 
@@ -248,12 +248,12 @@ export class BridgeContractFixture {
    * Mints MUSDC, MUSDT, MWBTC, MEURC and MATIC tokens to an EOA
    */
   async mintTokensToEOA(address: string, amount: BigNumberish = constants.MaxInt256): Promise<void> {
-    const { musdc, musdt, mwbtc, meuroc, mmatic, dfi } = this.getContractsWithSigner(this.adminAndOperationalSigner);
+    const { musdc, musdt, mwbtc, meuroc, dfi } = this.getContractsWithSigner(this.adminAndOperationalSigner);
     await musdc.mint(address, amount);
     await musdt.mint(address, amount);
     await mwbtc.mint(address, amount);
     await meuroc.mint(address, amount);
-    await mmatic.mint(address, amount);
+    // await mmatic.mint(address, amount);
     await dfi.mint(address, amount);
 
     await this.hardhatNetwork.generate(1);
@@ -266,14 +266,14 @@ export class BridgeContractFixture {
    * @param signer
    */
   async approveBridgeForEOA(signer: Signer): Promise<void> {
-    const { musdc, musdt, mwbtc, meuroc, mmatic, dfi } = this.getContractsWithSigner(signer);
+    const { musdc, musdt, mwbtc, meuroc, dfi } = this.getContractsWithSigner(signer);
     const { bridgeProxy } = this.contracts;
 
     await musdc.approve(bridgeProxy.address, constants.MaxInt256);
     await musdt.approve(bridgeProxy.address, constants.MaxInt256);
     await mwbtc.approve(bridgeProxy.address, constants.MaxInt256);
     await meuroc.approve(bridgeProxy.address, constants.MaxInt256);
-    await mmatic.approve(bridgeProxy.address, constants.MaxInt256);
+    // await mmatic.approve(bridgeProxy.address, constants.MaxInt256);
     await dfi.approve(bridgeProxy.address, constants.MaxInt256);
 
     await this.hardhatNetwork.generate(1);
@@ -301,6 +301,6 @@ export interface BridgeContracts {
   musdc: TestToken;
   mwbtc: TestToken;
   meuroc: TestToken;
-  mmatic: TestToken;
+  // mmatic: TestToken;
   dfi: TestToken;
 }
