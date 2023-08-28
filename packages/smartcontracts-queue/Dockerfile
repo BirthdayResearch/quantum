@@ -11,12 +11,9 @@ RUN apk add --no-cache libc6-compat
 
 WORKDIR /app
 
-COPY pnpm-lock.yaml ./
-COPY package.json ./
-COPY pnpm-workspace.yaml ./
-COPY .npmrc ./
+COPY package.json .npmrc ./
 COPY src ./src
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install
 
 CMD npx hardhat --config ./src/hardhat.config.ts node

@@ -16,8 +16,7 @@
       "dependsOn": ["^build"]
     },
     "build": {
-      "cache": false,
-      "inputs": ["tsconfig.json", "tsconfig.build.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "src/**"],
+      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
       "outputs": ["dist/**", ".next/**"],
       "dependsOn": [
         "^build",
@@ -27,8 +26,7 @@
       ]
     },
     "build:docker": {
-      "cache": false,
-      "inputs": ["tsconfig.json", "tsconfig.build.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "src/**"],
+      "inputs": ["tsconfig.json", "tsconfig.build.json", "src/**"],
       "dependsOn": ["^build"]
     },
     "playground:start": {
@@ -59,7 +57,6 @@
       "dependsOn": ["^build"]
     },
     "test": {
-      "cache": false,
       "inputs": ["src/**", "src/**/*.unit.ts", "tests-i9n/**", "tests-e2e/**"],
       "dependsOn": [
         "^build",
