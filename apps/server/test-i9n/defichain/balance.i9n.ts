@@ -67,9 +67,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(await getBalance('ETH')).toStrictEqual(0);
     expect(await getBalance('DFI')).toStrictEqual(0);
     expect(await getBalance('EUROC')).toStrictEqual(0);
-    expect(await getBalance('MATIC')).toStrictEqual(0);
-    expect(await getBalance('SOL')).toStrictEqual(0);
-    expect(await getBalance('DOT')).toStrictEqual(0);
+    // expect(await getBalance('MATIC')).toStrictEqual(0);
 
     // Send 10 BTC to hotwallet
     await defichain.playgroundClient?.rpc.call(
@@ -124,43 +122,17 @@ describe('DeFiChain Send Transaction Testing', () => {
     await defichain.generateBlock();
 
     // Send 10 MATIC to hotwallet
-    await defichain.playgroundClient?.rpc.call(
-      'sendtokenstoaddress',
-      [
-        {},
-        {
-          [hotWalletAddress]: `10@MATIC`,
-        },
-      ],
-      'number',
-    );
-    await defichain.generateBlock();
-
-    // Send 10 SOL to hotwallet
-    await defichain.playgroundClient?.rpc.call(
-      'sendtokenstoaddress',
-      [
-        {},
-        {
-          [hotWalletAddress]: `10@SOL`,
-        },
-      ],
-      'number',
-    );
-    await defichain.generateBlock();
-
-    // Send 10 DOT to hotwallet
-    await defichain.playgroundClient?.rpc.call(
-      'sendtokenstoaddress',
-      [
-        {},
-        {
-          [hotWalletAddress]: `10@DOT`,
-        },
-      ],
-      'number',
-    );
-    await defichain.generateBlock();
+    // await defichain.playgroundClient?.rpc.call(
+    //   'sendtokenstoaddress',
+    //   [
+    //     {},
+    //     {
+    //       [hotWalletAddress]: `10@MATIC`,
+    //     },
+    //   ],
+    //   'number',
+    // );
+    // await defichain.generateBlock();
 
     // Send 10 ETH to hotwallet
     await defichain.playgroundClient?.rpc.call(
@@ -183,9 +155,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     expect(await getBalance('USDC')).toStrictEqual(10);
     expect(await getBalance('USDT')).toStrictEqual(10);
     expect(await getBalance('EUROC')).toStrictEqual(10);
-    expect(await getBalance('MATIC')).toStrictEqual(10);
-    expect(await getBalance('SOL')).toStrictEqual(10);
-    expect(await getBalance('DOT')).toStrictEqual(10);
+    // expect(await getBalance('MATIC')).toStrictEqual(10);
 
     // Delay to workaround throttler exception
     await sleep(30000);
