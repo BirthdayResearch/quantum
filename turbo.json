@@ -16,6 +16,7 @@
       "dependsOn": ["^build"]
     },
     "build": {
+      "cache": false,
       "inputs": ["tsconfig.json", "tsconfig.build.json", "pnpm-lock.yaml", "src/**"],
       "outputs": ["dist/**", ".next/**"],
       "dependsOn": [
@@ -26,6 +27,7 @@
       ]
     },
     "build:docker": {
+      "cache": false,
       "inputs": ["tsconfig.json", "tsconfig.build.json", "pnpm-lock.yaml", "src/**"],
       "dependsOn": ["^build"]
     },
