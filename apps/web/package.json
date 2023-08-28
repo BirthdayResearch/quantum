@@ -21,7 +21,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "@tailwindcss/line-clamp": "^0.4.4",
     "@waveshq/standard-web": "^2.2.0",
-    "axios": "^1.4.0",
+    "axios": "^1.5.0",
     "bignumber.js": "^9.1.1",
     "clsx": "^2.0.0",
     "connectkit": "^1.5.2",
