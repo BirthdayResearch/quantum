@@ -23,7 +23,7 @@
     "@waveshq/standard-web": "^2.2.0",
     "axios": "^1.4.0",
     "bignumber.js": "^9.1.1",
-    "clsx": "^1.2.1",
+    "clsx": "^2.0.0",
     "connectkit": "^1.5.2",
     "dayjs": "^1.11.9",
     "react-circular-progressbar": "^2.1.0",
