@@ -12,7 +12,6 @@ import {
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { sepolia, mainnet } from "wagmi/chains";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-import { InjectedConnector } from "wagmi/connectors/injected";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
 import { ConnectKitProvider, getDefaultConfig } from "connectkit";
@@ -33,14 +32,6 @@ import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
 import { QueueStorageProvider } from "./contexts/QueueStorageContext";
-
-/**
- * TODO (lyka): remove unnecessary `InjectedConnector` once issue is resolved
- * bug ticket: https://github.com/family/connectkit/issues/294
- */
-const injected = new InjectedConnector({
-  chains: [mainnet, sepolia],
-});
 
 const metamask = new MetaMaskConnector({
   chains: [mainnet, sepolia],
@@ -67,7 +58,7 @@ const config = createConfig(
     autoConnect: true,
     chains,
     appName,
-    connectors: [metamask, injected],
+    connectors: [metamask],
     walletConnectProjectId:
       process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID ?? "",
   }),
