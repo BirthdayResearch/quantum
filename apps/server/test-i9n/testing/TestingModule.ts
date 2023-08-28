@@ -30,6 +30,7 @@ export function buildTestConfig({
   usdtAddress,
   wbtcAddress,
   eurocAddress,
+  maticAddress,
   dfiAddress,
 }: BuildTestConfigParams) {
   if (startedPostgresContainer === undefined) {
@@ -73,6 +74,9 @@ export function buildTestConfig({
         EUROC: {
           address: eurocAddress,
         },
+        MATIC: {
+          address: maticAddress,
+        },
         DFI: {
           address: dfiAddress,
         },
@@ -107,6 +111,7 @@ type OptionalBuildTestConfigParams = {
       USDC: string;
       EUROC: string;
       DFI: string;
+      MATIC: string;
     };
   };
   startedHardhatContainer: StartedHardhatNetworkContainer | StartedHardhatNetworkQueueContainer;
@@ -123,5 +128,6 @@ type OptionalBuildTestConfigParams = {
   usdtAddress: string;
   wbtcAddress: string;
   eurocAddress: string;
+  maticAddress: string;
   dfiAddress: string;
 };

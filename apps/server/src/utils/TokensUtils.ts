@@ -38,6 +38,10 @@ export const getDTokenDetailsByWToken = (
           id: '12',
           symbol: 'EUROC',
         },
+        MMATIC: {
+          id: '13',
+          symbol: 'MATIC',
+        },
       };
       break;
     case EnvironmentNetwork.LocalPlayground:
@@ -65,6 +69,10 @@ export const getDTokenDetailsByWToken = (
         MEURC: {
           id: '12',
           symbol: 'EUROC',
+        },
+        MMATIC: {
+          id: '13',
+          symbol: 'MATIC',
         },
       };
       break;
@@ -95,6 +103,10 @@ export const getDTokenDetailsByWToken = (
           id: '25',
           symbol: 'EUROC',
         },
+        MMATIC: {
+          id: '30',
+          symbol: 'MATIC',
+        },
       };
       break;
     case EnvironmentNetwork.MainNet:
@@ -123,6 +135,10 @@ export const getDTokenDetailsByWToken = (
         EUROC: {
           id: '216',
           symbol: 'EUROC',
+        },
+        MATIC: {
+          id: '228',
+          symbol: 'MATIC',
         },
       };
       break;
