@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { EnvironmentNetwork, getJellyfishNetwork, newOceanOptions, newWhaleAPIClient } from '@waveshq/walletkit-core';
 
 // TODO: To update Jellyfish to export this type
-export type SupportedNetwork = 'mainnet' | 'testnet' | 'regtest' | 'devnet';
+export type SupportedNetwork = 'mainnet' | 'testnet' | 'regtest' | 'devnet' | 'changi';
 
 @Injectable()
 export class WhaleApiClientProvider {
