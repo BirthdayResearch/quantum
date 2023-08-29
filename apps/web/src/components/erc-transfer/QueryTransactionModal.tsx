@@ -182,20 +182,11 @@ export default function QueryTransactionModal({
     setStorage("transfer-amount", txnDetails.amount.toString());
     setStorage("destination-address", txnDetails.toAddress);
 
-    let ercSymbol = txnDetails.symbol;
-    switch (txnDetails.symbol) {
-      case "BTC":
-        ercSymbol = "WBTC";
-        break;
-      default:
-        ercSymbol = txnDetails.symbol;
-    }
-
     const ethSymbolToDisplay = mapTokenToNetworkName(
       Network.Ethereum,
       // symbol and name for BTC for evm should both be WBTC https://etherscan.io/address/0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599
       // however as we are storing as BTC in the DB we would check for WBTC if symbol is BTC for Eth network
-      ercSymbol,
+      txnDetails.symbol === "BTC" ? "WBTC" : txnDetails.symbol,
     );
     const dfcSymbolToDisplay = mapTokenToNetworkName(
       Network.DeFiChain,
