@@ -124,6 +124,43 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/dEUROC.svg",
         },
       },
+      {
+        tokenA: {
+          name: "MATIC",
+          symbol: "MATIC",
+          icon: "/tokens/MATIC.svg",
+        },
+        tokenB: {
+          name: "dMATIC",
+          symbol: "MATIC",
+          icon: "/tokens/dMATIC.svg",
+        },
+      },
+      /* TODO: Uncomment once ready
+      {
+        tokenA: {
+          name: "SOL",
+          symbol: "SOL",
+          icon: "/tokens/SOL.svg",
+        },
+        tokenB: {
+          name: "dSOL",
+          symbol: "SOL",
+          icon: "/tokens/dSOL.svg",
+        },
+      },
+      {
+        tokenA: {
+          name: "BDOT",
+          symbol: "BDOT",
+          icon: "/tokens/bDOT.svg",
+        },
+        tokenB: {
+          name: "dDOT",
+          symbol: "DOT",
+          icon: "/tokens/dDOT.svg",
+        },
+      }, */
     ],
   },
   {
@@ -203,6 +240,43 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/EUROC.svg",
         },
       },
+      {
+        tokenA: {
+          name: "dMATIC",
+          symbol: "MATIC",
+          icon: "/tokens/dMATIC.svg",
+        },
+        tokenB: {
+          name: "MATIC",
+          symbol: "MATIC",
+          icon: "/tokens/MATIC.svg",
+        },
+      },
+      /* TODO: Uncomment once ready
+      {
+        tokenA: {
+          name: "dSOL",
+          symbol: "SOL",
+          icon: "/tokens/dSOL.svg",
+        },
+        tokenB: {
+          name: "SOL",
+          symbol: "SOL",
+          icon: "/tokens/SOL.svg",
+        },
+      },
+      {
+        tokenA: {
+          name: "dDOT",
+          symbol: "DOT",
+          icon: "/tokens/dDOT.svg",
+        },
+        tokenB: {
+          name: "BDOT",
+          symbol: "BDOT",
+          icon: "/tokens/bDOT.svg",
+        },
+      }, */
     ],
   },
 ];
