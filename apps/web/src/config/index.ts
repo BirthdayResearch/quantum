@@ -50,6 +50,6 @@ export const TESTNET_CONFIG: ContractContextI = {
     EUROC: { address: "0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd" },
     DFI: { address: "0x1f84B07483AC2D5f212a7bF14184310baE087448" },
     MATIC: { address: "0x0B36470228F0B8C8E0313ba0C4356520F50cE85b" },
-    XCHF: { address: "0x" }, // TODO(lyka): add sepolia address
+    XCHF: { address: "0x75bff147629E93F508483062EE3AeD466028c807" },
   },
 };
