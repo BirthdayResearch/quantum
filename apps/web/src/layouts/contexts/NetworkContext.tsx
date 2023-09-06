@@ -136,6 +136,18 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           icon: "/tokens/dMATIC.svg",
         },
       },
+      {
+        tokenA: {
+          name: "XCHF",
+          symbol: "XCHF",
+          icon: "/tokens/XCHF.svg",
+        },
+        tokenB: {
+          name: "dXCHF",
+          symbol: "XCHF",
+          icon: "/tokens/dXCHF.svg",
+        },
+      },
       /* TODO: Uncomment once ready
       {
         tokenA: {
@@ -250,6 +262,18 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           name: "MATIC",
           symbol: "MATIC",
           icon: "/tokens/MATIC.svg",
+        },
+      },
+      {
+        tokenA: {
+          name: "dXCHF",
+          symbol: "XCHF",
+          icon: "/tokens/dXCHF.svg",
+        },
+        tokenB: {
+          name: "XCHF",
+          symbol: "XCHF",
+          icon: "/tokens/XCHF.svg",
         },
       },
       /* TODO: Uncomment once ready
