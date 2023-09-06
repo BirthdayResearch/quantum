@@ -13,37 +13,6 @@ export const getDTokenDetailsByWToken = (
   let wTokenToDTokenMap: WTokenToDTokenMapI;
   switch (network) {
     case EnvironmentNetwork.RemotePlayground:
-      wTokenToDTokenMap = {
-        MDFI: {
-          id: '0',
-          symbol: 'DFI',
-        },
-        ETH: {
-          id: '2',
-          symbol: 'ETH',
-        },
-        MWBTC: {
-          id: '1',
-          symbol: 'BTC',
-        },
-        MUSDT: {
-          id: '3',
-          symbol: 'USDT',
-        },
-        MUSDC: {
-          id: '5',
-          symbol: 'USDC',
-        },
-        MEURC: {
-          id: '12',
-          symbol: 'EUROC',
-        },
-        MMATIC: {
-          id: '13',
-          symbol: 'MATIC',
-        },
-      };
-      break;
     case EnvironmentNetwork.LocalPlayground:
       wTokenToDTokenMap = {
         MDFI: {
@@ -73,6 +42,10 @@ export const getDTokenDetailsByWToken = (
         MMATIC: {
           id: '13',
           symbol: 'MATIC',
+        },
+        MXCHF: {
+          id: '000', // TODO(lyka): Add proper id for local playground
+          symbol: 'XCHF',
         },
       };
       break;
@@ -107,6 +80,10 @@ export const getDTokenDetailsByWToken = (
           id: '30',
           symbol: 'MATIC',
         },
+        MXCHF: {
+          id: '000', // TODO(lyka): Add proper id for testnet
+          symbol: 'XCHF',
+        },
       };
       break;
     case EnvironmentNetwork.MainNet:
@@ -139,6 +116,10 @@ export const getDTokenDetailsByWToken = (
         MATIC: {
           id: '228',
           symbol: 'MATIC',
+        },
+        XCHF: {
+          id: '000', // TODO(lyka): Add proper id for mainnet
+          symbol: 'XCHF',
         },
       };
       break;
