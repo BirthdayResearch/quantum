@@ -47,6 +47,9 @@ export function appConfig() {
         [SupportedEVMTokenSymbols.MATIC]: {
           address: process.env.MATIC_ADDRESS,
         },
+        [SupportedEVMTokenSymbols.XCHF]: {
+          address: process.env.XCHF_ADDRESS,
+        },
       },
       ethWalletPrivKey: process.env.ETHEREUM_WALLET_PRIVATE_KEY,
       queueTokensMinAmt: {
@@ -57,6 +60,7 @@ export function appConfig() {
         EUROC: process.env.EUROC_MIN_QUEUE_AMT,
         DFI: process.env.DFI_MIN_QUEUE_AMT,
         MATIC: process.env.MATIC_MIN_QUEUE_AMT,
+        XCHF: process.env.XCHF_MIN_QUEUE_AMT,
       },
     },
   };
@@ -90,6 +94,7 @@ export enum SupportedEVMTokenSymbols {
   EUROC = 'EUROC',
   DFI = 'DFI',
   MATIC = 'MATIC',
+  XCHF = 'XCHF',
 }
 export enum SupportedDFCTokenSymbols {
   USDC = 'USDC',
@@ -99,6 +104,7 @@ export enum SupportedDFCTokenSymbols {
   DFI = 'DFI',
   EUROC = 'EUROC',
   MATIC = 'MATIC',
+  XCHF = 'XCHF',
 }
 
 export enum Network {
@@ -122,7 +128,7 @@ export interface NetworkOptionsI {
   tokens: TokensI[];
 }
 
-export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI' | 'MATIC';
+export type Erc20Token = 'WBTC' | 'USDT' | 'USDC' | 'ETH' | 'EUROC' | 'DFI' | 'MATIC' | 'XCHF';
 export interface NetworkI<T> {
   name: Network;
   tokens: {
@@ -206,6 +212,16 @@ export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
           symbol: 'MATIC',
         },
       },
+      {
+        tokenA: {
+          name: 'XCHF',
+          symbol: 'XCHF',
+        },
+        tokenB: {
+          name: 'dXCHF',
+          symbol: 'XCHF',
+        },
+      },
     ],
   },
   {
@@ -280,6 +296,16 @@ export const NETWORK_TOKENS_LIST: [NetworkI<Erc20Token>, NetworkI<string>] = [
         tokenB: {
           name: 'MATIC',
           symbol: 'MATIC',
+        },
+      },
+      {
+        tokenA: {
+          name: 'dXCHF',
+          symbol: 'XCHF',
+        },
+        tokenB: {
+          name: 'XCHF',
+          symbol: 'XCHF',
         },
       },
     ],
