@@ -118,7 +118,7 @@ export const getDTokenDetailsByWToken = (
           symbol: 'MATIC',
         },
         XCHF: {
-          id: '000', // TODO(lyka): Add proper id for mainnet
+          id: '234',
           symbol: 'XCHF',
         },
       };
