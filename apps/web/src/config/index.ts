@@ -25,6 +25,7 @@ export const MAINNET_CONFIG: ContractContextI = {
     EUROC: { address: "0x1aBaEA1f7C830bD89Acc67eC4af516284b1bC33c" },
     DFI: { address: "0x8fc8f8269ebca376d046ce292dc7eac40c8d358a" },
     MATIC: { address: "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0" },
+    XCHF: { address: "0xb4272071ecadd69d933adcd19ca99fe80664fc08" },
   },
 };
 
@@ -49,5 +50,6 @@ export const TESTNET_CONFIG: ContractContextI = {
     EUROC: { address: "0xc8042c992c9627dF9e84ddf57Bc6adc1AB9C3acd" },
     DFI: { address: "0x1f84B07483AC2D5f212a7bF14184310baE087448" },
     MATIC: { address: "0x0B36470228F0B8C8E0313ba0C4356520F50cE85b" },
+    XCHF: { address: "0x75bff147629E93F508483062EE3AeD466028c807" },
   },
 };
