@@ -44,7 +44,7 @@ export const getDTokenDetailsByWToken = (
           symbol: 'MATIC',
         },
         MXCHF: {
-          id: '000', // TODO(lyka): Add proper id for local playground
+          id: '000', // TODO: Add proper id for local playground
           symbol: 'XCHF',
         },
       };
@@ -81,7 +81,7 @@ export const getDTokenDetailsByWToken = (
           symbol: 'MATIC',
         },
         MXCHF: {
-          id: '000', // TODO(lyka): Add proper id for testnet
+          id: '37',
           symbol: 'XCHF',
         },
       };
