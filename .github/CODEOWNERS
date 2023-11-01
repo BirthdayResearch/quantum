@@ -1,29 +1,29 @@
 # Define individuals that are responsible for code in a repository.
 # More details are here: https://help.github.com/articles/about-codeowners/
 
-/.husky/                                        @thedoublejay
-/.github/                                       @thedoublejay
+/.husky/                                        @fullstackninja864 @lykalabrada @pierregee
+/.github/                                       @fullstackninja864 @lykalabrada @pierregee
 
-public                                          @thedoublejay
-apps/web                                        @thedoublejay @kyleleow @fullstackninja864 @lykalabrada @pierregee
-apps/server                                     @thedoublejay @fullstackninja864 @lykalabrada @pierregee
-packages                                        @thedoublejay @lykalabrada @pierregee @cuongquangnam
+public                                          @fullstackninja864 @lykalabrada @pierregee
+apps/web                                        @fullstackninja864 @lykalabrada @pierregee
+apps/server                                     @fullstackninja864 @lykalabrada @pierregee
+packages                                        @fullstackninja864 @lykalabrada @pierregee @cuongquangnam
 
-.codeclimate.yml                                @thedoublejay
-.editorconfig                                   @thedoublejay
-.eslintignore                                   @thedoublejay
-.eslintrc                                       @thedoublejay
-.gitignore                                      @thedoublejay
-.imgbotconfig                                   @thedoublejay
-.lintstagedrc.js                                @thedoublejay
-.nvmrc                                          @thedoublejay
+.codeclimate.yml                                @fullstackninja864 @lykalabrada @pierregee
+.editorconfig                                   @fullstackninja864 @lykalabrada @pierregee
+.eslintignore                                   @fullstackninja864 @lykalabrada @pierregee
+.eslintrc                                       @fullstackninja864 @lykalabrada @pierregee
+.gitignore                                      @fullstackninja864 @lykalabrada @pierregee
+.imgbotconfig                                   @fullstackninja864 @lykalabrada @pierregee
+.lintstagedrc.js                                @fullstackninja864 @lykalabrada @pierregee
+.nvmrc                                          @fullstackninja864 @lykalabrada @pierregee
 
-codecov.yml                                     @thedoublejay
-docker-compose.yml                              @thedoublejay
-LICENSE                                         @thedoublejay
-package.json                                    @thedoublejay
-package-lock.json                               @thedoublejay
-postcss.config.js                               @thedoublejay
-README.md                                       @thedoublejay
-tailwind.config.js                              @thedoublejay
-tsconfig.json                                   @thedoublejay
+codecov.yml                                     @fullstackninja864 @lykalabrada @pierregee
+docker-compose.yml                              @fullstackninja864 @lykalabrada @pierregee
+LICENSE                                         @fullstackninja864 @lykalabrada @pierregee
+package.json                                    @fullstackninja864 @lykalabrada @pierregee
+package-lock.json                               @fullstackninja864 @lykalabrada @pierregee
+postcss.config.js                               @fullstackninja864 @lykalabrada @pierregee
+README.md                                       @fullstackninja864 @lykalabrada @pierregee
+tailwind.config.js                              @fullstackninja864 @lykalabrada @pierregee
+tsconfig.json                                   @fullstackninja864 @lykalabrada @pierregee
