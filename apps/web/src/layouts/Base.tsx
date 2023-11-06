@@ -33,10 +33,10 @@ import SecuredStoreAPI from "@api/secure-storage";
 import Logging from "@api/logging";
 import { StorageProvider } from "@contexts/StorageContext";
 import { store } from "@store/store";
+import { QueueStorageProvider } from "@contexts/QueueStorageContext";
 import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
-import { QueueStorageProvider } from "@contexts/QueueStorageContext";
 
 const metamask = new MetaMaskConnector({
   chains: [mainnet, sepolia],
