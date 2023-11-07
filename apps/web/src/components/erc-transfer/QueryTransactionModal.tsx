@@ -17,8 +17,8 @@ import {
   useGetQueueTransactionQuery,
   useLazyGetEVMTxnDetailsQuery,
 } from "@store/index";
-import { useQueueStorageContext } from "@contexts/QueueStorageContext";
-import { useNetworkContext } from "@contexts/NetworkContext";
+import { useQueueStorageContext } from "../../layouts/contexts/QueueStorageContext";
+import { useNetworkContext } from "../../layouts/contexts/NetworkContext";
 
 export interface QueueTxData {
   amount?: string;
