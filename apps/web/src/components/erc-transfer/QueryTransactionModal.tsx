@@ -17,8 +17,8 @@ import {
   useGetQueueTransactionQuery,
   useLazyGetEVMTxnDetailsQuery,
 } from "@store/index";
-import { useQueueStorageContext } from "../../layouts/contexts/QueueStorageContext";
-import { useNetworkContext } from "../../layouts/contexts/NetworkContext";
+import { useQueueStorageContext } from "@contexts/QueueStorageContext";
+import { useNetworkContext } from "@contexts/NetworkContext";
 
 export interface QueueTxData {
   amount?: string;
@@ -206,6 +206,7 @@ export default function QueryTransactionModal({
     }
     try {
       setIsLoading(true);
+      // @ts-ignore
       const receipt = await client.getTransaction({
         hash: transactionInput as `0x${string}`,
       });
