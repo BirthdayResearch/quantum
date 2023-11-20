@@ -35,7 +35,7 @@ importers:
         version: 1.3.1
       '@waveshq/walletkit-ui':
         specifier: ^1.3.1
-        version: 1.3.1(@babel/core@7.22.10)(@types/node@18.15.3)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@6.11.0)(@typescript-eslint/parser@6.11.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 1.3.1(@babel/core@7.22.10)(@types/node@18.15.3)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@6.11.0)(@typescript-eslint/parser@6.11.0)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5)
       bignumber.js:
         specifier: ^9.1.2
         version: 9.1.2
@@ -134,8 +134,8 @@ importers:
         specifier: ^1.7.17
         version: 1.7.17(react-dom@18.2.0)(react@18.2.0)
       '@reduxjs/toolkit':
-        specifier: ^1.9.5
-        version: 1.9.5(react-redux@8.1.2)(react@18.2.0)
+        specifier: ^1.9.7
+        version: 1.9.7(react-redux@8.1.2)(react@18.2.0)
       '@tailwindcss/line-clamp':
         specifier: ^0.4.4
         version: 0.4.4(tailwindcss@3.3.3)
@@ -4759,8 +4759,8 @@ packages:
     resolution: {integrity: sha512-dT7FOLUCdZmq+AunLqB1Iz+ZH/IIS1Fz2THmKZQ6aFONrQD/BQ5ecJ7g2wGS2OgyUFf4OaLam6/bxmgdOBDqig==}
     requiresBuild: true
 
-  /@reduxjs/toolkit@1.9.5(react-redux@8.1.2)(react@18.2.0):
-    resolution: {integrity: sha512-Rt97jHmfTeaxL4swLRNPD/zV4OxTes4la07Xc4hetpUW/vc75t5m1ANyxG6ymnEQ2FsLQsoMlYB2vV1sO3m8tQ==}
+  /@reduxjs/toolkit@1.9.7(react-redux@8.1.2)(react@18.2.0):
+    resolution: {integrity: sha512-t7v8ZPxhhKgOKtU+uyJT13lu4vL7az5aFi4IdoDs/eS548edn2M8Ik9h8fxgvMjGoAUVFSt6ZC1P5cWmQ014QQ==}
     peerDependencies:
       react: ^16.9.0 || ^17.0.0 || ^18
       react-redux: ^7.2.1 || ^8.0.2
@@ -7063,11 +7063,11 @@ packages:
       - supports-color
     dev: true
 
-  /@waveshq/standard-web@2.2.0(@babel/core@7.22.10)(redux@4.2.1):
+  /@waveshq/standard-web@2.2.0(@babel/core@7.22.10):
     resolution: {integrity: sha512-NGdLji/7kDIj4fy9Gr8YViJTyzri2qxl6WCHCufRF5oRkArmvAYQU4nYh13ocbptFgmVdwk69inZzO98gBCnfQ==}
     dependencies:
       '@netlify/ipx': 1.4.4
-      '@reduxjs/toolkit': 1.9.5(react-redux@8.1.2)(react@18.2.0)
+      '@reduxjs/toolkit': 1.9.7(react-redux@8.1.2)(react@18.2.0)
       '@tanstack/react-query': 5.0.0-beta.20(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.21
       '@types/react-dom': 18.2.7
@@ -7108,7 +7108,7 @@ packages:
     resolution: {integrity: sha512-HaDRmPZAXid5aQXglrrbzl+5HFUUVw+dX/o2wkZAIFEEqD7sYkzKJqOZyOeNEl8KWz4ymGwLmReEJIPPSGEayg==}
     dependencies:
       '@netlify/ipx': 1.4.4
-      '@reduxjs/toolkit': 1.9.5(react-redux@8.1.2)(react@18.2.0)
+      '@reduxjs/toolkit': 1.9.7(react-redux@8.1.2)(react@18.2.0)
       '@tanstack/react-query': 5.0.0-beta.20(react-dom@18.2.0)(react@18.2.0)
       '@types/react': 18.2.21
       '@types/react-dom': 18.2.7
@@ -7155,12 +7155,12 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@waveshq/walletkit-ui@1.3.1(@babel/core@7.22.10)(@types/node@18.15.3)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@6.11.0)(@typescript-eslint/parser@6.11.0)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)(ts-node@10.9.1)(typescript@4.9.5):
+  /@waveshq/walletkit-ui@1.3.1(@babel/core@7.22.10)(@types/node@18.15.3)(@types/tar-fs@2.0.1)(@typescript-eslint/eslint-plugin@6.11.0)(@typescript-eslint/parser@6.11.0)(react-dom@18.2.0)(react@18.2.0)(ts-node@10.9.1)(typescript@4.9.5):
     resolution: {integrity: sha512-7RjkRPGP+xc0/laxb5AfMrQfpPT5x2bXVhy6icD/dIek3q1W6hFbNuWTPyx5cCbaLCx+oO5/pvQMFE+FYrHBNA==}
     dependencies:
       '@stickyjs/jest': 1.3.2(@babel/core@7.22.10)(@types/node@18.15.3)(ts-node@10.9.1)(typescript@4.9.5)
       '@waveshq/standard-defichain-jellyfishsdk': 2.2.0(@types/tar-fs@2.0.1)
-      '@waveshq/standard-web': 2.2.0(@babel/core@7.22.10)(redux@4.2.1)
+      '@waveshq/standard-web': 2.2.0(@babel/core@7.22.10)
       '@waveshq/standard-web-linter': 2.2.0(@babel/core@7.22.10)(@typescript-eslint/eslint-plugin@6.11.0)(@typescript-eslint/parser@6.11.0)(react-dom@18.2.0)(react@18.2.0)
       '@waveshq/walletkit-core': 1.3.1
       bignumber.js: 9.1.2
