@@ -22,7 +22,7 @@
     "@tailwindcss/line-clamp": "^0.4.4",
     "@waveshq/standard-web": "^2.3.0",
     "axios": "^1.4.0",
-    "bignumber.js": "^9.1.1",
+    "bignumber.js": "^9.1.2",
     "clsx": "^2.0.0",
     "connectkit": "^1.5.2",
     "dayjs": "^1.11.9",
