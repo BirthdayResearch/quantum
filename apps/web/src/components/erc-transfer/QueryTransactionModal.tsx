@@ -206,6 +206,7 @@ export default function QueryTransactionModal({
     }
     try {
       setIsLoading(true);
+      // @ts-ignore
       const receipt = await client.getTransaction({
         hash: transactionInput as `0x${string}`,
       });
