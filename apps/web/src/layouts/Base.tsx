@@ -9,8 +9,13 @@ import {
   siteTitle,
   website,
 } from "@components/siteInfo";
-import { configureChains, createConfig, WagmiConfig } from "wagmi";
-import { sepolia, mainnet } from "wagmi/chains";
+import {
+  configureChains,
+  createConfig,
+  WagmiConfig,
+  sepolia,
+  mainnet,
+} from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 import { publicProvider } from "wagmi/providers/public";
@@ -28,10 +33,10 @@ import SecuredStoreAPI from "@api/secure-storage";
 import Logging from "@api/logging";
 import { StorageProvider } from "@contexts/StorageContext";
 import { store } from "@store/store";
+import { QueueStorageProvider } from "@contexts/QueueStorageContext";
 import ScreenContainer from "../components/ScreenContainer";
 import { ETHEREUM_MAINNET_ID } from "../constants";
 import { MAINNET_CONFIG, TESTNET_CONFIG } from "../config";
-import { QueueStorageProvider } from "./contexts/QueueStorageContext";
 
 const metamask = new MetaMaskConnector({
   chains: [mainnet, sepolia],
