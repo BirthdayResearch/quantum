@@ -105,17 +105,18 @@ export class WhaleWalletService {
         return { isValid: false, statusCode: CustomErrorCodes.IsZeroBalance };
       }
 
-      // Verify that the amount === utxo balance
+      // Verify that the utxo balance >= amount
+      const utxoBalance = new BigNumber(utxo);
       if (
         verify.symbol === TokenSymbol.DFI &&
-        !new BigNumber(verify.amount).isEqualTo(utxo) &&
-        !new BigNumber(verify.amount).plus(this.dustUTXO).isEqualTo(utxo)
+        utxoBalance.isLessThan(verify.amount) &&
+        utxoBalance.isLessThan(verify.amount.plus(this.dustUTXO))
       ) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
-      // Verify that the amount === token balance
-      if (token !== undefined && !new BigNumber(verify.amount).isEqualTo(token.amount)) {
+      // Verify that the token balance >= amount
+      if (token !== undefined && new BigNumber(token.amount).isLessThan(verify.amount)) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
       }
 
@@ -309,7 +310,7 @@ export class WhaleWalletService {
 
     // Verify that user sent one transaction with exact amount needed
     if (txInfo === undefined) {
-      return { code: CustomErrorCodes.TxnWithExactAmountNotFound, numberOfConfirmations: 0, txid: undefined };
+      return { code: CustomErrorCodes.TxnWithEnoughAmountNotFound, numberOfConfirmations: 0, txid: undefined };
     }
     const { numberOfConfirmations, txid } = txInfo;
     let statusCode: CustomErrorCodes | undefined;
@@ -333,22 +334,24 @@ export class WhaleWalletService {
       let txid: string;
       let txAmount: BigNumber;
       if (verify.symbol === TokenSymbol.DFI && dfiTokenTxns.length > 0) {
-        // Find DFI txn with exact amount
-        const transaction = dfiTokenTxns.find((tx) => verify.amount.isEqualTo(tx.value));
+        // Find one DFI txn with amount greater than or equal to expected amount
+        const transaction = dfiTokenTxns.find((tx) => new BigNumber(tx.value).isGreaterThanOrEqualTo(verify.amount));
         if (transaction === undefined) {
-          throw new Error(`No txn found with same amount needed (${verify.symbol}).`);
+          throw new Error(`No txn found with enough amount needed (${verify.symbol}).`);
         }
         txid = transaction.txid;
         txAmount = new BigNumber(transaction.value);
       } else {
-        // Find non-DFI token txn with exact amount
+        // Find one non-DFI token txn with greater than or equal to expected amount
         const transaction = otherTokensTxns.find((tx) => {
           const txAmountSymbol = tx.amounts[0]?.split('@');
           const tokenSymbol = txAmountSymbol[1];
-          return verify.amount.isEqualTo(txAmountSymbol[0]) && verify.symbol === tokenSymbol;
+          return (
+            new BigNumber(txAmountSymbol[0]).isGreaterThanOrEqualTo(verify.amount) && verify.symbol === tokenSymbol
+          );
         });
         if (transaction === undefined) {
-          throw new Error(`No txn found with same amount needed (${verify.symbol}).`);
+          throw new Error(`No txn found with enough amount needed (${verify.symbol}).`);
         }
         txAmount = new BigNumber(transaction.amounts[0]?.split('@')[0]);
         txid = transaction.txid;

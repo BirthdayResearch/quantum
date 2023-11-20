@@ -181,7 +181,7 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotFound });
   });
 
-  it('should throw error if balance did not match with the amount', async () => {
+  it('should throw error if balance is less than expected amount', async () => {
     // Generate address (index = 3)
     await testing.inject({
       method: 'GET',
@@ -208,7 +208,7 @@ describe('DeFiChain Verify fund Testing', () => {
     await defichain.generateBlock();
 
     const response = await verify({
-      amount: '10',
+      amount: '2.5',
       symbol: 'BTC',
       address: newLocalAddress,
       ethReceiverAddress: ethWalletAddress,

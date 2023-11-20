@@ -168,8 +168,8 @@ function TokenDetails({
         </div>
         <NumericFormat
           testId={`${testId}-liquidity`}
-          className="text-dark-1000 text-sm lg:text-base text-dark-1000 text-right lg:text-left flex-1"
-          value={amount}
+          className="text-dark-1000 text-sm lg:text-base text-right lg:text-left flex-1"
+          value={amount.isNaN() ? 0 : amount}
           decimalScale={8}
           thousandSeparator
           suffix={` ${token.name}`}
