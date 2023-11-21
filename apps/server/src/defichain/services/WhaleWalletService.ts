@@ -112,12 +112,12 @@ export class WhaleWalletService {
         utxoBalance.isLessThan(verify.amount) &&
         utxoBalance.isLessThan(verify.amount.plus(this.dustUTXO))
       ) {
-        return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
+        return { isValid: false, statusCode: CustomErrorCodes.BalanceNotEnough };
       }
 
       // Verify that the token balance >= amount
       if (token !== undefined && new BigNumber(token.amount).isLessThan(verify.amount)) {
-        return { isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched };
+        return { isValid: false, statusCode: CustomErrorCodes.BalanceNotEnough };
       }
 
       // Get and validate the number of confirmation blocks

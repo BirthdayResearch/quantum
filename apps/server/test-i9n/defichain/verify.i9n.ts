@@ -215,7 +215,7 @@ describe('DeFiChain Verify fund Testing', () => {
       tokenAddress: mwbtcContract.address,
     });
 
-    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.BalanceNotMatched });
+    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.BalanceNotEnough });
   });
 
   it('should throw error if address is not owned by the wallet', async () => {
