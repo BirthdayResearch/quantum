@@ -32,7 +32,6 @@ jobs:
       - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
         with:
           node-version-file: ".nvmrc"
-          cache: "pnpm"
 
       # install specific version of chrome
       - name: Install latest Google Chrome
