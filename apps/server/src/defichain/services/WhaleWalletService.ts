@@ -110,6 +110,7 @@ export class WhaleWalletService {
       if (
         verify.symbol === TokenSymbol.DFI &&
         utxoBalance.isLessThan(verify.amount) &&
+        // Note: Dust UTXO is sent from `fundUTXO` fn to make sure that unique address has enough UTXO
         utxoBalance.isLessThan(verify.amount.plus(this.dustUTXO))
       ) {
         return { isValid: false, statusCode: CustomErrorCodes.BalanceNotEnough };
