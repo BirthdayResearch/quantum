@@ -208,7 +208,7 @@ describe('DeFiChain Verify fund Testing', () => {
     await defichain.generateBlock();
 
     const response = await verify({
-      amount: '2.5',
+      amount: '10',
       symbol: 'BTC',
       address: newLocalAddress,
       ethReceiverAddress: ethWalletAddress,
