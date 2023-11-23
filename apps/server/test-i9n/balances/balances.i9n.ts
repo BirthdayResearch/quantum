@@ -224,7 +224,7 @@ describe('DeFiChain Send Transaction Testing', () => {
     await meurocContract.mint(bridgeContract.address, ethers.utils.parseEther('7'));
     // Mint 2 MATIC to hotwallet
     // await mmaticContract.mint(bridgeContract.address, ethers.utils.parseEther('2'));
-    // await hardhatNetwork.generate(1);
+    await hardhatNetwork.generate(1);
 
     const initialResponse = await testing.inject({
       method: 'GET',
