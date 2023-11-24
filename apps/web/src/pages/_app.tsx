@@ -33,13 +33,6 @@ export default function BridgeApp({ Component, pageProps }): JSX.Element {
         }}
         src="https://www.googletagmanager.com/gtag/js?id=G-CNVHG8WSHW"
       />
-      {process.env.NODE_ENV === "production" && (
-        <Script
-          id="ze-snippet"
-          strategy="afterInteractive"
-          src="https://static.zdassets.com/ekr/snippet.js?key=7f6d52fd-355b-450d-8e01-1b126ebf3593"
-        />
-      )}
       <Component {...pageProps} />
     </Base>
   );
