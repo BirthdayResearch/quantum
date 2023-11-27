@@ -136,3 +136,25 @@ After making changes to the database schema in schema.prisma, run `cd apps/serve
 Run `./with-db generate` to generate the Prisma Client.
 
 Run `./with-db migrate dev` to migrate and apply database migrations in the development environment.
+
+## Instruction on how to generate ABI-encoded data related to TimelockController
+
+Clone project, then execute `pnpm i`
+
+### For BridgeProxy
+
+Change this [file](packages/smartcontracts/src/scripts/generateEncodedData.ts) according to your needs.
+Inside packages/smartcontracts/src, execute this command line
+
+```
+npx hardhat run scripts/generateEncodedData.ts
+```
+
+### For BridgeQueueProxy
+
+Change this [file](packages/smartcontracts-queue/src/scripts/generateEncodedData.ts) according to your needs.
+Inside packages/smartcontracts-queue/src, execute this command line
+
+```
+npx hardhat run scripts/generateEncodedData.ts
+```
