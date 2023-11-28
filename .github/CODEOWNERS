@@ -1,29 +1,29 @@
 # Define individuals that are responsible for code in a repository.
 # More details are here: https://help.github.com/articles/about-codeowners/
 
-/.husky/                                        @fullstackninja864 @lykalabrada @pierregee
-/.github/                                       @fullstackninja864 @lykalabrada @pierregee
+/.husky/                                        @fullstackninja864 @pierregee
+/.github/                                       @fullstackninja864 @pierregee
 
-public                                          @fullstackninja864 @lykalabrada @pierregee
-apps/web                                        @fullstackninja864 @lykalabrada @pierregee
-apps/server                                     @fullstackninja864 @lykalabrada @pierregee
-packages                                        @fullstackninja864 @lykalabrada @pierregee @cuongquangnam
+public                                          @fullstackninja864 @pierregee
+apps/web                                        @fullstackninja864 @pierregee
+apps/server                                     @fullstackninja864 @pierregee
+packages                                        @fullstackninja864 @pierregee @cuongquangnam
 
-.codeclimate.yml                                @fullstackninja864 @lykalabrada @pierregee
-.editorconfig                                   @fullstackninja864 @lykalabrada @pierregee
-.eslintignore                                   @fullstackninja864 @lykalabrada @pierregee
-.eslintrc                                       @fullstackninja864 @lykalabrada @pierregee
-.gitignore                                      @fullstackninja864 @lykalabrada @pierregee
-.imgbotconfig                                   @fullstackninja864 @lykalabrada @pierregee
-.lintstagedrc.js                                @fullstackninja864 @lykalabrada @pierregee
-.nvmrc                                          @fullstackninja864 @lykalabrada @pierregee
+.codeclimate.yml                                @fullstackninja864 @pierregee
+.editorconfig                                   @fullstackninja864 @pierregee
+.eslintignore                                   @fullstackninja864 @pierregee
+.eslintrc                                       @fullstackninja864 @pierregee
+.gitignore                                      @fullstackninja864 @pierregee
+.imgbotconfig                                   @fullstackninja864 @pierregee
+.lintstagedrc.js                                @fullstackninja864 @pierregee
+.nvmrc                                          @fullstackninja864 @pierregee
 
-codecov.yml                                     @fullstackninja864 @lykalabrada @pierregee
-docker-compose.yml                              @fullstackninja864 @lykalabrada @pierregee
-LICENSE                                         @fullstackninja864 @lykalabrada @pierregee
-package.json                                    @fullstackninja864 @lykalabrada @pierregee
-package-lock.json                               @fullstackninja864 @lykalabrada @pierregee
-postcss.config.js                               @fullstackninja864 @lykalabrada @pierregee
-README.md                                       @fullstackninja864 @lykalabrada @pierregee
-tailwind.config.js                              @fullstackninja864 @lykalabrada @pierregee
-tsconfig.json                                   @fullstackninja864 @lykalabrada @pierregee
+codecov.yml                                     @fullstackninja864 @pierregee
+docker-compose.yml                              @fullstackninja864 @pierregee
+LICENSE                                         @fullstackninja864 @pierregee
+package.json                                    @fullstackninja864 @pierregee
+package-lock.json                               @fullstackninja864 @pierregee
+postcss.config.js                               @fullstackninja864 @pierregee
+README.md                                       @fullstackninja864 @pierregee
+tailwind.config.js                              @fullstackninja864 @pierregee
+tsconfig.json                                   @fullstackninja864 @pierregee
