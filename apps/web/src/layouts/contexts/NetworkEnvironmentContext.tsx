@@ -38,8 +38,15 @@ export function NetworkEnvironmentProvider({
   const isEthereumMainNet = chain?.id === ETHEREUM_MAINNET_ID;
 
   function getInitialNetwork(n: EnvironmentNetwork): EnvironmentNetwork {
-    if (chain === undefined || process.env.NODE_ENV === "development") {
+    // if metamask is not connected
+    if (chain === undefined) {
       return env.networks.includes(n) ? n : defaultNetwork;
+    }
+    // if metamask is connected and in dev mode
+    if (process.env.NODE_ENV === "development" && !isEthereumMainNet) {
+      return env.networks.includes(n) && n !== EnvironmentNetwork.MainNet
+        ? n
+        : EnvironmentNetwork.LocalPlayground;
     }
 
     return isEthereumMainNet
@@ -48,6 +55,17 @@ export function NetworkEnvironmentProvider({
   }
 
   const initialNetwork = getInitialNetwork(networkQuery as EnvironmentNetwork);
+
+  useEffect(() => {
+    const { query } = router;
+    if (isEthereumMainNet) {
+      delete query.network;
+    } else {
+      query.network = initialNetwork;
+    }
+    router.push({ pathname: router.basePath, query });
+  }, [initialNetwork]);
+
   const [networkEnv, setNetworkEnv] =
     useState<EnvironmentNetwork>(initialNetwork);
 
