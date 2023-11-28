@@ -355,4 +355,44 @@ describe('DeFiChain Verify fund Testing', () => {
                       new BigNumber('0.001').toFixed(8),
                     ); */
   });
+
+  it('should verify fund if balance is more than expected amount', async () => {
+    // Generate address (index = 5)
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    const newWallet = whaleWalletProvider.createWallet(5);
+    const newLocalAddress = await newWallet.getAddress();
+
+    // Sends token to the address
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [newLocalAddress]: `11@BTC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock(40);
+
+    const response = await verify({
+      amount: '10',
+      symbol: 'BTC',
+      address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+    expect(response.isValid).toBeTruthy();
+    expect(response.signature).toBeDefined();
+    expect(response.nonce).toBeDefined();
+    expect(response.deadline).toBeDefined();
+    expect(response.txnId).toBeDefined();
+  });
 });

@@ -4,7 +4,7 @@ export const networkConfigs = [
     network: "TestNet",
     dfcAddress: "tf1qsckyp02vdzaf95cjl5dr95n8stcalze0pfswcp",
     evmAddress:
-      "https://sepolia.etherscan.io/address/0x62caa18a745b3d61e81f64e5b47c1a21de8155ba",
+      "https://sepolia.etherscan.io/address/0x62cAa18a745b3d61E81f64e5B47c1A21dE8155bA",
     balancesUrl: "https://testnet.api.quantumbridge.app/balances",
   },
   {

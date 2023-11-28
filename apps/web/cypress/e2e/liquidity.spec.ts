@@ -18,15 +18,13 @@ networkConfigs.forEach((networkItem) => {
         cy.viewport(desktopViewPort);
       });
 
-      // TODO: check why it's flaky
-      it.skip("should check Proof of Backing link", () => {
+      it("should check Proof of Backing link", () => {
         cy.findByTestId("POB.Url")
           .should("have.attr", "href")
           .and("include", "https://defiscan.live/proof-of-backing");
       });
 
-      // TODO: check why it's flaky
-      it.skip("should check that Addresses links are correct", () => {
+      it("should check that Addresses links are correct", () => {
         evmSymbols.forEach((symbol) => {
           cy.findByTestId(`${symbol}-Ethereum-address`)
             .and("have.attr", "href")
