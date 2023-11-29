@@ -181,7 +181,7 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotFound });
   });
 
-  it('should throw error if balance is less than expected amount', async () => {
+  it('should throw error if DFI balance is less than expected amount', async () => {
     // Generate address (index = 3)
     await testing.inject({
       method: 'GET',
@@ -192,6 +192,34 @@ describe('DeFiChain Verify fund Testing', () => {
     });
 
     const newWallet = whaleWalletProvider.createWallet(3);
+    const newLocalAddress = await newWallet.getAddress();
+
+    // Sends UTXO to the address
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(newLocalAddress, 3);
+    await defichain.generateBlock(40);
+
+    const response = await verify({
+      amount: '10',
+      symbol: 'DFI',
+      address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+
+    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.BalanceNotEnough });
+  });
+
+  it('should throw error if balance is less than expected amount', async () => {
+    // Generate address (index = 4)
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    const newWallet = whaleWalletProvider.createWallet(4);
     const newLocalAddress = await newWallet.getAddress();
 
     // Sends token to the address
@@ -276,8 +304,8 @@ describe('DeFiChain Verify fund Testing', () => {
   });
 
   it('should throw error if confirmed block number is less than 35', async () => {
-    // Generate address (index = 4)
-    const newWallet = whaleWalletProvider.createWallet(4);
+    // Generate address (index = 5)
+    const newWallet = whaleWalletProvider.createWallet(5);
     const newLocalAddress = await newWallet.getAddress();
 
     await testing.inject({
@@ -357,7 +385,7 @@ describe('DeFiChain Verify fund Testing', () => {
   });
 
   it('should verify fund if balance is equal to expected amount of DFI', async () => {
-    // Generate address (index = 5)
+    // Generate address (index = 6)
     await testing.inject({
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/generate`,
@@ -366,7 +394,7 @@ describe('DeFiChain Verify fund Testing', () => {
       },
     });
 
-    const newWallet = whaleWalletProvider.createWallet(5);
+    const newWallet = whaleWalletProvider.createWallet(6);
     const newLocalAddress = await newWallet.getAddress();
 
     // Sends DFI token to the address
@@ -389,7 +417,7 @@ describe('DeFiChain Verify fund Testing', () => {
   });
 
   it('should verify fund if balance is more than expected amount of DFI', async () => {
-    // Generate address (index = 6)
+    // Generate address (index = 7)
     await testing.inject({
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/generate`,
@@ -398,7 +426,7 @@ describe('DeFiChain Verify fund Testing', () => {
       },
     });
 
-    const newWallet = whaleWalletProvider.createWallet(5);
+    const newWallet = whaleWalletProvider.createWallet(7);
     const newLocalAddress = await newWallet.getAddress();
 
     // Sends DFI token to the address
@@ -421,7 +449,7 @@ describe('DeFiChain Verify fund Testing', () => {
   });
 
   it('should verify fund if balance is more than expected amount', async () => {
-    // Generate address (index = 7)
+    // Generate address (index = 8)
     await testing.inject({
       method: 'GET',
       url: `${WALLET_ENDPOINT}address/generate`,
@@ -430,7 +458,7 @@ describe('DeFiChain Verify fund Testing', () => {
       },
     });
 
-    const newWallet = whaleWalletProvider.createWallet(6);
+    const newWallet = whaleWalletProvider.createWallet(8);
     const newLocalAddress = await newWallet.getAddress();
 
     // Sends token to the address
