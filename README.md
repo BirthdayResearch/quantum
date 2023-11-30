@@ -144,17 +144,19 @@ Clone project, then execute `pnpm i`
 ### For BridgeProxy
 
 Change this [file](packages/smartcontracts/src/scripts/generateEncodedData.ts) according to your needs.
-Inside packages/smartcontracts/src, execute this command line
+
+Then execute the file:
 
 ```
-npx hardhat run scripts/generateEncodedData.ts
+npx ts-node packages/smartcontracts/src/scripts/generateEncodedData
 ```
 
 ### For BridgeQueueProxy
 
 Change this [file](packages/smartcontracts-queue/src/scripts/generateEncodedData.ts) according to your needs.
-Inside packages/smartcontracts-queue/src, execute this command line
+
+Then execute the file:
 
 ```
-npx hardhat run scripts/generateEncodedData.ts
+npx ts-node packages/smartcontracts-queue/src/scripts/generateEncodedData
 ```
