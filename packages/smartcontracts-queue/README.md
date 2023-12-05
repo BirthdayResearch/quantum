@@ -8,7 +8,7 @@ There is only one role for BridgeQueueProxy: DEFAULT_ADMIN_ROLE, which is assign
 
 ### Add supported token
 
-Only address with DEFAULT_ADMIN_ROLE can call the `addSupportedTokens(address)` function.
+Only address with DEFAULT_ADMIN_ROLE can call the `addSupportedToken(address)` function.
 The argument for this function is `_tokenAddress` which is the address of the ERC20 token to add support (for ETH, it will be 0x0000000000000000000000000000000000000000)
 
 ### Remove supported token
@@ -27,7 +27,7 @@ Only address with DEFAULT_ADMIN_ROLE can change `coldWallet`. This can be done b
 
 Only address with DEFAULT_ADMIN_ROLE can change `communityWallet`. This can be done by using function `changeCommunityWallet(address)`. This will be address that the bridge fee will be transferred to.
 
-### Modify roles (i.e. DEFAULT_ADMIN_ROLE)
+### Modify roles
 
 `grantRole(bytes32 role,address)` and `revokeRole(bytes32 role,address)` will be used to grant a role to new addresses and revoke the existing addresses role respectively. Requirement: the caller must be have "role" 's admin role to grant or revoke for that "role"
 
