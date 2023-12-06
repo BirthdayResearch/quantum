@@ -67,7 +67,7 @@ describe('DeFiChain Verify fund Testing', () => {
             key: StartedDeFiChainStubContainer.LOCAL_MNEMONIC,
             transferFee: '0.003',
             dustUTXO: '0.001',
-            supportedTokens: 'BTC,ETH',
+            supportedTokens: 'BTC,ETH,DFI',
           },
           startedHardhatContainer,
           testnet: {
@@ -181,7 +181,7 @@ describe('DeFiChain Verify fund Testing', () => {
     expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.AddressNotFound });
   });
 
-  it('should throw error if balance is less than expected amount', async () => {
+  it('should throw error if DFI balance is less than expected amount', async () => {
     // Generate address (index = 3)
     await testing.inject({
       method: 'GET',
@@ -192,6 +192,34 @@ describe('DeFiChain Verify fund Testing', () => {
     });
 
     const newWallet = whaleWalletProvider.createWallet(3);
+    const newLocalAddress = await newWallet.getAddress();
+
+    // Sends UTXO to the address
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(newLocalAddress, 3);
+    await defichain.generateBlock(40);
+
+    const response = await verify({
+      amount: '10',
+      symbol: 'DFI',
+      address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+
+    expect(response).toStrictEqual({ isValid: false, statusCode: CustomErrorCodes.BalanceNotEnough });
+  });
+
+  it('should throw error if balance is less than expected amount', async () => {
+    // Generate address (index = 4)
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    const newWallet = whaleWalletProvider.createWallet(4);
     const newLocalAddress = await newWallet.getAddress();
 
     // Sends token to the address
@@ -276,8 +304,8 @@ describe('DeFiChain Verify fund Testing', () => {
   });
 
   it('should throw error if confirmed block number is less than 35', async () => {
-    // Generate address (index = 4)
-    const newWallet = whaleWalletProvider.createWallet(4);
+    // Generate address (index = 5)
+    const newWallet = whaleWalletProvider.createWallet(5);
     const newLocalAddress = await newWallet.getAddress();
 
     await testing.inject({
@@ -354,5 +382,109 @@ describe('DeFiChain Verify fund Testing', () => {
                     expect(await defichain.whaleClient.address.getBalance(localAddress)).toStrictEqual(
                       new BigNumber('0.001').toFixed(8),
                     ); */
+  });
+
+  it('should verify fund if balance is equal to expected amount of DFI', async () => {
+    // Generate address (index = 6)
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    const newWallet = whaleWalletProvider.createWallet(6);
+    const newLocalAddress = await newWallet.getAddress();
+
+    // Sends DFI token to the address
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(newLocalAddress, 10);
+
+    await defichain.generateBlock(40);
+
+    const response = await verify({
+      amount: '10',
+      symbol: 'DFI',
+      address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+    expect(response.isValid).toBeTruthy();
+    expect(response.signature).toBeDefined();
+    expect(response.nonce).toBeDefined();
+    expect(response.deadline).toBeDefined();
+    expect(response.txnId).toBeDefined();
+  });
+
+  it('should verify fund if balance is more than expected amount of DFI', async () => {
+    // Generate address (index = 7)
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    const newWallet = whaleWalletProvider.createWallet(7);
+    const newLocalAddress = await newWallet.getAddress();
+
+    // Sends DFI token to the address
+    await defichain.playgroundRpcClient?.wallet.sendToAddress(newLocalAddress, 11);
+
+    await defichain.generateBlock(40);
+
+    const response = await verify({
+      amount: '10',
+      symbol: 'DFI',
+      address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+    expect(response.isValid).toBeTruthy();
+    expect(response.signature).toBeDefined();
+    expect(response.nonce).toBeDefined();
+    expect(response.deadline).toBeDefined();
+    expect(response.txnId).toBeDefined();
+  });
+
+  it('should verify fund if balance is more than expected amount', async () => {
+    // Generate address (index = 8)
+    await testing.inject({
+      method: 'GET',
+      url: `${WALLET_ENDPOINT}address/generate`,
+      query: {
+        refundAddress: localAddress,
+      },
+    });
+
+    const newWallet = whaleWalletProvider.createWallet(8);
+    const newLocalAddress = await newWallet.getAddress();
+
+    // Sends token to the address
+    await defichain.playgroundClient?.rpc.call(
+      'sendtokenstoaddress',
+      [
+        {},
+        {
+          [newLocalAddress]: `11@BTC`,
+        },
+      ],
+      'number',
+    );
+    await defichain.generateBlock(40);
+
+    const response = await verify({
+      amount: '10',
+      symbol: 'BTC',
+      address: newLocalAddress,
+      ethReceiverAddress: ethWalletAddress,
+      tokenAddress: mwbtcContract.address,
+    });
+    expect(response.isValid).toBeTruthy();
+    expect(response.signature).toBeDefined();
+    expect(response.nonce).toBeDefined();
+    expect(response.deadline).toBeDefined();
+    expect(response.txnId).toBeDefined();
   });
 });
