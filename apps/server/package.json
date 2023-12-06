@@ -6,7 +6,7 @@
     "build": "tsc -b ./tsconfig.build.json",
     "clean": "rm -rf dist",
     "dev": "pnpm run migration:dev && nest start --watch",
-    "docker:pull": "docker pull ghcr.io/birthdayresearch/whale-api:4.0.0-beta.10 && docker pull ghcr.io/birthdayresearch/playground-api:4.0.0-beta.10 && docker pull defi/defichain:master-92f1c507b && docker pull postgres:15.4-alpine",
+    "docker:pull": "docker pull ghcr.io/birthdayresearch/whale-api:4.0.1 && docker pull ghcr.io/birthdayresearch/playground-api:4.0.1 && docker pull defi/defichain:4.0.0 && docker pull postgres:15.4-alpine",
     "generate:migrations": "./with-db migrate dev && pnpm prisma format",
     "generate:prisma": "prisma generate",
     "lint": "eslint .",
