@@ -7,7 +7,7 @@ import '@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol';
 import '@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol';
 /** @notice @dev
-/* This error occurs when incoorect nonce provided
+/* This error occurs when incorrect nonce provided
 */
 error INCORRECT_NONCE();
 
@@ -15,6 +15,16 @@ error INCORRECT_NONCE();
 /* This error occurs when token is not in supported list
 */
 error TOKEN_NOT_SUPPORTED();
+
+/** @notice @dev
+/* This error occurs when zero address is used
+*/
+error ZERO_ADDRESS_NOT_ALLOWED();
+
+/** @notice @dev
+/* This error occurs when supported tokens length is 0
+*/
+error SUPPORTED_TOKENS_LENGTH_ZERO();
 
 /** @notice @dev
 /* This error occurs when fake signatures being used to claim fund
@@ -208,7 +218,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     /**
      * constructor to disable initalization of implementation contract
      */
-    constructor() {
+    constructor() payable {
         _disableInitializers();
     }
 
@@ -229,7 +239,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address _communityWallet,
         uint256 _fee,
         address _flushReceiveAddress
-    ) external initializer {
+    ) external initializer onlyRole(DEFAULT_ADMIN_ROLE) {
         __EIP712_init(NAME, '1');
         _grantRole(DEFAULT_ADMIN_ROLE, _timelockContract);
         _grantRole(WITHDRAW_ROLE, _initialWithdraw);
@@ -256,6 +266,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         address _tokenAddress,
         bytes calldata signature
     ) external {
+        if (_to == address(0)) revert ZERO_ADDRESS_NOT_ALLOWED();
+        if (supportedTokens.length() == 0) revert SUPPORTED_TOKENS_LENGTH_ZERO();
         if (eoaAddressToNonce[_to] != _nonce) revert INCORRECT_NONCE();
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
         if (block.timestamp > _deadline) revert EXPIRED_CLAIM();
@@ -263,12 +275,13 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         bytes32 msg_hash = _hashTypedDataV4(struct_hash);
         if (ECDSAUpgradeable.recover(msg_hash, signature) != relayerAddress) revert FAKE_SIGNATURE();
         eoaAddressToNonce[_to]++;
-        emit CLAIM_FUND(_tokenAddress, _to, _amount);
         if (_tokenAddress == ETH) {
             (bool sent, ) = _to.call{value: _amount}('');
             if (!sent) revert ETH_TRANSFER_FAILED();
+            emit CLAIM_FUND(_tokenAddress, _to, _amount);
         } else {
             IERC20Upgradeable(_tokenAddress).safeTransfer(_to, _amount);
+            emit CLAIM_FUND(_tokenAddress, _to, _amount);
         }
     }
 
@@ -279,11 +292,8 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
      * @param _tokenAddress Supported token address that being bridged
      * @param _amount Amount to be bridged, this in in Wei
      */
-    function bridgeToDeFiChain(
-        bytes calldata _defiAddress,
-        address _tokenAddress,
-        uint256 _amount
-    ) external payable {
+    function bridgeToDeFiChain(bytes calldata _defiAddress, address _tokenAddress, uint256 _amount) external payable {
+        if (supportedTokens.length() == 0) revert SUPPORTED_TOKENS_LENGTH_ZERO();
         if (!supportedTokens.contains(_tokenAddress)) revert TOKEN_NOT_SUPPORTED();
         uint256 requestedAmount;
         if (_tokenAddress == ETH) {
@@ -296,15 +306,16 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
         if (requestedAmount == 0) revert REQUESTED_BRIDGE_AMOUNT_IS_ZERO();
         uint256 netAmountInWei = amountAfterFees(requestedAmount);
         uint256 netTxFee = requestedAmount - netAmountInWei;
-        emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmountInWei, block.timestamp);
         if (_tokenAddress == ETH) {
             if (netTxFee > 0) {
                 (bool sent, ) = communityWallet.call{value: netTxFee}('');
                 if (!sent) revert ETH_TRANSFER_FAILED();
             }
+            emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netAmountInWei, block.timestamp);
         } else {
             if (netTxFee > 0) IERC20Upgradeable(_tokenAddress).safeTransferFrom(msg.sender, communityWallet, netTxFee);
             IERC20Upgradeable(_tokenAddress).safeTransferFrom(msg.sender, address(this), netAmountInWei);
+            emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, netTxFee, block.timestamp);
         }
     }
 
@@ -317,17 +328,19 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     function flushMultipleTokenFunds(uint256 _fromIndex, uint256 _toIndex) external {
         if (_toIndex > supportedTokens.length()) revert INVALID_TOINDEX();
         address _flushReceiveAddress = flushReceiveAddress;
-        for (uint256 i = _fromIndex; i < _toIndex; ++i) {
-            address supToken = supportedTokens.at(i);
-            if (supToken == ETH) {
-                if (address(this).balance > tokenCap[ETH]) {
-                    uint256 amountToFlush = address(this).balance - tokenCap[ETH];
-                    (bool sent, ) = _flushReceiveAddress.call{value: amountToFlush}('');
-                    if (!sent) revert ETH_TRANSFER_FAILED();
+        unchecked {
+            for (uint256 i = _fromIndex; i < _toIndex; ++i) {
+                address supToken = supportedTokens.at(i);
+                if (supToken == ETH) {
+                    if (address(this).balance > tokenCap[ETH]) {
+                        uint256 amountToFlush = address(this).balance - tokenCap[ETH];
+                        (bool sent, ) = _flushReceiveAddress.call{value: amountToFlush}('');
+                        if (!sent) revert ETH_TRANSFER_FAILED();
+                    }
+                } else if (IERC20Upgradeable(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
+                    uint256 amountToFlush = IERC20Upgradeable(supToken).balanceOf(address(this)) - tokenCap[supToken];
+                    IERC20Upgradeable(supToken).safeTransfer(_flushReceiveAddress, amountToFlush);
                 }
-            } else if (IERC20Upgradeable(supToken).balanceOf(address(this)) > tokenCap[supToken]) {
-                uint256 amountToFlush = IERC20Upgradeable(supToken).balanceOf(address(this)) - tokenCap[supToken];
-                IERC20Upgradeable(supToken).safeTransfer(_flushReceiveAddress, amountToFlush);
             }
         }
         emit FLUSH_FUND_MULTIPLE_TOKENS(_fromIndex, _toIndex);
@@ -376,7 +389,7 @@ contract BridgeV1 is UUPSUpgradeable, EIP712Upgradeable, AccessControlUpgradeabl
     }
 
     /**
-     * @notice Used by addresses with Admin and Operational roles to remove an exisiting supported token
+     * @notice Used by addresses with Admin and Operational roles to remove an existing supported token
      * @param _tokenAddress The token address to be removed from supported list
      */
     function removeSupportedTokens(address _tokenAddress) external onlyRole(DEFAULT_ADMIN_ROLE) {

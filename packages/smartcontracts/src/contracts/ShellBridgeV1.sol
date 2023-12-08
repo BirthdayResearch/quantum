@@ -2,7 +2,6 @@
 pragma solidity 0.8.17;
 
 contract ShellBridgeV1 {
-
     /**
      * @notice Emitted when the user bridges token to DefiChain
      * @param defiAddress defiAddress DeFiChain address of user
@@ -17,9 +16,7 @@ contract ShellBridgeV1 {
         uint256 timestamp
     );
 
-
-    constructor() {
-    }
+    constructor() {}
 
     /**
      * @notice Used to transfer the supported token from Mainnet(EVM) to DefiChain
@@ -28,12 +25,7 @@ contract ShellBridgeV1 {
      * @param _tokenAddress Supported token address that being bridged
      * @param _amount Amount to be bridged, this in in Wei
      */
-    function bridgeToDeFiChain(
-        bytes calldata _defiAddress,
-        address _tokenAddress,
-        uint256 _amount
-    ) external payable {
-        emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, 100000000000, block.timestamp);
+    function bridgeToDeFiChain(bytes calldata _defiAddress, address _tokenAddress, uint256 _amount) external payable {
+        emit BRIDGE_TO_DEFI_CHAIN(_defiAddress, _tokenAddress, _amount, block.timestamp);
     }
-
 }
