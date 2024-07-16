@@ -7,8 +7,16 @@ export default function Banner(): JSX.Element {
         <HiLockClosed size={16} />
       </div>
       <div className="pl-4">
-        {`Quantum Bridge will enter maintenance mode indefinitely, please visit
-        Birthday Research's Official Twitter account for the full information`}
+        <span className="inline-block md:inline">
+          Quantum Bridge will enter maintenance mode indefinitely, please visit
+          Birthday Research's Official Twitter account for the &nbsp;
+        </span>
+        <a
+          href="https://x.com/BirthdayDev/status/1813165248980869335"
+          className="inline font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#42F9C2] to-[#082FD4]"
+        >
+          full information&nbsp;
+        </a>
       </div>
     </div>
   );
