@@ -578,7 +578,7 @@ export default function BridgeForm({
                   setSelectedNetworkA(value)
                 }
                 value={selectedNetworkA}
-                disabled={hasUnconfirmedTxn}
+                disabled
               />
             </div>
             <div className="w-1/2">

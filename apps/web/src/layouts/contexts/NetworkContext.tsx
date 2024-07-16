@@ -48,134 +48,6 @@ export interface NetworkI<T> {
 
 export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
   {
-    name: Network.Ethereum,
-    icon: "/tokens/Ethereum.svg",
-    tokens: [
-      // {
-      //   tokenA: {
-      //     name: "DFI",
-      //     subtitle: "(Ethereum)",
-      //     symbol: "DFI",
-      //     icon: "/tokens/DFI.svg",
-      //   },
-      //   tokenB: {
-      //     name: "DFI",
-      //     symbol: "DFI",
-      //     icon: "/tokens/DFI.svg",
-      //   },
-      // },
-      // {
-      //   tokenA: {
-      //     name: "WBTC",
-      //     symbol: "WBTC",
-      //     icon: "/tokens/wBTC.svg",
-      //   },
-      //   tokenB: {
-      //     name: "dBTC",
-      //     symbol: "BTC",
-      //     icon: "/tokens/dBTC.svg",
-      //   },
-      // },
-      // {
-      //   tokenA: {
-      //     name: "ETH",
-      //     symbol: "ETH",
-      //     icon: "/tokens/ETH.svg",
-      //   },
-      //   tokenB: {
-      //     name: "dETH",
-      //     symbol: "ETH",
-      //     icon: "/tokens/dETH.svg",
-      //   },
-      // },
-      // {
-      //   tokenA: {
-      //     name: "USDT",
-      //     symbol: "USDT",
-      //     icon: "/tokens/USDT.svg",
-      //   },
-      //   tokenB: {
-      //     name: "dUSDT",
-      //     symbol: "USDT",
-      //     icon: "/tokens/dUSDT.svg",
-      //   },
-      // },
-      // {
-      //   tokenA: {
-      //     name: "USDC",
-      //     symbol: "USDC",
-      //     icon: "/tokens/USDC.svg",
-      //   },
-      //   tokenB: {
-      //     name: "dUSDC",
-      //     symbol: "USDC",
-      //     icon: "/tokens/dUSDC.svg",
-      //   },
-      // },
-      // {
-      //   tokenA: {
-      //     name: "EUROC",
-      //     symbol: "EUROC",
-      //     icon: "/tokens/EUROC.svg",
-      //   },
-      //   tokenB: {
-      //     name: "dEUROC",
-      //     symbol: "EUROC",
-      //     icon: "/tokens/dEUROC.svg",
-      //   },
-      // },
-      // {
-      //   tokenA: {
-      //     name: "MATIC",
-      //     symbol: "MATIC",
-      //     icon: "/tokens/MATIC.svg",
-      //   },
-      //   tokenB: {
-      //     name: "dMATIC",
-      //     symbol: "MATIC",
-      //     icon: "/tokens/dMATIC.svg",
-      //   },
-      // },
-      {
-        tokenA: {
-          name: "XCHF",
-          symbol: "XCHF",
-          icon: "/tokens/XCHF.svg",
-        },
-        tokenB: {
-          name: "dXCHF",
-          symbol: "XCHF",
-          icon: "/tokens/dXCHF.svg",
-        },
-      },
-      /* TODO: Uncomment once ready
-      {
-        tokenA: {
-          name: "SOL",
-          symbol: "SOL",
-          icon: "/tokens/SOL.svg",
-        },
-        tokenB: {
-          name: "dSOL",
-          symbol: "SOL",
-          icon: "/tokens/dSOL.svg",
-        },
-      },
-      {
-        tokenA: {
-          name: "BDOT",
-          symbol: "BDOT",
-          icon: "/tokens/bDOT.svg",
-        },
-        tokenB: {
-          name: "dDOT",
-          symbol: "DOT",
-          icon: "/tokens/dDOT.svg",
-        },
-      }, */
-    ],
-  },
-  {
     name: Network.DeFiChain,
     icon: "/tokens/DeFichain.svg",
     tokens: [
@@ -299,6 +171,134 @@ export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
           name: "BDOT",
           symbol: "BDOT",
           icon: "/tokens/bDOT.svg",
+        },
+      }, */
+    ],
+  },
+  {
+    name: Network.Ethereum,
+    icon: "/tokens/Ethereum.svg",
+    tokens: [
+      // {
+      //   tokenA: {
+      //     name: "DFI",
+      //     subtitle: "(Ethereum)",
+      //     symbol: "DFI",
+      //     icon: "/tokens/DFI.svg",
+      //   },
+      //   tokenB: {
+      //     name: "DFI",
+      //     symbol: "DFI",
+      //     icon: "/tokens/DFI.svg",
+      //   },
+      // },
+      // {
+      //   tokenA: {
+      //     name: "WBTC",
+      //     symbol: "WBTC",
+      //     icon: "/tokens/wBTC.svg",
+      //   },
+      //   tokenB: {
+      //     name: "dBTC",
+      //     symbol: "BTC",
+      //     icon: "/tokens/dBTC.svg",
+      //   },
+      // },
+      // {
+      //   tokenA: {
+      //     name: "ETH",
+      //     symbol: "ETH",
+      //     icon: "/tokens/ETH.svg",
+      //   },
+      //   tokenB: {
+      //     name: "dETH",
+      //     symbol: "ETH",
+      //     icon: "/tokens/dETH.svg",
+      //   },
+      // },
+      // {
+      //   tokenA: {
+      //     name: "USDT",
+      //     symbol: "USDT",
+      //     icon: "/tokens/USDT.svg",
+      //   },
+      //   tokenB: {
+      //     name: "dUSDT",
+      //     symbol: "USDT",
+      //     icon: "/tokens/dUSDT.svg",
+      //   },
+      // },
+      // {
+      //   tokenA: {
+      //     name: "USDC",
+      //     symbol: "USDC",
+      //     icon: "/tokens/USDC.svg",
+      //   },
+      //   tokenB: {
+      //     name: "dUSDC",
+      //     symbol: "USDC",
+      //     icon: "/tokens/dUSDC.svg",
+      //   },
+      // },
+      // {
+      //   tokenA: {
+      //     name: "EUROC",
+      //     symbol: "EUROC",
+      //     icon: "/tokens/EUROC.svg",
+      //   },
+      //   tokenB: {
+      //     name: "dEUROC",
+      //     symbol: "EUROC",
+      //     icon: "/tokens/dEUROC.svg",
+      //   },
+      // },
+      // {
+      //   tokenA: {
+      //     name: "MATIC",
+      //     symbol: "MATIC",
+      //     icon: "/tokens/MATIC.svg",
+      //   },
+      //   tokenB: {
+      //     name: "dMATIC",
+      //     symbol: "MATIC",
+      //     icon: "/tokens/dMATIC.svg",
+      //   },
+      // },
+      {
+        tokenA: {
+          name: "XCHF",
+          symbol: "XCHF",
+          icon: "/tokens/XCHF.svg",
+        },
+        tokenB: {
+          name: "dXCHF",
+          symbol: "XCHF",
+          icon: "/tokens/dXCHF.svg",
+        },
+      },
+      /* TODO: Uncomment once ready
+      {
+        tokenA: {
+          name: "SOL",
+          symbol: "SOL",
+          icon: "/tokens/SOL.svg",
+        },
+        tokenB: {
+          name: "dSOL",
+          symbol: "SOL",
+          icon: "/tokens/dSOL.svg",
+        },
+      },
+      {
+        tokenA: {
+          name: "BDOT",
+          symbol: "BDOT",
+          icon: "/tokens/bDOT.svg",
+        },
+        tokenB: {
+          name: "dDOT",
+          symbol: "DOT",
+          icon: "/tokens/dDOT.svg",
         },
       }, */
     ],
