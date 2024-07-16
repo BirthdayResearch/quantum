@@ -46,7 +46,7 @@ export interface NetworkI<T> {
   }[];
 }
 
-export const networks: [NetworkI<Erc20Token>, NetworkI<string>] = [
+export const networks: [NetworkI<string>, NetworkI<Erc20Token>] = [
   {
     name: Network.DeFiChain,
     icon: "/tokens/DeFichain.svg",
