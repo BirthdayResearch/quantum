@@ -8,8 +8,9 @@ export default function Banner(): JSX.Element {
       </div>
       <div className="pl-4">
         <span className="inline-block md:inline">
-          Quantum Bridge will enter maintenance mode indefinitely, please visit
-          Birthday Research's Official Twitter account for the &nbsp;
+          {`Quantum Bridge will enter maintenance mode indefinitely, please visit
+          Birthday Research's Official Twitter account for the`}
+          &nbsp;
         </span>
         <a
           href="https://x.com/BirthdayDev/status/1813165248980869335"
