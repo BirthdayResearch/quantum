@@ -7,8 +7,8 @@ export default function Banner(): JSX.Element {
         <HiLockClosed size={16} />
       </div>
       <div className="pl-4">
-        Quantum Bridge will enter maintenance mode indefinitely, please visit
-        Birthday Research's Official Twitter account for the full information
+        {`Quantum Bridge will enter maintenance mode indefinitely, please visit
+        Birthday Research's Official Twitter account for the full information`}
       </div>
     </div>
   );
