@@ -7,16 +7,8 @@ export default function Banner(): JSX.Element {
         <HiLockClosed size={16} />
       </div>
       <div className="pl-4">
-        <span className="inline-block md:inline">
-          Make sure you are visiting&nbsp;
-        </span>
-        <a
-          href="https://quantumbridge.app"
-          className="inline font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#42F9C2] to-[#082FD4]"
-        >
-          https://quantumbridge.app&nbsp;
-        </a>
-        – check the URL correctly.{" "}
+        Quantum Bridge will enter maintenance mode indefinitely, please visit
+        Birthday Research's Official Twitter account for the full information
       </div>
     </div>
   );
