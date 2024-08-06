@@ -11,6 +11,14 @@
 
 All smart contracts will be deployed on Sepolia testnet for testing purposes.
 
+### Instant Smart Contract
+
+The instant smart contract is designed for the immediate execution of transactions, offering quick and seamless processing without additional steps. Transactions are executed instantly upon initiation, fully automated to ensure rapid and efficient processing. This makes the instant smart contract particularly suitable for routine operations where speed and efficiency are crucial. By eliminating extra steps and focusing on automation, it simplifies the transaction process and reduces administrative overhead, ensuring that transactions are processed quickly and effectively.
+
+### Queue Smart Contract
+
+The queue smart contract handles transactions that require an additional step before completion, ensuring a thorough verification process. When a transaction is initiated through this contract, it is placed in a queue and processed only after this verification step is completed. This introduces a delay, allowing for enhanced security by reviewing each transaction before its final execution. The queue smart contract is specifically designed to support transactions from DeFiChain to Ethereum, providing an additional layer of protection and assurance for high-value or sensitive operations.
+
 ### How to get ether on a testnet to make testnet transactions?
 
 Users can get the SepoliaETH via Sepolia Faucet(https://sepoliafaucet.com/)
@@ -22,14 +30,6 @@ The MUSDT and MUSDC contract have been deployed on Sepolia for testing. Users wi
 ### When bridging from DeFiChain, what is the expected signed message?
 
 Expected message should be similar to `0x9a2618a0503cf675a85e4519fc97890fba5b851d15e02b8bc8f351d22b46580059c03992465695e89fc29e528797972d05de0b34768d5d3d7f772f2422eb9af01b == relayerAddress._signTypedData(domainData, eip712Types, eip712Data)`. This data is signed by the relayer address. Data that hasn't been signed by the relayer address will revert with the error `FAKE_SIGNATURE`.
-
-### Sample metamask transaction of claim transaction?
-
-TODO
-
-### General explanation on how the contract works from an EVM perspective?
-
-TODO
 
 ## Contract Operations
 
