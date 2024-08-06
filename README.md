@@ -1,3 +1,5 @@
+To make your README more readable by collapsing some sections, you can use the HTML `<details>` and `<summary>` tags. Here’s how you can structure it:
+
 [![CI](https://github.com/WavesHQ/quantum/actions/workflows/ci.yml/badge.svg)](https://github.com/WavesHQ/quantum/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/WavesHQ/quantum/branch/main/graph/badge.svg?token=OXLL8IBZQV)](https://codecov.io/gh/WavesHQ/quantum)
 
@@ -19,23 +21,27 @@ The instant smart contract is designed for the immediate execution of transactio
 
 The queue smart contract handles transactions that require an additional step before completion, ensuring a thorough verification process. When a transaction is initiated through this contract, it is placed in a queue and processed only after this verification step is completed. This introduces a delay, allowing for enhanced security by reviewing each transaction before its final execution. The queue smart contract is specifically designed to support transactions from DeFiChain to Ethereum, providing an additional layer of protection and assurance for high-value or sensitive operations.
 
-### How to get ether on a testnet to make testnet transactions?
-
+<details>
+<summary>How to get ether on a testnet to make testnet transactions?</summary>
 Users can get the SepoliaETH via Sepolia Faucet(https://sepoliafaucet.com/)
+</details>
 
-### How to get ERC20 tokens to test bridging functionality?
-
+<details>
+<summary>How to get ERC20 tokens to test bridging functionality?</summary>
 The MUSDT and MUSDC contract have been deployed on Sepolia for testing. Users will be able to mint tokens by calling the `mint()` function with the respective EOA (Externally Owned Account) or contract address and amount.
+</details>
 
-### When bridging from DeFiChain, what is the expected signed message?
-
+<details>
+<summary>When bridging from DeFiChain, what is the expected signed message?</summary>
 Expected message should be similar to `0x9a2618a0503cf675a85e4519fc97890fba5b851d15e02b8bc8f351d22b46580059c03992465695e89fc29e528797972d05de0b34768d5d3d7f772f2422eb9af01b == relayerAddress._signTypedData(domainData, eip712Types, eip712Data)`. This data is signed by the relayer address. Data that hasn't been signed by the relayer address will revert with the error `FAKE_SIGNATURE`.
+</details>
 
-## Contract Operations
+<details>
+<summary>Contract Operations</summary>
 
 We are implementing a TimeLock contract that will work as an Admin address for ADMIN ONLY tx. There will be 3 days delay on every operational tx except when calling `Withdraw()` function, TimeLock contract is not able to call this function.
 
-## TimeLock Contract Operations
+### TimeLock Contract Operations
 
 Gnosis safe will be implemented with both proposers and executors roles. Only the Timelock smart contract has the role (TIMELOCK_ADMIN_ROLE) to grant roles for now. If we want to grant new roles to new addresses, have to go through a round of scheduling and executing the grantRole functions through the Timelock contract. When revoking privileges, either the revokeRole() or renounceRole() functions must be used.
 
@@ -53,7 +59,10 @@ The reason behind choosing different salt is to avoid having the same operation 
 
 After scheduling the transaction using a timelock, the developer must call the execute() function with the provided arguments(same as above). If the execute() function is called before the specified `delay` time has passed, the transaction will revert with the error message "TimelockController: operation is not ready". This is because the timelock is designed to ensure that the specified delay time has elapsed before the transaction can be executed. Once the delay time has passed, the transaction can be executed normally.
 
-## Bridge Contract operations
+</details>
+
+<details>
+<summary>Bridge Contract operations</summary>
 
 ### Bridge Contract Account Permission
 
@@ -120,7 +129,10 @@ Only address with admin role can change `tokenCap`.
 
 `grantRole` and `revokeRole` will be used to grant a role to new addresses and revoke the existing addresses role respectively. Only Admin address can make these changes.
 
-## Deployed Smart Contracts on Sepolia testnet
+</details>
+
+<details>
+<summary>Deployed Smart Contract on MainNet and TestNet</summary>
 
 ### Deploy ERC20 tokens 'MUSDT' & 'MUSDC'
 
@@ -209,7 +221,10 @@ Bridge V1 Proxy: [0x62cAa18a745b3d61E81f64e5B47c1A21dE8155bA](https://sepolia.et
 
 Bridge V1: [0xD321B5EfB5E8E3aE630d13DB2A00eB50eEBEFd4E](https://sepolia.etherscan.io/address/0xD321B5EfB5E8E3aE630d13DB2A00eB50eEBEFd4E)
 
-## Fund Bridge ERC20 tokens
+</details>
+
+<details>
+<summary>Fund Bridge ERC20 tokens</summary>
 
 ### Add funds
 
@@ -217,10 +232,16 @@ Anyone can send funds to the bridge contract. Ideally, this should be done by li
 
 Admins can send ERC20 tokens via the `transfer(address _to, uint256 _amount)` function or utilizing wallets such as Metamask.
 
-## Workflow for generating Prisma Client and applying database migrations
+</details>
+
+<details>
+<summary>Workflow for generating Prisma Client and applying database migrations</summary>
+##
 
 After making changes to the database schema in schema.prisma, run `cd apps/server` in terminal (/bridge).
 
 Run `./with-db generate` to generate the Prisma Client.
 
 Run `./with-db migrate dev` to migrate and apply database migrations in the development environment.
+
+</details>
