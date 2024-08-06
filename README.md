@@ -101,15 +101,17 @@ To execute only Admin transactions, the developer will need to follow these step
 
 ### Add supported token
 
-- Only address with the Admin role can call the `addSupportedTokens()` function.
-  - This sets the `_tokenCap` for an ERC20 token and ETH identified by its `_tokenAddress`.
-  - All added tokens will be instantly supported by the bridge.
-  - In case of ETH, address(0) will be used as an address.
-  - `_tokenCap` represents the maximum balance of tokens the contract can hold per `_tokenAddress`.
+- Only an address with the Admin role can call the `addSupportedTokens()` function.
+  - This function sets the `_tokenCap` for an ERC20 token or ETH, identified by its `_tokenAddress`.
+  - All tokens added will be immediately supported by the bridge.
+  - For ETH, use `address(0)` as the `_tokenAddress`.
+  - The `_tokenCap` defines the maximum balance of tokens the contract can hold for each `_tokenAddress`. Any funds exceeding this cap will be transferred to a specified wallet address in the event of a flush.
+  - After adding a supported token to the smart contract, update the token symbol in the server's [.env](./apps/server/.env#L42-L43) variables: `SUPPORTED_EVM_TOKENS` and `SUPPORTED_DFC_TOKENS`.
 
-### Remove supported token
+### Remove Supported Token
 
-- Only address with the Admin role can call the `removeSupportedTokens()` function. This also sets the `_tokenCap` to `0`.
+- Only an address with the Admin role can call the `removeSupportedTokens()` function. This function also sets the `_tokenCap` to `0`.
+- After removing a supported token from the smart contract, remove the token symbol from the server's [.env](./apps/server/.env#L42-L43) variables: `SUPPORTED_EVM_TOKENS` and `SUPPORTED_DFC_TOKENS`.
 
 ### Withdraw
 
@@ -120,6 +122,7 @@ To execute only Admin transactions, the developer will need to follow these step
 - `flushMultipleTokenFunds(uint256 _fromIndex, uint256 _toIndex)` function to flush the excess funds `(token.balanceOf(Bridge) - tokenCap)` across supported tokens to a hardcoded address (`flushReceiveAddress`) anyone can call this function.
   - For example, calling flushMultipleTokenFunds(0,3), only the tokens at index 0, 1 and 2 will be flushed.
   - This applies to all tokens and ETH.
+  - only funds exceeding respective `_tokenCap` will be transferred to a specified wallet address in the event of a flush.
 
 ### flushFundPerToken
 
