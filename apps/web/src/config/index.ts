@@ -5,8 +5,7 @@ import BridgeQueue from "./ABIs/mainnet/BridgeQueue.json";
 import BridgeQueueTestnet from "./ABIs/testnet/BridgeQueue.json";
 
 export const MAINNET_CONFIG: ContractContextI = {
-  EthereumRpcUrl:
-    "https://mainnet.infura.io/v3/df267399d98e41e996d6588a76678d5e",
+  EthereumRpcUrl: "", // Required config
   ExplorerURL: "https://etherscan.io",
   BridgeV1: {
     address: "0x54346d39976629b65ba54eac1c9ef0af3be1921b",
